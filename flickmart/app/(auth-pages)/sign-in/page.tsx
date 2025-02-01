@@ -1,44 +1,129 @@
-import { signInAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import Link from "next/link";
+"use client";
 
-export default async function Login(props: { searchParams: Promise<Message> }) {
-  const searchParams = await props.searchParams;
+import LoginHeader from "@/components/auth/LoginHeader";
+import Link from "next/link";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+
+const formSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  password: z
+    .string({ required_error: "password is required" })
+    .min(8, { message: "Password must be at least 8 characters" }),
+  rememberMe: z.boolean().default(false).optional(),
+});
+
+export default function Login() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+  };
   return (
-    <form className="flex-1 flex flex-col min-w-64">
-      <h1 className="text-2xl font-medium">Sign in</h1>
-      <p className="text-sm text-foreground">
-        Don't have an account?{" "}
-        <Link className="text-foreground font-medium underline" href="/sign-up">
-          Sign up
-        </Link>
-      </p>
-      <div className="flex flex-col gap-2 [&>input]:mb-3 mt-8">
-        <Label htmlFor="email">Email</Label>
-        <Input name="email" placeholder="you@example.com" required />
-        <div className="flex justify-between items-center">
-          <Label htmlFor="password">Password</Label>
+    <main>
+      <LoginHeader />
+      <section className="container mt-16">
+        <h1 className="pb-5">Sign in</h1>
+        <p className="font-light text-flickmart-gray">
+          Don't have an account yet?{" "}
           <Link
-            className="text-xs text-foreground underline"
-            href="/forgot-password"
+            className="capitalize text-black font-medium hover:text-flickmart transition-colors duration-300"
+            href="/sign-up"
           >
-            Forgot Password?
+            sign up
           </Link>
-        </div>
-        <Input
-          type="password"
-          name="password"
-          placeholder="Your password"
-          required
-        />
-        <SubmitButton pendingText="Signing In..." formAction={signInAction}>
-          Sign in
-        </SubmitButton>
-        <FormMessage message={searchParams} />
-      </div>
-    </form>
+        </p>
+        <Form {...form}>
+          <form className="mt-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="auth-form-label">
+                    Email address
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      className="auth-input"
+                      placeholder="Email address"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="auth-form-label">password</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="auth-input"
+                      placeholder="Password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="rememberMe"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between mt-8">
+                  <div className="flex items-center gap-3 text-flickmart-gray">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="size-6"
+                      />
+                    </FormControl>
+                    <FormLabel className="font-light text-base !m-0">
+                      Remember me
+                    </FormLabel>
+                  </div>
+                  <Link
+                    className="!m-0 text-sm font-semibold hover:text-flickmart duration-300"
+                    href="forgot-password"
+                  >
+                    Forgot password?
+                  </Link>
+                </FormItem>
+              )}
+            />
+            <Button
+              className="w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:bg-white duration-300"
+              type="submit"
+            >
+              Sign Up
+            </Button>
+          </form>
+        </Form>
+      </section>
+    </main>
   );
 }
