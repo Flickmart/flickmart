@@ -12,10 +12,9 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import CustomInput from "@/components/auth/CustomInput";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -53,41 +52,15 @@ export default function Login() {
         </p>
         <Form {...form}>
           <form className="mt-8" onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
+            <CustomInput
               name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="auth-form-label">
-                    Email address
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      className="auth-input"
-                      placeholder="Email address"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
               control={form.control}
+              placeholder="Email address"
+            />
+            <CustomInput
               name="password"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="auth-form-label">password</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="auth-input"
-                      placeholder="Password"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              control={form.control}
+              placeholder="Password"
             />
             <FormField
               control={form.control}
