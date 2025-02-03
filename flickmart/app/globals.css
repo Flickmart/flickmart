@@ -80,4 +80,7 @@
   .auth-input::placeholder{
     @apply text-base text-flickmart-gray
   }
+  .container-px{
+    @apply px-5 sm:px-12
+  }
 }
