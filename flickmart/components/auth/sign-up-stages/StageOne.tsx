@@ -11,29 +11,46 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
+import { Dispatch, SetStateAction } from "react";
 
 const formSchema = z.object({
+  firstName: z
+    .string()
+    .min(2, { message: "First name must be at least 2 characters" }),
+  lastName: z
+    .string()
+    .min(2, { message: "Last name must be at least 2 characters" }),
   email: z.string().email({ message: "Invalid email address" }),
   password: z
-    .string({ required_error: "password is required" })
+    .string()
     .min(8, { message: "Password must be at least 8 characters" }),
-  rememberMe: z.boolean().default(false).optional(),
+  agreeWithPrivacyPolicyAndTermsOfUse: z.boolean().refine((val) => val, {
+    message: "Please check the field above",
+  }),
 });
 
-export default function SignIn() {
+export default function StageOne({
+  setStage,
+}: {
+  setStage: Dispatch<SetStateAction<number>> ;
+}) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      firstName: "",
+      lastName: "",
       email: "",
       password: "",
-      rememberMe: false,
+      agreeWithPrivacyPolicyAndTermsOfUse: false,
     },
   });
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setStage(2);
     console.log(values);
   };
   return (
@@ -41,25 +58,38 @@ export default function SignIn() {
       <AuthHeader />
       <section className="form-grid">
         <Image
-          src="/sign-in-illustration.svg"
+          src="/sign-up-illustration.svg"
           width={563}
           height={618}
           alt="sign in illustration"
-          className="w-[450px] hidden lg:block lg:w-[500px]"
+          className="hidden lg:block lg:w-[550px]"
         />
         <div className="mt-16 container-px lg:mt-0">
-          <h1 className="mb-5">Sign in</h1>
+          <h1 className="pb-5">Sign up</h1>
           <p className="font-light text-flickmart-gray">
-            Don't have an account yet?{" "}
+            Already have an account?{" "}
             <Link
               className="capitalize font-medium text-flickmart hover:underline"
-              href="/sign-up"
+              href="/sign-in"
             >
-              sign up
+              sign in
             </Link>
           </p>
           <Form {...form}>
-            <form className="mt-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="mt-8 space-y-8 pb-20 lg:pb-0"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
+              <CustomInput
+                name="firstName"
+                control={form.control}
+                placeholder="First Name"
+              />
+              <CustomInput
+                name="lastName"
+                control={form.control}
+                placeholder="Last Name"
+              />
               <CustomInput
                 name="email"
                 control={form.control}
@@ -72,9 +102,9 @@ export default function SignIn() {
               />
               <FormField
                 control={form.control}
-                name="rememberMe"
+                name="agreeWithPrivacyPolicyAndTermsOfUse"
                 render={({ field }) => (
-                  <FormItem className="flex items-center justify-between mt-8">
+                  <FormItem className=" mt-8">
                     <div className="flex items-center gap-3 text-flickmart-gray">
                       <FormControl>
                         <Checkbox
@@ -83,16 +113,24 @@ export default function SignIn() {
                           className="size-6 hover:border-flickmart transition-colors duration-300"
                         />
                       </FormControl>
-                      <FormLabel className="font-light text-base !m-0">
-                        Remember me
+                      <FormLabel className="font-light !m-0 text-xs text-flickmart-gray">
+                        I agree with{" "}
+                        <Link
+                          className="text-flickmart font-semibold hover:underline"
+                          href=""
+                        >
+                          Privacy Policy
+                        </Link>{" "}
+                        and{" "}
+                        <Link
+                          className="text-flickmart font-semibold hover:underline"
+                          href=""
+                        >
+                          Terms of Use
+                        </Link>
                       </FormLabel>
                     </div>
-                    <Link
-                      className="!m-0 text-sm font-semibold hover:text-flickmart duration-300"
-                      href="forgot-password"
-                    >
-                      Forgot password?
-                    </Link>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
