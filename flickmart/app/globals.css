@@ -71,6 +71,12 @@
   }
 }
 @layer utilities{
+  .abs-center-x {
+    @apply left-1/2 -translate-x-1/2;
+  }
+  .abs-center-y {
+    @apply top-1/2 -translate-y-1/2;
+  }
   .auth-form-label{
     @apply absolute top-[-9999px]
   }
@@ -82,5 +88,11 @@
   }
   .container-px{
     @apply px-5 sm:px-12
+  }
+  .form-grid{
+    @apply lg:grid lg:grid-cols-2 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:px-8 lg:max-w-[1140px] lg:items-center
+  }
+  .submit-btn{
+    @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300
   }
 }
