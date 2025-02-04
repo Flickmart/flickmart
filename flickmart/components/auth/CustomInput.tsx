@@ -30,7 +30,7 @@ const CustomInput = ({
         <FormItem>
           <FormLabel className="auth-form-label">{placeholder}</FormLabel>
           <FormControl>
-            {name === "password" ? (
+            {name.includes("password") || name.includes("Password") ? (
               <div className="flex">
                 <Input
                   type={showPassword ? "text" : "password"}

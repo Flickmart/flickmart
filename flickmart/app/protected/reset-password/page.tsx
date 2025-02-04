@@ -1,37 +1,85 @@
-import { resetPasswordAction } from "@/app/actions";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+"use client";
 
-export default async function ResetPassword(props: {
-  searchParams: Promise<Message>;  // searchParams is a Promise containing a Message
-}) {
-  const searchParams = await props.searchParams;  // await the Promise to get the actual message
+import { resetPasswordAction } from "@/app/actions";
+import { SubmitButton } from "@/components/submit-button";
+import CustomInput from "@/components/auth/CustomInput";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import Image from "next/image";
+import AuthHeader from "@/components/auth/AuthHeader";
+import { Form } from "@/components/ui/form";
+
+const formSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+    confirmPassword: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters" }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export default function ResetPassword() {
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+  };
+
   return (
-    <form className="flex flex-col w-full max-w-md p-4 gap-2 [&>input]:mb-4">
-      <h1 className="text-2xl font-medium">Reset password</h1>
-      <p className="text-sm text-foreground/60">
-        Please enter your new password below.
-      </p>
-      <Label htmlFor="password">New password</Label>
-      <Input
-        type="password"
-        name="password"
-        placeholder="New password"
-        required
-      />
-      <Label htmlFor="confirmPassword">Confirm password</Label>
-      <Input
-        type="password"
-        name="confirmPassword"
-        placeholder="Confirm password"
-        required
-      />
-      <SubmitButton formAction={resetPasswordAction}>
-        Reset password
-      </SubmitButton>
-      <FormMessage message={searchParams} />  // Display the message to the user
-    </form>
+    <main>
+      <AuthHeader />
+      <section className="form-grid">
+        <Image
+          src="/reset-password.svg"
+          width={563}
+          height={618}
+          alt="sign in illustration"
+          className="w-[450px] hidden lg:block lg:w-[500px]"
+        />
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className=" w-full [&>input]:mb-4 container-px mt-8"
+          >
+            <div className="mb-12">
+              <h1 className="text-4xl font-medium mb-5">Reset password</h1>
+              <p className="text-sm text-flickmart-gray">
+                Password must be different from the last one
+              </p>
+            </div>
+            <div className="flex flex-col gap-6">
+              <CustomInput
+                name="newPassword"
+                control={form.control}
+                placeholder="New Password"
+              />
+              <CustomInput
+                name="confirmPassword"
+                control={form.control}
+                placeholder="Confirm Password"
+              />
+            </div>
+            <SubmitButton
+              className="submit-btn !mt-20"
+              // formAction={resetPasswordAction}
+            >
+              Reset password
+            </SubmitButton>
+          </form>
+        </Form>
+      </section>
+    </main>
   );
 }
