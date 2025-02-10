@@ -15,7 +15,7 @@ export default function CategoryItem({
         height={200}
         className="h-2/3 w-3/4 object-contain "
       />
-      <span className="font-semibold lg:text-xl">{categoryName}</span>
+      <span className="font-semibold text-sm lg:text-xl">{categoryName}</span>
     </div>
   );
 }

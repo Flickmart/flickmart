@@ -34,17 +34,17 @@ export default function Slider() {
       <CarouselContent>
         {Array.from({ length: 3 }).map((_, index) => (
           <CarouselItem key={index}>
-            <div className="slide   rounded-2xl lg:py-3 lg:px-5 p-7 capitalize h-full lg:min-h-60 flex flex-col justify-center   items-center space-y-7">
+            <div className="slide   rounded-2xl lg:py-3 lg:px-5   pb-2 p-7 capitalize h-full lg:min-h-60 flex flex-col justify-center   items-center lg:space-y-7 space-y-2.5">
               <div className=" text-center">
-                <h1 className="font-medium lg:text-4xl text-2xl">
+                <h1 className="font-medium lg:text-4xl text-xl">
                   this is slide one
                 </h1>
-                <p className="font-light leading-relaxed lg:leading-loose lg:text-base text-xs text-gray-300 ">
+                <p className="font-light leading-normal lg:leading-loose lg:text-base text-xs text-gray-300 ">
                   Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab
                   reiciendis consequuntur
                 </p>
               </div>
-              <Button className="rounded-3xl capitalize p-5  bg-black text-sm  lg:text-xl lg:px-10 lg:py-6">
+              <Button className="rounded-3xl capitalize p-2 lg:w-1/6 w-2/4 bg-black text-sm  lg:text-xl lg:px-10 lg:py-6">
                 button
               </Button>
               <RadioGroup
