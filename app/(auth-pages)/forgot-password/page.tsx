@@ -12,7 +12,7 @@ export default async function ForgotPassword(props: {
   const searchParams = await props.searchParams;
   return (
     <>
-      {/* <AuthHeader /> */}
+      <AuthHeader />
       <section className="form-grid">
         <Image
           src="/forgot-password.svg"
