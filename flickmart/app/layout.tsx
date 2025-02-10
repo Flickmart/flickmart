@@ -2,6 +2,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 
+import Footer from "@/components/Footer";
+import Delivery from "@/components/Delivery";
+
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
@@ -24,6 +28,10 @@ export default function RootLayout({
       <body className="bg-background text">
         <Navbar />
         {children}
+
+        <Delivery />
+        <Footer />
+
       </body>
     </html>
   );

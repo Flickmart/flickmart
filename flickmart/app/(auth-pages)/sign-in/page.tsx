@@ -47,19 +47,10 @@ export default function SignIn() {
           alt="sign in illustration"
           className="w-[450px] hidden lg:block lg:w-[500px]"
         />
-        <div className="mt-16 container-px lg:mt-0">
-          <h1 className="mb-5">Sign in</h1>
-          <p className="font-light text-flickmart-gray">
-            Don't have an account yet?{" "}
-            <Link
-              className="capitalize font-medium text-flickmart hover:underline"
-              href="/sign-up"
-            >
-              sign up
-            </Link>
-          </p>
+        <div className="mt-16 container-px lg:mt-0 space-y-8">
+          <h1 className="mb-5">Sign in</h1>      
           <Form {...form}>
-            <form className="mt-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form className="mt-8 space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
               <CustomInput
                 name="email"
                 control={form.control}
@@ -101,6 +92,15 @@ export default function SignIn() {
               </Button>
             </form>
           </Form>
+          <p className="font-light text-flickmart-gray text-center">
+            Don't have an account yet?{" "}
+            <Link
+              className="capitalize font-medium text-flickmart hover:underline"
+              href="/sign-up"
+            >
+              sign up
+            </Link>
+          </p>
         </div>
       </section>
     </main>
