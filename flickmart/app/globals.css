@@ -66,33 +66,44 @@
   body {
     @apply bg-background text-foreground;
   }
-  h1{
-    @apply text-[40px] font-medium
+  h1 {
+    @apply text-[40px] font-medium;
   }
 }
-@layer utilities{
+@layer utilities {
   .abs-center-x {
     @apply left-1/2 -translate-x-1/2;
   }
   .abs-center-y {
     @apply top-1/2 -translate-y-1/2;
   }
-  .auth-form-label{
-    @apply absolute top-[-9999px]
+  .auth-form-label {
+    @apply absolute top-[-9999px];
   }
-  .auth-input{
-    @apply border-0 border-b-2 rounded-none px-0 py-6 transition-all duration-300 focus-visible:border-b-flickmart
+  .auth-input {
+    @apply border-0 border-b-2 rounded-none px-0 py-6 transition-all duration-300 focus-visible:border-b-flickmart;
   }
-  .auth-input::placeholder{
-    @apply text-base text-flickmart-gray
+  .auth-input::placeholder {
+    @apply text-base text-flickmart-gray;
   }
-  .container-px{
-    @apply px-5 sm:px-12
+  .container-px {
+    @apply px-5 sm:px-12;
   }
-  .form-grid{
-    @apply lg:grid lg:grid-cols-2 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:px-8 lg:max-w-[1140px] lg:items-center
+  .form-grid {
+    @apply lg:grid lg:grid-cols-2 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:px-8 lg:max-w-[1140px] lg:items-center;
   }
-  .submit-btn{
-    @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300
+  .submit-btn {
+    @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300;
+  }
+}
+
+@layer components {
+  .slide {
+    background-image: url("/slide-img.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .fill-primary {
+    @apply !fill-flickmartLight;
   }
 }
