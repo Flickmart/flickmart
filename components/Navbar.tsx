@@ -18,7 +18,7 @@ export default function Navbar() {
     }
 
     return (
-        <header className="relative w-full bg-[#FEC75A] border-black border-b">
+        <header className="relative w-full bg-flickmartLight border-black border-b">
             <div className="w-[95%] mx-auto py-1">
                 <div className="w-full flex justify-between items-center">
                     <div className="flex gap-1 items-center">
