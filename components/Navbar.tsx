@@ -18,7 +18,7 @@ export default function Navbar() {
     }
 
     return (
-        <header className="fixed z-30 top-0 w-full bg-flickmartLight border-black border-b">
+        <header className="fixed z-30 top-0 w-full bg-flickmartLight shadow-sm shadow-black/20">
             <div className="w-[95%] mx-auto py-1">
                 <div className="w-full flex justify-between items-center">
                     <Link href={'/'} className="flex gap-1 items-center">
