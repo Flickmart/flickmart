@@ -1,6 +1,18 @@
-import { Locate, LocateIcon, Map, MapPin, Search } from "lucide-react"
+'use client'
+import { MapPin, Search } from "lucide-react"
+import { usePathname } from "next/navigation";
 
 export default function SearchBox() {
+
+    const pathname = usePathname();
+
+    // Pages where SearchBox should not be shown
+    const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
+
+    if (hiddenPages.includes(pathname)) {
+        return null; // Don't render any component
+    }
+
     return (
         <div className="w-full bg-flickmartLight py-32 flex justify-center text-base">
             <div className="w-11/12 lg:w-6/12 flex flex-col justify-center items-center gap-4">

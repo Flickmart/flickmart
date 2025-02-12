@@ -21,10 +21,10 @@ export default function Navbar() {
         <header className="relative w-full bg-flickmartLight border-black border-b">
             <div className="w-[95%] mx-auto py-1">
                 <div className="w-full flex justify-between items-center">
-                    <div className="flex gap-1 items-center">
+                    <Link href={'/'} className="flex gap-1 items-center">
                         <Image src='/flickmart-logo.svg' width={500} height={500} className="h-12 w-12" alt='' />
-                        <h1 className="font-bold text-base mt-2">Flick<span className="text-flickmart">Mart</span></h1>
-                    </div>
+                        <h1 className="font-bold text-xl mt-2">Flick<span className="text-flickmart">Mart</span></h1>
+                    </Link>
                     
                     <div className="hidden lg:flex items-center gap-8">
                         <div className="relative flex items-center gap-3"

@@ -19,10 +19,10 @@ export default function Footer() {
                     <article className="w-full lg:w-6/12 mb-8">
 
                         <div className="lg:hidden flex justify-between items-center">
-                            <div className="flex gap-1 items-center">
+                            <Link href={'/'} className="flex gap-1 items-center">
                                 <Image src='/flickmart-logo.svg' width={500} height={500} className="h-12 w-12" alt='' />
                                 <h1 className="font-bold text-2xl mt-2">Flick<span className="text-flickmart">Mart</span></h1>
-                            </div>
+                            </Link>
                             <button onClick={toggleExpanded}><ChevronDown /></button>
                         </div>
                         <div className="hidden lg:flex gap-1 items-center">
