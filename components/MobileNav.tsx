@@ -15,7 +15,7 @@ export default function MobileNav() {
     }
 
     return (
-        <header className="z-50 bg-white lg:hidden w-full fixed bottom-0 text-sm">
+        <header className="z-50 bg-white lg:hidden w-full fixed bottom-0 text-[12px]">
             <div className="relative w-[94%] mx-auto flex justify-between py-3">
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
                     <House className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
