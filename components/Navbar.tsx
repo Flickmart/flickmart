@@ -18,7 +18,7 @@ export default function Navbar() {
     }
 
     return (
-        <header className="relative w-full bg-flickmartLight border-black border-b">
+        <header className="fixed z-30 top-0 w-full bg-flickmartLight border-black border-b">
             <div className="w-[95%] mx-auto py-1">
                 <div className="w-full flex justify-between items-center">
                     <Link href={'/'} className="flex gap-1 items-center">
@@ -53,7 +53,7 @@ export default function Navbar() {
                         <div className="w-full flex items-center justify-between py-1">
                             <div className="flex gap-1 items-center">
                                 <Image src='/flickmart-logo.svg' width={500} height={500} className="h-12 w-12" alt='' />
-                                <h1 className="font-bold text-base mt-2">Flick<span className="text-flickmart">Mart</span></h1>
+                                <h1 className="font-bold text-xl mt-2">Flick<span className="text-flickmart">Mart</span></h1>
                             </div>
                             <button onClick={toggleNav} className="lg:hidden"><X className="" strokeWidth={1.25} /></button>
                         </div>
