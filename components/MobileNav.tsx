@@ -18,27 +18,27 @@ export default function MobileNav() {
         <header className="z-50 bg-white lg:hidden w-full fixed bottom-0 text-sm">
             <div className="relative w-[94%] mx-auto flex justify-between py-3">
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
-                    <House className='text-flickmart-gray group-hover:text-flickmart duration-500' />
+                    <House className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
                     <span className='group-hover:text-flickmart duration-500'>Home</span>
                 </Link>
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
-                    <Bookmark className='text-flickmart-gray group-hover:text-flickmart duration-500' />
+                    <Bookmark className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
                     <span className='group-hover:text-flickmart duration-500'>Saved</span>
                 </Link>
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
-                    <div className="absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
+                    <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
                         <div className="bg-flickmart p-5 rounded-full flex justify-center items-center text-white shadow-lg shadow-black/20">
-                            <Store className='' />
+                            <Store className=' h-5 w-5' />
                         </div>
                         <span className='group-hover:text-flickmart duration-500'>Sell</span>
                     </div>
                 </Link>
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
-                    <MessageSquareText className='text-flickmart-gray group-hover:text-flickmart duration-500' />
+                    <MessageSquareText className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
                     <span className='group-hover:text-flickmart duration-500'>Chats</span>
                 </Link>
                 <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
-                    <UserRound className='text-flickmart-gray group-hover:text-flickmart duration-500' />
+                    <UserRound className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
                     <span className='group-hover:text-flickmart duration-500'>Profile</span>
                 </Link>
             </div>
