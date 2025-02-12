@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Delivery from "@/components/Delivery";
 import SearchBox from "@/components/SearchBox";
+import MobileNav from "@/components/MobileNav";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,6 +30,7 @@ export default function RootLayout({
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text">
         <Navbar />
+        <MobileNav />
         <SearchBox />
         {children}
         <Delivery />
