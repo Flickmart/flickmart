@@ -14,7 +14,7 @@ export default function SearchBox() {
     }
 
     return (
-        <div className="w-full bg-flickmartLight pt-32 pb-28 flex justify-center text-base">
+        <div className="w-full bg-flickmartLight pt-32 pb-24 flex justify-center text-base">
             <div className="w-11/12 lg:w-6/12 flex flex-col justify-center items-center gap-4">
                 <div className="w-full flex items-center justify-center gap-2">
                     <span className="font-medium">Find anything in</span>

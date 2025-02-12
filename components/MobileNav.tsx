@@ -25,7 +25,7 @@ export default function MobileNav() {
                     <Bookmark className='text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5' />
                     <span className='group-hover:text-flickmart duration-500'>Saved</span>
                 </Link>
-                <Link href={'#'} className="flex flex-col items-center justify-center gap-1.5 group">
+                <Link href={'#'} className="mx-6 flex flex-col items-center justify-center gap-1.5 group">
                     <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
                         <div className="bg-flickmart p-5 rounded-full flex justify-center items-center text-white shadow-lg shadow-black/20">
                             <Store className=' h-5 w-5' />
