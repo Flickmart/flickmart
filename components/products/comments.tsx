@@ -101,7 +101,7 @@ export function CommentDrawer({ isOpen, onClose }: CommentDrawerProps) {
     <Drawer modal open={isOpen} onOpenChange={onClose}>
       <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[70vh] rounded-t-[10px]">
         <DrawerHeader className="border-b">
-          <DrawerTitle>Comments (700)</DrawerTitle>
+          <DrawerTitle className="text-center w-full"> 700 Comments</DrawerTitle>
           <DrawerClose asChild>
             <Button variant="ghost" className="absolute right-4 top-4">
               ✕
