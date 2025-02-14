@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import {
   Heart,
@@ -9,8 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { CommentDrawer } from "@/components/products/comments";
 
 export default function ProductPage() {
+  const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       {/* Banner */}
@@ -61,7 +67,11 @@ export default function ProductPage() {
                 <ThumbsDown className="w-5 h-5" />
                 <span className="text-xs">Dislikes</span>
               </Button>
-              <Button variant="ghost" className="flex flex-col items-center">
+              <Button
+                variant="ghost"
+                className="flex flex-col items-center"
+                onClick={() => setIsCommentDrawerOpen(true)}
+              >
                 <MessageCircle className="w-5 h-5" />
                 <span className="text-xs">Comments</span>
               </Button>
@@ -165,7 +175,7 @@ export default function ProductPage() {
           </h2>
           <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Product Cards */}
-            {[1, 2, 3, 4].map((item) => (
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((item) => (
               <Card key={item} className="overflow-hidden">
                 <div className="relative aspect-square">
                   <Badge className="absolute top-2 left-2 z-10 bg-red-500">
@@ -196,6 +206,10 @@ export default function ProductPage() {
           </div>
         </div>
       </main>
+      <CommentDrawer
+        isOpen={isCommentDrawerOpen}
+        onClose={() => setIsCommentDrawerOpen(false)}
+      />
     </div>
   );
 }
