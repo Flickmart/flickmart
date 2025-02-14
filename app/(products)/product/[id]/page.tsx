@@ -12,6 +12,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+
 import { CommentDrawer } from "@/components/products/comments";
 
 export default function ProductPage() {
@@ -47,17 +53,50 @@ export default function ProductPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
           {/* Product Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square">
-              <Image
-                src="/airpods-demo.png"
-                alt="Apple Airpod Pro 2nd Gen"
-                fill
-                className="rounded-lg object-cover"
-              />
-              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                884.03 x 916
-              </div>
-            </div>
+            <Carousel>
+              <CarouselContent>
+                <CarouselItem>
+                  <div className="relative aspect-square">
+                    <Image
+                      src="/airpods-demo.png"
+                      alt="Apple Airpod Pro 2nd Gen"
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      884.03 x 916
+                    </div>
+                  </div>
+                </CarouselItem>
+                <CarouselItem>
+                  <div className="relative aspect-square">
+                    <Image
+                      src="/electronics.png"
+                      alt="Apple Airpod Pro 2nd Gen"
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      884.03 x 916
+                    </div>{" "}
+                  </div>
+                </CarouselItem>
+                <CarouselItem>
+                  <div className="relative aspect-square">
+                    <Image
+                      src="/fashion.png"
+                      alt="Apple Airpod Pro 2nd Gen"
+                      fill
+                      className="rounded-lg object-cover"
+                    />
+                    <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      884.03 x 916
+                    </div>
+                  </div>
+                </CarouselItem>
+              </CarouselContent>
+            </Carousel>
+
             <div className="flex items-center justify-around pt-4 border-t">
               <Button variant="ghost" className="flex flex-col items-center">
                 <ThumbsUp className="w-5 h-5" />

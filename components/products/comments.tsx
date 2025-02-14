@@ -99,7 +99,7 @@ const comments: Comment[] = [
 export function CommentDrawer({ isOpen, onClose }: CommentDrawerProps) {
   return (
     <Drawer modal open={isOpen} onOpenChange={onClose}>
-      <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[70vh] rounded-t-[10px]">
+      <DrawerContent className="fixed bottom-0 left-0 right-0 max-h-[80vh] rounded-t-[10px]">
         <DrawerHeader className="border-b">
           <DrawerTitle className="text-center w-full"> 700 Comments</DrawerTitle>
           <DrawerClose asChild>
@@ -108,7 +108,7 @@ export function CommentDrawer({ isOpen, onClose }: CommentDrawerProps) {
             </Button>
           </DrawerClose>
         </DrawerHeader>
-        <ScrollArea className="h-[60vh] md:h-[70vh]">
+        <ScrollArea className="h-[70vh] md:h-[70vh]">
           <div className="space-y-4 p-4">
             {comments.map((comment) => (
               <div key={comment.id} className="flex gap-3">
