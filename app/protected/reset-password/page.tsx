@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
 import AuthHeader from "@/components/auth/AuthHeader";
-import { Form } from "@/components/ui/form";
+import { Form } from "@/components/auth/ui/form";
 
 const formSchema = z
   .object({

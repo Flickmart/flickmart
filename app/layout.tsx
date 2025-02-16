@@ -3,6 +3,8 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Delivery from "@/components/Delivery";
+import Loader from "@/components/Loader";
+import Authenticator from "@/components/auth/Authenticator";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -23,9 +25,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body className="bg-background text">
+      <body className="bg-background text relative">
+        <Loader />
         <Navbar />
-        {children}
+        <Authenticator>{children}</Authenticator>
         <Delivery />
         <Footer />
       </body>

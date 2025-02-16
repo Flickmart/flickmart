@@ -4,7 +4,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/auth/ui/button";
 import {
   Form,
   FormControl,
@@ -12,11 +12,13 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/components/auth/ui/form";
+import { Checkbox } from "@/components/auth/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
+import useUserStore from "@/store/useUserStore";
+import { createUser } from "@/app/(auth-pages)/auth";
 
 const formSchema = z.object({
   firstName: z
@@ -37,8 +39,10 @@ const formSchema = z.object({
 export default function StageOne({
   setStage,
 }: {
-  setStage: Dispatch<SetStateAction<number>> ;
+  setStage: Dispatch<SetStateAction<number>>;
 }) {
+  const updateEmail = useUserStore((state) => state.updateEmail);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,8 +53,11 @@ export default function StageOne({
       agreeWithPrivacyPolicyAndTermsOfUse: false,
     },
   });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
+    createUser({ email: values.email, password: values.password }, "admin");
     setStage(2);
+    updateEmail(values.email);
     console.log(values);
   };
   return (
