@@ -3,6 +3,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Delivery from "@/components/Delivery";
+
+import SearchBox from "@/components/SearchBox";
+import MobileNav from "@/components/MobileNav";
 import Loader from "@/components/Loader";
 import Authenticator from "@/components/auth/Authenticator";
 
@@ -18,16 +21,21 @@ export const metadata = {
 const inter = Inter({
   subsets: ["latin"],
 });
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text relative">
         <Loader />
         <Navbar />
+        <MobileNav />
+        <SearchBox />
         <Authenticator>{children}</Authenticator>
         <Delivery />
         <Footer />
