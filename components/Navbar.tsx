@@ -1,21 +1,49 @@
-'use client';
-import { Bell, Bookmark, ChevronDown, CircleUserRound, LogOut, Menu, MessageSquareText, Settings, X } from "lucide-react";
+"use client";
+import { logout } from "@/app/(auth-pages)/auth";
+import {
+  Bell,
+  Bookmark,
+  ChevronDown,
+  CircleUserRound,
+  LogOut,
+  Menu,
+  MessageSquareText,
+  Settings,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import React, { useState } from "react";
 
 export default function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [isNavOpen, setIsNavOpen] = useState(false);
+  const toggleProfile = () => {
+    setIsOpen((prev) => !prev);
+  };
 
-    const toggleProfile = () => {
-        setIsOpen(prev => !prev);
-    }
+  const toggleNav = () => {
+    setIsNavOpen((prev) => !prev);
+  };
 
-    const toggleNav = () => {
-        setIsNavOpen(prev => !prev);
-    }
+  return (
+    <header className="relative w-full bg-[#FEC75A] border-black border-b">
+      <div className="w-[95%] mx-auto py-1">
+        <div className="w-full flex justify-between items-center">
+          <div className="flex gap-1 items-center">
+            <Image
+              src="/flickmart-logo.svg"
+              width={500}
+              height={500}
+              className="h-12 w-12"
+              alt=""
+            />
+            <h1 className="font-bold text-base mt-2">
+              Flick<span className="text-flickmart">Mart</span>
+            </h1>
+          </div>
+
 
     return (
         <header className="fixed z-30 top-0 w-full bg-flickmartLight shadow-sm shadow-black/20">
@@ -45,7 +73,9 @@ export default function Navbar() {
                         <button className="py-2 px-8 text-sm font-bold rounded-md bg-flickmart text-white">SELL</button>
                     </div>
                     <button onClick={toggleNav} className="lg:hidden"><Menu className="" strokeWidth={1.25} /></button>
+
                 </div>
+              )}
             </div>
             {isNavOpen && (
                 <div className="lg:hidden absolute inset-0 z-30 w-full h-screen bg-white">

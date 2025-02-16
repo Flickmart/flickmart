@@ -7,9 +7,9 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from "@/components/ui/carousel";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "../ui/button";
+} from "@/components/auth/ui/carousel";
+import { RadioGroup, RadioGroupItem } from "@/components/auth/ui/radio-group";
+import { Button } from "../auth/ui/button";
 
 export default function Slider() {
   const [api, setApi] = useState<CarouselApi>();

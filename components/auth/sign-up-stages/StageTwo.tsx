@@ -1,5 +1,5 @@
 import AuthHeader from "../AuthHeader";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/auth/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,19 +10,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from "@/components/auth/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
+} from "@/components/auth/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+import { createClient } from "@/utils/supabase/client";
+import useUserStore from "@/store/useUserStore";
+import { verifyOtp } from "@/app/(auth-pages)/auth";
 
 const formSchema = z.object({
   otp: z
     .string()
-    .min(4, { message: "Your one-time password must be 4 digits" }),
+    .min(4, { message: "Your one-time password must be 6 digits" }),
 });
 
 const StageTwo = ({
@@ -30,14 +33,18 @@ const StageTwo = ({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) => {
+  const { email } = useUserStore((state) => state.user);
+  const [otpMaxLength] = useState(6);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       otp: "",
     },
   });
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
+    verifyOtp(data.otp, email);
     setStage(3);
   };
   return (
@@ -64,15 +71,14 @@ const StageTwo = ({
                 </FormLabel>
                 <FormControl>
                   <InputOTP
-                    maxLength={4}
+                    maxLength={otpMaxLength}
                     {...field}
                     pattern={REGEXP_ONLY_DIGITS}
                   >
-                    <InputOTPGroup className="w-full justify-between">
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
+                    <InputOTPGroup className="w-full justify-between gap-4">
+                      {Array.from({ length: otpMaxLength }).map((_, index) => (
+                        <InputOTPSlot index={index} key={index} />
+                      ))}
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>

@@ -4,17 +4,21 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/auth/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/ui/form";
-import { Checkbox } from "@/components/ui/checkbox";
+} from "@/components/auth/ui/form";
+import { Checkbox } from "@/components/auth/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
+import { login } from "../auth";
+import useUserStore from "@/store/useUserStore";
+import { useRouter } from "next/navigation";
+import { useOthersStore } from "@/store/useOthersStore";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -25,6 +29,10 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
+  const { createSession, updateUserInfo } = useUserStore((state) => state);
+  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,9 +41,20 @@ export default function SignIn() {
       rememberMe: false,
     },
   });
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      setLoadingStatus(true);
+      const data = await login(values);
+      createSession(data.session);
+      updateUserInfo(data.user);
+      router.push("/");
+    } catch (err) {
+    } finally {
+      setLoadingStatus(false);
+    }
   };
+
   return (
     <main className="relative h-screen">
       <AuthHeader />
@@ -48,9 +67,12 @@ export default function SignIn() {
           className="w-[450px] hidden lg:block lg:w-[500px]"
         />
         <div className="mt-16 container-px lg:mt-0 space-y-8">
-          <h1 className="mb-5">Sign in</h1>      
+          <h1 className="mb-5">Sign in</h1>
           <Form {...form}>
-            <form className="mt-8 space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="mt-8 space-y-8"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <CustomInput
                 name="email"
                 control={form.control}
