@@ -1,15 +1,11 @@
-import BestSellers from "@/components/home/BestSellers";
-import Categories from "@/components/home/Categories";
-import NewArrivals from "@/components/home/NewArrivals";
-import Slider from "@/components/home/Slider";
+"use client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default async function Home() {
-  return (
-    <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">
-      <Slider />
-      <Categories />
-      <BestSellers />
-      <NewArrivals />
-    </div>
-  );
+export default function page() {
+  const router = useRouter();
+  useEffect(function () {
+    router.push("/home");
+  }, []);
+  return null;
 }

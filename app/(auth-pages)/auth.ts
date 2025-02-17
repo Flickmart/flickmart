@@ -66,7 +66,6 @@ export async function authWithGoogle() {
     provider: "google",
   });
   if (error) throw Error(error.message);
-  console.log(data);
 }
 
 // Retrieve User & session

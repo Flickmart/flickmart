@@ -61,9 +61,6 @@ export default function StageOne({
     console.log(values);
   };
 
-  const handleGoogleSignUp = function () {
-    const data = authWithGoogle();
-  };
   return (
     <main className="relative min-h-screen">
       <AuthHeader />
@@ -75,17 +72,9 @@ export default function StageOne({
           alt="sign in illustration"
           className="hidden lg:block lg:w-[550px]"
         />
-        <div className="mt-16 container-px lg:mt-0">
-          <h1 className="pb-5">Sign up</h1>
-          <p className="font-light text-flickmart-gray">
-            Already have an account?{" "}
-            <Link
-              className="capitalize font-medium text-flickmart hover:underline"
-              href="/sign-in"
-            >
-              sign in
-            </Link>
-          </p>
+        <div className="mt-16 container-px lg:mt-0 lg:overflow-x-auto lg:h-[95vh]">
+          <h1 className="pt-5">Sign up</h1>
+
           <Form {...form}>
             <form
               className="mt-8 space-y-8 pb-20 lg:pb-0"
@@ -145,7 +134,7 @@ export default function StageOne({
                   </FormItem>
                 )}
               />
-              <div className="flex items-center space-y-4 flex-col">
+              <div className="flex items-center space-y-4 flex-col pb-3">
                 <Button className="submit-btn" type="submit">
                   Sign Up
                 </Button>
@@ -160,6 +149,15 @@ export default function StageOne({
               </div>
             </form>
           </Form>
+          <p className="font-light text-flickmart-gray text-center">
+            Already have an account?{" "}
+            <Link
+              className="capitalize font-medium text-flickmart hover:underline"
+              href="/sign-in"
+            >
+              sign in
+            </Link>
+          </p>
         </div>
       </section>
     </main>

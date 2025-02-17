@@ -48,7 +48,7 @@ export default function SignIn() {
       const data = await login(values);
       createSession(data.session);
       updateUserInfo(data.user);
-      router.push("/");
+      router.push("/home");
     } catch (err) {
     } finally {
       setLoadingStatus(false);

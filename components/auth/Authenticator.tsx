@@ -2,7 +2,7 @@
 import { retrieveUserSession } from "@/app/(auth-pages)/auth";
 import { useOthersStore } from "@/store/useOthersStore";
 import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 export default function Authenticator({
   children,
@@ -11,16 +11,18 @@ export default function Authenticator({
 }) {
   const router = useRouter();
   const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(function () {
     async function authenticate() {
       try {
         setLoadingStatus(true);
         const data = await retrieveUserSession();
-        console.log(data);
 
         if (!data.session && data.user?.role !== "authenticated") {
           router.push("/sign-in");
+        } else {
+          setIsAuthenticated(true);
         }
       } finally {
         setLoadingStatus(false);
@@ -29,5 +31,10 @@ export default function Authenticator({
 
     authenticate();
   }, []);
-  return <>{children}</>;
+
+  if (!isAuthenticated) {
+    return null;
+  } else {
+    return <>{children}</>;
+  }
 }

@@ -1,13 +1,5 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import Delivery from "@/components/Delivery";
-
-import SearchBox from "@/components/SearchBox";
-import MobileNav from "@/components/MobileNav";
-import Loader from "@/components/Loader";
-import Authenticator from "@/components/auth/Authenticator";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -29,15 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
-      <body className="bg-background text relative">
-        <Loader />
-        <Navbar />
-        <MobileNav />
-        <SearchBox />
-        <Authenticator>{children}</Authenticator>
-        <Delivery />
-        <Footer />
-      </body>
+      <body className="bg-background text relative">{children}</body>
     </html>
   );
 }
