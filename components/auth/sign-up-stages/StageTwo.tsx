@@ -44,7 +44,7 @@ const StageTwo = ({
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    verifyOtp(data.otp, email);
+   email && verifyOtp(data.otp, email);
     setStage(3);
   };
   return (
