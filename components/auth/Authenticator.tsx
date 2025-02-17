@@ -17,8 +17,9 @@ export default function Authenticator({
       try {
         setLoadingStatus(true);
         const data = await retrieveUserSession();
+        console.log(data);
 
-        if (!data.session) {
+        if (!data.session && data.user?.role !== "authenticated") {
           router.push("/sign-in");
         }
       } finally {

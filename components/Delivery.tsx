@@ -6,6 +6,7 @@ export default function Delivery() {
   return (
     <div className="lg:h-96 bg-flickmartLight lg:flex gap-8 justify-between">
       <Image
+        priority
         src="/delivery.png"
         width={500}
         height={500}

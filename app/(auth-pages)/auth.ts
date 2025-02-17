@@ -61,7 +61,7 @@ export const login: LoginType = async function (credentials) {
 };
 
 // Login in with google
-export async function loginWithGoogle() {
+export async function authWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
   });
@@ -69,15 +69,6 @@ export async function loginWithGoogle() {
   console.log(data);
 }
 
-// Get Session
-export async function retrieveSession() {
-  const { data, error } = await supabase.auth.getSession();
-
-  if (error) throw Error(error.message);
-  console.log(data);
-
-  return data;
-}
 // Retrieve User & session
 export async function retrieveUserSession() {
   const { data: user, error: userErr } = await supabase.auth.getUser();

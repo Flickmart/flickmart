@@ -18,7 +18,7 @@ import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
 import useUserStore from "@/store/useUserStore";
-import { createUser } from "@/app/(auth-pages)/auth";
+import { authWithGoogle, createUser } from "@/app/(auth-pages)/auth";
 
 const formSchema = z.object({
   firstName: z
@@ -60,8 +60,12 @@ export default function StageOne({
     updateEmail(values.email);
     console.log(values);
   };
+
+  const handleGoogleSignUp = function () {
+    const data = authWithGoogle();
+  };
   return (
-    <main className="relative h-screen">
+    <main className="relative min-h-screen">
       <AuthHeader />
       <section className="form-grid">
         <Image
@@ -141,9 +145,19 @@ export default function StageOne({
                   </FormItem>
                 )}
               />
-              <Button className="submit-btn" type="submit">
-                Sign In
-              </Button>
+              <div className="flex items-center space-y-4 flex-col">
+                <Button className="submit-btn" type="submit">
+                  Sign Up
+                </Button>
+                <Image
+                  onClick={authWithGoogle}
+                  src="/icons/google.png"
+                  alt="google"
+                  width={500}
+                  height={500}
+                  className="h-10 w-10  object-cover rounded-full hover cursor-pointer hover:bg-black/5 duration-300"
+                />
+              </div>
             </form>
           </Form>
         </div>
