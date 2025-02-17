@@ -1,5 +1,4 @@
 "use client";
-import { retrieveUserSession } from "@/app/(auth-pages)/auth";
 import { useOthersStore } from "@/store/useOthersStore";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
@@ -13,13 +12,16 @@ export default function Authenticator({
   const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useEffect(function () {
-    async function authenticate() {
+  useEffect(
+    function () {
       try {
         setLoadingStatus(true);
-        const data = await retrieveUserSession();
 
-        if (!data.session && data.user?.role !== "authenticated") {
+        // Retrieve from local storage
+        const session = JSON.parse(localStorage.getItem("session")!);
+        const user = JSON.parse(localStorage.getItem("user")!);
+
+        if (!session && user?.role !== "authenticated") {
           router.push("/sign-in");
         } else {
           setIsAuthenticated(true);
@@ -27,10 +29,10 @@ export default function Authenticator({
       } finally {
         setLoadingStatus(false);
       }
-    }
+    },
 
-    authenticate();
-  }, []);
+    []
+  );
 
   if (!isAuthenticated) {
     return null;

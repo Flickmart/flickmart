@@ -81,5 +81,6 @@ export async function retrieveUserSession() {
 
 export async function logout() {
   const { error } = await supabase.auth.signOut();
+  localStorage.clear();
   if (!error) console.log("Logged out");
 }

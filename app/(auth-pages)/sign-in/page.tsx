@@ -19,6 +19,8 @@ import { authWithGoogle, login } from "../auth";
 import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
 import { useOthersStore } from "@/store/useOthersStore";
+import { useEffect, useState } from "react";
+import Loader from "@/components/Loader";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -32,6 +34,7 @@ export default function SignIn() {
   const { createSession, updateUserInfo } = useUserStore((state) => state);
   const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
   const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,18 +51,46 @@ export default function SignIn() {
       const data = await login(values);
       createSession(data.session);
       updateUserInfo(data.user);
-      router.push("/home");
+      router.push("/");
     } catch (err) {
     } finally {
       setLoadingStatus(false);
     }
   };
 
+  // Check if User is Authenticated
+  useEffect(
+    function () {
+      try {
+        setLoadingStatus(true);
+
+        // Retrieve from local storage
+        const session = JSON.parse(localStorage.getItem("session")!);
+        const user = JSON.parse(localStorage.getItem("user")!);
+
+        if (session && user?.role === "authenticated") {
+          router.push("/home");
+        } else {
+          setIsAuthenticated(false);
+        }
+      } finally {
+        setLoadingStatus(false);
+      }
+    },
+
+    []
+  );
+
+  if (isAuthenticated) {
+    return <Loader open={true} />;
+  }
+
   return (
     <main className="relative h-screen">
       <AuthHeader />
       <section className="form-grid">
         <Image
+          priority
           src="/sign-in-illustration.svg"
           width={563}
           height={618}
