@@ -1,4 +1,7 @@
+"use client";
+
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { SalesChart } from "@/components/analytics/sales-chart";
 
 export default function AnalyticsPage() {
   return (
@@ -6,7 +9,7 @@ export default function AnalyticsPage() {
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+            <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -30,7 +33,7 @@ export default function AnalyticsPage() {
       </div>
       <div className="rounded-xl bg-muted/50 p-6 min-h-[400px]">
         <h3 className="text-lg font-semibold mb-4">Sales Analytics</h3>
-        {/* Add charts or graphs here */}
+        <SalesChart />
       </div>
     </div>
   );
