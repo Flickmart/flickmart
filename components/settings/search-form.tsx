@@ -1,4 +1,5 @@
 import { Search } from "lucide-react"
+import { useState } from "react"
 
 import { Label } from "@/components/ui/label"
 import {
@@ -7,7 +8,19 @@ import {
   SidebarInput,
 } from "@/components/ui/sidebar"
 
-export function SearchForm({ ...props }: React.ComponentProps<"form">) {
+interface SearchFormProps extends React.ComponentProps<"form"> {
+  onSearch?: (query: string) => void;
+}
+
+export function SearchForm({ onSearch, ...props }: SearchFormProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    onSearch?.(query);
+  };
+
   return (
     <form {...props}>
       <SidebarGroup className="py-0">
@@ -17,6 +30,8 @@ export function SearchForm({ ...props }: React.ComponentProps<"form">) {
           </Label>
           <SidebarInput
             id="search"
+            value={searchQuery}
+            onChange={handleSearch}
             placeholder="Search for settings..."
             className="pl-8"
           />

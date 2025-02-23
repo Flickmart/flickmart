@@ -127,6 +127,22 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
+  const [searchQuery, setSearchQuery] = React.useState("");
+
+  const filteredNavMain = React.useMemo(() => {
+    if (!searchQuery) return data.navMain;
+
+    return data.navMain.map(group => ({
+      ...group,
+      items: group.items.filter(item =>
+        item.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    })).filter(group => group.items.length > 0);
+  }, [searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
 
   return (
     <Sidebar {...props}>
@@ -145,10 +161,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </span>
           </div>
         </SidebarMenuButton>
-        <SearchForm />
+        <SearchForm onSearch={handleSearch} />
       </SidebarHeader>
-      <SidebarContent>
-        {data.navMain.map((group) => (
+      <SidebarContent className="scrollbar-none">
+        {filteredNavMain.map((group) => (
           <SidebarGroup key={group.title}>
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
