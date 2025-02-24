@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
 // This would typically come from an API or database
-const getUserProfile = (username: string) => ({
+const getUserProfile = async (username: string) => ({
   fullName: "Panji Dwi",
   username: "@panjidwi",
   bio: "Passionate about vintage collectibles and tech gadgets. Always on the lookout for unique items!",
@@ -33,11 +33,12 @@ const getUserProfile = (username: string) => ({
 })
 
 type PageProps = {
-  params: { username: string }
+  params: Promise<{ username: string }>
 }
 
-export default function PublicProfile({ params }: PageProps) {
-  const profile = getUserProfile(params.username)
+export default async function PublicProfile({ params }: PageProps) {
+  const { username } = await params
+  const profile = await getUserProfile(username)
 
   return (
     <div className="min-h-screen bg-gray-50/50 p-4 lg:p-8">
