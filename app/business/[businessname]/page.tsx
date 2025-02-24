@@ -1,17 +1,24 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Mail, MapPin, Phone, Globe, Star, ThumbsUp, ThumbsDown } from "lucide-react"
-import { Card } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Button } from "@/components/ui/button"
-import Navbar from "@/components/Navbar"
+import { useState } from "react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Globe,
+  Star,
+  ThumbsUp,
+  ThumbsDown,
+} from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import Navbar from "@/components/Navbar";
 
-/* eslint-disable */
 export default function BusinessProfile() {
-  const [showAllPositive, setShowAllPositive] = useState(false)
-  const [showAllNegative, setShowAllNegative] = useState(false)
+  const [showAllPositive, setShowAllPositive] = useState(false);
+  const [showAllNegative, setShowAllNegative] = useState(false);
 
   // Mock reviews data - In a real app, this would come from an API
   const reviews = {
@@ -21,45 +28,50 @@ export default function BusinessProfile() {
         rating: 5,
         reviewer: "John Smith",
         date: "2024-01-15",
-        content: "Excellent service and high-quality products. The staff was very helpful and knowledgeable.",
+        content:
+          "Excellent service and high-quality products. The staff was very helpful and knowledgeable.",
         helpful: 45,
-        unhelpful: 2
+        unhelpful: 2,
       },
       {
         id: 2,
         rating: 5,
         reviewer: "Sarah Johnson",
         date: "2024-01-10",
-        content: "Best tech store in the area. They have everything you need and prices are competitive.",
+        content:
+          "Best tech store in the area. They have everything you need and prices are competitive.",
         helpful: 38,
-        unhelpful: 1
+        unhelpful: 1,
       },
       {
         id: 3,
         rating: 4,
         reviewer: "Mike Wilson",
         date: "2024-01-05",
-        content: "Great selection of products and friendly staff. Slightly on the expensive side.",
+        content:
+          "Great selection of products and friendly staff. Slightly on the expensive side.",
         helpful: 30,
-        unhelpful: 3
+        unhelpful: 3,
       },
       {
         id: 4,
         rating: 5,
         reviewer: "Emily Brown",
         date: "2023-12-28",
-        content: "Amazing customer service! They went above and beyond to help me find the right laptop.",
+        content:
+          "Amazing customer service! They went above and beyond to help me find the right laptop.",
         helpful: 25,
-        unhelpful: 0
+        unhelpful: 0,
       },
       {
         id: 5,
         rating: 4,
         reviewer: "David Lee",
         date: "2023-12-20",
-        content: "Very professional and helpful staff. Good after-sales service.",
+        content:
+          "Very professional and helpful staff. Good after-sales service.",
         helpful: 20,
-        unhelpful: 1
+        unhelpful: 1,
       },
       // Additional positive reviews that will be shown when expanded
       {
@@ -67,9 +79,10 @@ export default function BusinessProfile() {
         rating: 5,
         reviewer: "Lisa Anderson",
         date: "2023-12-15",
-        content: "Outstanding experience from start to finish. Will definitely shop here again!",
+        content:
+          "Outstanding experience from start to finish. Will definitely shop here again!",
         helpful: 18,
-        unhelpful: 1
+        unhelpful: 1,
       },
       {
         id: 7,
@@ -78,8 +91,8 @@ export default function BusinessProfile() {
         date: "2023-12-10",
         content: "Good range of products and competitive prices. Recommended!",
         helpful: 15,
-        unhelpful: 2
-      }
+        unhelpful: 2,
+      },
     ],
     negative: [
       {
@@ -87,18 +100,20 @@ export default function BusinessProfile() {
         rating: 2,
         reviewer: "Tom Harris",
         date: "2024-01-12",
-        content: "Prices are higher than online retailers. Limited stock for some items.",
+        content:
+          "Prices are higher than online retailers. Limited stock for some items.",
         helpful: 12,
-        unhelpful: 5
+        unhelpful: 5,
       },
       {
         id: 9,
         rating: 1,
         reviewer: "Karen White",
         date: "2024-01-08",
-        content: "Poor customer service. Had to wait for a long time to get assistance.",
+        content:
+          "Poor customer service. Had to wait for a long time to get assistance.",
         helpful: 10,
-        unhelpful: 8
+        unhelpful: 8,
       },
       {
         id: 10,
@@ -107,7 +122,7 @@ export default function BusinessProfile() {
         date: "2023-12-25",
         content: "Product arrived damaged and return process was complicated.",
         helpful: 8,
-        unhelpful: 4
+        unhelpful: 4,
       },
       {
         id: 11,
@@ -116,7 +131,7 @@ export default function BusinessProfile() {
         date: "2023-12-18",
         content: "Website showed in-stock but item was unavailable in store.",
         helpful: 6,
-        unhelpful: 3
+        unhelpful: 3,
       },
       {
         id: 12,
@@ -125,7 +140,7 @@ export default function BusinessProfile() {
         date: "2023-12-12",
         content: "Overpriced products and unfriendly staff.",
         helpful: 5,
-        unhelpful: 7
+        unhelpful: 7,
       },
       // Additional negative reviews that will be shown when expanded
       {
@@ -133,9 +148,10 @@ export default function BusinessProfile() {
         rating: 2,
         reviewer: "Sophie Turner",
         date: "2023-12-05",
-        content: "Long waiting times for technical support. Need to improve service.",
+        content:
+          "Long waiting times for technical support. Need to improve service.",
         helpful: 4,
-        unhelpful: 2
+        unhelpful: 2,
       },
       {
         id: 14,
@@ -144,16 +160,17 @@ export default function BusinessProfile() {
         date: "2023-12-01",
         content: "Disappointing experience. Products not as described.",
         helpful: 3,
-        unhelpful: 4
-      }
-    ]
-  }
+        unhelpful: 4,
+      },
+    ],
+  };
 
   // In a real application, you would fetch this data based on the businessname parameter
   const businessInfo = {
     name: "TechGadgets Inc.",
     logo: `/placeholder.svg`,
-    description: "We specialize in selling high-quality tech gadgets and accessories.",
+    description:
+      "We specialize in selling high-quality tech gadgets and accessories.",
     established: "2015",
     website: "https://techgadgets.com",
     email: "contact@techgadgets.com",
@@ -175,13 +192,28 @@ export default function BusinessProfile() {
     totalReviews: 128,
     responseRate: "98%",
     responseTime: "Within 1 hour",
-  }
+  };
 
-  const displayedPositiveReviews = showAllPositive ? reviews.positive : reviews.positive.slice(0, 5)
-  const displayedNegativeReviews = showAllNegative ? reviews.negative : reviews.negative.slice(0, 5)
+  const displayedPositiveReviews = showAllPositive
+    ? reviews.positive
+    : reviews.positive.slice(0, 5);
+  const displayedNegativeReviews = showAllNegative
+    ? reviews.negative
+    : reviews.negative.slice(0, 5);
 
-// eslint-disable-next-line
-  const ReviewCard = ({ review }) => (
+  const ReviewCard = ({
+    review,
+  }: {
+    review: {
+      id: number;
+      rating: number;
+      reviewer: string;
+      date: string;
+      content: string;
+      helpful: number;
+      unhelpful: number;
+    };
+  }) => (
     <Card className="p-4 mb-4">
       <div className="flex items-start justify-between">
         <div>
@@ -195,7 +227,9 @@ export default function BusinessProfile() {
             ))}
           </div>
           <h3 className="font-semibold">{review.reviewer}</h3>
-          <p className="text-sm text-muted-foreground">{new Date(review.date).toLocaleDateString()}</p>
+          <p className="text-sm text-muted-foreground">
+            {new Date(review.date).toLocaleDateString()}
+          </p>
         </div>
       </div>
       <p className="mt-2">{review.content}</p>
@@ -210,7 +244,7 @@ export default function BusinessProfile() {
         </div>
       </div>
     </Card>
-  )
+  );
 
   return (
     <>
@@ -229,12 +263,18 @@ export default function BusinessProfile() {
                 <div className="flex items-center space-x-2">
                   <h1 className="text-3xl font-bold">{businessInfo.name}</h1>
                   {businessInfo.isVerified && (
-                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">Verified</span>
+                    <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-sm">
+                      Verified
+                    </span>
                   )}
                 </div>
-                <p className="text-muted-foreground mt-1">{businessInfo.category}</p>
+                <p className="text-muted-foreground mt-1">
+                  {businessInfo.category}
+                </p>
                 <p className="mt-2">{businessInfo.description}</p>
-                <p className="text-sm text-muted-foreground mt-1">Established {businessInfo.established}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Established {businessInfo.established}
+                </p>
               </div>
             </div>
 
@@ -242,7 +282,9 @@ export default function BusinessProfile() {
 
             {/* Contact Information */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Contact Information
+              </h2>
               <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <Globe className="h-4 w-4 text-muted-foreground" />
@@ -257,13 +299,19 @@ export default function BusinessProfile() {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <a href={`mailto:${businessInfo.email}`} className="hover:underline">
+                  <a
+                    href={`mailto:${businessInfo.email}`}
+                    className="hover:underline"
+                  >
                     {businessInfo.email}
                   </a>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <a href={`tel:${businessInfo.phone}`} className="hover:underline">
+                  <a
+                    href={`tel:${businessInfo.phone}`}
+                    className="hover:underline"
+                  >
                     {businessInfo.phone}
                   </a>
                 </div>
@@ -280,12 +328,17 @@ export default function BusinessProfile() {
             <div>
               <h2 className="text-xl font-semibold mb-4">Operating Hours</h2>
               <div className="grid grid-cols-2 gap-4">
-                {Object.entries(businessInfo.operatingHours).map(([day, hours]) => (
-                  <div key={day} className="flex items-center justify-between">
-                    <span className="capitalize">{day}:</span>
-                    <span>{hours}</span>
-                  </div>
-                ))}
+                {Object.entries(businessInfo.operatingHours).map(
+                  ([day, hours]) => (
+                    <div
+                      key={day}
+                      className="flex items-center justify-between"
+                    >
+                      <span className="capitalize">{day}:</span>
+                      <span>{hours}</span>
+                    </div>
+                  )
+                )}
               </div>
             </div>
 
@@ -310,22 +363,32 @@ export default function BusinessProfile() {
 
             {/* Business Performance */}
             <div>
-              <h2 className="text-xl font-semibold mb-4">Business Performance</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Business Performance
+              </h2>
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-1">
                   <div className="flex items-center">
                     <Star className="h-5 w-5 text-yellow-400 mr-1" />
-                    <span className="font-semibold text-lg">{businessInfo.averageRating}</span>
-                    <span className="text-muted-foreground ml-1">({businessInfo.totalReviews} reviews)</span>
+                    <span className="font-semibold text-lg">
+                      {businessInfo.averageRating}
+                    </span>
+                    <span className="text-muted-foreground ml-1">
+                      ({businessInfo.totalReviews} reviews)
+                    </span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <p className="text-sm text-muted-foreground">Response Rate</p>
+                    <p className="text-sm text-muted-foreground">
+                      Response Rate
+                    </p>
                     <p className="font-medium">{businessInfo.responseRate}</p>
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Response Time</p>
+                    <p className="text-sm text-muted-foreground">
+                      Response Time
+                    </p>
                     <p className="font-medium">{businessInfo.responseTime}</p>
                   </div>
                 </div>
@@ -352,7 +415,9 @@ export default function BusinessProfile() {
                       className="w-full mt-4"
                       onClick={() => setShowAllPositive(!showAllPositive)}
                     >
-                      {showAllPositive ? "Show Less" : `Show More (${reviews.positive.length - 5} more)`}
+                      {showAllPositive
+                        ? "Show Less"
+                        : `Show More (${reviews.positive.length - 5} more)`}
                     </Button>
                   )}
                 </TabsContent>
@@ -366,7 +431,9 @@ export default function BusinessProfile() {
                       className="w-full mt-4"
                       onClick={() => setShowAllNegative(!showAllNegative)}
                     >
-                      {showAllNegative ? "Show Less" : `Show More (${reviews.negative.length - 5} more)`}
+                      {showAllNegative
+                        ? "Show Less"
+                        : `Show More (${reviews.negative.length - 5} more)`}
                     </Button>
                   )}
                 </TabsContent>
@@ -376,5 +443,5 @@ export default function BusinessProfile() {
         </Card>
       </div>
     </>
-  )
+  );
 }
