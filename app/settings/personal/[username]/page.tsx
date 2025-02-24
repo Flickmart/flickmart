@@ -32,7 +32,11 @@ const getUserProfile = (username: string) => ({
   ],
 })
 
-export default function PublicProfile({ params }: { params: { username: string } }) {
+type PageProps = {
+  params: { username: string }
+}
+
+export default function PublicProfile({ params }: PageProps) {
   const profile = getUserProfile(params.username)
 
   return (
