@@ -10,10 +10,24 @@ import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { MultipleSelect } from "@/components/ui/multiple-select"
 import Link from "next/link"
 
 export default function BusinessSettings() {
   const [isEditMode, setIsEditMode] = useState(false)
+  const PRODUCT_CATEGORIES = [
+    { key: 'smartphones', name: 'Smartphones' },
+    { key: 'laptops', name: 'Laptops' },
+    { key: 'accessories', name: 'Accessories' },
+    { key: 'smart-home', name: 'Smart Home' },
+    { key: 'tablets', name: 'Tablets' },
+    { key: 'wearables', name: 'Wearables' },
+    { key: 'cameras', name: 'Cameras' },
+    { key: 'audio', name: 'Audio' },
+    { key: 'gaming', name: 'Gaming' },
+    { key: 'networking', name: 'Networking' },
+  ]
+
   const [businessInfo, setBusinessInfo] = useState({
     name: "TechGadgets Inc.",
     logo: `${process.env.NEXT_PUBLIC_ASSETS_URL}/placeholder.svg`,
@@ -34,7 +48,12 @@ export default function BusinessSettings() {
       saturday: "10:00 AM - 4:00 PM",
       sunday: "Closed",
     },
-    productCategories: ["Smartphones", "Laptops", "Accessories", "Smart Home"],
+    productCategories: [
+      { key: 'smartphones', name: 'Smartphones' },
+      { key: 'laptops', name: 'Laptops' },
+      { key: 'accessories', name: 'Accessories' },
+      { key: 'smart-home', name: 'Smart Home' }
+    ],
     averageRating: 4.7,
     totalReviews: 128,
     responseRate: "98%",
@@ -277,21 +296,16 @@ export default function BusinessSettings() {
           <div>
             <h2 className="text-xl font-semibold mb-4">Product Categories</h2>
             {isEditMode ? (
-              <Textarea
-                value={businessInfo.productCategories.join(", ")}
-                onChange={(e) =>
-                  setBusinessInfo({
-                    ...businessInfo,
-                    productCategories: e.target.value.split(",").map((cat) => cat.trim()),
-                  })
-                }
-                placeholder="Enter categories separated by commas"
+              <MultipleSelect
+                tags={PRODUCT_CATEGORIES}
+                onChange={(items) => setBusinessInfo({ ...businessInfo, productCategories: items })}
+                defaultValue={businessInfo.productCategories}
               />
             ) : (
               <div className="flex flex-wrap gap-2">
-                {businessInfo.productCategories.map((category, index) => (
-                  <span key={index} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-sm">
-                    {category}
+                {businessInfo.productCategories.map((category) => (
+                  <span key={category.key} className="bg-secondary text-secondary-foreground px-2 py-1 rounded-full text-sm">
+                    {category.name}
                   </span>
                 ))}
               </div>
@@ -306,64 +320,22 @@ export default function BusinessSettings() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="average-rating">Average Rating</Label>
-                {isEditMode ? (
-                  <Input
-                    id="average-rating"
-                    type="number"
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    value={businessInfo.averageRating}
-                    onChange={(e) =>
-                      setBusinessInfo({ ...businessInfo, averageRating: Number.parseFloat(e.target.value) })
-                    }
-                  />
-                ) : (
-                  <p className="flex items-center">
-                    <Star className="h-4 w-4 text-yellow-400 mr-1" />
-                    {businessInfo.averageRating} ({businessInfo.totalReviews} reviews)
-                  </p>
-                )}
+                <p className="flex items-center">
+                  <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                  {businessInfo.averageRating} ({businessInfo.totalReviews} reviews)
+                </p>
               </div>
               <div>
                 <Label htmlFor="total-reviews">Total Reviews</Label>
-                {isEditMode ? (
-                  <Input
-                    id="total-reviews"
-                    type="number"
-                    min="0"
-                    value={businessInfo.totalReviews}
-                    onChange={(e) =>
-                      setBusinessInfo({ ...businessInfo, totalReviews: Number.parseInt(e.target.value) })
-                    }
-                  />
-                ) : (
-                  <p>{businessInfo.totalReviews}</p>
-                )}
+                <p>{businessInfo.totalReviews}</p>
               </div>
               <div>
                 <Label htmlFor="response-rate">Response Rate</Label>
-                {isEditMode ? (
-                  <Input
-                    id="response-rate"
-                    value={businessInfo.responseRate}
-                    onChange={(e) => setBusinessInfo({ ...businessInfo, responseRate: e.target.value })}
-                  />
-                ) : (
-                  <p>{businessInfo.responseRate}</p>
-                )}
+                <p>{businessInfo.responseRate}</p>
               </div>
               <div>
                 <Label htmlFor="response-time">Response Time</Label>
-                {isEditMode ? (
-                  <Input
-                    id="response-time"
-                    value={businessInfo.responseTime}
-                    onChange={(e) => setBusinessInfo({ ...businessInfo, responseTime: e.target.value })}
-                  />
-                ) : (
-                  <p>{businessInfo.responseTime}</p>
-                )}
+                <p>{businessInfo.responseTime}</p>
               </div>
             </div>
           </div>
