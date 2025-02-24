@@ -24,6 +24,11 @@ export default function BusinessSettings() {
     { key: 'wearables', name: 'Wearables' },
     { key: 'cameras', name: 'Cameras' },
     { key: 'audio', name: 'Audio' },
+    { key: 'housing', name: 'Housing' },
+    { key: 'real-estate', name: 'Real Estate' },
+    { key: 'rentals', name: 'Rentals' },
+    { key: 'apartments', name: 'Apartments' },
+    { key: 'condos', name: 'Condominiums' },
     { key: 'gaming', name: 'Gaming' },
     { key: 'networking', name: 'Networking' },
   ]
@@ -78,11 +83,11 @@ export default function BusinessSettings() {
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Business Details</h1>
-        <div className="space-x-2">
-          <Button onClick={() => (isEditMode ? handleSave() : setIsEditMode(true))}>
+    <div className="container mx-auto py-4 px-4 sm:py-8 sm:px-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold">Business Details</h1>
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button className="w-full sm:w-auto" onClick={() => (isEditMode ? handleSave() : setIsEditMode(true))}>
             {isEditMode ? (
               <>
                 <Check className="mr-2 h-4 w-4" />
@@ -95,29 +100,29 @@ export default function BusinessSettings() {
               </>
             )}
           </Button>
-          <Button variant="outline" asChild>
+          <Button variant="outline" asChild className="w-full sm:w-auto">
             <Link href="/business">View Public Page</Link>
           </Button>
         </div>
       </div>
 
-      <Card className="p-6">
-        <div className="space-y-8">
+      <Card className="p-4 sm:p-6">
+        <div className="space-y-6 sm:space-y-8">
           {/* Basic Information */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Basic Information</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Basic Information</h2>
             <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                <div className="relative w-full sm:w-auto flex justify-center sm:justify-start">
                   <img
                     src={businessInfo.logo || "/placeholder.svg"}
                     alt="Business Logo"
-                    className="w-24 h-24 rounded-full object-cover"
+                    className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover"
                   />
                   {isEditMode && (
                     <Label
                       htmlFor="logo-upload"
-                      className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1 cursor-pointer"
+                      className="absolute bottom-0 right-1/2 sm:right-0 translate-x-10 sm:translate-x-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:opacity-90 transition-opacity"
                     >
                       <Camera className="h-4 w-4" />
                       <Input
@@ -130,13 +135,14 @@ export default function BusinessSettings() {
                     </Label>
                   )}
                 </div>
-                <div className="flex-1">
-                  <Label htmlFor="business-name">Business Name</Label>
+                <div className=" w-full">
+                  <Label htmlFor="business-name" className="block mb-1">Business Name</Label>
                   {isEditMode ? (
                     <Input
                       id="business-name"
                       value={businessInfo.name}
                       onChange={(e) => setBusinessInfo({ ...businessInfo, name: e.target.value })}
+                      className="w-full"
                     />
                   ) : (
                     <p className="font-medium">{businessInfo.name}</p>
@@ -199,44 +205,24 @@ export default function BusinessSettings() {
           <div>
             <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <Globe className="h-4 w-4 text-muted-foreground" />
+              <div className="flex items-center space-x-2 w-full">
+                <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 {isEditMode ? (
                   <Input
                     value={businessInfo.website}
                     onChange={(e) => setBusinessInfo({ ...businessInfo, website: e.target.value })}
+                    className="w-full"
+                    placeholder="Enter website URL"
                   />
                 ) : (
                   <a
                     href={businessInfo.website}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
+                    className="text-blue-600 hover:underline break-all"
                   >
                     {businessInfo.website}
                   </a>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Mail className="h-4 w-4 text-muted-foreground" />
-                {isEditMode ? (
-                  <Input
-                    value={businessInfo.email}
-                    onChange={(e) => setBusinessInfo({ ...businessInfo, email: e.target.value })}
-                  />
-                ) : (
-                  <span>{businessInfo.email}</span>
-                )}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Phone className="h-4 w-4 text-muted-foreground" />
-                {isEditMode ? (
-                  <Input
-                    value={businessInfo.phone}
-                    onChange={(e) => setBusinessInfo({ ...businessInfo, phone: e.target.value })}
-                  />
-                ) : (
-                  <span>{businessInfo.phone}</span>
                 )}
               </div>
             </div>
@@ -264,14 +250,16 @@ export default function BusinessSettings() {
 
           {/* Operating Hours */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Operating Hours</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Operating Hours</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
               {Object.entries(businessInfo.operatingHours).map(([day, hours]) => (
-                <div key={day} className="flex items-center justify-between">
-                  <span className="capitalize">{day}:</span>
+                <div key={day} className="flex items-center justify-between gap-2 w-full">
+                  <span className="capitalize min-w-[60px] sm:min-w-[100px]">{day}:</span>
                   {isEditMode ? (
                     <Input
                       value={hours}
+                      className=" w-max"
+                      placeholder="e.g. 9:00 AM - 6:00 PM"
                       onChange={(e) =>
                         setBusinessInfo({
                           ...businessInfo,
@@ -283,7 +271,7 @@ export default function BusinessSettings() {
                       }
                     />
                   ) : (
-                    <span>{hours}</span>
+                    <span className="">{hours}</span>
                   )}
                 </div>
               ))}
@@ -316,26 +304,26 @@ export default function BusinessSettings() {
 
           {/* Business Performance */}
           <div>
-            <h2 className="text-xl font-semibold mb-4">Business Performance</h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4">Business Performance</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 sm:gap-4">
+              <div className="space-y-1">
                 <Label htmlFor="average-rating">Average Rating</Label>
-                <p className="flex items-center">
-                  <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                <p className="flex items-center text-lg">
+                  <Star className="h-5 w-5 text-yellow-400 mr-1" />
                   {businessInfo.averageRating} ({businessInfo.totalReviews} reviews)
                 </p>
               </div>
-              <div>
+              <div className="space-y-1">
                 <Label htmlFor="total-reviews">Total Reviews</Label>
-                <p>{businessInfo.totalReviews}</p>
+                <p className="text-lg">{businessInfo.totalReviews}</p>
               </div>
-              <div>
+              <div className="space-y-1">
                 <Label htmlFor="response-rate">Response Rate</Label>
-                <p>{businessInfo.responseRate}</p>
+                <p className="text-lg">{businessInfo.responseRate}</p>
               </div>
-              <div>
+              <div className="space-y-1">
                 <Label htmlFor="response-time">Response Time</Label>
-                <p>{businessInfo.responseTime}</p>
+                <p className="text-lg">{businessInfo.responseTime}</p>
               </div>
             </div>
           </div>
@@ -343,10 +331,10 @@ export default function BusinessSettings() {
           <Separator />
 
           {/* Verification Status */}
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
             <div>
-              <h2 className="text-xl font-semibold">Verification Status</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className="text-lg sm:text-xl font-semibold">Verification Status</h2>
+              <p className="text-sm text-muted-foreground mt-1">
                 {businessInfo.isVerified ? "Your business is verified" : "Your business is not verified"}
               </p>
             </div>
@@ -354,6 +342,7 @@ export default function BusinessSettings() {
               checked={businessInfo.isVerified}
               onCheckedChange={(checked) => setBusinessInfo({ ...businessInfo, isVerified: checked })}
               disabled={!isEditMode}
+              className="mt-2 sm:mt-0"
             />
           </div>
         </div>

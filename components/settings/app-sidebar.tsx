@@ -22,8 +22,8 @@ import Image from "next/image";
 
 const data = {
   user: {
-    name: "shadcn",
-    email: "m@example.com",
+    name: "ebuka",
+    email: "ebuka@gmail.com",
     avatar: "/avatars/shadcn.jpg",
   },
   modes: [

@@ -62,9 +62,9 @@ export const MultipleSelect = ({
         <motion.div
           layout
           ref={containerRef}
-          className='selected no-scrollbar flex h-12 w-full items-center overflow-x-scroll scroll-smooth rounded-md border border-solid border-gray-200 bg-gray-50 p-2'
+          className='selected flex min-h-[3rem] w-full flex-wrap items-center gap-2 rounded-md border border-solid border-gray-200 bg-gray-50 p-2'
         >
-          <motion.div layout className='flex items-center gap-2'>
+          <motion.div layout className='flex flex-wrap items-center gap-2'>
             {selected?.map((item) => (
               <Tag
                 name={item?.key}
