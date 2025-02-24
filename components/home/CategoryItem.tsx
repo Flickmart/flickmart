@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React from "react";
+import Link from "next/link";
 
 export default function CategoryItem({
   categoryName,
@@ -7,6 +7,8 @@ export default function CategoryItem({
   categoryName: string;
 }) {
   return (
+    <Link href={`/categories/${categoryName}`}>
+    
     <div className="bg-gray-200 lg:p-0  lg:h-80 h-52 rounded-xl capitalize flex flex-col items-center justify-center space-y-7 text-gray-700">
       <Image
         src={`/${categoryName}.png`}
@@ -17,5 +19,6 @@ export default function CategoryItem({
       />
       <span className="font-semibold text-sm lg:text-xl">{categoryName}</span>
     </div>
+    </Link>
   );
 }
