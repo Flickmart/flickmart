@@ -89,13 +89,10 @@ export function NavUser({
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
               <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
                 <CreditCard />
-                Billing
+                Fund your wallet
               </DropdownMenuItem>
+            <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <Bell />
                 Notifications
