@@ -95,6 +95,9 @@
   .submit-btn {
     @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300;
   }
+  .conditional-no-hover-effect:has(button:hover){
+    @apply !bg-white
+  }
 }
 
 @layer components {

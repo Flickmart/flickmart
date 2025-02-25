@@ -6,21 +6,31 @@ import { ChevronLeft, EllipsisVertical, Menu } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import ConversationTab from "@/components/chats/ConversationTab";
+import ProfileTab from "@/components/chats/ProfileTab";
 
 export interface Chat {
-  id: string;
+  userId: string;
+  chatId: string;
   avatar: string;
   name: string;
   preview: string;
   timestamp: string;
   unread: number;
 }
+export interface Profile {
+  userId: string;
+  avatar: string;
+  name: string;
+  desc: string;
+  products: undefined[];
+}
 
 const page = () => {
   const tabs: string[] = ["all", "unread", "archived"];
   const demoChats: Chat[] = [
     {
-      id: "1",
+      userId: "1",
+      chatId: "1",
       avatar: "/chat-avatars/chat-avatar-1.png",
       name: "FlickMart",
       preview: "welcome to flickmart your one stop",
@@ -28,7 +38,8 @@ const page = () => {
       unread: 3,
     },
     {
-      id: "2",
+      userId: "2",
+      chatId: "2",
       avatar: "/chat-avatars/chat-avatar-2.png",
       name: "Fisayo",
       preview:
@@ -37,7 +48,8 @@ const page = () => {
       unread: 3,
     },
     {
-      id: "3",
+      userId: "3",
+      chatId: "3",
       avatar: "/chat-avatars/chat-avatar-3.png",
       name: "Felix",
       preview:
@@ -46,7 +58,8 @@ const page = () => {
       unread: 0,
     },
     {
-      id: "4",
+      userId: "4",
+      chatId: "4",
       avatar: "/chat-avatars/chat-avatar-4.png",
       name: "Fashola",
       preview:
@@ -55,13 +68,45 @@ const page = () => {
       unread: 2,
     },
   ];
+  const demoProfiles: Profile[] = [
+    {
+      userId: "1",
+      avatar: "/chat-avatars/chat-avatar-1.png",
+      name: "FlickMart",
+      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
+      products: [...Array(4)],
+    },
+    {
+      userId: "2",
+      avatar: "/chat-avatars/chat-avatar-2.png",
+      name: "FlickMart",
+      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
+      products: [...Array(4)],
+    },
+    {
+      userId: "3",
+      avatar: "/chat-avatars/chat-avatar-3.png",
+      name: "FlickMart",
+      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
+      products: [...Array(4)],
+    },
+    {
+      userId: "4",
+      avatar: "/chat-avatars/chat-avatar-4.png",
+      name: "FlickMart",
+      desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
+      products: [...Array(4)],
+    },
+  ];
   const [currentConversation, setCurrentConversation] = useState<string | null>(
-    "1"
+    null
   );
+  const [currentProfile, setCurrentProfile] = useState<string | null>(null);
   return (
     <main className="max-w-[1440px] md:grid md:grid-cols-2 md:mt-20 md:mx-4 md:h-[711px] lg:mx-12 md:shadow-[0_4px_4px_#00000040] lg:grid-cols-[35%_65%] 2xl:mx-auto relative">
+      
       <section
-        className={`md:pt-4 ${currentConversation ? "hidden md:block" : ""}`}
+        className={`md:pt-4 ${currentConversation || currentProfile ? "hidden md:block" : ""}`}
       >
         <header className="shadow-lg py-4 px-2 flex items-center justify-between sticky top-0 bg-white md:static md:bg-transparent md:px-4 md:shadow-none md:py-0">
           <button
@@ -104,38 +149,49 @@ const page = () => {
             return (
               <ChatItem
                 demoChat={demoChat}
-                key={demoChat.id}
+                key={demoChat.chatId}
                 setCurrentConversation={setCurrentConversation}
+                setCurrentProfile={setCurrentProfile}
               />
             );
           })}
         </ul>
       </section>
-      <section
-        className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-[711px]`}
-      >
-        {currentConversation ? (
-          <ConversationTab
-            currentConversation={demoChats.find(
-              (item) => item.id === currentConversation
-            )}
-            setCurrentConversation={setCurrentConversation}
-          />
-        ) : (
-          <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
-            <Image
-              src="/chat-avatars/Character.svg"
-              alt="woman throwing a paper airplane"
-              width={312}
-              height={312}
-              className="mx-auto w-1/2 max-w-[300px]"
+      {currentProfile ? (
+        <ProfileTab
+          currentProfile={demoProfiles.find(
+            (item) => item.userId === currentProfile
+          )}
+          setCurrentProfile={setCurrentProfile}
+        />
+      ) : (
+        <section
+          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-[711px]`}
+        >
+          {currentConversation ? (
+            <ConversationTab
+              currentConversation={demoChats.find(
+                (item) => item.chatId === currentConversation
+              )}
+              setCurrentConversation={setCurrentConversation}
+              setCurrentProfile={setCurrentProfile}
             />
-            <p className="font-light mt-2">
-              Select a chat to view conversation.
-            </p>
-          </div>
-        )}
-      </section>
+          ) : (
+            <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
+              <Image
+                src="/chat-avatars/Character.svg"
+                alt="woman throwing a paper airplane"
+                width={312}
+                height={312}
+                className="mx-auto w-1/2 max-w-[300px]"
+              />
+              <p className="font-light mt-2">
+                Select a chat to view conversation.
+              </p>
+            </div>
+          )}
+        </section>
+      )}
     </main>
   );
 };

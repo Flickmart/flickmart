@@ -3,27 +3,41 @@ import Image from "next/image";
 import { Dispatch } from "react";
 
 const ChatItem = ({
-  demoChat: { id, avatar, name, preview, timestamp, unread },
+  demoChat: { chatId ,userId, avatar, name, preview, timestamp, unread },
   setCurrentConversation,
+  setCurrentProfile
 }: {
   demoChat: Chat;
   setCurrentConversation: Dispatch<string>;
+  setCurrentProfile: Dispatch<string | null>;
 }) => {
   return (
     <li
       onClick={() => {
-        setCurrentConversation(id);
+        // Temporary code to demo how the app would behave in production
+        setCurrentConversation(chatId);
+        setCurrentProfile(null)
       }}
-      className="p-4 border-b border-black/15 first:border-t-0 flex items-center justify-between cursor-pointer transition-colors hover:bg-flickmart-chat-gray/60"
+      className="p-4 border-b border-black/15 first:border-t-0 flex items-center justify-between cursor-pointer transition-colors hover:bg-flickmart-chat-gray/60 conditional-no-hover-effect group"
     >
       <div className="flex items-center">
-        <Image
-          src={avatar}
-          alt={name}
-          width={48}
-          height={47}
-          className="w-14 flex-none"
-        />
+        <button
+        onClick={(e)=>{
+          e.stopPropagation()
+          // Temporary code to demo how the app would behave in production
+          setCurrentProfile(userId)
+        }}
+          type="button"
+          className="rounded-full outline outline-2 outline-white transition-all duration-300 hover:!outline-flickmart group-hover:outline-flickmart-chat-gray/60"
+        >
+          <Image
+            src={avatar}
+            alt={name}
+            width={48}
+            height={47}
+            className="w-14 flex-none"
+          />
+        </button>
         <div className="ml-4">
           <h2 className="font-medium mb-2">{name}</h2>
           <p className="text-[13px] font-light">

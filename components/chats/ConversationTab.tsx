@@ -11,9 +11,11 @@ import SendMessage from "./SendMessage";
 const ConversationTab = ({
   currentConversation,
   setCurrentConversation,
+  setCurrentProfile,
 }: {
   currentConversation: Chat | undefined;
   setCurrentConversation: Dispatch<string | null>;
+  setCurrentProfile: Dispatch<string | null>;
 }) => {
   if (!currentConversation) {
     return notFound();
@@ -32,14 +34,30 @@ const ConversationTab = ({
             <ChevronLeft size={35} strokeWidth={1.5} />
           </button>
           <div className="flex items-center gap-4">
-            <Image
-              src={currentConversation?.avatar}
-              width={40}
-              height={40}
-              alt={currentConversation?.name}
-            />
+            <button
+              type="button"
+              className="rounded-full outline outline-2 outline-white transition-all duration-300 hover:outline-flickmart"
+              onClick={() => {
+                setCurrentProfile(currentConversation.userId);
+              }}
+            >
+              <Image
+                src={currentConversation?.avatar}
+                width={40}
+                height={40}
+                alt={currentConversation?.name}
+              />
+            </button>
             <div className="flex flex-col ">
-              <span>{currentConversation?.name}</span>
+              <button
+                type="button"
+                className=" transition-all duration-300 hover:text-flickmart"
+                onClick={() => {
+                  setCurrentProfile(currentConversation.userId);
+                }}
+              >
+                {currentConversation?.name}
+              </button>
               <span className="text-flickmart text-[13px]">Online</span>
             </div>
           </div>
