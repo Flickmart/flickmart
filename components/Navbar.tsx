@@ -13,11 +13,13 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const cPath = usePathname();
 
   const toggleProfile = () => {
     setIsOpen((prev) => !prev);
@@ -33,8 +35,8 @@ export default function Navbar() {
   };
 
   return (
-    <header className="fixed z-30 top-0 w-full bg-flickmartLight shadow-sm shadow-black/20">
-      <div className="w-[95%] mx-auto py-1">
+    <header className={cPath === '/home' ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20" : "relative z-30 w-full bg-white shadow-sm shadow-black/20"}>
+      <div className="w-[95%] mx-auto py-2">
         <div className="w-full flex justify-between items-center">
           <Link href={"/"} className="flex gap-1 items-center">
             <Image
@@ -44,7 +46,7 @@ export default function Navbar() {
               className="h-12 w-12"
               alt=""
             />
-            <h1 className="font-bold text-xl mt-2">
+            <h1 className="font-bold text-xl">
               Flick<span className="text-flickmart">Mart</span>
             </h1>
           </Link>
@@ -95,9 +97,9 @@ export default function Navbar() {
         </div>
       </div>
       {isNavOpen && (
-        <div className="lg:hidden absolute inset-0 z-30 w-full h-screen bg-white">
+        <div className="lg:hidden fixed inset-0 z-30 w-full h-screen bg-white">
           <div className="w-[95%] mx-auto h-full">
-            <div className="w-full flex items-center justify-between py-1">
+            <div className="w-full flex items-center justify-between py-2">
               <div className="flex gap-1 items-center">
                 <Image
                   src="/flickmart-logo.svg"
@@ -106,7 +108,7 @@ export default function Navbar() {
                   className="h-12 w-12"
                   alt=""
                 />
-                <h1 className="font-bold text-xl mt-2">
+                <h1 className="font-bold text-xl">
                   Flick<span className="text-flickmart">Mart</span>
                 </h1>
               </div>
