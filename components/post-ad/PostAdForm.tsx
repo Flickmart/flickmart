@@ -1,7 +1,7 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useForm } from "react-hook-form";
+import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
 import { Button } from "../auth/ui/button";
@@ -10,12 +10,49 @@ import Selector from "./Selector";
 import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
+import { uploadImage } from "@/app/post-ad/action";
+import { useMutation } from "@tanstack/react-query";
+
+type SubmitType = SubmitHandler<{
+  category: string;
+  location: string;
+  exchange: string;
+  condition: string;
+  title: string;
+  description: string;
+  price: string;
+  store: string;
+  phone: string;
+  plan: string;
+}>;
+
+type ErrorType = SubmitErrorHandler<{
+  category: string;
+  location: string;
+  exchange: string;
+  condition: string;
+  title: string;
+  description: string;
+  price: string;
+  store: string;
+  phone: string;
+  plan: string;
+}>;
 
 const categories = ["electronics", "fashion", "beauty"];
-const location = ["nigeria", "ghana", "south africa", "niger", "kenya"];
+const location = ["enugu", "nsukka"];
+const exchange = ["bank transfer", "card", "ussd"];
+const condition = ["brand new", "used"];
 
 export default function PostAdForm() {
   const formSchema = z.object({
+    category: z.string(),
+    image: z
+      .instanceof(File)
+      .refine((file) => file.name, { message: "an image is required" }),
+    location: z.string(),
+    exchange: z.string(),
+    condition: z.string(),
     title: z
       .string()
       .min(5, { message: "Title length is too short" })
@@ -24,35 +61,79 @@ export default function PostAdForm() {
     price: z.string(),
     store: z.string(),
     phone: z.string(),
+    plan: z.string(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      category: "",
+      image: undefined,
+      location: "",
       title: "",
+      exchange: "",
+      condition: "",
       description: "",
       price: "",
       store: "",
       phone: "",
+      plan: "",
     },
   });
 
-  function onSubmit() {
-    console.log("Form Submitted");
-  }
+  const { mutate } = useMutation({
+    mutationFn: uploadImage,
+    onSuccess: () => console.log("j"),
+  });
+  const { mutate: postAdMutate } = useMutation({
+    mutationFn: uploadImage,
+    onSuccess: () => console.log("j"),
+  });
+
+  const onSubmit: SubmitType = async (e) => {
+    try {
+      // mutate();
+      alert("submitted");
+      console.log(e);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      form.reset();
+    }
+  };
+  const onError: ErrorType = (error) => {
+    console.log(error);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+    }
+  };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onKeyDown={handleKeyPress}
+        onSubmit={form.handleSubmit(onSubmit, onError)}
         className="bg-white lg:w-5/6 w-full  grid place-items-center rounded-lg space-y-10"
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
-          <Selector options={categories} label="category" />
-          <AddPhoto />
-          <Selector options={location} label="select location" />
+          <Selector form={form} options={categories} name="category" />
+          <AddPhoto form={form} />
+          <Selector
+            options={location}
+            form={form}
+            name="location"
+            label="select location"
+          />
           <InputField name="title" form={form} />
-          <Selector options={location} label="exchange possible" />
-          <Selector options={location} label="condition" />
+          <Selector
+            form={form}
+            options={exchange}
+            name="exchange"
+            label="exchange possible"
+          />
+          <Selector form={form} options={condition} name="condition" />
           <InputField name="description" form={form} type="textArea" />
           <InputField name="price" form={form} />
         </div>
@@ -73,7 +154,7 @@ export default function PostAdForm() {
               select a visibility rate and promote your ad
             </p>
           </div>
-          <AdPromotion />
+          <AdPromotion form={form} />
           <Button
             type="submit"
             className="capitalize  bg-flickmart w-full py-9 lg:rounded-none text-xl"

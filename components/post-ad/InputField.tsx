@@ -1,20 +1,40 @@
+"use client";
 import React, { useState } from "react";
 import { FormControl, FormField, FormItem, FormLabel } from "../auth/ui/form";
 import { UseFormReturn } from "react-hook-form";
 import { Input } from "../auth/ui/input";
 import { Textarea } from "../ui/textarea";
 
-type NameType = "title" | "description" | "price" | "store" | "phone";
+export type NameType =
+  | "category"
+  | "image"
+  | "location"
+  | "title"
+  | "exchange"
+  | "condition"
+  | "description"
+  | "price"
+  | "store"
+  | "phone"
+  | "plan";
+
+export type FormType = UseFormReturn<{
+  category: string;
+  image: File;
+  location: string;
+  title: string;
+  exchange: string;
+  condition: string;
+  description: string;
+  price: string;
+  store: string;
+  phone: string;
+  plan: string;
+}>;
 
 type FieldType = {
   name: NameType;
-  form: UseFormReturn<{
-    title: string;
-    description: string;
-    price: string;
-    store: string;
-    phone: string;
-  }>;
+  form: FormType;
   type?: "textField" | "textArea";
 };
 
@@ -23,36 +43,62 @@ export default function InputField({
   form,
   type = "textField",
 }: FieldType) {
+  const {
+    formState: { errors },
+  } = form;
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
   return (
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <div className={`${type === "textArea" && "mt-5"}`}>
-          {type === "textArea" && (
-            <span className="text-xs text-gray-500  w-full flex justify-end">
-              {textAreaLength}/300
-            </span>
-          )}
-          <FormItem className={` border  border-gray-300 rounded-lg `}>
-            <FormControl>
-              {type === "textField" ? (
-                <Input
-                  className="w-full placeholder:capitalize border-none py-9 text-lg placeholder:text-gray-400"
-                  placeholder={`${name}*`}
-                  {...field}
-                />
-              ) : (
-                <Textarea
-                  placeholder={`${name}*`}
-                  className="placeholder:capitalize placeholder:text-lg h-48 placeholder:text-gray-400 lg:!text-lg"
-                />
-              )}
-            </FormControl>
-          </FormItem>
-        </div>
-      )}
+      render={({ field }) => {
+        let value = "";
+        if (typeof field.value === "string") {
+          value = field.value;
+        }
+        return (
+          <div className={`${type === "textArea" && "mt-5"}`}>
+            {type === "textArea" && (
+              <span className="text-xs text-gray-500  w-full flex justify-end">
+                {textAreaLength}/300
+              </span>
+            )}
+            <FormItem className={` `}>
+              <FormControl>
+                {type === "textField" ? (
+                  <div>
+                    <Input
+                      className="w-full placeholder:capitalize  border  border-gray-300 rounded-lg  py-9 text-lg placeholder:text-gray-500"
+                      placeholder={`${name}*`}
+                      {...field}
+                      value={value}
+                    />
+                    <p className="capitalize py-3 font-medium  text-red-500">
+                      {errors[name]?.message}
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Textarea
+                      onInput={(e) => {
+                        const target = e.target as HTMLTextAreaElement;
+                        setTextAreaLength(target.value.length);
+                      }}
+                      placeholder={`${name}*`}
+                      className="placeholder:capitalize placeholder:text-lg h-48 placeholder:text-gray-500 lg:!text-lg"
+                      {...field}
+                      value={value}
+                    />
+                    <p className="capitalize py-3 font-medium  text-red-500">
+                      {errors[name]?.message}
+                    </p>
+                  </div>
+                )}
+              </FormControl>
+            </FormItem>
+          </div>
+        );
+      }}
     />
   );
 }

@@ -1,4 +1,6 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
+import { FormType } from "./InputField";
 
 const adPlans = [
   { type: "basic", duration: 3, amount: 20, percentage: 20 },
@@ -6,13 +8,33 @@ const adPlans = [
   { type: "pro", duration: 30, amount: 100, percentage: 75 },
 ];
 
-export default function AdPromotion() {
+export default function AdPromotion({ form }: { form: FormType }) {
+  const [activePlan, setActivePlan] = useState<string | null>(null);
+  const { getValues } = form;
+  const values = getValues();
+
+  const handlePlan = (index: number) => {
+    const plan = !index ? "basic" : index === 1 ? "premium" : "pro";
+
+    if (activePlan === plan) {
+      setActivePlan(null);
+      form.setValue("plan", "");
+    } else {
+      setActivePlan(plan);
+      form.setValue("plan", plan);
+    }
+  };
+
   return (
     <div className="min-h-[50vh] w-full lg:p-5 flex flex-col justify-between space-y-5">
-      {adPlans.map((item) => (
+      {adPlans.map((item, i) => (
         <div
+          id={item.type}
+          onClick={() => handlePlan(i)}
           key={item.type}
-          className="h-40  border-gray-200 border-2 duration-200 hover:border-flickmart/70 capitalize flex flex-col justify-between p-5"
+          className={`h-40 border-2 duration-200 capitalize flex flex-col justify-between p-5
+            ${values.plan === item.type && "border-flickmart/70"}
+            `}
         >
           <div className="flex justify-between">
             <span className="font-medium lg:text-xl">{item.type}</span>
