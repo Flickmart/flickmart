@@ -3,7 +3,7 @@ import { create } from "zustand";
 interface OthersType {
   loading: boolean;
   image: File | null;
-  storeImage: (image: File) => void;
+  storeImage: (image: File | null) => void;
   setLoadingStatus: (status: boolean) => void;
 }
 

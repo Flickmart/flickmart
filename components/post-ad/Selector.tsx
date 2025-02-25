@@ -21,7 +21,7 @@ export default function Selector({
   form: FormType;
 }) {
   return (
-    <div className="border border-gray-300 py-5 rounded-lg ">
+    <div className="border border-gray-300 lg:py- py-2.5 rounded-lg ">
       <FormField
         control={form.control}
         name={name}
@@ -38,7 +38,7 @@ export default function Selector({
               defaultValue={value}
               value={value}
             >
-              <SelectTrigger className="w-full flex text-lg justify-between capitalize outline-none  border-none shadow-none focus:ring-0">
+              <SelectTrigger className="w-full  text-lg  capitalize outline-none  border-none shadow-none focus:ring-0">
                 <SelectValue placeholder={`${label || name}*`} />
               </SelectTrigger>
               <SelectContent

@@ -44,7 +44,7 @@ type ErrorType = SubmitErrorHandler<{
 
 const categories = ["electronics", "fashion", "beauty"];
 const location = ["enugu", "nsukka"];
-const exchange = ["bank transfer", "card", "ussd"];
+const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
 
 export default function PostAdForm() {
@@ -147,7 +147,7 @@ export default function PostAdForm() {
           <InputField name="title" form={form} />
           <Selector
             form={form}
-            options={exchange}
+            options={returnable}
             name="exchange"
             label="exchange possible"
           />
@@ -158,7 +158,7 @@ export default function PostAdForm() {
 
         <Separator className="h-5 bg-gray-100 w-full" />
 
-        <div className="bg-inherit lg:w-3/4  space-y-6   lg:px-10 w-full p-5  ">
+        <div className="bg-inherit lg:w-3/4 space-y-3 lg:space-y-6   lg:px-10 w-full p-5  ">
           <InputField name="store" form={form} />
           <InputField name="phone" form={form} />
         </div>
@@ -175,13 +175,13 @@ export default function PostAdForm() {
           <AdPromotion form={form} />
           <Button
             type="submit"
-            className="capitalize  bg-flickmart w-full py-9 lg:rounded-none text-xl"
+            className="capitalize  bg-flickmart w-full py-7 lg:py-9 lg:rounded-none text-xl"
           >
             post ad
           </Button>
           <p className="lg:w-2/4 text-center font-light capitalize leading-relaxed lg:text-sm text-xs">
             By clicking on Post Ad you accepted the{" "}
-            <span className="text-flickmart">Sell Policy </span>
+            <span className="text-flickmart cursor-pointer">Sell Policy </span>
             confirm that you will abide by the safety tips and other terms and
             conditions
           </p>
