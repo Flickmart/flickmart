@@ -7,7 +7,7 @@ import {
 } from "../ui/select";
 import React from "react";
 import { FormField } from "../auth/ui/form";
-import { FormType, NameType } from "./InputField";
+import { FormType, NameType } from "@/types/form";
 
 export default function Selector({
   name,
@@ -32,6 +32,7 @@ export default function Selector({
           }
           return (
             <Select
+              required
               onValueChange={field.onChange}
               {...field}
               defaultValue={value}

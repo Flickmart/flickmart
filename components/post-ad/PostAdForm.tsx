@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
@@ -10,8 +10,11 @@ import Selector from "./Selector";
 import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
-import { uploadImage } from "@/app/post-ad/action";
+import { postAd, uploadImage } from "@/app/post-ad/action";
 import { useMutation } from "@tanstack/react-query";
+import { useOthersStore } from "@/store/useOthersStore";
+import toast from "react-hot-toast";
+import { FormDataType } from "@/types/form";
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -47,9 +50,6 @@ const condition = ["brand new", "used"];
 export default function PostAdForm() {
   const formSchema = z.object({
     category: z.string(),
-    image: z
-      .instanceof(File)
-      .refine((file) => file.name, { message: "an image is required" }),
     location: z.string(),
     exchange: z.string(),
     condition: z.string(),
@@ -67,7 +67,6 @@ export default function PostAdForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "",
-      image: undefined,
       location: "",
       title: "",
       exchange: "",
@@ -79,31 +78,50 @@ export default function PostAdForm() {
       plan: "",
     },
   });
+  const { image, setLoadingStatus } = useOthersStore((state) => state);
+  const [formData, setFormData] = useState<FormDataType | null>(null);
 
-  const { mutate } = useMutation({
+  // Form Submission
+  const { mutate: imgUploadMutate } = useMutation({
     mutationFn: uploadImage,
-    onSuccess: () => console.log("j"),
+    onSuccess: (data) => {
+      toast.success("Image uploaded successfully");
+      const imgUrl = `https://tbgmruevxeutwcbwmvup.supabase.co/storage/v1/object/public/${data?.fullPath}`;
+
+      // The full object to be inserted
+      if (typeof formData?.title === "string") {
+        const modifiedObj = { ...formData, image: imgUrl };
+        postAdMutate(modifiedObj);
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message);
+      setLoadingStatus(false);
+    },
   });
+
   const { mutate: postAdMutate } = useMutation({
-    mutationFn: uploadImage,
-    onSuccess: () => console.log("j"),
+    mutationFn: postAd,
+    onSettled: () => setLoadingStatus(false),
   });
 
-  const onSubmit: SubmitType = async (e) => {
+  const onSubmit: SubmitType = (e) => {
     try {
-      // mutate();
-      alert("submitted");
-      console.log(e);
-    } catch (err) {
-      console.log(err);
+      setLoadingStatus(true);
+
+      // store form data in state because we first need to upload image
+      setFormData(e);
+      imgUploadMutate(image);
     } finally {
       form.reset();
     }
   };
+
   const onError: ErrorType = (error) => {
     console.log(error);
   };
 
+  // Prevent Default KeyPress Behavior
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -119,7 +137,7 @@ export default function PostAdForm() {
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
           <Selector form={form} options={categories} name="category" />
-          <AddPhoto form={form} />
+          <AddPhoto />
           <Selector
             options={location}
             form={form}

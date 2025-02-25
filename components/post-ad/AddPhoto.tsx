@@ -1,11 +1,12 @@
 "use client";
 import { Plus } from "lucide-react";
 import React, { useRef, useState } from "react";
-import { FormType } from "./InputField";
+import { useOthersStore } from "@/store/useOthersStore";
 
-export default function AddPhoto({ form }: { form: FormType }) {
+export default function AddPhoto() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<string | undefined>("");
+  const storeImage = useOthersStore((state) => state.storeImage);
 
   const handleBtnClick = () => {
     if (fileRef.current) {
@@ -13,8 +14,12 @@ export default function AddPhoto({ form }: { form: FormType }) {
     }
   };
 
-  const handleFileChange = (fileName: string | undefined) => {
-    setFileName(fileName);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.item(0);
+    if (file) {
+      setFileName(file.name);
+      storeImage(file);
+    }
   };
 
   return (
@@ -25,16 +30,10 @@ export default function AddPhoto({ form }: { form: FormType }) {
         onClick={handleBtnClick}
         className="cursor-pointer hover:bg-flickmart/80 bg-flickmart duration-200 rounded-lg w-20 h-14 flex justify-center items-center"
       >
-        <button className="bg-white rounded-full h-6 w-6 ">
+        <button type="button" className="bg-white rounded-full h-6 w-6 ">
           <Plus className="p-1 text-flickmart" />
           <input
-            onChange={(e) => {
-              const file = e.target.files?.item(0);
-              if (file) {
-                form.setValue("image", file);
-                handleFileChange(file?.name);
-              }
-            }}
+            onChange={handleFileChange}
             ref={fileRef}
             type="file"
             hidden

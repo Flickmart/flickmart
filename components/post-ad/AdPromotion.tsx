@@ -1,6 +1,6 @@
 "use client";
+import { FormType } from "@/types/form";
 import React, { useState } from "react";
-import { FormType } from "./InputField";
 
 const adPlans = [
   { type: "basic", duration: 3, amount: 20, percentage: 20 },

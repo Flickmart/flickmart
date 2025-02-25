@@ -1,36 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { FormControl, FormField, FormItem, FormLabel } from "../auth/ui/form";
-import { UseFormReturn } from "react-hook-form";
 import { Input } from "../auth/ui/input";
 import { Textarea } from "../ui/textarea";
-
-export type NameType =
-  | "category"
-  | "image"
-  | "location"
-  | "title"
-  | "exchange"
-  | "condition"
-  | "description"
-  | "price"
-  | "store"
-  | "phone"
-  | "plan";
-
-export type FormType = UseFormReturn<{
-  category: string;
-  image: File;
-  location: string;
-  title: string;
-  exchange: string;
-  condition: string;
-  description: string;
-  price: string;
-  store: string;
-  phone: string;
-  plan: string;
-}>;
+import { FormType, NameType } from "@/types/form";
 
 type FieldType = {
   name: NameType;
@@ -68,6 +41,7 @@ export default function InputField({
                 {type === "textField" ? (
                   <div>
                     <Input
+                      required
                       className="w-full placeholder:capitalize  border  border-gray-300 rounded-lg  py-9 text-lg placeholder:text-gray-500"
                       placeholder={`${name}*`}
                       {...field}
@@ -80,6 +54,7 @@ export default function InputField({
                 ) : (
                   <div>
                     <Textarea
+                      required
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
                         setTextAreaLength(target.value.length);
