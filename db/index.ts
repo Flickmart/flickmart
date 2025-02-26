@@ -1,7 +1,8 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
+import { adPosts } from "./schema/adPosts";
 
-async function main() {
+export async function main() {
   if (typeof process.env.DATABASE_URL === "string") {
     const client = postgres(process.env.DATABASE_URL);
     const database = drizzle({ client });
@@ -10,10 +11,11 @@ async function main() {
   }
 }
 
-// Note after creating your schema file, add the path to the drizzle config file
-// After creating table, run these commands for migration,
-// Generate SQL- npx drizzle-kit generate
-// Migrate- npx drizzle-kit migrate
+const db = await main();
 
-// Interact with db with this - Insert, Select, Update, Delete
-const db = main();
+type AdPost = typeof adPosts.$inferInsert;
+
+export async function createAdPost(formValues: AdPost) {
+  const newAdPost = await db?.insert(adPosts).values(formValues);
+  return newAdPost;
+}

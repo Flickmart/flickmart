@@ -1,7 +1,7 @@
 import { integer, pgTable, serial, text, varchar } from "drizzle-orm/pg-core";
 
 export const adPosts = pgTable("adPosts", {
-  id: serial("id").primaryKey(),
+  id: serial("id").primaryKey().notNull(),
   category: varchar("category", { length: 256 }),
   image: text("image"),
   location: varchar("location", { enum: ["nsukka", "enugu"] }),
@@ -11,6 +11,6 @@ export const adPosts = pgTable("adPosts", {
   description: text("description"),
   price: varchar("price", { length: 50 }),
   store: varchar("store", { length: 50 }),
-  phone: varchar("phone", { length: 50 }),
+  phone: varchar("phone", { length: 50 }).unique(),
   plan: varchar("plan", { length: 25, enum: ["basic", "premium", "pro"] }),
 });

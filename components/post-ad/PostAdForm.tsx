@@ -10,7 +10,7 @@ import Selector from "./Selector";
 import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
-import { postAd, uploadImage } from "@/app/post-ad/action";
+import { createAdPost, uploadImage } from "@/app/post-ad/action";
 import { useMutation } from "@tanstack/react-query";
 import { useOthersStore } from "@/store/useOthersStore";
 import toast from "react-hot-toast";
@@ -91,7 +91,7 @@ export default function PostAdForm() {
       // The full object to be inserted
       if (typeof formData?.title === "string") {
         const modifiedObj = { ...formData, image: imgUrl };
-        postAdMutate(modifiedObj);
+        adPostMutate(modifiedObj);
       }
     },
     onError: (err) => {
@@ -100,15 +100,19 @@ export default function PostAdForm() {
     },
   });
 
-  const { mutate: postAdMutate } = useMutation({
-    mutationFn: postAd,
+  const { mutate: adPostMutate } = useMutation({
+    mutationFn: createAdPost,
+    onSuccess: (data) => {
+      toast.success(data.message);
+      console.log(data);
+    },
+    onError: (err) => toast.error(err.message),
     onSettled: () => setLoadingStatus(false),
   });
 
   const onSubmit: SubmitType = (e) => {
     try {
       setLoadingStatus(true);
-
       // store form data in state because we first need to upload image
       setFormData(e);
       imgUploadMutate(image);
