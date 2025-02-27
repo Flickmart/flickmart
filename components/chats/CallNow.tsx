@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const CallNow = () => {
   return (
-    <div className="py-4 flex items-center justify-between px-4 bg-white shadow-lg">
+    <div className="py-3 flex items-center justify-between px-4 bg-white shadow-lg z-10 sticky top-[75px] md:absolute md:w-full">
       <div className="flex items-center gap-5">
         <Image
           className="w-20 h-12 object-cover rounded-lg"

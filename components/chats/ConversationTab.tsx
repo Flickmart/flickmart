@@ -21,8 +21,8 @@ const ConversationTab = ({
     return notFound();
   }
   return (
-    <section className="min-h-screen md:min-h-0 md:h-full relative md:pt-[75px]">
-      <header className="shadow-md mb-2 py-4 px-2 flex items-center justify-between bg-white sticky top-0 md:absolute md:w-full">
+    <section className="min-h-screen md:min-h-0 md:h-full relative md:pt-[150px]">
+      <header className="shadow-md py-4 z-20 px-2 flex items-center justify-between bg-white sticky top-0 md:absolute md:w-full">
         <div className="flex">
           <button
             onClick={() => {
@@ -69,8 +69,8 @@ const ConversationTab = ({
           <EllipsisVertical strokeWidth={1.5} />
         </button>
       </header>
-      <section className="md:h-full md:overflow-scroll">
-        <CallNow />
+      <CallNow />
+      <section className="relative md:h-full md:overflow-scroll">
         <Warning />
         <p className="text-center text-sm mt-8 text-black/65 font-light mb-6">
           August, 28 2024
@@ -81,9 +81,6 @@ const ConversationTab = ({
         <section className="py-20 px-5 flex flex-col gap-7">
           <Message message="Good evening." type="sent" />
           <Message message="Good evening" type="received" />
-          <button className="fixed bottom-[100px] right-[25px] bg-flickmart-chat-orange p-3 rounded-full shadow-[0_0_5px_4px_#00000025] md:absolute">
-            <Wallet color="white" />
-          </button>
           <Message
             message="I sell great shoes of good quality sir. How many would you like to purchase?"
             type="received"
@@ -102,6 +99,9 @@ const ConversationTab = ({
           />
         </section>
       </section>
+      <button className="fixed bottom-[100px] right-[25px] bg-flickmart-chat-orange p-3 rounded-full shadow-[0_0_5px_4px_#00000025] md:absolute">
+        <Wallet color="white" />
+      </button>
       <SendMessage />
     </section>
   );
