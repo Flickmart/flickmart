@@ -1,6 +1,6 @@
 import Image from "next/image";
 import React from "react";
-import { Button } from "./auth/ui/button";
+import { Button } from "./ui/button";
 
 export default function Delivery() {
   return (

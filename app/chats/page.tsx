@@ -74,37 +74,36 @@ const page = () => {
       avatar: "/chat-avatars/chat-avatar-1.png",
       name: "FlickMart",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-      products: [...Array(4)],
+      products: [...Array(8)],
     },
     {
       userId: "2",
       avatar: "/chat-avatars/chat-avatar-2.png",
       name: "FlickMart",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-      products: [...Array(4)],
+      products: [...Array(8)],
     },
     {
       userId: "3",
       avatar: "/chat-avatars/chat-avatar-3.png",
       name: "FlickMart",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-      products: [...Array(4)],
+      products: [...Array(8)],
     },
     {
       userId: "4",
       avatar: "/chat-avatars/chat-avatar-4.png",
       name: "FlickMart",
       desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-      products: [...Array(4)],
+      products: [...Array(8)],
     },
   ];
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null
   );
-  const [currentProfile, setCurrentProfile] = useState<string | null>(null);
+  const [currentProfile, setCurrentProfile] = useState<string | null>("1");
   return (
     <main className="max-w-[1440px] md:grid md:grid-cols-2 md:mt-20 md:mx-4 md:h-[711px] lg:mx-12 md:shadow-[0_4px_4px_#00000040] lg:grid-cols-[35%_65%] 2xl:mx-auto relative">
-      
       <section
         className={`md:pt-4 ${currentConversation || currentProfile ? "hidden md:block" : ""}`}
       >

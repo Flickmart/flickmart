@@ -12,6 +12,14 @@ import {
 import { Profile } from "@/app/chats/page";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import {
+  Carousel,
+  CarouselItem,
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious,
+} from "../ui/carousel";
+import { poppins } from "@/app/fonts";
 
 const ProfileTab = ({
   currentProfile,
@@ -54,9 +62,9 @@ const ProfileTab = ({
           height={47}
           className="w-20 mx-auto mb-3"
         />
-        <h2>{name}</h2>
+        <h2 className={poppins.className}>{name}</h2>
         <span className="text-flickmart text-[13px]">Online</span>
-        <p className="text-[13px] px-[15%]">{desc}</p>
+        <p className="text-[13px] px-[15%] mt-3">{desc}</p>
       </section>
       <section className="bg-[#EDEDED] mt-9 py-9">
         <div className="flex gap-11 justify-center mb-9">
@@ -82,11 +90,11 @@ const ProfileTab = ({
             Share
           </button>
         </div>
-        <section className="grid grid-cols-2 px-8 gap-3">
+        <section className="grid grid-cols-2 px-8 gap-3 sm:grid-cols-3 md:block md:w-[90%] md:mx-auto">
           {products.map((_, index) => (
             <div
               key={index}
-              className="flex flex-col justify-between min-h-72 rounded-md border border-gray-200 relative shadow-lg"
+              className="flex flex-col justify-between min-h-72 rounded-md border border-gray-200 relative shadow-lg md:hidden"
             >
               <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
                 hot
@@ -111,10 +119,43 @@ const ProfileTab = ({
               </div>
             </div>
           ))}
+          <Carousel className="hidden md:block">
+            <CarouselContent>
+              {products.map((_, index) => (
+                <CarouselItem key={index} className="basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                  <div className="flex flex-col justify-between min-h-72 rounded-md border border-gray-200 relative shadow-lg">
+                    <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
+                      hot
+                    </span>
+                    <span className=" p-1  bg-white absolute top-4 lg:top-5 lg:right-5 right-3 rounded-full">
+                      <Bookmark className="fill-gray-500     " />
+                    </span>
+                    <Image
+                      src="/jacket.png"
+                      alt="jacket"
+                      width={500}
+                      height={500}
+                      className="flex-grow p-0.5 rounded-md"
+                    />
+                    <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">
+                      <span className="lg:text-base text-sm">
+                        Freestyle Crew Racer leather jacket
+                      </span>
+                      <span className="text-flickmart lg:text-sm text-xs">
+                        $149.99
+                      </span>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </section>
         <button
           type="button"
-          className="bg-white px-2 py-1 mt-5 mx-auto block border-2 border-black/30 text-black/60 rounded-lg hover:text-flickmart hover:border-flickmart transition-all duration-300"
+          className="bg-white px-2 py-1 mt-5 mx-auto block border-2 border-black/30 text-black/60 rounded-lg hover:text-flickmart hover:border-flickmart transition-all duration-300 md:hidden"
         >
           See more
         </button>

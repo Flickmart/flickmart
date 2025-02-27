@@ -7,6 +7,8 @@ import CallNow from "./CallNow";
 import Warning from "./Warning";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
+import { Poppins } from "next/font/google";
+import { poppins } from "@/app/fonts";
 
 const ConversationTab = ({
   currentConversation,
@@ -51,7 +53,7 @@ const ConversationTab = ({
             <div className="flex flex-col ">
               <button
                 type="button"
-                className=" transition-all duration-300 hover:text-flickmart"
+                className={`transition-all duration-300 hover:text-flickmart ${poppins.className}`}
                 onClick={() => {
                   setCurrentProfile(currentConversation.userId);
                 }}

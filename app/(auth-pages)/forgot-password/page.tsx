@@ -1,8 +1,8 @@
 import { forgotPasswordAction } from "@/app/actions";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
-import { Input } from "@/components/auth/ui/input";
-import { Label } from "@/components/auth/ui/label";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import AuthHeader from "@/components/auth/AuthHeader";
 import Image from "next/image";
 
