@@ -4,15 +4,15 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Button } from "@/components/auth/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from "@/components/auth/ui/form";
-import { Checkbox } from "@/components/auth/ui/checkbox";
+} from "@/components/ui/form";
+import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
 import { authWithGoogle, login } from "../auth";

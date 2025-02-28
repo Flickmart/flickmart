@@ -1,5 +1,5 @@
 import AuthHeader from "../AuthHeader";
-import { Button } from "@/components/auth/ui/button";
+import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -10,12 +10,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/auth/ui/form";
+} from "@/components/ui/form";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/auth/ui/input-otp";
+} from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Dispatch, SetStateAction, useState } from "react";
 import { createClient } from "@/utils/supabase/client";
