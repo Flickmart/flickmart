@@ -18,7 +18,17 @@ export async function uploadImage(file: File | null) {
   }
 }
 
-export async function postAd(data: FormDataType & { image: string }) {
-  console.log(data);
-  //   const { data, error } = await supabase.from("product").insert();
+export async function createAdPost(data: FormDataType & { image: string }) {
+  const response = await fetch("/api/ad-posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (!response.ok) throw Error("Something went wrong...");
+
+  const adPost = await response.json();
+
+  return adPost;
 }
