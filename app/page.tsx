@@ -10,12 +10,13 @@ export default function page() {
   useEffect(function () {
     async function setUerAndSession() {
       // Retrieve User data and Session
-      const data = await retrieveUserSession();
+      // const data = await retrieveUserSession();
 
-      if (data.user && data.session) {
+      // temporarily disabled sign-in
+      if (true) {
         // Store  in local storage
-        localStorage.setItem("user", JSON.stringify(data.user));
-        localStorage.setItem("session", JSON.stringify(data.session));
+        localStorage.setItem("user", JSON.stringify("yes"));
+        localStorage.setItem("session", JSON.stringify("queen"));
 
         // Redirect to home
         router.push("/home");
