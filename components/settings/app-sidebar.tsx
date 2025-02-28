@@ -50,11 +50,12 @@ const data = {
       items: [
         {
           title: "Analytics",
+          icon: <ChevronRight/>,
           url: "/settings/analytics",
         },
         {
           title: "Products",
-          url: "/settings/products",
+  icon: <ChevronRight/>,          url: "/settings/products",
         },
       ],
     },
@@ -64,10 +65,12 @@ const data = {
       items: [
         {
           title: "Theme Settings",
+            icon: <ChevronRight/>,
           url: "/settings/appearance",
         },
         {
           title: "Accessibility",
+            icon: <ChevronRight/>,
           url: "/settings/accessibility",
         },
       ],
@@ -78,14 +81,17 @@ const data = {
       items: [
         {
           title: "Personal Details",
+            icon: <ChevronRight/>,
           url: "/settings/personal",
         },
         {
           title: "Business Details",
+            icon: <ChevronRight/>,
           url: "/settings/business",
         },
         {
           title: "Privacy & Security",
+            icon: <ChevronRight/>,
           url: "/settings/privacy",
         },
       ],
@@ -96,10 +102,12 @@ const data = {
       items: [
         {
           title: "Language & Region",
+            icon: <ChevronRight/>,
           url: "/settings/language",
         },
         {
           title: "Notifications",
+            icon: <ChevronRight/>,
           url: "/settings/notifications",
         },
       ],
@@ -110,14 +118,17 @@ const data = {
       items: [
         {
           title: "Help Center",
+            icon: <ChevronRight/>,
           url: "/settings/help",
         },
         {
           title: "Contact Support",
+            icon: <ChevronRight/>,
           url: "/settings/support",
         },
         {
           title: "About",
+            icon: <ChevronRight/>,
           url: "/settings/about",
         },
       ],
@@ -173,7 +184,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <SidebarMenuItem>
                     <Link href={item.url}>
                       <SidebarMenuButton isActive={pathname === item.url}>
-                        {item.title} <ChevronRight className="ml-auto" />
+                      {item.icon}  {item.title}
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>
