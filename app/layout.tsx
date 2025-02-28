@@ -8,7 +8,7 @@ const defaultUrl = process.env.VERCEL_URL
 export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Flickmart",
-  description: "The fastest way to build apps with Next.js and Supabase",
+  description: "The all in one store for university students to buy and sell products",
 };
 const inter = Inter({
   subsets: ["latin"],
