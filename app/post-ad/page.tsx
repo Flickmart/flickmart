@@ -8,7 +8,7 @@ export default function Page() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="bg-gray-100 p-5  lg:p-10 min-h-screen space-y-5 flex flex-col justify-center items-center">
+      <div className="bg-gray-100 p-3  lg:p-10 min-h-screen space-y-5 flex flex-col justify-center items-center">
         <div className="bg-white lg:w-5/6 w-full h-20 rounded-lg flex items-center justify-between">
           <span className="text-xl text-gray-700 font-semibold pl-7">
             Post Product
