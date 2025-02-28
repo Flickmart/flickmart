@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import ConversationTab from "@/components/chats/ConversationTab";
 import ProfileTab from "@/components/chats/ProfileTab";
+import Link from "next/link";
 
 export interface Chat {
   userId: string;
@@ -101,20 +102,21 @@ const page = () => {
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null
   );
-  const [currentProfile, setCurrentProfile] = useState<string | null>("1");
+  const [currentProfile, setCurrentProfile] = useState<string | null>(null);
   return (
-    <main className="max-w-[1440px] md:grid md:grid-cols-2 md:mt-20 md:mx-4 md:h-[711px] lg:mx-12 md:shadow-[0_4px_4px_#00000040] lg:grid-cols-[35%_65%] 2xl:mx-auto relative">
+    <main className="max-w-[1440px] md:grid md:grid-cols-2 md:h-[calc(100vh-64px)] md:shadow-[0_4px_4px_#00000040] lg:grid-cols-[35%_65%] 2xl:mx-auto relative">
       <section
         className={`md:pt-4 ${currentConversation || currentProfile ? "hidden md:block" : ""}`}
       >
         <header className="shadow-lg py-4 px-2 flex items-center justify-between sticky top-0 bg-white md:static md:bg-transparent md:px-4 md:shadow-none md:py-0">
-          <button
+          <Link
+            href="/home"
             type="button"
             className="flex font-light items-center transition-colors text-flickmart-gray hover:text-flickmart duration-300 md:hidden"
           >
             <ChevronLeft size={35} strokeWidth={1.5} />
             Chats
-          </button>
+          </Link>
           <button
             type="button"
             className="transition-colors text-flickmart-gray hover:text-flickmart duration-300 md:hidden"
@@ -165,7 +167,7 @@ const page = () => {
         />
       ) : (
         <section
-          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-[711px]`}
+          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-[calc(100vh-64px)]`}
         >
           {currentConversation ? (
             <ConversationTab
