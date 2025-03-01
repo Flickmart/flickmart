@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { FormControl, FormField, FormItem, FormLabel } from "../auth/ui/form";
-import { Input } from "../auth/ui/input";
+import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
+import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { FormType, NameType } from "@/types/form";
 

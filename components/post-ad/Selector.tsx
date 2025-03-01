@@ -6,7 +6,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import React from "react";
-import { FormField } from "../auth/ui/form";
+import { FormField } from "../ui/form";
 import { FormType, NameType } from "@/types/form";
 
 export default function Selector({
