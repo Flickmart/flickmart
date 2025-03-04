@@ -23,7 +23,7 @@ export async function GET() {
     return NextResponse.json({
       message: "Businesses fetched successfully",
       businessData,
-    });8
+    });
   } catch (err) {
     const error = err as Error;
     return NextResponse.json({ message: error.message });

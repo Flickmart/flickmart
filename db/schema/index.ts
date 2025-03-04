@@ -32,6 +32,5 @@ export const business = pgTable("business", {
     name: text("name").notNull() ,
     logo: text("logo"),
     location:  varchar("location", { length: 50 }),
-    establishedYear: integer("established_year"),
     description: text("description"),
   });
