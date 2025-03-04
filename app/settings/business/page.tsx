@@ -42,7 +42,7 @@ export default function BusinessDetailsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <header className="flex items-center">
+      <header className=" flex items-center">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>

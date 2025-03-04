@@ -1,7 +1,6 @@
 import * as React from "react";
 import { usePathname } from "next/navigation";
 
-import { ModeSwitcher } from "./version-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -13,18 +12,31 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { SearchForm } from "./search-form";
 import Link from "next/link";
 import { NavUser } from "./nav-user";
-import { ChevronRight} from "lucide-react";
-import Image from "next/image";
+import {
+  Activity,
+  ChartSpline,
+  Languages,
+  Palette,
+  Store,
+  ShieldCheck,
+  HelpCircle,
+  MessageSquare,
+  Info,
+  Bell,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const data = {
   user: {
     name: "ebuka",
     email: "ebuka@gmail.com",
     avatar: "/avatars/shadcn.jpg",
+    username: "ebuka223",
   },
   modes: [
     {
@@ -50,12 +62,13 @@ const data = {
       items: [
         {
           title: "Analytics",
-          icon: <ChevronRight/>,
+          icon: <ChartSpline />,
           url: "/settings/analytics",
         },
         {
           title: "Products",
-  icon: <ChevronRight/>,          url: "/settings/products",
+          icon: <Store />,
+          url: "/settings/products",
         },
       ],
     },
@@ -65,12 +78,12 @@ const data = {
       items: [
         {
           title: "Theme Settings",
-            icon: <ChevronRight/>,
+          icon: <Palette />,
           url: "/settings/appearance",
         },
         {
           title: "Accessibility",
-            icon: <ChevronRight/>,
+          icon: <Activity />,
           url: "/settings/accessibility",
         },
       ],
@@ -80,18 +93,13 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Personal Details",
-            icon: <ChevronRight/>,
-          url: "/settings/personal",
-        },
-        {
           title: "Business Details",
-            icon: <ChevronRight/>,
+          icon: <Store />,
           url: "/settings/business",
         },
         {
           title: "Privacy & Security",
-            icon: <ChevronRight/>,
+          icon: <ShieldCheck />,
           url: "/settings/privacy",
         },
       ],
@@ -102,12 +110,12 @@ const data = {
       items: [
         {
           title: "Language & Region",
-            icon: <ChevronRight/>,
+          icon: <Languages />,
           url: "/settings/language",
         },
         {
           title: "Notifications",
-            icon: <ChevronRight/>,
+          icon: <Bell />,
           url: "/settings/notifications",
         },
       ],
@@ -118,17 +126,17 @@ const data = {
       items: [
         {
           title: "Help Center",
-            icon: <ChevronRight/>,
+          icon: <HelpCircle />,
           url: "/settings/help",
         },
         {
           title: "Contact Support",
-            icon: <ChevronRight/>,
+          icon: <MessageSquare />,
           url: "/settings/support",
         },
         {
           title: "About",
-            icon: <ChevronRight/>,
+          icon: <Info />,
           url: "/settings/about",
         },
       ],
@@ -139,16 +147,25 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = React.useState("");
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(true);
+    }
+  }, [isMobile]);
 
   const filteredNavMain = React.useMemo(() => {
     if (!searchQuery) return data.navMain;
 
-    return data.navMain.map(group => ({
-      ...group,
-      items: group.items.filter(item =>
-        item.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    })).filter(group => group.items.length > 0);
+    return data.navMain
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
   }, [searchQuery]);
 
   const handleSearch = (query: string) => {
@@ -156,22 +173,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar {...props}>
+    <Sidebar {...props} className="bg-white max-sm:w-full">
       <SidebarHeader>
-        <SidebarMenuButton
-          size="lg"
-          className="flex items-center"
-        >
-          <div className="flex items-center justify-center rounded-lg  text-sidebar-primary-foreground">
-            <Image src="/icons/logo.svg" width={48} height={48} alt="logo" />
-          </div>
-          <div className="flex flex-col gap-0.5 leading-none">
-            <span className="font-semibold">Flickmart</span>
-            <span className="text-xs text-muted-foreground">
-              Management and Settings
-            </span>
-          </div>
-        </SidebarMenuButton>
+        <Link href="/settings/personal">
+          <SidebarMenuButton
+            size="lg"
+            className="flex items-center"
+            onClick={() => setOpenMobile(!openMobile)}
+          >
+            <Avatar className="h-8 w-8 rounded-lg">
+              <AvatarImage src={data.user.avatar} alt={data.user.name} />
+              <AvatarFallback className="rounded-lg">EB</AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold">{data.user.name}</span>
+              <span className="truncate text-xs">{data.user.username}</span>
+            </div>
+          </SidebarMenuButton>
+        </Link>
         <SearchForm onSearch={handleSearch} />
       </SidebarHeader>
       <SidebarContent className="scrollbar-none">
@@ -183,8 +202,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenu key={item.title}>
                   <SidebarMenuItem>
                     <Link href={item.url}>
-                      <SidebarMenuButton isActive={pathname === item.url}>
-                      {item.icon}  {item.title}
+                      <SidebarMenuButton
+                        isActive={pathname === item.url}
+                        onClick={() => setOpenMobile(!openMobile)}
+                      >
+                        {item.icon} {item.title}
                       </SidebarMenuButton>
                     </Link>
                   </SidebarMenuItem>
@@ -194,9 +216,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <NavUser user={data.user} />
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 }

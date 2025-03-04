@@ -8,6 +8,13 @@
       "when": 1740506257859,
       "tag": "0000_narrow_hitman",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1740892491567,
+      "tag": "0001_late_karnak",
+      "breakpoints": true
     }
   ]
 }
