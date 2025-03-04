@@ -15,6 +15,13 @@
       "when": 1740892491567,
       "tag": "0001_late_karnak",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1741048799648,
+      "tag": "0002_unusual_serpent_society",
+      "breakpoints": true
     }
   ]
 }
