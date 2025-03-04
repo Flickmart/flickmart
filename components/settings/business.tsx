@@ -1,84 +1,27 @@
 "use client";
 
 import { useState, type ChangeEvent } from "react";
-import {
-  Mail,
-  MapPin,
-  Phone,
-  Edit2,
-  Check,
-  Globe,
-  Camera,
-  Star,
-} from "lucide-react";
+import { MapPin, Edit2, Check, Phone, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { MultipleSelect } from "@/components/ui/multiple-select";
 import Link from "next/link";
 
 export default function BusinessSettings() {
   const [isEditMode, setIsEditMode] = useState(false);
-  const PRODUCT_CATEGORIES = [
-    { key: "smartphones", name: "Smartphones" },
-    { key: "laptops", name: "Laptops" },
-    { key: "accessories", name: "Accessories" },
-    { key: "smart-home", name: "Smart Home" },
-    { key: "tablets", name: "Tablets" },
-    { key: "wearables", name: "Wearables" },
-    { key: "cameras", name: "Cameras" },
-    { key: "audio", name: "Audio" },
-    { key: "housing", name: "Housing" },
-    { key: "real-estate", name: "Real Estate" },
-    { key: "rentals", name: "Rentals" },
-    { key: "apartments", name: "Apartments" },
-    { key: "condos", name: "Condominiums" },
-    { key: "gaming", name: "Gaming" },
-    { key: "networking", name: "Networking" },
-  ];
-
   const [businessInfo, setBusinessInfo] = useState({
     name: "TechGadgets Inc.",
     logo: `${process.env.NEXT_PUBLIC_ASSETS_URL}/placeholder.svg`,
     description:
       "We specialize in selling high-quality tech gadgets and accessories.",
-    established: "2015",
-    website: "https://techgadgets.com",
     email: "contact@techgadgets.com",
     phone: "+1 (555) 123-4567",
     address: "123 Tech Street, Silicon Valley, CA 94000",
-    isVerified: true,
-    category: "Electronics & Gadgets",
-    operatingHours: {
-      monday: "9:00 AM - 6:00 PM",
-      tuesday: "9:00 AM - 6:00 PM",
-      wednesday: "9:00 AM - 6:00 PM",
-      thursday: "9:00 AM - 6:00 PM",
-      friday: "9:00 AM - 6:00 PM",
-      saturday: "10:00 AM - 4:00 PM",
-      sunday: "Closed",
-    },
-    productCategories: [
-      { key: "smartphones", name: "Smartphones" },
-      { key: "laptops", name: "Laptops" },
-      { key: "accessories", name: "Accessories" },
-      { key: "smart-home", name: "Smart Home" },
-    ],
-    averageRating: 4.7,
-    totalReviews: 128,
-    responseRate: "98%",
-    responseTime: "Within 1 hour",
   });
 
   const handleLogoChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -177,7 +120,7 @@ export default function BusinessSettings() {
                   )}
                 </div>
               </div>
-           
+
               <div>
                 <Label htmlFor="business-description">Description</Label>
                 {isEditMode ? (
@@ -196,23 +139,6 @@ export default function BusinessSettings() {
                   <p>{businessInfo.description}</p>
                 )}
               </div>
-              <div>
-                <Label htmlFor="business-established">Year Established</Label>
-                {isEditMode ? (
-                  <Input
-                    id="business-established"
-                    value={businessInfo.established}
-                    onChange={(e) =>
-                      setBusinessInfo({
-                        ...businessInfo,
-                        established: e.target.value,
-                      })
-                    }
-                  />
-                ) : (
-                  <p>{businessInfo.established}</p>
-                )}
-              </div>
             </div>
           </div>
 
@@ -223,28 +149,21 @@ export default function BusinessSettings() {
             <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
             <div className="space-y-4">
               <div className="flex items-center space-x-2 w-full">
-                <Globe className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
                 {isEditMode ? (
                   <Input
-                    value={businessInfo.website}
+                    value={businessInfo.phone}
                     onChange={(e) =>
                       setBusinessInfo({
                         ...businessInfo,
-                        website: e.target.value,
+                        phone: e.target.value,
                       })
                     }
                     className="w-full"
-                    placeholder="Enter website URL"
+                    placeholder="Enter phone number"
                   />
                 ) : (
-                  <a
-                    href={businessInfo.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline break-all"
-                  >
-                    {businessInfo.website}
-                  </a>
+                  <span>{businessInfo.phone}</span>
                 )}
               </div>
             </div>
@@ -274,7 +193,6 @@ export default function BusinessSettings() {
           </div>
 
           <Separator />
-
         </div>
       </Card>
     </div>
