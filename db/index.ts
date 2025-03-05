@@ -1,18 +1,10 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { adPosts } from "./schema/adPosts";
-import { chats } from "./schema/chats";
 
-export async function main() {
-  if (typeof process.env.DATABASE_URL === "string") {
-    const client = postgres(process.env.DATABASE_URL);
-    const database = drizzle({ client });
+import { adPosts, business, chats } from "./schema";
 
-    return database;
-  }
-}
-
-const db = await main();
+const client = postgres(process.env.DATABASE_URL!);
+export const db = drizzle({ client });
 
 type AdPost = typeof adPosts.$inferInsert;
 

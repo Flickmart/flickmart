@@ -5,6 +5,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 
+
+
 // This would typically come from an API or database
 const getUserProfile = async (username: string) => ({
   fullName: "Panji Dwi",

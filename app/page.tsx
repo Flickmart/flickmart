@@ -11,8 +11,8 @@ export default function page() {
     async function setUerAndSession() {
       // Retrieve User data and Session
       const data = await retrieveUserSession();
-      // temporarily disable sign-in
-      if (true) {
+
+      if (data.user && data.session) {
         // Store  in local storage
         localStorage.setItem("user", JSON.stringify(data.user));
         localStorage.setItem("session", JSON.stringify(data.session));
