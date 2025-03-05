@@ -50,7 +50,7 @@ export default function MobileNav() {
           </div>
         </Link>
         <Link
-          href={"#"}
+          href={"/chats"}
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <MessageSquareText className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />

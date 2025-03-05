@@ -14,8 +14,8 @@ export default function page() {
       // temporarily disable sign-in
       if (true) {
         // Store  in local storage
-        localStorage.setItem("user", JSON.stringify("yes"));
-        localStorage.setItem("session", JSON.stringify("yes"));
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("session", JSON.stringify(data.session));
 
         // Redirect to home
         router.push("/home");

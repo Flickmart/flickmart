@@ -21,7 +21,8 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@schema": ["./db/schema"]
+      "@schema": ["./db/schema"],
+      "@db": ["./db/index.ts"]
     }
   },
   "include": [
@@ -29,7 +30,9 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "node_modules/.bin/schema.ts"
+    "node_modules/.bin/schema.ts",
+    "server/server.mts",
+    "db/index.ts"
   ],
   "exclude": ["node_modules"]
 }
