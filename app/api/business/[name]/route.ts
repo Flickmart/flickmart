@@ -18,3 +18,13 @@ export async function GET(
   }
 }
   
+
+const updateBusiness = ()=>{
+  
+}
+export aync function POST(
+  request: NextRequest, response: NextResponse
+){
+
+
+}
