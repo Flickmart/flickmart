@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -16,75 +15,26 @@ import {
 } from "@/components/ui/sidebar";
 import { SearchForm } from "./search-form";
 import Link from "next/link";
-import { NavUser } from "./nav-user";
-import {
-  Activity,
-  ChartSpline,
-  Languages,
-  Palette,
-  Store,
-  ShieldCheck,
-  HelpCircle,
-  MessageSquare,
-  Info,
-  Bell,
-} from "lucide-react";
+import { Store, MessageSquare, Bell } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const data = {
   user: {
     name: "ebuka",
     email: "ebuka@gmail.com",
-    avatar: "/avatars/shadcn.jpg",
+    avatar: "/avatar.jpeg",
     username: "ebuka223",
   },
-  modes: [
-    {
-      id: "light",
-      name: "Light Mode",
-      description: "Default light appearance",
-    },
-    {
-      id: "dark",
-      name: "Dark Mode",
-      description: "Darker appearance for low-light environments",
-    },
-    {
-      id: "system",
-      name: "System",
-      description: "Follow system appearance",
-    },
-  ],
   navMain: [
     {
       title: "Main Settings",
       url: "#",
       items: [
         {
-          title: "Analytics",
-          icon: <ChartSpline />,
-          url: "/settings/analytics",
-        },
-        {
           title: "Products",
           icon: <Store />,
+          description: "Create and edit your products",
           url: "/settings/products",
-        },
-      ],
-    },
-    {
-      title: "Display & Appearance",
-      url: "#",
-      items: [
-        {
-          title: "Theme Settings",
-          icon: <Palette />,
-          url: "/settings/appearance",
-        },
-        {
-          title: "Accessibility",
-          icon: <Activity />,
-          url: "/settings/accessibility",
         },
       ],
     },
@@ -93,14 +43,10 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Business Details",
+          title: "Store Details",
           icon: <Store />,
+          description: "Create or edit your store details",
           url: "/settings/business",
-        },
-        {
-          title: "Privacy & Security",
-          icon: <ShieldCheck />,
-          url: "/settings/privacy",
         },
       ],
     },
@@ -109,13 +55,9 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Language & Region",
-          icon: <Languages />,
-          url: "/settings/language",
-        },
-        {
           title: "Notifications",
           icon: <Bell />,
+          description: "Manage your notification preferences",
           url: "/settings/notifications",
         },
       ],
@@ -125,19 +67,10 @@ const data = {
       url: "#",
       items: [
         {
-          title: "Help Center",
-          icon: <HelpCircle />,
-          url: "/settings/help",
-        },
-        {
           title: "Contact Support",
           icon: <MessageSquare />,
+          description: "Get help with your account",
           url: "/settings/support",
-        },
-        {
-          title: "About",
-          icon: <Info />,
-          url: "/settings/about",
         },
       ],
     },
@@ -183,7 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           >
             <Avatar className="h-8 w-8 rounded-lg">
               <AvatarImage src={data.user.avatar} alt={data.user.name} />
-              <AvatarFallback className="rounded-lg">EB</AvatarFallback>
+              <AvatarFallback className="rounded-full">EB</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
               <span className="truncate font-semibold">{data.user.name}</span>
@@ -199,15 +132,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               {group.items.map((item) => (
-                <SidebarMenu key={item.title}>
+                <SidebarMenu key={item.title} className="gap-y-0">
                   <SidebarMenuItem>
                     <Link href={item.url}>
                       <SidebarMenuButton
                         isActive={pathname === item.url}
                         onClick={() => setOpenMobile(!openMobile)}
+                        className="py-0"
                       >
                         {item.icon} {item.title}
                       </SidebarMenuButton>
+                      <span className="text-muted-foreground ml-2 leading-tight text-xs">
+                        {item.description}
+                      </span>
                     </Link>
                   </SidebarMenuItem>
                 </SidebarMenu>
@@ -216,9 +153,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      {/* <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter> */}
     </Sidebar>
   );
 }
