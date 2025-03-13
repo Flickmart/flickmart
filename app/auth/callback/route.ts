@@ -1,5 +1,8 @@
 import { createClient } from "@/utils/supabase/server";
 import { NextResponse } from "next/server";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export async function GET(request: Request) {
   // The `/auth/callback` route is required for the server-side auth flow implemented
@@ -12,7 +15,25 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient();
-    await supabase.auth.exchangeCodeForSession(code);
+    const { data: { user } } = await supabase.auth.exchangeCodeForSession(code);
+
+    console.log("Testing this state")
+
+    if (user && user.email) {
+      // Check if user already exists in our database
+      const existingUser = await db.select().from(users).where(eq(users.email, user.email)).limit(1);
+      console.log("Checking if this function even runs")
+
+      if (!existingUser.length) {
+        // Create new user in our database
+        console.log("User dosent exist adding to db...")
+        await db.insert(users).values({
+          email: user.email,
+          name: user.user_metadata.full_name,
+          profileImage: user.user_metadata.avatar_url
+        });
+      }
+    }
   }
 
   if (redirectTo) {

@@ -1,17 +1,9 @@
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
-import { adPosts } from "./schema/adPosts";
+import { adPosts, business } from "./schema";
 
-export async function main() {
-  if (typeof process.env.DATABASE_URL === "string") {
-    const client = postgres(process.env.DATABASE_URL);
-    const database = drizzle({ client });
-
-    return database;
-  }
-}
-
-const db = await main();
+const client = postgres(process.env.DATABASE_URL!);
+export const db = drizzle({ client });
 
 type AdPost = typeof adPosts.$inferInsert;
 
@@ -19,3 +11,4 @@ export async function createAdPost(formValues: AdPost) {
   const newAdPost = await db?.insert(adPosts).values(formValues);
   return newAdPost;
 }
+
