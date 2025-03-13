@@ -19,7 +19,7 @@ export default function SavedItem() {
                     <button className="z-30 absolute top-0 right-7 py-2 px-6 bg-white text-black border rounded-sm text-sm">Delete</button>
                 )}
             </div>
-            
+
             <div className="flex gap-3 ">
                 <div className="w-5/12 h-32 lg:w-5/12 lg:h-56 aspect-square overflow-hidden flex justify-center items-center">
                     <Image src='/car.jpeg' className="h-full lg:h-auto w-full lg:w-auto rounded-md object-cover" alt="" height={1000} width={1000} />
@@ -33,6 +33,7 @@ export default function SavedItem() {
                             <span className="bg-flickmart text-white py-1.5 px-2 rounded-sm text-[8px] lg:text-sm">Brand New</span>
                         </span>
                     </div>
+                    
                     <div className="flex flex-col gap-4 mt-3">
                         <span className="flex gap-1 items-center text-flickmart-gray text-[8px] lg:text-sm">
                             <MapPin className="h-4 w-4" />
