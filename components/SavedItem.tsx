@@ -19,7 +19,6 @@ export default function SavedItem() {
                     <button className="z-30 absolute top-0 right-7 py-2 px-6 bg-white text-black border rounded-sm text-sm">Delete</button>
                 )}
             </div>
-
             <div className="flex gap-3 ">
                 <div className="w-5/12 h-32 lg:w-5/12 lg:h-56 aspect-square overflow-hidden flex justify-center items-center">
                     <Image src='/car.jpeg' className="h-full lg:h-auto w-full lg:w-auto rounded-md object-cover" alt="" height={1000} width={1000} />

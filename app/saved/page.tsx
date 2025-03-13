@@ -20,6 +20,7 @@ export default function SavedPage() {
                 <button onClick={toggleAd} className={selectedTab ? `w-full py-5 text-center text-flickmart-gray font-bold` : `w-full py-5 text-center text-flickmart font-bold`}>Adverts (7)</button>
                 <button onClick={toggleWl} className={selectedTab ? `w-full py-5 text-center text-flickmart font-bold` : `w-full py-5 text-center text-flickmart-gray font-bold`}>Wishlist (5)</button>
             </div>
+            {/* {savedItems} */}
             {!selectedTab ? (
                 <div className="w-[95%] mx-auto flex flex-col gap-3 mt-3">
                     <SavedItem />
