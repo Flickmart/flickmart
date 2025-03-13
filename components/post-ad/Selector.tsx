@@ -14,14 +14,18 @@ export default function Selector({
   options,
   label = "",
   form,
+  className = "",
 }: {
   name: NameType;
   options: Array<string>;
   label?: string;
   form: FormType;
+  className?: string;
 }) {
   return (
-    <div className="border border-gray-300 lg:py- py-2.5 rounded-lg ">
+    <div
+      className="border border-gray-300 lg:py- py-2.5 rounded-lg"
+    >
       <FormField
         control={form.control}
         name={name}
@@ -38,13 +42,13 @@ export default function Selector({
               defaultValue={value}
               value={value}
             >
-              <SelectTrigger className="w-full  text-lg  capitalize outline-none  border-none shadow-none focus:ring-0">
+              <SelectTrigger className={`w-full  text-lg  capitalize outline-none  border-none shadow-none focus:ring-0 ${className}`}>
                 <SelectValue placeholder={`${label || name}*`} />
               </SelectTrigger>
               <SelectContent
                 side="bottom"
                 align="center"
-                className=" py-3  capitalize  rounded-lg shadow-lg "
+                className=" py-3  capitalize  rounded-lg shadow-lg"
               >
                 {options.map((item) => (
                   <SelectItem
