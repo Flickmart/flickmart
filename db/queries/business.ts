@@ -16,6 +16,8 @@ export async function getBusiness(name: string) {
 }
 const updateBusiness = async (formValues: typeof business)=>{
 return await db.update(business).set({
-  formValues
+  name: formValues.name,
+  location: formValues.location,
+  description: formValues.description,
 })
 }
