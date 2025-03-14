@@ -3,124 +3,130 @@ import { Bookmark, ChevronRight, LayoutGrid, LayoutPanelLeft } from "lucide-reac
 import Image from "next/image";
 import Link from "next/link";
 
-function findCategoryBySlug(slug: string): Category | undefined {
-    return categories.find(category => 
-        category.name.toLowerCase().replace(/\s+/g, "-") === slug.toLowerCase()
-    );
-}
-
-type CategoryPageProps = {
-    params: {
-        slug: string;
-    };
-};
-
-type SubItem = {
-    id: number;
-    name: string;
-    adAmount: string;
-};
-
-type Category = {
-    id: number;
-    name: string;
-    path: string;
-    img: string;
-    subItems?: SubItem[];
-};
-
-const categories: Category[] = [
-    {
-        id: 1,
-        name: "Food",
-        path: "#food",
-        img: "/food.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 2,
-        name: "Mobile Phones",
-        path: "#mood_phones",
-        img: "/mobiles.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 3,
-        name: "Vehicles",
-        path: "#vehicles",
-        img: "/vehicles.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 4,
-        name: "Home Appliances",
-        path: "#home_appliances",
-        img: "/appliances.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 5,
-        name: "Pets",
-        path: "#pets",
-        img: "/pets.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 6,
-        name: "Fashion",
-        path: "#fashion",
-        img: "/fashion.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 7,
-        name: "Electronics",
-        path: "#electronics",
-        img: "/electronics.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-    {
-        id: 8,
-        name: "Services",
-        path: "#services",
-        img: "/services.png",
-        subItems: [
-            { id: 1, name: "Television set", adAmount: "119" },
-            { id: 2, name: "Headphones", adAmount: "202" }
-        ]
-    },
-]
-
-export default async function CategoryPage({ params }: CategoryPageProps) {
-    const { slug } = await params;
-    const selected = findCategoryBySlug(slug);
+export default async function CategoryPage() {
     return (
         <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
             <section className="w-full flex lg:hidden flex-col">
-                {categories.map((item) => (
-                    <CatItem key={item.id} item={item} />
-                ))}
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/food.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Food</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/mobiles.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Mobile Phones</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/electronics.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Electronics</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/vehicles.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Vehicles</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/fashion.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Fashion</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/pets.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Pets</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/beauty.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Health & beauty</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/appliances.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Home Appliances</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/homes.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Home</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
+                <Link href={'#'} className="py-3 border-t flex gap-1 items-center justify-between">
+                    <div className="flex gap-3 items-center">
+                        <div className="h-12 w-12 aspect-square flex justify-center items-center overflow-hidden">
+                            <Image src='/services.png' width={500} height={500} className="max-w-full max-h-full" alt="category image" />
+                        </div>
+                        <div>
+                            <h2 className="font-semibold">Services</h2> 
+                            <span></span>
+                        </div>
+                    </div>
+                    <span className="text-gray-500"><ChevronRight /></span>
+                </Link>
             </section>
             <section className="lg:mt-12 hidden lg:block w-2/12 mb-12">
                 <div className="w-full flex flex-col gap-12">
@@ -129,15 +135,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                             <h2 className="font-semibold text-flickmart-chat-orange">Categories</h2>
                         </div>
                         <h2 className="font-semibold text-sm capitalize">
-                            {slug}
+                            Electronics
                         </h2>
                         <div className="flex flex-col text-sm text-gray-800">
-                            {selected?.subItems?.map((el) => (
-                                <Link key={el.id} href={'#'} className="py-3 border-b flex flex-col">
-                                    <span>{el.name}</span>
-                                    <span className="text-[10px] text-gray-500">{el.adAmount} Ads</span>
-                                </Link>
-                            ))}
+                            <Link href={'#'} className="py-3 border-b flex flex-col">
+                                <span>Television set</span>
+                                <span className="text-[10px] text-gray-500">202 Ads</span>
+                            </Link>
+                            <Link href={'#'} className="py-3 border-b flex flex-col">
+                                <span>Headphones</span>
+                                <span className="text-[10px] text-gray-500">119 Ads</span>
+                            </Link>
                         </div>
                         <div className="w-full flex justify-end text-[12px]">
                             <Link href={'#'} className="text-flickmart-chat-orange mt-2">Show More</Link>
@@ -196,7 +204,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 </div>
             </section>
             <section className="hidden lg:block lg:mt-12 w-9/12 text-sm mb-12">
-                <h1 className="font-semibold text-lg capitalize">{slug} in Nigeria</h1>
+                <h1 className="font-semibold text-lg capitalize">Electronics in Nigeria</h1>
                 <div className="mt-3">
                     <div className="flex justify-between items-center">
                         <span>Sort By:</span>
