@@ -11,7 +11,6 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { io, Socket } from "socket.io-client";
 
 export interface Chat {
   userId: string;
@@ -106,7 +105,6 @@ const ChatContext = createContext<{
   currentConversation: string | null;
   setCurrentConversation: React.Dispatch<React.SetStateAction<string | null>>;
   setChat: Dispatch<SetStateAction<Array<{ message: string; type: string }>>>;
-  socket: Socket;
   chat: Array<{
     message: string;
     type: string;
@@ -123,11 +121,9 @@ export default function layout({ children }: { children: React.ReactNode }) {
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null
   );
-  const socket = io();
   const value = {
     currentConversation,
     setCurrentConversation,
-    socket,
     chat,
     setChat,
   };
