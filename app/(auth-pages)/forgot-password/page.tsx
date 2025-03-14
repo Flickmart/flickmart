@@ -1,15 +1,31 @@
-import { forgotPasswordAction } from "@/app/actions";
+"use client";
 import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AuthHeader from "@/components/auth/AuthHeader";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useOthersStore } from "@/store/useOthersStore";
 
-export default async function ForgotPassword(props: {
-  searchParams: Promise<Message>;
-}) {
-  const searchParams = await props.searchParams;
+export default function ForgotPassword() {
+  const router = useRouter();
+  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
+
+  // Automatically redirect to home page
+  useEffect(() => {
+    setLoadingStatus(true);
+    // Short delay to show loading state
+    const timer = setTimeout(() => {
+      router.push("/home");
+      setLoadingStatus(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [router, setLoadingStatus]);
+
   return (
     <>
       <AuthHeader />
@@ -24,6 +40,9 @@ export default async function ForgotPassword(props: {
         <form className="flex-1 flex flex-col w-full gap-2 text-foreground [&>input]:mb-6 min-w-64 container-px mt-14 mx-auto">
           <div>
             <h1 className="text-[32px] font-medium">Forgot Password?</h1>
+            <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm mt-4">
+              Authentication has been removed. You will be redirected to the home page automatically.
+            </div>
             <p className="text-flickmart-gray mt-8">
               Enter your email to reset password.
             </p>
@@ -38,13 +57,7 @@ export default async function ForgotPassword(props: {
               placeholder="Email address"
               required
             />
-            <SubmitButton
-              className="submit-btn"
-              formAction={forgotPasswordAction}
-            >
-              Next
-            </SubmitButton>
-            <FormMessage message={searchParams} />
+            <Button> Next</Button>
           </div>
         </form>
       </section>

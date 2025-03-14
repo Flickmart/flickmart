@@ -9,6 +9,9 @@ import { useForm } from "react-hook-form";
 import Image from "next/image";
 import AuthHeader from "@/components/auth/AuthHeader";
 import { Form } from "@/components/ui/form";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useOthersStore } from "@/store/useOthersStore";
 
 const formSchema = z
   .object({
@@ -25,6 +28,9 @@ const formSchema = z
   });
 
 export default function ResetPassword() {
+  const router = useRouter();
+  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
+  
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,8 +39,21 @@ export default function ResetPassword() {
     },
   });
 
+  // Automatically redirect to home page
+  useEffect(() => {
+    setLoadingStatus(true);
+    // Short delay to show loading state
+    const timer = setTimeout(() => {
+      router.push("/home");
+      setLoadingStatus(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [router, setLoadingStatus]);
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
+    router.push("/home");
   };
 
   return (
@@ -55,6 +74,9 @@ export default function ResetPassword() {
           >
             <div className="mb-12">
               <h1 className="text-4xl font-medium mb-5">Reset password</h1>
+              <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm mb-4">
+                Authentication has been removed. You will be redirected to the home page automatically.
+              </div>
               <p className="text-sm text-flickmart-gray">
                 Password must be different from the last one
               </p>
