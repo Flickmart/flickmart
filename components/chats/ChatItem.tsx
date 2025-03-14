@@ -1,11 +1,11 @@
-import { Chat } from "@/app/chats/page";
+import { Chat } from "@/app/chats/layout";
 import Image from "next/image";
 import { Dispatch } from "react";
 
 const ChatItem = ({
-  demoChat: { chatId ,userId, avatar, name, preview, timestamp, unread },
+  demoChat: { chatId, userId, avatar, name, preview, timestamp, unread },
   setCurrentConversation,
-  setCurrentProfile
+  setCurrentProfile,
 }: {
   demoChat: Chat;
   setCurrentConversation: Dispatch<string>;
@@ -16,26 +16,26 @@ const ChatItem = ({
       onClick={() => {
         // Temporary code to demo how the app would behave in production
         setCurrentConversation(chatId);
-        setCurrentProfile(null)
+        setCurrentProfile(null);
       }}
       className="p-4 border-b border-black/15 first:border-t-0 flex items-center justify-between cursor-pointer transition-colors hover:bg-flickmart-chat-gray/60 conditional-no-hover-effect group"
     >
       <div className="flex items-center">
         <button
-        onClick={(e)=>{
-          e.stopPropagation()
-          // Temporary code to demo how the app would behave in production
-          setCurrentProfile(userId)
-        }}
+          onClick={(e) => {
+            e.stopPropagation();
+            // Temporary code to demo how the app would behave in production
+            setCurrentProfile(userId);
+          }}
           type="button"
           className="rounded-full outline outline-2 outline-white transition-all duration-300 hover:!outline-flickmart group-hover:outline-flickmart-chat-gray/60"
         >
           <Image
             src={avatar}
             alt={name}
-            width={48}
-            height={47}
-            className="w-14 flex-none"
+            width={100}
+            height={100}
+            className="w-14 h-14 flex-none"
           />
         </button>
         <div className="ml-4">
@@ -54,7 +54,7 @@ const ChatItem = ({
           {timestamp}
         </span>
         {unread !== 0 && (
-          <span className="bg-flickmart  size-5 text-center text-white rounded-full">
+          <span className="bg-flickmart size-5 rounded-full   text-white grid place-items-center">
             {unread}
           </span>
         )}

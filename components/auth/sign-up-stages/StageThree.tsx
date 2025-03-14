@@ -1,7 +1,21 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const StageThree = () => {
+  const [redirectTimer, setRedirectTimer] = useState(5);
+  const router = useRouter();
+  useEffect(function () {
+    setInterval(() => {
+      if (redirectTimer < 1) {
+        console.log("time up");
+        router.push("/sign-in");
+      } else {
+        setRedirectTimer((prev) => prev - 1);
+      }
+    }, 1000);
+  }, []);
   return (
     <main className="container-px text-center fixed abs-center-x abs-center-y w-full max-w-[700px]">
       <Image
@@ -22,7 +36,7 @@ const StageThree = () => {
       </Button>
       <p className="mt-5">
         You will be redirected in{" "}
-        <span className="text-flickmart">5 seconds...</span>
+        <span className="text-flickmart">{redirectTimer} seconds...</span>
       </p>
     </main>
   );

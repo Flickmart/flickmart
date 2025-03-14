@@ -19,8 +19,7 @@ import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
 import useUserStore from "@/store/useUserStore";
 
-
-const formSchema = z.object({
+export const formSchema = z.object({
   firstName: z
     .string()
     .min(2, { message: "First name must be at least 2 characters" }),
@@ -57,7 +56,6 @@ export default function StageOne({
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setStage(2);
     updateEmail(values.email);
-    console.log(values);
   };
 
   return (
@@ -138,7 +136,7 @@ export default function StageOne({
                   Sign Up
                 </Button>
                 <Image
-                  onClick={()=>{}}
+                  onClick={() => {}}
                   src="/icons/google.png"
                   alt="google"
                   width={500}

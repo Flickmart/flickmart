@@ -32,7 +32,6 @@ const StageTwo = ({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) => {
-  const { email } = useUserStore((state) => state.user);
   const [otpMaxLength] = useState(6);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -57,7 +56,7 @@ const StageTwo = ({
             Verify your email address
           </h1>
           <p className="text-sm text-flickmart-gray mb-20 lg:text-base">
-            We sent a verification code to henrymadueke@gmail.com
+            We sent a verification code to
           </p>
           <FormField
             control={form.control}
@@ -75,7 +74,11 @@ const StageTwo = ({
                   >
                     <InputOTPGroup className="w-full justify-between gap-4">
                       {Array.from({ length: otpMaxLength }).map((_, index) => (
-                        <InputOTPSlot index={index} key={index} />
+                        <InputOTPSlot
+                          index={index}
+                          key={index}
+                          className="rounded-lg"
+                        />
                       ))}
                     </InputOTPGroup>
                   </InputOTP>

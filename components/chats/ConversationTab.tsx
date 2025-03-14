@@ -1,5 +1,4 @@
-import { Dispatch } from "react";
-import { Chat } from "@/app/chats/page";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { ChevronLeft, EllipsisVertical, Wallet } from "lucide-react";
 import { notFound } from "next/navigation";
 import Image from "next/image";
@@ -7,8 +6,8 @@ import CallNow from "./CallNow";
 import Warning from "./Warning";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
-import { Poppins } from "next/font/google";
 import { poppins } from "@/app/fonts";
+import { Chat, useChat } from "@/app/chats/layout";
 
 const ConversationTab = ({
   currentConversation,
@@ -19,6 +18,22 @@ const ConversationTab = ({
   setCurrentConversation: Dispatch<string | null>;
   setCurrentProfile: Dispatch<string | null>;
 }) => {
+  const context = useChat();
+
+  // useEffect(function () {
+  //   context?.socket.on(
+  //     "privateMessage",
+  //     (data: { message: string; type: string }) => {
+  //       console.log("server returned something");
+  //       setChat((prev) => [...prev, data]);
+  //     }
+  //   );
+
+  //   return () => {
+  //     context?.socket.off("privateMessage");
+  //   };
+  // }, []);
+
   if (!currentConversation) {
     return notFound();
   }
@@ -81,24 +96,9 @@ const ConversationTab = ({
           Monday
         </div>
         <section className="py-20 px-5 flex flex-col gap-7">
-          <Message message="Good evening." type="sent" />
-          <Message message="Good evening" type="received" />
-          <Message
-            message="I sell great shoes of good quality sir. How many would you like to purchase?"
-            type="received"
-          />
-          <Message
-            message="I sell great shoes of good quality sir. How many would you like to purchase?"
-            type="sent"
-          />
-          <Message
-            message="I sell great shoes of good quality sir. How many would you like to purchase?"
-            type="received"
-          />
-          <Message
-            message="I sell great shoes of good quality sir. How many would you like to purchase?"
-            type="sent"
-          />
+          {context?.chat?.map((item, index) => (
+            <Message key={index} message={item.message} type={item.type} />
+          ))}
         </section>
       </section>
       <button className="fixed bottom-[100px] right-[25px] bg-flickmart-chat-orange p-3 rounded-full shadow-[0_0_5px_4px_#00000025] md:absolute">

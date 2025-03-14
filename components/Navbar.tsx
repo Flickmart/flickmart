@@ -15,15 +15,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const cPath = usePathname();
-
-  const toggleProfile = () => {
-    setIsOpen((prev) => !prev);
-  };
 
   const toggleNav = () => {
     setIsNavOpen((prev) => !prev);
@@ -34,7 +37,13 @@ export default function Navbar() {
   };
 
   return (
-    <header className={cPath === '/home' ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20" : "relative z-30 w-full bg-white shadow-sm shadow-black/20"}>
+    <header
+      className={
+        cPath === "/home"
+          ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20"
+          : "relative z-30 w-full bg-white shadow-sm shadow-black/20"
+      }
+    >
       <div className="w-[95%] mx-auto py-2">
         <div className="w-full flex justify-between items-center">
           <Link href={"/"} className="flex gap-1 items-center">
@@ -62,29 +71,47 @@ export default function Navbar() {
               <button>
                 <Bell strokeWidth={1.25} className="h-6 w-6" />
               </button>
-              <button onClick={toggleProfile}>
-                <CircleUserRound strokeWidth={1.25} className="h-6 w-6" />
-              </button>
-              {isOpen && (
+              <div className="">
+                <DropdownMenu>
+                  <DropdownMenuTrigger>
+                    <CircleUserRound strokeWidth={1.25} className="h-6 w-6" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuItem>
+                      <CircleUserRound className="h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Bookmark strokeWidth={1.25} className="h-4 w-4" />
+                      <span>Saved</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <Settings strokeWidth={1.25} className="h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                      <LogOut strokeWidth={1.25} className="h-4 w-4" />
+                      <span>Logout</span>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+              {/* {isOpen && (
                 <div className="absolute top-8 left-0 py-3 ps-3 pe-12 bg-white/10 backdrop-blur-sm rounded-md flex flex-col gap-3 text-[#7F693D] text-[12px] font-medium">
                   <Link href={"#"} className="flex items-center gap-2">
-                    <CircleUserRound className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                   <Link href={"#"} className="flex items-center gap-2">
-                    <Bookmark strokeWidth={1.25} className="h-4 w-4" />
                     <span>Saved</span>
                   </Link>
                   <Link href={"#"} className="flex items-center gap-2">
-                    <Settings strokeWidth={1.25} className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                   <Link href={"#"} className="flex items-center gap-2">
-                    <LogOut strokeWidth={1.25} className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </div>
-              )}
+              )} */}
             </div>
             <button className="py-2 px-8 text-sm font-bold rounded-md bg-flickmart text-white">
               SELL
