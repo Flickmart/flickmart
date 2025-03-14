@@ -22,7 +22,7 @@ export async function GET(
 const updateBusiness = ()=>{
   
 }
-export aync function POST(
+export async function POST(
   request: NextRequest, response: NextResponse
 ){
 
