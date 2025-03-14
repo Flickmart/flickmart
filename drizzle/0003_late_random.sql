@@ -1,1 +1,0 @@
-ALTER TABLE "business" DROP COLUMN "established_year";

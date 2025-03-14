@@ -18,9 +18,8 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Dispatch, SetStateAction, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+
 import useUserStore from "@/store/useUserStore";
-import { verifyOtp } from "@/app/(auth-pages)/auth";
 
 const formSchema = z.object({
   otp: z
@@ -44,7 +43,6 @@ const StageTwo = ({
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    email && verifyOtp(data.otp, email);
     setStage(3);
   };
   return (

@@ -18,7 +18,7 @@ import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
 import useUserStore from "@/store/useUserStore";
-import { authWithGoogle, createUser } from "@/app/(auth-pages)/auth";
+
 
 const formSchema = z.object({
   firstName: z
@@ -55,7 +55,6 @@ export default function StageOne({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    createUser({ email: values.email, password: values.password }, "admin");
     setStage(2);
     updateEmail(values.email);
     console.log(values);
@@ -139,7 +138,7 @@ export default function StageOne({
                   Sign Up
                 </Button>
                 <Image
-                  onClick={authWithGoogle}
+                  onClick={()=>{}}
                   src="/icons/google.png"
                   alt="google"
                   width={500}

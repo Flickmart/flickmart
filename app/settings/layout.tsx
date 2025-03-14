@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { retrieveUserSession } from "@/app/(auth-pages)/auth";
-import useUserStore from "@/store/useUserStore";
+
 import { AppSidebar } from "@/components/settings/app-sidebar";
 import {
   SidebarInset,
@@ -17,27 +15,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const router = useRouter();
-  const updateUserInfo = useUserStore((state) => state.updateUserInfo);
-
-  useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const { user } = await retrieveUserSession();
-        if (!user) {
-          console.log("No User");
-          router.push("/sign-in");
-          return;
-        }
-        console.log(user);
-        updateUserInfo(user);
-      } catch (error) {
-        console.error("Error checking session:", error);
-        router.push("/sign-in");
-      }
-    };
-
-    checkSession();
-  }, [router]);
 
   return (
     <SidebarProvider>
