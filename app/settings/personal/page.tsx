@@ -10,8 +10,9 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import MarketplaceProfile from "@/components/settings/profile";
+import { ArrowLeft } from "lucide-react";
 
 export default function PersonalDetailsPage() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function PersonalDetailsPage() {
     username: "",
     bio: "",
   });
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -40,7 +42,16 @@ export default function PersonalDetailsPage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <header className="flex items-center">
-        <SidebarTrigger className="-ml-1" />
+      {!isMobile ? (
+          <SidebarTrigger className="-ml-1" />
+        ) : (
+          <>
+            <ArrowLeft
+              className="cursor-pointer -ml-1"
+              onClick={() => setOpenMobile(!openMobile)}
+            />
+          </>
+        )}
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>

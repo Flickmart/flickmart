@@ -1,10 +1,19 @@
-import { useChat } from "@/app/chats/layout";
 import { Paperclip, Mic, Sticker, Send } from "lucide-react";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { FormEvent, useState } from "react";
 
-const SendMessage = () => {
+const SendMessage = ({
+  setChat,
+}: {
+  setChat: React.Dispatch<
+    React.SetStateAction<
+      {
+        message: string;
+        type: string;
+      }[]
+    >
+  >;
+}) => {
   const [inpChange, setInpChange] = useState<string | null>(null);
-  const context = useChat();
   const user = JSON.parse(localStorage.getItem("user")!);
   const name = (user?.user_metadata.name as string).split(" ").join("");
 
@@ -18,16 +27,10 @@ const SendMessage = () => {
       type: "sent",
     };
 
-    context?.setChat((prev: Array<{ message: string; type: string }>) => [
+    setChat((prev: Array<{ message: string; type: string }>) => [
       ...prev,
       messageObj,
     ]);
-
-    context?.socket.emit("privateMessage", {
-      sender: name,
-      message: chat.value,
-      receiver: name === "EgentiNnamdi" ? "EgentiChioma" : "EgentiNnamdi",
-    });
 
     setInpChange(null);
   }

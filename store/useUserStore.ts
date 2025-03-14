@@ -18,10 +18,14 @@ const useUserStore = create<UserStore>((set, get) => ({
     last_sign_in_at: "",
     phone: "",
   },
-  updateUserInfo: (user) => set((state) => ({ ...state, ...user })),
+  updateUserInfo: (user) => set((state) => ({ ...state, user: { ...user } })),
   createSession: (sessionObj) =>
-    set((state) => ({ session: { ...state, ...sessionObj } })),
-  updateEmail: (email) => set((state) => ({ ...state, email: email })),
+    set((state) => ({
+      ...state,
+      session: { ...state.session, ...sessionObj },
+    })),
+  updateEmail: (email) =>
+    set((state) => ({ ...state, user: { ...state.user, email } })),
 }));
 
 export default useUserStore;

@@ -1,15 +1,24 @@
-import { useChat } from "@/app/chats/layout";
 import { CheckCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-const Message = ({ message, type }: { message: string; type: string }) => {
+const Message = ({
+  message,
+  type,
+  chat,
+}: {
+  message: string;
+  type: string;
+  chat: Array<{
+    message: string;
+    type: string;
+  }>;
+}) => {
   const messageRef = useRef<HTMLDivElement | null>(null);
-  const context = useChat();
   useEffect(
     function () {
       messageRef.current?.scrollIntoView({ behavior: "smooth" });
     },
-    [context?.chat]
+    [chat]
   );
   return (
     <div

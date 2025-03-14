@@ -15,12 +15,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
-import { authWithGoogle, login } from "../auth";
-import useUserStore from "@/store/useUserStore";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
-import { useEffect, useState } from "react";
-import Loader from "@/components/Loader";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -31,10 +28,8 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
-  const { createSession, updateUserInfo } = useUserStore((state) => state);
-  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -46,44 +41,21 @@ export default function SignIn() {
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setLoadingStatus(true);
-      const data = await login(values);
-      createSession(data.session);
-      updateUserInfo(data.user);
-      router.push("/");
-    } catch (err) {
-    } finally {
-      setLoadingStatus(false);
-    }
+    // Just redirect to home page without authentication
+    router.push("/home");
   };
 
-  // Check if User is Authenticated
-  useEffect(
-    function () {
-      try {
-        setLoadingStatus(true);
-
-        // Retrieve from local storage
-        const session = JSON.parse(localStorage.getItem("session")!);
-        const user = JSON.parse(localStorage.getItem("user")!);
-
-        if (session && user?.role === "authenticated") {
-          router.push("/home");
-        } else {
-          setIsAuthenticated(false);
-        }
-      } finally {
-        setLoadingStatus(false);
-      }
-    },
-
-    []
-  );
-
-  if (isAuthenticated) {
-    return <Loader open={true} />;
-  }
+  // Automatically redirect to home page
+  useEffect(() => {
+    setLoadingStatus(true);
+    // Short delay to show loading state
+    const timer = setTimeout(() => {
+      router.push("/home");
+      setLoadingStatus(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [router, setLoadingStatus]);
 
   return (
     <main className="relative h-screen">
@@ -99,6 +71,9 @@ export default function SignIn() {
         />
         <div className="mt-16 container-px lg:mt-0 space-y-8">
           <h1 className="mb-5">Sign in</h1>
+          <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm">
+            Authentication has been removed. You will be redirected to the home page automatically.
+          </div>
           <Form {...form}>
             <form
               className="mt-8 space-y-8"
@@ -145,7 +120,7 @@ export default function SignIn() {
                   Sign In
                 </Button>
                 <Image
-                  onClick={authWithGoogle}
+                  onClick={()=>{}}
                   src="/icons/google.png"
                   alt="google"
                   width={500}

@@ -1,18 +1,15 @@
 "use client";
 import { FormDataType } from "@/types/form";
-import { createClient } from "@/utils/supabase/client";
-
-const supabase = createClient();
 
 export async function uploadImage(file: File | null) {
   if (file) {
-    const { data, error } = await supabase.storage
-      .from("productImage")
-      .upload(file.name, file);
-
-    if (error) throw Error(error.message);
-
-    return data;
+    // TODO: Replace with Convex implementation
+    console.log("Image upload will be implemented with Convex");
+    
+    // Return mock data to prevent UI from breaking
+    return {
+      fullPath: "placeholder-path"
+    };
   } else {
     throw Error("image not found");
   }

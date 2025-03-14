@@ -18,9 +18,8 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Dispatch, SetStateAction, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+
 import useUserStore from "@/store/useUserStore";
-import { verifyOtp } from "@/app/(auth-pages)/auth";
 
 const formSchema = z.object({
   otp: z
@@ -33,7 +32,6 @@ const StageTwo = ({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) => {
-  const { email } = useUserStore((state) => state.user);
   const [otpMaxLength] = useState(6);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -44,7 +42,6 @@ const StageTwo = ({
   });
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    email && verifyOtp(data.otp, email);
     setStage(3);
   };
   return (
@@ -59,7 +56,7 @@ const StageTwo = ({
             Verify your email address
           </h1>
           <p className="text-sm text-flickmart-gray mb-20 lg:text-base">
-            We sent a verification code to henrymadueke@gmail.com
+            We sent a verification code to
           </p>
           <FormField
             control={form.control}
@@ -77,7 +74,11 @@ const StageTwo = ({
                   >
                     <InputOTPGroup className="w-full justify-between gap-4">
                       {Array.from({ length: otpMaxLength }).map((_, index) => (
-                        <InputOTPSlot index={index} key={index} />
+                        <InputOTPSlot
+                          index={index}
+                          key={index}
+                          className="rounded-lg"
+                        />
                       ))}
                     </InputOTPGroup>
                   </InputOTP>
