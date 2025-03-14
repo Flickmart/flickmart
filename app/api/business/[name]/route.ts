@@ -17,14 +17,4 @@ export async function GET(
     return NextResponse.json({ message: error.message });
   }
 }
-  
 
-const updateBusiness = ()=>{
-  
-}
-export async function POST(
-  request: NextRequest, response: NextResponse
-){
-
-
-}
