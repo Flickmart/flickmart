@@ -1,8 +1,5 @@
 "use client";
 import { FormDataType } from "@/types/form";
-import { createClient } from "@/utils/supabase/client";
-
-const supabase = createClient();
 
 export async function uploadImage(file: File | null) {
   if (file) {
