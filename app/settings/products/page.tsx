@@ -7,13 +7,28 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { ArrowLeft } from "lucide-react";
 
 export default function ProductsPage() {
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
+
+
+
+  
   return (
     <div className="flex flex-col gap-4 p-4">
       <header className="flex items-center">
-        <SidebarTrigger className="-ml-1" />
+        {!isMobile ? (
+          <SidebarTrigger className="-ml-1" />
+        ) : (
+          <>
+            <ArrowLeft
+              className="cursor-pointer -ml-1"
+              onClick={() => setOpenMobile(!openMobile)}
+            />
+          </>
+        )}
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
