@@ -2,8 +2,9 @@
 import ConversationTab from "@/components/chats/ConversationTab";
 import ProfileTab from "@/components/chats/ProfileTab";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
-import { demoProfiles, useChat } from "./layout";
+import React, { useState } from "react";
+import { demoProfiles } from "./layout";
+import { useChat } from "@/hooks/useChat";
 
 export default function page() {
   const [currentProfile, setCurrentProfile] = useState<string | null>(null);

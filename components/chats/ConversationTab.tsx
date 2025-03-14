@@ -7,7 +7,8 @@ import Warning from "./Warning";
 import Message from "./Message";
 import SendMessage from "./SendMessage";
 import { poppins } from "@/app/fonts";
-import { Chat, useChat } from "@/app/chats/layout";
+import { Chat } from "@/app/chats/layout";
+import { useChat } from "@/hooks/useChat";
 
 const ConversationTab = ({
   currentConversation,

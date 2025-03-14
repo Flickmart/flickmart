@@ -101,7 +101,7 @@ export const demoProfiles: Profile[] = [
   },
 ];
 
-const ChatContext = createContext<{
+export const ChatContext = createContext<{
   currentConversation: string | null;
   setCurrentConversation: React.Dispatch<React.SetStateAction<string | null>>;
   setChat: Dispatch<SetStateAction<Array<{ message: string; type: string }>>>;
@@ -189,9 +189,4 @@ export default function layout({ children }: { children: React.ReactNode }) {
       </main>
     </>
   );
-}
-
-export function useChat() {
-  const context = useContext(ChatContext);
-  return context;
 }
