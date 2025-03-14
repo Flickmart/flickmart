@@ -8,19 +8,30 @@ import Message from "./Message";
 import SendMessage from "./SendMessage";
 import { poppins } from "@/app/fonts";
 import { Chat } from "@/app/chats/layout";
-import { useChat } from "@/hooks/useChat";
 
 const ConversationTab = ({
   currentConversation,
   setCurrentConversation,
   setCurrentProfile,
+  chat,
+  setChat,
 }: {
   currentConversation: Chat | undefined;
   setCurrentConversation: Dispatch<string | null>;
   setCurrentProfile: Dispatch<string | null>;
+  chat: Array<{
+    message: string;
+    type: string;
+  }>;
+  setChat: React.Dispatch<
+    React.SetStateAction<
+      {
+        message: string;
+        type: string;
+      }[]
+    >
+  >;
 }) => {
-  const context = useChat();
-
   // useEffect(function () {
   //   context?.socket.on(
   //     "privateMessage",
@@ -97,15 +108,20 @@ const ConversationTab = ({
           Monday
         </div>
         <section className="py-20 px-5 flex flex-col gap-7">
-          {context?.chat?.map((item, index) => (
-            <Message key={index} message={item.message} type={item.type} />
+          {chat?.map((item, index) => (
+            <Message
+              key={index}
+              message={item.message}
+              type={item.type}
+              chat={chat}
+            />
           ))}
         </section>
       </section>
       <button className="fixed bottom-[100px] right-[25px] bg-flickmart-chat-orange p-3 rounded-full shadow-[0_0_5px_4px_#00000025] md:absolute">
         <Wallet color="white" />
       </button>
-      <SendMessage />
+      <SendMessage setChat={setChat} />
     </section>
   );
 };

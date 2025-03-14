@@ -3,7 +3,6 @@ import ConversationTab from "@/components/chats/ConversationTab";
 import ProfileTab from "@/components/chats/ProfileTab";
 import Image from "next/image";
 import React, { useState } from "react";
-import { useChat } from "@/hooks/useChat";
 import ChatItem from "@/components/chats/ChatItem";
 import SearchBar from "@/components/chats/SearchBar";
 import MobileNav from "@/components/MobileNav";
@@ -88,8 +87,9 @@ export default function page() {
   const [currentConversation, setCurrentConversation] = useState<string | null>(
     null
   );
-
-  const context = useChat();
+  const [chat, setChat] = useState<Array<{ message: string; type: string }>>(
+    []
+  );
 
   // useEffect(function () {
   //   const user = JSON.parse(localStorage.getItem("user")!); //temporary
@@ -190,6 +190,8 @@ export default function page() {
               )}
               setCurrentConversation={setCurrentConversation}
               setCurrentProfile={setCurrentProfile}
+              setChat={setChat}
+              chat={chat}
             />
           ) : (
             <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
