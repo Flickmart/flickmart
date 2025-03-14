@@ -14,3 +14,10 @@ export async function getAllBusiness() {
 export async function getBusiness(name: string) {
   return await db.select().from(business).where(eq(business.name, name));
 }
+const updateBusiness = async (formValues: typeof business)=>{
+return await db.update(business).set({
+  name: formValues.name,
+  location: formValues.location,
+  description: formValues.description,
+})
+}

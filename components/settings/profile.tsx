@@ -44,7 +44,7 @@ export default function MarketplaceProfile() {
   };
   return (
     <div className="min-h-screen bg-white p-4 lg:p-8">
-      <div className="mx-auto max-w-2xl space-y-6">
+      <div className="max-w-2xl space-y-6">
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">

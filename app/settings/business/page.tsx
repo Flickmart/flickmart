@@ -13,7 +13,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import BusinessSettings from "@/components/settings/business";
 import {
   Dialog,
@@ -33,6 +33,8 @@ import {
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { ArrowLeft } from "lucide-react";
 const businessFormSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
   description: z
@@ -49,6 +51,7 @@ type BusinessFormValues = z.infer<typeof businessFormSchema>;
 export default function BusinessDetailsPage() {
   const [hasBusiness, setHasBusiness] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const { isMobile, openMobile, setOpenMobile } = useSidebar();
 
   const form = useForm<BusinessFormValues>({
     resolver: zodResolver(businessFormSchema),
@@ -70,7 +73,7 @@ export default function BusinessDetailsPage() {
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result as string);
-        form.setValue("businessProfile", reader.result as string)
+        form.setValue("businessProfile", reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -85,7 +88,16 @@ export default function BusinessDetailsPage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <header className=" flex items-center">
-        <SidebarTrigger className="-ml-1" />
+        {!isMobile ? (
+          <SidebarTrigger className="-ml-1" />
+        ) : (
+          <>
+            <ArrowLeft
+              className="cursor-pointer -ml-1"
+              onClick={() => setOpenMobile(!openMobile)}
+            />
+          </>
+        )}
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
@@ -97,7 +109,7 @@ export default function BusinessDetailsPage() {
               <BreadcrumbPage>Business</BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
-        </Breadcrumb> 
+        </Breadcrumb>
       </header>
 
       {hasBusiness ? (
@@ -219,7 +231,7 @@ export default function BusinessDetailsPage() {
                       </FormItem>
                     )}
                   />
-                 
+
                   <FormField
                     control={form.control}
                     name="contactNumber"
