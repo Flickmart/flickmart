@@ -113,15 +113,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
         >
           next
         </button>
-        <p className="font-light text-flickmart-gray text-center text-sm">
-          Don't have an account yet?{" "}
-          <Link
-            className="capitalize font-medium text-flickmart hover:underline"
-            href="/sign-up"
-          >
-            sign up
-          </Link>
-        </p>
+       
       </form>
     </Form>
   );

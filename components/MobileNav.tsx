@@ -56,7 +56,7 @@ export default function MobileNav() {
           <span className="group-hover:text-flickmart duration-500">Saved</span>
         </Link>
         <Link
-          href={"#"}
+          href={"/create-store"}
           className="mx-6 flex flex-col items-center justify-center gap-1.5 group"
         >
           <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
