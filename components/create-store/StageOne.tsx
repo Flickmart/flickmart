@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Dispatch } from "react";
 
-const StageOne = ({ setStage }: { setStage: Dispatch<number> }) => {
+const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   return (
     <div>
       <h2 className="capitalize font-medium text-2xl mb-3 md:text-4xl">

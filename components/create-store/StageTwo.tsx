@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
 import Selector from "../post-ad/Selector";
-import InputField from "../post-ad/InputField";
 
 const formSchema = z.object({
   businessName: z
@@ -26,20 +25,30 @@ const formSchema = z.object({
       message: "Business name must be at most 50 characters.",
     }),
   location: z.string(),
+  address: z
+    .string()
+    .min(3, {
+      message: "Address must be at least 2 characters",
+    })
+    .max(50, {
+      message: "Address must be at most 50 characters",
+    }),
 });
 
-const StageTwo = ({ setStage }: { setStage: Dispatch<number> }) => {
+const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       businessName: "",
       location: "",
+      address: "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    setStage(3);
     console.log(values);
   }
   const locations: string[] = ["enugu", "nsukka"];
@@ -52,19 +61,38 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<number> }) => {
         <p className="text-sm font-light text-flickmart-gray mb-8 md:text-base">
           Fill in the form to create your store
         </p>
-        <section className="space-y-2">
+        <section className="space-y-2 text-left">
           <FormField
             control={form.control}
             name="businessName"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="absolute top-[-9999px]">
-                  Username
+                  Business Name
                 </FormLabel>
                 <FormControl>
                   <Input
                     className="h-[56px]"
                     placeholder="Business name*"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="absolute top-[-9999px]">
+                  Address
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    className="h-[56px]"
+                    placeholder="Address*"
                     {...field}
                   />
                 </FormControl>
@@ -80,8 +108,9 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<number> }) => {
             className="text-sm"
           />
         </section>
-
-        <button onClick={()=>{setStage(3)}} className="submit-btn text-white rounded-lg capitalize mb-4">
+        <button
+          className="submit-btn text-white rounded-lg capitalize mb-4"
+        >
           next
         </button>
         <p className="font-light text-flickmart-gray text-center text-sm">

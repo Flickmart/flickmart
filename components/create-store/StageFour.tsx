@@ -5,8 +5,8 @@ const StageFour = ({
   setStage,
   avatar,
 }: {
-  setStage: Dispatch<number>;
-  avatar: string | null | undefined | ArrayBuffer;
+  setStage: Dispatch<1 | 2 | 3 | 4>;
+  avatar: string | null;
 }) => {
   return (
     <div className="fixed w-5/6 abs-center-x abs-center-y md:static md:translate-x-0 md:translate-y-0">
@@ -17,7 +17,7 @@ const StageFour = ({
           height={60}
           width={60}
           alt="default profile"
-        ></Image>
+        />
         <Image
           className="w-7 absolute right-1 bottom-1"
           src="/check.svg"
