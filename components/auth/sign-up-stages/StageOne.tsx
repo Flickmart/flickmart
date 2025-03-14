@@ -16,9 +16,10 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
-import { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction } from "react";
+import useUserStore from "@/store/useUserStore";
 
-const formSchema = z.object({
+export const formSchema = z.object({
   firstName: z
     .string()
     .min(2, { message: "First name must be at least 2 characters" }),
@@ -37,8 +38,10 @@ const formSchema = z.object({
 export default function StageOne({
   setStage,
 }: {
-  setStage: Dispatch<SetStateAction<number>> ;
+  setStage: Dispatch<SetStateAction<number>>;
 }) {
+  const updateEmail = useUserStore((state) => state.updateEmail);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -49,12 +52,14 @@ export default function StageOne({
       agreeWithPrivacyPolicyAndTermsOfUse: false,
     },
   });
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     setStage(2);
-    console.log(values);
+    updateEmail(values.email);
   };
+
   return (
-    <main className="relative h-screen">
+    <main className="relative min-h-screen">
       <AuthHeader />
       <section className="form-grid">
         <Image
@@ -64,17 +69,9 @@ export default function StageOne({
           alt="sign in illustration"
           className="hidden lg:block lg:w-[550px]"
         />
-        <div className="mt-16 container-px lg:mt-0">
-          <h1 className="pb-5">Sign up</h1>
-          <p className="font-light text-flickmart-gray">
-            Already have an account?{" "}
-            <Link
-              className="capitalize font-medium text-flickmart hover:underline"
-              href="/sign-in"
-            >
-              sign in
-            </Link>
-          </p>
+        <div className="mt-16 container-px lg:mt-0 lg:overflow-x-auto lg:h-[95vh]">
+          <h1 className="pt-5">Sign up</h1>
+
           <Form {...form}>
             <form
               className="mt-8 space-y-8 pb-20 lg:pb-0"
@@ -134,11 +131,30 @@ export default function StageOne({
                   </FormItem>
                 )}
               />
-              <Button className="submit-btn" type="submit">
-                Sign In
-              </Button>
+              <div className="flex items-center space-y-4 flex-col pb-3">
+                <Button className="submit-btn" type="submit">
+                  Sign Up
+                </Button>
+                <Image
+                  onClick={() => {}}
+                  src="/icons/google.png"
+                  alt="google"
+                  width={500}
+                  height={500}
+                  className="h-10 w-10  object-cover rounded-full hover cursor-pointer hover:bg-black/5 duration-300"
+                />
+              </div>
             </form>
           </Form>
+          <p className="font-light text-flickmart-gray text-center">
+            Already have an account?{" "}
+            <Link
+              className="capitalize font-medium text-flickmart hover:underline"
+              href="/sign-in"
+            >
+              sign in
+            </Link>
+          </p>
         </div>
       </section>
     </main>

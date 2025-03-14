@@ -15,6 +15,9 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { useOthersStore } from "@/store/useOthersStore";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -25,6 +28,9 @@ const formSchema = z.object({
 });
 
 export default function SignIn() {
+  const router = useRouter();
+  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -33,14 +39,30 @@ export default function SignIn() {
       rememberMe: false,
     },
   });
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    // Just redirect to home page without authentication
+    router.push("/home");
   };
+
+  // Automatically redirect to home page
+  useEffect(() => {
+    setLoadingStatus(true);
+    // Short delay to show loading state
+    const timer = setTimeout(() => {
+      router.push("/home");
+      setLoadingStatus(false);
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, [router, setLoadingStatus]);
+
   return (
     <main className="relative h-screen">
       <AuthHeader />
       <section className="form-grid">
         <Image
+          priority
           src="/sign-in-illustration.svg"
           width={563}
           height={618}
@@ -48,9 +70,15 @@ export default function SignIn() {
           className="w-[450px] hidden lg:block lg:w-[500px]"
         />
         <div className="mt-16 container-px lg:mt-0 space-y-8">
-          <h1 className="mb-5">Sign in</h1>      
+          <h1 className="mb-5">Sign in</h1>
+          <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm">
+            Authentication has been removed. You will be redirected to the home page automatically.
+          </div>
           <Form {...form}>
-            <form className="mt-8 space-y-8" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="mt-8 space-y-8"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <CustomInput
                 name="email"
                 control={form.control}
@@ -87,9 +115,19 @@ export default function SignIn() {
                   </FormItem>
                 )}
               />
-              <Button className="submit-btn" type="submit">
-                Sign In
-              </Button>
+              <div className="flex items-center space-y-4 flex-col">
+                <Button className="submit-btn" type="submit">
+                  Sign In
+                </Button>
+                <Image
+                  onClick={()=>{}}
+                  src="/icons/google.png"
+                  alt="google"
+                  width={500}
+                  height={500}
+                  className="h-10 w-10  object-cover rounded-full hover cursor-pointer hover:bg-black/5 duration-300"
+                />
+              </div>
             </form>
           </Form>
           <p className="font-light text-flickmart-gray text-center">

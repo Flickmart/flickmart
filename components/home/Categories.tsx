@@ -1,4 +1,5 @@
-import Image from "next/image";
+"use client";
+
 import React from "react";
 import CategoryItem from "./CategoryItem";
 import Container from "./Container";
@@ -22,7 +23,7 @@ const categoryItems: Array<CategoryObj> = [
 export default function Categories() {
   return (
     <Container>
-      <div className="lg:w-5/6 grid lg:grid-cols-4 lg:grid-rows-3 grid-cols-3 gap-2 ">
+      <div className="lg:w-4/6 grid lg:grid-cols-4 lg:grid-rows-3 grid-cols-3 lg:gap-x-3 lg:gap-y-6  gap-3 cursor-pointer">
         {categoryItems.map((item) => (
           <CategoryItem
             key={item.categoryName}

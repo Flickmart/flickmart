@@ -27,8 +27,11 @@ const config = {
     extend: {
       colors: {
         flickmart: "#F68B1E",
-        flickmartLight: "rgba(254, 199, 90, 1)",
+        "flickmart-chat-orange": "#FF8100",
+        // flickmartLight: "rgba(254, 199, 90, 1)",
+        flickmartLight: "#f9b122",
         "flickmart-gray": "#6C7275",
+        "flickmart-chat-gray": "#E5E3E3C2",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

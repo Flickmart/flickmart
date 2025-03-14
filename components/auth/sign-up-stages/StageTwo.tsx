@@ -17,12 +17,14 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
+
+import useUserStore from "@/store/useUserStore";
 
 const formSchema = z.object({
   otp: z
     .string()
-    .min(4, { message: "Your one-time password must be 4 digits" }),
+    .min(4, { message: "Your one-time password must be 6 digits" }),
 });
 
 const StageTwo = ({
@@ -30,14 +32,16 @@ const StageTwo = ({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) => {
+  const [otpMaxLength] = useState(6);
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       otp: "",
     },
   });
+
   const onSubmit = (data: z.infer<typeof formSchema>) => {
-    console.log(data);
     setStage(3);
   };
   return (
@@ -52,7 +56,7 @@ const StageTwo = ({
             Verify your email address
           </h1>
           <p className="text-sm text-flickmart-gray mb-20 lg:text-base">
-            We sent a verification code to henrymadueke@gmail.com
+            We sent a verification code to
           </p>
           <FormField
             control={form.control}
@@ -64,15 +68,18 @@ const StageTwo = ({
                 </FormLabel>
                 <FormControl>
                   <InputOTP
-                    maxLength={4}
+                    maxLength={otpMaxLength}
                     {...field}
                     pattern={REGEXP_ONLY_DIGITS}
                   >
-                    <InputOTPGroup className="w-full justify-between">
-                      <InputOTPSlot index={0} />
-                      <InputOTPSlot index={1} />
-                      <InputOTPSlot index={2} />
-                      <InputOTPSlot index={3} />
+                    <InputOTPGroup className="w-full justify-between gap-4">
+                      {Array.from({ length: otpMaxLength }).map((_, index) => (
+                        <InputOTPSlot
+                          index={index}
+                          key={index}
+                          className="rounded-lg"
+                        />
+                      ))}
                     </InputOTPGroup>
                   </InputOTP>
                 </FormControl>
