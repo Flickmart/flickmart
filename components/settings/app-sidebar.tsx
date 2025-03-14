@@ -132,7 +132,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
             <SidebarGroupContent>
               {group.items.map((item) => (
-                <SidebarMenu key={item.title} className="gap-y-0">
+                <SidebarMenu key={item.title} className="">
                   <SidebarMenuItem>
                     <Link href={item.url}>
                       <SidebarMenuButton
@@ -140,11 +140,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                         onClick={() => setOpenMobile(!openMobile)}
                         className="py-0"
                       >
-                        {item.icon} {item.title}
+                        <div className="flex items-center gap-2">
+                          {item.icon}
+                          <div className="flex flex-col text-sm z-10 ">
+                            {item.title}
+                            <span className="text-muted-foreground leading-tight text-xs">
+                              {item.description}
+                            </span>
+                          </div>
+                        </div>
                       </SidebarMenuButton>
-                      <span className="text-muted-foreground ml-2 leading-tight text-xs">
-                        {item.description}
-                      </span>
                     </Link>
                   </SidebarMenuItem>
                 </SidebarMenu>

@@ -16,10 +16,8 @@ import { ArrowLeft } from "lucide-react";
 
 export default function NotificationsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
-  const [smsNotifications, setSmsNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
-  const [inAppNotifications, setInAppNotifications] = useState(true);
-  const [whatsappNotifications, setWhatsappNotifications] = useState(false);
+  const [notifications, setNotifications] = useState(true);
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
 
   return (
@@ -50,8 +48,20 @@ export default function NotificationsPage() {
       </header>
       <div className="space-y-4">
         <div className="rounded-lg border p-4 space-y-4">
-          <h2 className="text-lg font-semibold">Communication Channels</h2>
+          <h2 className="text-lg font-semibold">Notifications</h2>
 
+          <div className="flex items-center justify-between pt-4">
+            <div>
+              <p className="font-medium"> Notifications</p>
+              <p className="text-sm text-muted-foreground">
+                Show notifications
+              </p>
+            </div>
+            <Switch
+              checked={notifications}
+              onCheckedChange={setNotifications}
+            />
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Email Notifications</p>
@@ -67,19 +77,6 @@ export default function NotificationsPage() {
 
           <div className="flex items-center justify-between pt-4">
             <div>
-              <p className="font-medium">SMS Notifications</p>
-              <p className="text-sm text-muted-foreground">
-                Receive OTPs and delivery updates via SMS
-              </p>
-            </div>
-            <Switch
-              checked={smsNotifications}
-              onCheckedChange={setSmsNotifications}
-            />
-          </div>
-
-          <div className="flex items-center justify-between pt-4">
-            <div>
               <p className="font-medium">Push Notifications</p>
               <p className="text-sm text-muted-foreground">
                 Receive alerts on your device
@@ -88,32 +85,6 @@ export default function NotificationsPage() {
             <Switch
               checked={pushNotifications}
               onCheckedChange={setPushNotifications}
-            />
-          </div>
-
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <p className="font-medium">In-App Notifications</p>
-              <p className="text-sm text-muted-foreground">
-                Show notifications in the app
-              </p>
-            </div>
-            <Switch
-              checked={inAppNotifications}
-              onCheckedChange={setInAppNotifications}
-            />
-          </div>
-
-          <div className="flex items-center justify-between pt-4">
-            <div>
-              <p className="font-medium">WhatsApp Notifications</p>
-              <p className="text-sm text-muted-foreground">
-                Receive updates via WhatsApp
-              </p>
-            </div>
-            <Switch
-              checked={whatsappNotifications}
-              onCheckedChange={setWhatsappNotifications}
             />
           </div>
         </div>
