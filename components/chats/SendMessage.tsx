@@ -1,6 +1,6 @@
-import { useChat } from "@/app/chats/layout";
+import { useChat } from "@/hooks/useChat";
 import { Paperclip, Mic, Sticker, Send } from "lucide-react";
-import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { FormEvent, useState } from "react";
 
 const SendMessage = () => {
   const [inpChange, setInpChange] = useState<string | null>(null);
@@ -22,12 +22,6 @@ const SendMessage = () => {
       ...prev,
       messageObj,
     ]);
-
-    context?.socket.emit("privateMessage", {
-      sender: name,
-      message: chat.value,
-      receiver: name === "EgentiNnamdi" ? "EgentiChioma" : "EgentiNnamdi",
-    });
 
     setInpChange(null);
   }

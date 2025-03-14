@@ -117,9 +117,9 @@ export default function page() {
   // }, []);
 
   return (
-    <main>
+    <main className=" flex">
       <section
-        className={` ${currentConversation || currentProfile ? "hidden md:block" : ""} py-7 px-3`}
+        className={` ${currentConversation || currentProfile ? "hidden md:block" : ""} py-7 px-3 w-1/4`}
       >
         <header className="shadow-lg py-4 px-2 flex items-center justify-between sticky top-0 bg-white md:static md:bg-transparent md:px-4 md:shadow-none md:py-0">
           <Link
@@ -181,16 +181,17 @@ export default function page() {
         />
       ) : (
         <section
-          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-screen overflow-y-auto`}
+          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-screen overflow-y-auto flex-grow`}
         >
-          {currentConversation ? null : (
-            // <ConversationTab
-            // currentConversation={demoChats.find(
-            //   (item) => item.chatId === context.currentConversation
-            // )}
-            // setCurrentConversation={context.setCurrentConversation}
-            // setCurrentProfile={setCurrentProfile}
-            // />
+          {currentConversation ? (
+            <ConversationTab
+              currentConversation={demoChats.find(
+                (item) => item.chatId === currentConversation
+              )}
+              setCurrentConversation={setCurrentConversation}
+              setCurrentProfile={setCurrentProfile}
+            />
+          ) : (
             <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
               <Image
                 src="/chat-avatars/Character.svg"

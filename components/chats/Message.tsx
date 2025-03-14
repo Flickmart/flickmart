@@ -1,4 +1,4 @@
-import { useChat } from "@/app/chats/layout";
+import { useChat } from "@/hooks/useChat";
 import { CheckCheck } from "lucide-react";
 import { useEffect, useRef } from "react";
 
