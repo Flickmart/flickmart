@@ -9,7 +9,6 @@ import {
   Ban,
   OctagonAlert,
 } from "lucide-react";
-import { Profile } from "@/app/chats/page";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import {
@@ -20,6 +19,7 @@ import {
   CarouselPrevious,
 } from "../ui/carousel";
 import { poppins } from "@/app/fonts";
+import { Profile } from "@/app/chats/layout";
 
 const ProfileTab = ({
   currentProfile,
@@ -122,7 +122,10 @@ const ProfileTab = ({
           <Carousel className="hidden md:block">
             <CarouselContent>
               {products.map((_, index) => (
-                <CarouselItem key={index} className="basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <CarouselItem
+                  key={index}
+                  className="basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                >
                   <div className="flex flex-col justify-between min-h-72 rounded-md border border-gray-200 relative shadow-lg">
                     <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
                       hot
