@@ -18,12 +18,8 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Dispatch, SetStateAction, useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+
 import useUserStore from "@/store/useUserStore";
-import { verifyOtp } from "@/app/(auth-pages)/auth";
-import { useMutation } from "@tanstack/react-query";
-import { useOthersStore } from "@/store/useOthersStore";
-import toast from "react-hot-toast";
 
 const formSchema = z.object({
   otp: z
@@ -37,9 +33,6 @@ const StageTwo = ({
   setStage: Dispatch<SetStateAction<number>>;
 }) => {
   const [otpMaxLength] = useState(6);
-  const [timer, setTImer] = useState(30);
-  const user = useUserStore((state) => state);
-  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -48,23 +41,8 @@ const StageTwo = ({
     },
   });
 
-  const { mutate } = useMutation({
-    mutationFn: verifyOtp,
-    onSuccess: (data) => {
-      setStage(3);
-    },
-    onError: (error) => toast.error(error.message),
-    onSettled: () => {
-      setLoadingStatus(false);
-    },
-  });
-
-  const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    const { email } = user.user;
-    if (email) {
-      setLoadingStatus(true);
-      mutate({ token: data.otp, email });
-    }
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    setStage(3);
   };
   return (
     <main className="relative h-screen">
@@ -78,7 +56,7 @@ const StageTwo = ({
             Verify your email address
           </h1>
           <p className="text-sm text-flickmart-gray mb-20 lg:text-base">
-            We sent a verification code to {user.user.email}
+            We sent a verification code to
           </p>
           <FormField
             control={form.control}
@@ -114,17 +92,7 @@ const StageTwo = ({
           </Button>
           <p className="font-light mt-8">
             Didn't recieve any code? You will recieve a new code in the next{" "}
-            <span
-              className="text-flickmart"
-              onLoad={() => {
-                setInterval(() => {
-                  if (timer < 1) return;
-                  setTImer((prev) => prev - 1);
-                }, 1000);
-              }}
-            >
-              {timer < 1 ? "resend" : `${timer} seconds`}
-            </span>
+            <span className="text-flickmart">30 seconds</span>
           </p>
         </form>
       </Form>

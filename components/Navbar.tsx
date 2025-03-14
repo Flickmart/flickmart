@@ -1,5 +1,5 @@
 "use client";
-import { logout } from "@/app/(auth-pages)/auth";
+
 import {
   Bell,
   Bookmark,
@@ -33,7 +33,6 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    logout();
     location.href = "/sign-in";
   };
 

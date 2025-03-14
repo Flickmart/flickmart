@@ -1,5 +1,4 @@
 import AuthHeader from "@/components/auth/AuthHeader";
-// import Loader from "@/components/Loader";
 import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
 
@@ -20,7 +19,7 @@ export default function RootLayout({
           },
         }}
       />
-      {/* <Loader /> */}
+
       <Navbar />
       <AuthHeader />
       {children}

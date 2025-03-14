@@ -18,11 +18,6 @@ import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
 import useUserStore from "@/store/useUserStore";
-import { authWithGoogle } from "@/app/(auth-pages)/auth";
-import { createUser } from "@/app/(auth-pages)/action";
-import { useMutation } from "@tanstack/react-query";
-import { useOthersStore } from "@/store/useOthersStore";
-import toast from "react-hot-toast";
 
 export const formSchema = z.object({
   firstName: z
@@ -46,7 +41,6 @@ export default function StageOne({
   setStage: Dispatch<SetStateAction<number>>;
 }) {
   const updateEmail = useUserStore((state) => state.updateEmail);
-  const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,40 +52,9 @@ export default function StageOne({
       agreeWithPrivacyPolicyAndTermsOfUse: false,
     },
   });
-  const { mutate } = useMutation({
-    mutationFn: createUser,
-    onSuccess: (data) => {
-      console.log(data);
-      // if (data.user) {
-      //   const {
-      //     id,
-      //     created_at,
-      //     email,
-      //     role,
-      //     is_anonymous,
-      //     last_sign_in_at,
-      //     phone,
-      //   } = data.user;
 
-      //   user.updateUserInfo({
-      //     id,
-      //     created_at,
-      //     email,
-      //     role,
-      //     is_anonymous,
-      //     last_sign_in_at,
-      //     phone,
-      //   });
-      // }
-      setStage(2);
-    },
-    onError: (err) => toast.error(err.message),
-    onSettled: () => setLoadingStatus(false),
-  });
-
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoadingStatus(true);
-    mutate(values);
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    setStage(2);
     updateEmail(values.email);
   };
 
@@ -173,7 +136,7 @@ export default function StageOne({
                   Sign Up
                 </Button>
                 <Image
-                  onClick={authWithGoogle}
+                  onClick={() => {}}
                   src="/icons/google.png"
                   alt="google"
                   width={500}
