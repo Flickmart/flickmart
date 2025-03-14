@@ -11,11 +11,11 @@ export default function BestSellers() {
         best sellers
       </h2>
       <Container>
-        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-5/6 w-full grid-rows-2 lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full grid-rows-2 lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
           {Array.from({ length: 8 }).map((_, index) => (
             // Best Seller Item
             <Link href={`/product/jacket`} key={index}>
-              <div className=" flex flex-col justify-between  min-h-72  rounded-md border border-gray-200 relative">
+              <div className=" flex flex-col justify-between  min-h-64  rounded-md border border-gray-200 relative">
                 <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
                   hot
                 </span>
@@ -27,7 +27,7 @@ export default function BestSellers() {
                   alt="jacket"
                   width={500}
                   height={500}
-                  className="flex-grow p-0.5 rounded-md"
+                  className="h-3/5 p-0.5 rounded-md "
                 />
                 <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">
                   <span className="lg:text-base text-sm">

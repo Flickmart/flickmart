@@ -1,6 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "@/lib/query-provider";
+import Loader from "@/components/Loader";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text relative">
+        <Loader />
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>

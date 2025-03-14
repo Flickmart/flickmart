@@ -3,36 +3,36 @@ import ConversationTab from "@/components/chats/ConversationTab";
 import ProfileTab from "@/components/chats/ProfileTab";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { demoChats, demoProfiles, useChat } from "./layout";
+import { demoProfiles, useChat } from "./layout";
 
 export default function page() {
   const [currentProfile, setCurrentProfile] = useState<string | null>(null);
   const context = useChat();
 
-  useEffect(function () {
-    const user = JSON.parse(localStorage.getItem("user")!); //temporary
+  // useEffect(function () {
+  //   const user = JSON.parse(localStorage.getItem("user")!); //temporary
 
-    // Connect to socket server on page load
-    context?.socket.on("connect", () => {
-      console.log(`${context?.socket.id} socket connected`);
-    });
-    const name = (user?.user_metadata.name as string).split(" ").join("");
+  //   // Connect to socket server on page load
+  //   context?.socket.on("connect", () => {
+  //     console.log(`${context?.socket.id} socket connected`);
+  //   });
+  //   const name = (user?.user_metadata.name as string)?.split(" ").join("");
 
-    // Join room
-    context?.socket.emit("join", { name });
+  //   // Join room
+  //   context?.socket.emit("join", { name });
 
-    // Create event to listen for messages from server
-    context?.socket.on(
-      "privateMessage",
-      (data: { message: string; type: string; time: string }) => {
-        context.setChat((prev) => [...prev, data]);
-      }
-    );
+  //   // Create event to listen for messages from server
+  //   context?.socket.on(
+  //     "privateMessage",
+  //     (data: { message: string; type: string; time: string }) => {
+  //       context.setChat((prev) => [...prev, data]);
+  //     }
+  //   );
 
-    return () => {
-      context?.socket.disconnect();
-    };
-  }, []);
+  //   return () => {
+  //     context?.socket.disconnect();
+  //   };
+  // }, []);
 
   return (
     <>
@@ -47,15 +47,14 @@ export default function page() {
         <section
           className={`bg-[#D9D9D926] ${context?.currentConversation ? "" : ""} relative md:h-screen overflow-y-auto`}
         >
-          {context?.currentConversation ? (
-            <ConversationTab
-              currentConversation={demoChats.find(
-                (item) => item.chatId === context.currentConversation
-              )}
-              setCurrentConversation={context.setCurrentConversation}
-              setCurrentProfile={setCurrentProfile}
-            />
-          ) : (
+          {context?.currentConversation ? null : (
+            // <ConversationTab
+            // currentConversation={demoChats.find(
+            //   (item) => item.chatId === context.currentConversation
+            // )}
+            // setCurrentConversation={context.setCurrentConversation}
+            // setCurrentProfile={setCurrentProfile}
+            // />
             <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
               <Image
                 src="/chat-avatars/Character.svg"

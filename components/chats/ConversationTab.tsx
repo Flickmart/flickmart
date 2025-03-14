@@ -104,7 +104,7 @@ const ConversationTab = ({
       <button className="fixed bottom-[100px] right-[25px] bg-flickmart-chat-orange p-3 rounded-full shadow-[0_0_5px_4px_#00000025] md:absolute">
         <Wallet color="white" />
       </button>
-      <SendMessage  />
+      <SendMessage />
     </section>
   );
 };

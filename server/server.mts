@@ -1,4 +1,4 @@
-// import { insertChat } from "../db/index";
+// import { insertChat } from "../db/index.js";
 import { createServer } from "http";
 import next from "next";
 import { Server } from "socket.io";

@@ -1,30 +1,22 @@
 import { LoginType } from "@/types/auth";
 import { createClient } from "@/utils/supabase/client";
 
-interface User {
-  email: string;
-  password: string;
-}
-
 const supabase = createClient();
 
-// Sign Up
-export async function createUser(newUser: User, userRole: string) {
-  const { data, error } = await supabase.auth.signUp({
-    ...newUser,
-    options: { data: { userRole } },
-  });
-  if (error) throw Error(error.message);
-}
-
 // Verify  email
-export async function verifyOtp(token: string, email: string) {
+export async function verifyOtp({
+  token,
+  email,
+}: {
+  token: string;
+  email: string;
+}) {
   const { data, error } = await supabase.auth.verifyOtp({
     token,
     type: "signup",
     email,
   });
-  console.log(data);
+  return data;
 }
 
 // Login with email and password
