@@ -9,7 +9,7 @@ import MobileNav from "@/components/MobileNav";
 import { ChevronLeft, EllipsisVertical, Link, Menu } from "lucide-react";
 import { Chat, Profile } from "./layout";
 
-export const demoChats: Chat[] = [
+const demoChats: Chat[] = [
   {
     userId: "1",
     chatId: "1",
@@ -50,7 +50,7 @@ export const demoChats: Chat[] = [
     unread: 2,
   },
 ];
-export const demoProfiles: Profile[] = [
+const demoProfiles: Profile[] = [
   {
     userId: "1",
     avatar: "/chat-avatars/chat-avatar-1.png",
