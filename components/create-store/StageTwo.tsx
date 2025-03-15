@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
-import Selector from "../post-ad/Selector";
+import Selector from "./Selector";
 
 const formSchema = z.object({
   businessName: z
@@ -108,12 +108,9 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             className="text-sm"
           />
         </section>
-        <button
-          className="submit-btn text-white rounded-lg capitalize mb-4"
-        >
+        <button className="submit-btn text-white rounded-lg capitalize mb-4">
           next
         </button>
-       
       </form>
     </Form>
   );
