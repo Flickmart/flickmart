@@ -1,5 +1,3 @@
-//eslint disable
-
 import {
   Select,
   SelectContent,
@@ -9,7 +7,7 @@ import {
 } from "../ui/select";
 import React from "react";
 import { FormField } from "../ui/form";
-import { UseFormReturn, UseFormWatch } from "react-hook-form";
+import { UseFormReturn} from "react-hook-form";
 
 interface FormType {
   businessName: string;

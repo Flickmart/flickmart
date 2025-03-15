@@ -8,7 +8,7 @@ import { ChevronLeft } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 const page = () => {
-  const [stage, setStage] = useState<1 | 2 | 3 | 4>(2);
+  const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
   const [avatar, setAvatar] = useState<string | null>("");
   return (
     <>
