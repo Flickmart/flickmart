@@ -7,7 +7,13 @@ import {
 } from "../ui/select";
 import React from "react";
 import { FormField } from "../ui/form";
-import { FormType, NameType } from "@/types/form";
+import { UseFormReturn} from "react-hook-form";
+
+interface FormType {
+  businessName: string;
+  location: string;
+  address: string;
+}
 
 export default function Selector({
   name,
@@ -16,16 +22,14 @@ export default function Selector({
   form,
   className = "",
 }: {
-  name: NameType;
+  name: "businessName" | "location" | "address";
   options: Array<string>;
   label?: string;
-  form: FormType;
+  form: UseFormReturn<FormType>;
   className?: string;
 }) {
   return (
-    <div
-      className="border border-gray-300 lg:py- py-2.5 rounded-lg"
-    >
+    <div className="border border-gray-300 lg:py- py-2.5 rounded-lg">
       <FormField
         control={form.control}
         name={name}
@@ -42,7 +46,9 @@ export default function Selector({
               defaultValue={value}
               value={value}
             >
-              <SelectTrigger className={`w-full  text-lg  capitalize outline-none  border-none shadow-none focus:ring-0 ${className}`}>
+              <SelectTrigger
+                className={`w-full  text-lg  capitalize outline-none  border-none shadow-none focus:ring-0 ${className}`}
+              >
                 <SelectValue placeholder={`${label || name}*`} />
               </SelectTrigger>
               <SelectContent
