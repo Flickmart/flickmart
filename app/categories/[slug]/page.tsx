@@ -1,4 +1,3 @@
-import CatItem from "@/components/CategoryItem";
 import CategoryItem from "@/components/CategoryItem";
 import { Bookmark, ChevronRight, LayoutGrid, LayoutPanelLeft } from "lucide-react";
 import Image from "next/image";
@@ -7,24 +6,25 @@ import Link from "next/link";
 type Category = {
     id: number;
     title: string;
+    noAds?: number;
     image: string;
     path: string;
 };
 
 const categoryData: Category[] = [
-    { id: 1, title: "Food", image: "/food.png", path: "/categories/food"},
-    { id: 2, title: "Mobile Phones", image: "/mobiles.png", path: "/categories/mobilephones"},
-    { id: 3, title: "Electronics", image: "/electronics.png", path: "/categories/electronics"},
-    { id: 4, title: "Vehicles", image: "/vehicles.png", path: "/categories/vehicles"},
-    { id: 5, title: "Fashion", image: "/fashion.png", path: "/categories/fashion"},
-    { id: 6, title: "Pets", image: "/pets.png", path: "/categories/pets"},
-    { id: 7, title: "Health & beauty", image: "/beauty.png", path: "/categories/beauty"},
-    { id: 8, title: "Home Appliances", image: "/appliances.png", path: "/categories/appliances"},
-    { id: 9, title: "Home", image: "/homes.png", path: "/categories/home"},
-    { id: 10, title: "Services", image: "/services.png", path: "/categories/services"},
+    { id: 1, title: "Apple Phones", noAds: 202, image: "/mobiles.png", path: "/categories/applephones" },
+    { id: 2, title: "Android Phones", noAds: 180, image: "/mobiles.png", path: "/categories/androidphones" },
+    { id: 3, title: "Tablets", noAds: 600, image: "/mobiles.png", path: "/categories/tablets" },
+    { id: 4, title: "Phones & Tablets Accessories", noAds: 452, image: "/mobiles.png", path: "/categories/accessories" },
 ];
 
-export default async function CategoryPage() {
+interface DetailedCategoryPageProps {
+    params: { slug: string };
+}
+  
+const DetailedCategoryPage: React.FC<DetailedCategoryPageProps> = async ({ params }) => {
+    const { slug } = await params;
+
     return (
         <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
             <section className="w-full flex lg:hidden flex-col">
@@ -39,20 +39,19 @@ export default async function CategoryPage() {
                             <h2 className="font-semibold text-flickmart-chat-orange">Categories</h2>
                         </div>
                         <h2 className="font-semibold text-sm capitalize">
-                            Electronics
+                            {slug}
                         </h2>
                         <div className="flex flex-col text-sm text-gray-800">
-                            <Link href={'categories/subcategory'} className="py-3 border-b flex flex-col">
-                                <span>Television set</span>
-                                <span className="text-[10px] text-gray-500">202 Ads</span>
-                            </Link>
-                            <Link href={'categories/subcategory'} className="py-3 border-b flex flex-col">
+                            {categoryData.map((item) =>(
+                                <CategoryItem key={item.id} item={item} />
+                            ))}
+                            <Link href={'#'} className="py-3 border-b flex flex-col">
                                 <span>Headphones</span>
                                 <span className="text-[10px] text-gray-500">119 Ads</span>
                             </Link>
                         </div>
                         <div className="w-full flex justify-end text-[12px]">
-                            <Link href={'categories/subcategory'} className="text-flickmart-chat-orange mt-2">Show More</Link>
+                            <Link href={'#'} className="text-flickmart-chat-orange mt-2">Show More</Link>
                         </div>
                     </div>
                     <button className="w-full shadow-md p-2 flex justify-between items-center">
@@ -108,7 +107,7 @@ export default async function CategoryPage() {
                 </div>
             </section>
             <section className="hidden lg:block lg:mt-12 w-9/12 text-sm mb-12">
-                <h1 className="font-semibold text-lg capitalize">Electronics in Nigeria</h1>
+                <h1 className="font-semibold text-lg capitalize">{slug} in Nigeria</h1>
                 <div className="mt-3">
                     <div className="flex justify-between items-center">
                         <span>Sort By:</span>
@@ -130,7 +129,7 @@ export default async function CategoryPage() {
                                 <h2 className="font-semibold">Freestyle Crew Racer leather jacket</h2>
                                 <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">$595.00</span>
                             </div>
-                            <Link href={'categories/subcategory'} className="z-10 absolute inset-0 h-full w-full"></Link>
+                            <Link href={'#'} className="z-10 absolute inset-0 h-full w-full"></Link>
                             <div className="w-[95%] mx-auto right-0 left-0 absolute top-1 z-20 flex justify-between items-center">
                                 <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                 <button className="bg-white rounded-full flex justify-center items-center p-1.5">
@@ -146,7 +145,7 @@ export default async function CategoryPage() {
                                 <h2 className="font-semibold">Freestyle Crew Racer leather jacket</h2>
                                 <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">$595.00</span>
                             </div>
-                            <Link href={'categories/subcategory'} className="z-10 absolute inset-0 h-full w-full"></Link>
+                            <Link href={'#'} className="z-10 absolute inset-0 h-full w-full"></Link>
                             <div className="w-[95%] mx-auto right-0 left-0 absolute top-1 z-20 flex justify-between items-center">
                                 <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                 <button className="bg-white rounded-full flex justify-center items-center p-1.5">
@@ -162,7 +161,7 @@ export default async function CategoryPage() {
                                 <h2 className="font-semibold">Freestyle Crew Racer leather jacket</h2>
                                 <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">$595.00</span>
                             </div>
-                            <Link href={'categories/subcategory'} className="z-10 absolute inset-0 h-full w-full"></Link>
+                            <Link href={'#'} className="z-10 absolute inset-0 h-full w-full"></Link>
                             <div className="w-[95%] mx-auto right-0 left-0 absolute top-1 z-20 flex justify-between items-center">
                                 <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                 <button className="bg-white rounded-full flex justify-center items-center p-1.5">
@@ -178,7 +177,7 @@ export default async function CategoryPage() {
                                 <h2 className="font-semibold">Freestyle Crew Racer leather jacket</h2>
                                 <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">$595.00</span>
                             </div>
-                            <Link href={'categories/subcategory'} className="z-10 absolute inset-0 h-full w-full"></Link>
+                            <Link href={'#'} className="z-10 absolute inset-0 h-full w-full"></Link>
                             <div className="w-[95%] mx-auto right-0 left-0 absolute top-1 z-20 flex justify-between items-center">
                                 <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                 <button className="bg-white rounded-full flex justify-center items-center p-1.5">
@@ -194,7 +193,7 @@ export default async function CategoryPage() {
                                 <h2 className="font-semibold">Freestyle Crew Racer leather jacket</h2>
                                 <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">$595.00</span>
                             </div>
-                            <Link href={'categories/subcategory'} className="z-10 absolute inset-0 h-full w-full"></Link>
+                            <Link href={'#'} className="z-10 absolute inset-0 h-full w-full"></Link>
                             <div className="w-[95%] mx-auto right-0 left-0 absolute top-1 z-20 flex justify-between items-center">
                                 <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                 <button className="bg-white rounded-full flex justify-center items-center p-1.5">
@@ -207,4 +206,6 @@ export default async function CategoryPage() {
             </section>
         </main>
     );
-}
+};
+
+export default DetailedCategoryPage;  
