@@ -17,13 +17,14 @@ const categoryData: Category[] = [
     { id: 3, title: "Tablets", noAds: 600, image: "/mobiles.png", path: "/categories/tablets" },
     { id: 4, title: "Phones & Tablets Accessories", noAds: 452, image: "/mobiles.png", path: "/categories/accessories" },
 ];
-
-interface DetailedCategoryPageProps {
-    params: { slug: string };
-}
   
-const DetailedCategoryPage: React.FC<DetailedCategoryPageProps> = async ({ params }) => {
-    const { slug } = params;
+export default async function DetailedCategoryPage (
+    { 
+        params,
+    }: {
+        params: Promise<{ slug: string }> 
+    }) {
+    const { slug } = await params;
     return (
         <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
             <section className="w-full flex lg:hidden flex-col">
@@ -205,6 +206,4 @@ const DetailedCategoryPage: React.FC<DetailedCategoryPageProps> = async ({ param
             </section>
         </main>
     );
-};
-
-export default DetailedCategoryPage;  
+}; 
