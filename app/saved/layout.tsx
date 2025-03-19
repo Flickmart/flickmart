@@ -1,6 +1,6 @@
-import AuthHeader from "@/components/auth/AuthHeader";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import NavigationBar from "@/components/NavigationBar";
 
 export default async function Layout({
   children,
@@ -9,7 +9,7 @@ export default async function Layout({
 }) {
   return (
     <>
-      <AuthHeader />
+      <NavigationBar />
       {children}
     </>
   );
