@@ -23,8 +23,7 @@ interface DetailedCategoryPageProps {
 }
   
 const DetailedCategoryPage: React.FC<DetailedCategoryPageProps> = async ({ params }) => {
-    const { slug } = await params;
-
+    const { slug } = params;
     return (
         <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
             <section className="w-full flex lg:hidden flex-col">
