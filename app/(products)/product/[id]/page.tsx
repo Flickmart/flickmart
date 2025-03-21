@@ -28,6 +28,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import SimilarAdverts from "@/components/products/SimilarAdverts";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useNav from "@/hooks/useNav";
+import ProductHeader from "@/components/products/ProductHeader";
+import Comment from "@/components/products/Comment";
 const productIcons=[
   {label: "likes", icon: <ThumbsUp/>},
   {label: "dislikes", icon: <ThumbsDown/>},
@@ -38,36 +40,23 @@ const productIcons=[
 export default function ProductPage() {
   const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
   const isVisible= useNav()
+  const [isMobile, setIsMobile]= useState(true)
 
   
 
   return (
     <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
-      {/* <MobileNav/> */}
-      {/* <Navbar/> */}
       <div className="lg:flex gap-5 space-y-3">
         <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-          <Image src="/airpods-demo.png" alt="airpods" width={500} height={500} className=" w-full h-[550px] lg:object-cover  aspect-square"/>
+          <Image src="/airpods-demo.png" alt="airpods" width={500} height={500} className=" w-full lg:h-[550px] lg:object-cover  aspect-square"/>
+          {isMobile? <ProductHeader/> : null}
           <div className="bg-white rounded-md flex justify-around w-full p-5">
       {productIcons.map(item => <div key={item.label} className="capitalize space-y-3 text-center"><div className="flex justify-center">{item.icon}</div> <span className="inline-block text-sm lg:text-lg">{item.label}</span></div>)}
           </div>
         </div>
         <div className=" lg:w-2/4 flex flex-col justify-center space-y-3">
-          <div className="lg:space-y-3 space-y-4 bg-white rounded-md p-5">
-            <div className="flex text-xs font-light items-center gap-2 text-gray-500">
-              <MapPin size={17}/>
-              <span>Enugu, Nsukka, 3 hours ago </span>
-            </div>
-            <h2 className="text-xl font-bold">Apple Airpod Pro 2nd Gen</h2>
-            <div className="space-x-3 flex items-center">
-              <span className="inline-block text-flickmart-chat-orange text-lg font-extrabold  tracking-wider">&#8358;53,000</span>
-              <span className="bg-green-500/80 tracking-widest p-1 rounded-md text-white font-semibold text-xs">Negotiable</span>
-            </div>
-            <div className=" flex  gap-3 text-white">
-              <button className="p-2 px-3 font-medium bg-flickmart-chat-orange rounded-md flex items-center gap-2"> <MessageCircle/> Chat vendor</button>
-              <button className="p-2 px-3 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center gap-2"> <Share/> Share</button>
-            </div> 
-          </div>
+        {isMobile? <Comment/> : null}
+        {isMobile? null : <ProductHeader/>}
           <div className="space-y-2 bg-white rounded-md p-5">
             <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">Description</h3>
             <p className="text-justify text-sm leading-snug">Get the best sound from Airpod pro 2nd Gen, It last long
@@ -96,7 +85,7 @@ export default function ProductPage() {
               </AccordionItem>
             </Accordion>
           </div>
-          <div className={` ${isVisible?"translate-y-0": "-translate-y-[-100%]"} lg:translate-y-0 transition  duration-300  flex space-x-5 p-3 lg:p-0 lg:relative fixed bottom-0 w-full z-30 `}>
+          <div className={` ${isVisible?"translate-y-0": "-translate-y-[-100%]"} lg:translate-y-0 transition  duration-300  flex space-x-5 p-3 lg:p-0 lg:relative bg-white fixed bottom-0 w-full z-30 `}>
             <div className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center">
               <button className="rounded-full text-flickmart-chat-orange p-2 shadow-lg bg-white"><Bookmark/></button>
             </div>
@@ -107,25 +96,7 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
-        <div className="bg-white flex items-center lg:pr-10  justify-between py-7 px-3 gap-3  lg:p-7  rounded-md">
-          <div className="flex items-center gap-3">
-            <div>
-              <Avatar>
-                <AvatarImage src="/comment.png" alt="comment" />
-                <AvatarFallback>EN</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="flex flex-col">
-              <h3 className="lg:text-lg font-semibold">Samuel Johnson</h3>
-              <p className="text-xs">i searched for high quality mp3 speakers and it brought me here, but
-              seeing this made me change my mind</p>
-            </div>
-          </div>
-          <div className="flex flex-col items-center text-xs space-y-1">
-            <MessageCircle/>
-            <span>1200</span>
-          </div>
-        </div>
+      {isMobile? null: <Comment/> }
       <SimilarAdverts/>
     </div>
   );

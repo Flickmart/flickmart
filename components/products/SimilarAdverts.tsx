@@ -7,7 +7,7 @@ export default function SimilarAdverts() {
         <div>
             <h2 className=' text-xl lg:text-3xl font-black '>Similar Adverts</h2>
         </div>
-    <div className=' min-h-96 lg:grid grid-cols-4  gap-10'>
+    <div className=' min-h-96 grid lg:grid-cols-4 grid-cols-2 gap-3  lg:gap-10'>
         {Array.from({length:11}).map((_, index)=> <div className='' key={index}>
             <ProductCard/>
             </div>)}
