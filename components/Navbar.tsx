@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton  } from "@clerk/nextjs";
+import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
 import {
   Bell,
   Bookmark,
@@ -63,33 +63,18 @@ export default function Navbar() {
               tabIndex={0} // Makes it focusable
               onBlur={() => setIsOpen(false)}
             >
-              <button>
-                <MessageSquareText strokeWidth={1.25} className="h-6 w-6" />
-              </button>
-              <button>
-                <Bell strokeWidth={1.25} className="h-6 w-6" />
-              </button>
-              <UserButton  />
-              {isOpen && (
-                <div className="absolute top-8 left-0 py-3 ps-3 pe-12 bg-white/10 backdrop-blur-sm rounded-md flex flex-col gap-3 text-[#7F693D] text-[12px] font-medium">
-                  <Link href={"#"} className="flex items-center gap-2">
-                    <CircleUserRound className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                  <Link href={"#"} className="flex items-center gap-2">
-                    <Bookmark strokeWidth={1.25} className="h-4 w-4" />
-                    <span>Saved</span>
-                  </Link>
-                  <Link href={"#"} className="flex items-center gap-2">
-                    <Settings strokeWidth={1.25} className="h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                  <Link href={"#"} className="flex items-center gap-2">
-                    <LogOut strokeWidth={1.25} className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </div>
-              )}
+              <Link href="/chats">  
+                <MessageSquareText strokeWidth={1.25} className="h-8 w-8" />
+              </Link>
+              <Link href="/notifications">
+                <Bell strokeWidth={1.25} className="h-8 w-8" />
+              </Link>
+              <SignedIn>
+                <UserButton />
+              </SignedIn>
+              <SignedOut>
+                <SignInButton mode="modal" />
+              </SignedOut>
             </div>
             <button className="py-2 px-8 text-sm font-bold rounded-md bg-flickmart text-white">
               SELL

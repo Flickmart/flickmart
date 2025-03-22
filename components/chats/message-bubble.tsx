@@ -14,7 +14,7 @@ export default function MessageBubble({ message, isUser, timestamp, status = "re
       <div
         className={cn(
           "max-w-[75%] sm:max-w-[70%] md:max-w-[65%] rounded-lg p-2 md:p-3 shadow-sm",
-          isUser ? "bg-orange-500 text-white rounded-br-none" : "bg-background text-foreground rounded-bl-none",
+          isUser ? "bg-flickmart text-white rounded-br-none" : "bg-background text-foreground rounded-bl-none",
         )}
       >
         <p className="break-words text-sm md:text-base">{message}</p>
@@ -27,9 +27,8 @@ export default function MessageBubble({ message, isUser, timestamp, status = "re
               {status === "read" && <CheckCheck className="h-3 w-3 inline text-orange-200" />}
             </span>
           )}
-        </div>
+        </div>  
       </div>
     </div>
-  )
+  );
 }
-
