@@ -11,17 +11,6 @@ export default function SignUp() {
   const router = useRouter();
   const setLoadingStatus = useOthersStore((state) => state.setLoadingStatus);
 
-  // Automatically redirect to home page
-  useEffect(() => {
-    setLoadingStatus(true);
-    // Short delay to show loading state
-    const timer = setTimeout(() => {
-      router.push("/home");
-      setLoadingStatus(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [router, setLoadingStatus]);
 
   return (
     <>

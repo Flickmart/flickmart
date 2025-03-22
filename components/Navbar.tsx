@@ -1,5 +1,6 @@
 "use client";
 
+import { UserButton  } from "@clerk/nextjs";
 import {
   Bell,
   Bookmark,
@@ -34,7 +35,13 @@ export default function Navbar() {
   };
 
   return (
-    <header className={cPath === '/home' ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20" : "relative z-30 w-full bg-white shadow-sm shadow-black/20"}>
+    <header
+      className={
+        cPath === "/home"
+          ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20"
+          : "relative z-30 w-full bg-white shadow-sm shadow-black/20"
+      }
+    >
       <div className="w-[95%] mx-auto py-2">
         <div className="w-full flex justify-between items-center">
           <Link href={"/"} className="flex gap-1 items-center">
@@ -62,9 +69,7 @@ export default function Navbar() {
               <button>
                 <Bell strokeWidth={1.25} className="h-6 w-6" />
               </button>
-              <button onClick={toggleProfile}>
-                <CircleUserRound strokeWidth={1.25} className="h-6 w-6" />
-              </button>
+              <UserButton  />
               {isOpen && (
                 <div className="absolute top-8 left-0 py-3 ps-3 pe-12 bg-white/10 backdrop-blur-sm rounded-md flex flex-col gap-3 text-[#7F693D] text-[12px] font-medium">
                   <Link href={"#"} className="flex items-center gap-2">
