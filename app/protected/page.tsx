@@ -1,3 +1,5 @@
+"use client";
+
 import { SignIn, useUser } from "@clerk/nextjs";
 
 export default async function ProtectedPage() {

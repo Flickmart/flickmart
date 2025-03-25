@@ -3,18 +3,14 @@
 import type React from "react";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Menu, Search, ChevronLeft, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import MessageBubble from "@/components/chats/message-bubble";
 import { demoChats, demoMessages } from "@/lib/demo-data";
-import { cn } from "@/lib/utils";
 import WelcomeScreen from "@/components/chats/welcome-screen";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import ChatSidebar from "@/components/chats/chat-sidebar";
 import ChatHeader from "@/components/chats/chat-header";
 import ChatMessages from "@/components/chats/chat-messages";
 import ChatInput from "@/components/chats/chat-input";
+import { Wallet } from "lucide-react";
 
 interface Message {
   id: string;
@@ -138,25 +134,32 @@ export default function ChatPage() {
       {/* Main chat area */}
       <div className="flex flex-col flex-1 w-full h-full overflow-hidden">
         {activeChat ? (
-          <>
+          <div className="flex flex-col h-full">
             <ChatHeader
               toggleSidebar={toggleSidebar}
               activeChatData={activeChatData}
               isTyping={isTyping}
             />
-            <ChatMessages messages={activeMessages} />
-            <ChatInput
-              input={input}
-              setInput={setInput}
-              handleSubmit={handleSubmit}
-            />
-          </>
+            <div className="flex-1 overflow-y-auto">
+              <ChatMessages messages={activeMessages} />
+            </div>
+            <div className="fixed bottom-[88px] right-6 z-20">
+              <Button size="icon" className="rounded-full">
+                <Wallet className="w-h h-5" />
+              </Button>
+            </div>
+            <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
+              <ChatInput
+                input={input}
+                setInput={setInput}
+                handleSubmit={handleSubmit}
+              />
+            </div>
+          </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />
         )}
       </div>
-
-   
     </div>
   );
 }

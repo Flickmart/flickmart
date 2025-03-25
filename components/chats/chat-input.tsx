@@ -10,7 +10,7 @@ interface ChatInputProps {
 
 export default function ChatInput({ input, setInput, handleSubmit }: ChatInputProps) {
   return (
-    <div className="p-3 md:p-4 bg-background border-t sticky bottom-0 w-full z-10">
+    <div className="fixed bottom-0 left-0 right-0 p-3 bg-background border-t z-10">
       <form onSubmit={handleSubmit} className="flex items-center space-x-2">
         <Input
           value={input}
@@ -29,4 +29,4 @@ export default function ChatInput({ input, setInput, handleSubmit }: ChatInputPr
       </form>
     </div>
   );
-} 
+}
