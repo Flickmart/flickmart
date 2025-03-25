@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
+import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 
-import { useRouter } from "next/navigation";
-
-export default function page() {
-  const router = useRouter();
-  useEffect(() => {
-    router.push("/home");
-  }, [router]);
-  return <div>Redirecting to home page...</div>;
+export default function Home() {
+  return (
+    <div className="flex gap-3">
+      <SignedIn>
+        <UserButton />
+      </SignedIn>
+      <SignedOut>
+        <SignInButton mode="modal" />
+      </SignedOut>
+      <span>Flickmart landing page</span>
+    </div>
+  );
 }
