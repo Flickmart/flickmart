@@ -22,9 +22,9 @@ export default function MessageBubble({ message, isUser, timestamp, status = "re
           <span className="text-[10px] md:text-xs opacity-70">{timestamp}</span>
           {isUser && (
             <span className="text-[10px] md:text-xs">
-              {status === "sent" && <Check className="h-3 w-3 inline" />}
-              {status === "delivered" && <CheckCheck className="h-3 w-3 inline" />}
-              {status === "read" && <CheckCheck className="h-3 w-3 inline text-orange-200" />}
+              {status === "sent" && <Check className="h-4 w-5 inline" />}
+              {status === "delivered" && <CheckCheck className="h-4 w-5 inline te" />}
+              {status === "read" && <CheckCheck className="h-4 w-5 inline text-blue-500" />}
             </span>
           )}
         </div>  

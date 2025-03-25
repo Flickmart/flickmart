@@ -1,3 +1,11 @@
+interface Message {
+  id: string;
+  chatId: string;
+  content: string;
+  role: "user" | "assistant";
+  timestamp: Date;
+}
+
 export const demoChats = [
     {
       id: "1",
@@ -41,20 +49,20 @@ export const demoChats = [
     },
   ]
   
-  export const demoMessages = [
+  export const demoMessages: Message[] = [
     // Alice's conversation
     {
       id: "a1",
       chatId: "1",
       content: "Hey, how are you doing?",
-      role: "user",
+      role: "user" as const,
       timestamp: new Date(Date.now() - 3600000 * 2),
     },
     {
       id: "a2",
       chatId: "1",
       content: "I'm good! Just finished that project we talked about.",
-      role: "assistant",
+      role: "assistant" as const,
       timestamp: new Date(Date.now() - 3600000 * 1.9),
     },
     {

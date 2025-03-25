@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState, useRef, useEffect } from "react";
-import { Send, Menu, Search, ChevronLeft } from "lucide-react";
+import { Send, Menu, Search, ChevronLeft, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import MessageBubble from "@/components/chats/message-bubble";
@@ -11,13 +11,25 @@ import { demoChats, demoMessages } from "@/lib/demo-data";
 import { cn } from "@/lib/utils";
 import WelcomeScreen from "@/components/chats/welcome-screen";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import ChatSidebar from "@/components/chats/chat-sidebar";
+import ChatHeader from "@/components/chats/chat-header";
+import ChatMessages from "@/components/chats/chat-messages";
+import ChatInput from "@/components/chats/chat-input";
+
+interface Message {
+  id: string;
+  chatId: string;
+  content: string;
+  role: "user" | "assistant";
+  timestamp: Date;
+}
 
 type FilterType = "all" | "unread" | "archived";
 
 export default function ChatPage() {
   const [input, setInput] = useState("");
   const [activeChat, setActiveChat] = useState<string | null>(null);
-  const [chatMessages, setChatMessages] = useState(demoMessages);
+  const [chatMessages, setChatMessages] = useState<Message[]>(demoMessages);
   const [isTyping, setIsTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -92,7 +104,9 @@ export default function ChatPage() {
     : [];
 
   const activeChatData = activeChat
-    ? demoChats.find((chat) => chat.id === activeChat)
+    ? {
+        name: demoChats.find((chat) => chat.id === activeChat)?.name || "",
+      }
     : null;
 
   const toggleSidebar = () => {
@@ -101,126 +115,17 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-gray-100">
-      {/* Sidebar - fixed position on mobile, regular position on desktop */}
-      <div
-        className={cn(
-          "fixed md:relative z-30 h-full bg-white transition-transform duration-300 ease-in-out border-r border-gray-200",
-          "w-full md:w-[320px]",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        )}
-      >
-        {/* Sidebar Header */}
-        <div className="px-3 py-2 flex items-center justify-between">
-          <div className="flex items-center">
-            <h2 className=" text-flickmart font-bold text-xl"> Chats</h2>
-          </div>
-          <Menu />
-        </div>
-
-        {/* Search */}
-        <div className="p-2">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
-              placeholder="Search or start new chat"
-              className="pl-9"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-        </div>
-
-        {/* Filter Tabs */}
-        <div className="flex border-b">
-          <button
-            className={cn(
-              "flex-1 py-2 text-sm font-medium",
-              activeFilter === "all"
-                ? "text-orange-500 border-b-2 border-orange-500"
-                : "text-gray-500 hover:text-orange-500"
-            )}
-            onClick={() => setActiveFilter("all")}
-          >
-            All
-          </button>
-          <button
-            className={cn(
-              "flex-1 py-2 text-sm font-medium",
-              activeFilter === "unread"
-                ? "text-orange-500 border-b-2 border-orange-500"
-                : "text-gray-500 hover:text-orange-500"
-            )}
-            onClick={() => setActiveFilter("unread")}
-          >
-            Unread
-          </button>
-          <button
-            className={cn(
-              "flex-1 py-2 text-sm font-medium",
-              activeFilter === "archived"
-                ? "text-orange-500 border-b-2 border-orange-500"
-                : "text-gray-500 hover:text-orange-500"
-            )}
-            onClick={() => setActiveFilter("archived")}
-          >
-            Archived
-          </button>
-        </div>
-
-        {/* Chat List */}
-        <div className="overflow-y-auto h-[calc(100%-150px)]">
-          <div className="space-y-1">
-            {filteredChats.map((chat) => (
-              <div
-                key={chat.id}
-                className={cn(
-                  "flex items-center p-3 cursor-pointer hover:bg-gray-100",
-                  activeChat === chat.id && "bg-orange-50"
-                )}
-                onClick={() => {
-                  setActiveChat(chat.id);
-                  // Close sidebar on mobile after selection
-                  if (window.innerWidth < 768) {
-                    setSidebarOpen(false);
-                  }
-                }}
-              >
-                <div
-                  className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold",
-                    chat.unread > 0 ? "bg-orange-500" : "bg-orange-300"
-                  )}
-                >
-                  {chat.name.charAt(0)}
-                </div>
-                <div className="ml-3 flex-1 overflow-hidden">
-                  <div className="flex justify-between items-center">
-                    <h3
-                      className={cn(
-                        "font-medium truncate",
-                        chat.unread > 0 && "font-semibold"
-                      )}
-                    >
-                      {chat.name}
-                    </h3>
-                    <span className="text-xs text-gray-500">{chat.time}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-gray-600 truncate">
-                      {chat.lastMessage}
-                    </p>
-                    {chat.unread > 0 && (
-                      <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {chat.unread}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Sidebar */}
+      <ChatSidebar
+        sidebarOpen={sidebarOpen}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        activeChat={activeChat}
+        setActiveChat={setActiveChat}
+        setSidebarOpen={setSidebarOpen}
+      />
 
       {/* Overlay for mobile */}
       {sidebarOpen && (
@@ -234,80 +139,24 @@ export default function ChatPage() {
       <div className="flex flex-col flex-1 w-full h-full overflow-hidden">
         {activeChat ? (
           <>
-            {/* Chat header */}
-            <div className="p-2 flex items-center shadow-md z-10">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="mr-2 text-white md:hidden"
-                onClick={toggleSidebar}
-              >
-                <ChevronLeft className="h-16 w-16 text-black" />
-              </Button>
-              <Avatar>
-                <AvatarImage
-                  src={activeChatData?.name}
-                  alt={activeChatData?.name}
-                />
-                <AvatarFallback className="bg-flickmart text-white">
-                  {activeChatData?.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
-              <div className="ml-3 flex-1 truncate">
-                <h4 className="text-black text-md truncate">
-                  {activeChatData?.name}
-                </h4>
-                <p className="text-black/70 text-sm truncate">
-                  {isTyping ? "typing..." : "online"}
-                </p>
-              </div>
-            </div>
-
-            {/* Chat messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-16">
-              {activeMessages.map((message) => (
-                <MessageBubble
-                  key={message.id}
-                  message={message.content}
-                  isUser={message.role === "user"}
-                  timestamp={message.timestamp.toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                  status={message.role === "user" ? "read" : undefined}
-                />
-              ))}
-              <div ref={messagesEndRef} />
-            </div>
-
-            {/* Chat input */}
-            <div className="p-3 md:p-4 bg-background border-t sticky bottom-0 w-full z-10">
-              <form
-                onSubmit={handleSubmit}
-                className="flex items-center space-x-2"
-              >
-                <Input
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder="Type a message"
-                  className="flex-1"
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  disabled={!input.trim()}
-                  className="bg-orange-500 hover:bg-orange-600"
-                >
-                  <Send className="h-5 w-5" />
-                </Button>
-              </form>
-            </div>
+            <ChatHeader
+              toggleSidebar={toggleSidebar}
+              activeChatData={activeChatData}
+              isTyping={isTyping}
+            />
+            <ChatMessages messages={activeMessages} />
+            <ChatInput
+              input={input}
+              setInput={setInput}
+              handleSubmit={handleSubmit}
+            />
           </>
         ) : (
-          // Welcome screen when no chat is selected
           <WelcomeScreen onOpenSidebar={toggleSidebar} />
         )}
       </div>
+
+   
     </div>
   );
 }
