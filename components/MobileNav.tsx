@@ -1,4 +1,5 @@
 "use client";
+import useNav from "@/hooks/useNav";
 import {
   Bookmark,
   House,
@@ -12,6 +13,8 @@ import { usePathname } from "next/navigation";
 export default function MobileNav() {
   const pathname = usePathname();
 
+  const isVisible = useNav()
+
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
 
@@ -19,8 +22,11 @@ export default function MobileNav() {
     return null; // Don't render any component
   }
 
+ 
   return (
-    <header className="z-40 bg-white lg:hidden w-full fixed bottom-0 text-[12px]">
+    <header
+      className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} transition duration-300 z-40 bg-white lg:hidden w-full fixed bottom-0 text-[12px]`}
+    >
       <div className="relative w-[94%] mx-auto flex justify-between py-3">
         <Link
           href={"#"}
@@ -37,7 +43,7 @@ export default function MobileNav() {
           <span className="group-hover:text-flickmart duration-500">Saved</span>
         </Link>
         <Link
-          href={"#"}
+          href={"/create-store"}
           className="mx-6 flex flex-col items-center justify-center gap-1.5 group"
         >
           <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
@@ -50,7 +56,7 @@ export default function MobileNav() {
           </div>
         </Link>
         <Link
-          href={"#"}
+          href={"/chats"}
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <MessageSquareText className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />

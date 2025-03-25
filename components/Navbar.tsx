@@ -16,11 +16,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
-  const cPath = usePathname();
 
   const toggleProfile = () => {
     setIsOpen((prev) => !prev);
@@ -30,19 +36,9 @@ export default function Navbar() {
     setIsNavOpen((prev) => !prev);
   };
 
-  const handleLogout = () => {
-    location.href = "/sign-in";
-  };
-
   return (
-    <header
-      className={
-        cPath === "/home"
-          ? "relative z-30 w-full bg-flickmartLight shadow-sm shadow-black/20"
-          : "relative z-30 w-full bg-white shadow-sm shadow-black/20"
-      }
-    >
-      <div className="w-[95%] mx-auto py-2">
+    <header className="fixed z-30 top-0 w-full bg-flickmartLight shadow-sm shadow-black/20">
+      <div className="w-[95%] mx-auto py-1">
         <div className="w-full flex justify-between items-center">
           <Link href={"/"} className="flex gap-1 items-center">
             <Image
@@ -52,7 +48,7 @@ export default function Navbar() {
               className="h-12 w-12"
               alt=""
             />
-            <h1 className="font-bold text-xl">
+            <h1 className="font-bold text-xl mt-2">
               Flick<span className="text-flickmart">Mart</span>
             </h1>
           </Link>
@@ -76,8 +72,10 @@ export default function Navbar() {
                 <SignInButton mode="modal" />
               </SignedOut>
             </div>
-            <button className="py-2 px-8 text-sm font-bold rounded-md bg-flickmart text-white">
-              SELL
+            <button className="text-sm font-bold rounded-md bg-flickmart text-white">
+              <Link className="py-2 px-8 inline-block" href="/create-store">
+                SELL
+              </Link>
             </button>
           </div>
           <button onClick={toggleNav} className="lg:hidden">
@@ -86,9 +84,9 @@ export default function Navbar() {
         </div>
       </div>
       {isNavOpen && (
-        <div className="lg:hidden fixed inset-0 z-30 w-full h-screen bg-white">
+        <div className="lg:hidden absolute inset-0 z-30 w-full h-screen bg-white">
           <div className="w-[95%] mx-auto h-full">
-            <div className="w-full flex items-center justify-between py-2">
+            <div className="w-full flex items-center justify-between py-1">
               <div className="flex gap-1 items-center">
                 <Image
                   src="/flickmart-logo.svg"
@@ -97,7 +95,7 @@ export default function Navbar() {
                   className="h-12 w-12"
                   alt=""
                 />
-                <h1 className="font-bold text-xl">
+                <h1 className="font-bold text-xl mt-2">
                   Flick<span className="text-flickmart">Mart</span>
                 </h1>
               </div>
@@ -148,7 +146,6 @@ export default function Navbar() {
                   </span>
                 </Link>
                 <Link
-                  onClick={handleLogout}
                   href={"#"}
                   className="bg-black text-white rounded-md py-4 flex justify-center items-center mt-2"
                 >
