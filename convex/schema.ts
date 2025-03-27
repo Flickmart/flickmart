@@ -8,7 +8,7 @@ export default defineSchema({
     imageUrl: v.optional(v.string()),
     email: v.optional(v.string()),
   }).index("byExternalId", ["externalId"]),
-  business: defineTable({
+  store: defineTable({
     name: v.string(),
     location: v.string(),
     description: v.string(),
