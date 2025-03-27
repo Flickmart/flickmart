@@ -1,7 +1,17 @@
 "use client";
 
-import { useState, type ChangeEvent } from "react";
-import { Mail, MapPin, Phone, Edit2, Check, Camera } from "lucide-react";
+import { useState, type ChangeEvent, useEffect } from "react";
+import {
+  Mail,
+  MapPin,
+  Phone,
+  Edit2,
+  Check,
+  Camera,
+  Info,
+  User,
+  X,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,25 +19,24 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import clsx from "clsx";
+import cloneDeep from "lodash/cloneDeep";
+
+interface ProfileField {
+  icon: React.ElementType;
+  title: string;
+  value: string;
+}
 
 const SectionHeader = ({ title }: { title: string }) => (
   <h2 className="text-lg font-semibold">{title}</h2>
 );
 
 export default function MarketplaceProfile() {
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState<boolean | string>(false);
   const [personalInfo, setPersonalInfo] = useState({
-    fullName: "Ebuka",
     username: "ebuka223",
-    bio: "Flickmart building team",
     profilePicture: `/placeholder.svg`,
-  });
-  const [contactInfo, setContactInfo] = useState({
-    phone: "+234-904-235-0500",
-    email: "ebuka@gmail.com"
-  });
-  const [addressInfo, setAddressInfo] = useState({
-    address: "Enugu, Nigeria",
   });
   const handleProfilePictureChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -42,146 +51,217 @@ export default function MarketplaceProfile() {
       reader.readAsDataURL(file);
     }
   };
+  const profileFields: ProfileField[] = [
+    {
+      icon: User,
+      title: "Name",
+      value: "Ebuka",
+    },
+    {
+      icon: Info,
+      title: "About",
+      value: "Flickmart building team",
+    },
+    {
+      icon: Phone,
+      title: "Phone",
+      value: "+234-904-235-0500",
+    },
+    {
+      icon: Mail,
+      title: "Email",
+      value: "ebuka@gmail.com",
+    },
+    {
+      icon: MapPin,
+      title: "Location",
+      value: "Enugu, Nigeria",
+    },
+  ];
+  const [fields, setFields] = useState(profileFields);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth > 640 && typeof isEditMode === "string") {
+        setIsEditMode(false);
+      }
+      if (window.innerWidth < 640 && typeof isEditMode === "boolean") {
+        setIsEditMode(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  });
+
+  const [prevValue, setPrevValue] = useState<string | ProfileField[]>("");
   return (
-    <div className="min-h-screen bg-white p-4 lg:p-8">
+    <section className="min-h-screen bg-white p-4 lg:p-8">
       <div className="max-w-2xl space-y-6">
-        <Card className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
+        <Card className="border-none shadow-none sm:p-6">
+          <div className="mb-8 sm:flex sm:items-center sm:justify-between">
+            <div className="justify-center flex items-center gap-4">
               <div className="relative">
-                <Avatar className="h-20 w-20">
+                <Avatar className="size-36 sm:size-20">
                   <AvatarImage
                     src={personalInfo.profilePicture}
                     alt="Profile picture"
                   />
-                  <AvatarFallback className="capitalize">
-                    {personalInfo.fullName
+                  <AvatarFallback className="capitalize text-2xl">
+                    {profileFields[0].value
                       .split(" ")
                       .map((n) => n[0])
                       .join("")}
-                    {personalInfo.fullName
+                    {profileFields[0].value
                       .split(" ")
                       .map((n) => n[1])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
-                {isEditMode && (
-                  <Label
-                    htmlFor="profile-picture"
-                    className="absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-1 cursor-pointer"
-                  >
-                    <Camera className="h-4 w-4" />
-                    <Input
-                      id="profile-picture"
-                      type="file"
-                      accept="image/*"
-                      className="sr-only"
-                      onChange={handleProfilePictureChange}
-                    />
-                  </Label>
-                )}
+                <Label
+                  htmlFor="profile-picture"
+                  className={clsx(
+                    "absolute bottom-0 right-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer sm:p-1",
+                    { "sm:block": isEditMode, "sm:hidden": !isEditMode }
+                  )}
+                >
+                  <Camera className="size-5 sm:size-4" />
+                  <Input
+                    id="profile-picture"
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={handleProfilePictureChange}
+                  />
+                </Label>
               </div>
-              <div>
-                <h1 className="text-2xl font-semibold">{personalInfo.fullName}</h1>
-                <p className="text-sm text-muted-foreground">{personalInfo.username}</p>
+              <div className="hidden sm:block">
+                <h1 className="text-2xl font-semibold">
+                  {profileFields[0].value}
+                </h1>
+                <p className="text-sm text-muted-foreground">
+                  {personalInfo.username}
+                </p>
               </div>
             </div>
-            <Button onClick={() => setIsEditMode(!isEditMode)}>
-              {isEditMode ? (
-                <>
+            {isEditMode ? (
+              <div className="hidden sm:flex gap-4">
+                <Button
+                  onClick={() => setIsEditMode(false)}
+                  className="flex gap-0 pl-2 pr-3"
+                >
                   <Check className="mr-2 h-4 w-4" />
                   Save
-                </>
-              ) : (
-                <>
-                  <Edit2 className="mr-2 h-4 w-4" />
-                  Edit
-                </>
-              )}
-            </Button>
+                </Button>
+                <Button
+                  className="flex gap-0 bg-red-600 pl-2 pr-4 hover:bg-red-400"
+                  onClick={() => {
+                    setIsEditMode(false);
+                    setFields(prevValue as ProfileField[]);
+                  }}
+                >
+                  <X className="mr-2 h-4 w-4" />
+                  Cancel
+                </Button>
+              </div>
+            ) : (
+              <Button
+                className="hidden sm:flex"
+                onClick={() => {
+                  setIsEditMode(true);
+                  setPrevValue(cloneDeep(fields));
+                }}
+              >
+                <Edit2 className="mr-2 h-4 w-4" />
+                Edit
+              </Button>
+            )}
           </div>
-          <Separator className="my-6" />
-          <div className="space-y-6">
-            <div>
-              <SectionHeader title="About" />
-              <div className="mt-4">
-                {isEditMode ? (
-                  <Textarea
-                    value={personalInfo.bio}
-                    onChange={(e) =>
-                      setPersonalInfo({
-                        ...personalInfo,
-                        bio: e.target.value,
-                      })
-                    }
-                    rows={4}
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">{personalInfo.bio}</p>
+          <Separator className="my-6 hidden sm:block" />
+          <div className="space-y-3">
+            {fields.map((field, index) => (
+              <div
+                onClick={() => {
+                  if (innerWidth > 640 || isEditMode) return;
+                  setIsEditMode(field.title);
+                  setPrevValue(field.value);
+                }}
+                key={index}
+                className={clsx(
+                  "flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md sm:cursor-auto sm:hover:bg-white",
+                  {
+                    "text-gray-400 cursor-not-allowed": field.title === "Email",
+                    "cursor-auto hover:bg-white":
+                      isEditMode && field.title !== isEditMode,
+                    "hover:bg-gray-100 cursor-pointer": field.title !== "Email",
+                  }
                 )}
-              </div>
-            </div>
-            <div>
-              <SectionHeader title="Contact Information" />
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  {isEditMode ? (
-                    <Input
-                      value={contactInfo.phone}
-                      onChange={(e) =>
-                        setContactInfo({
-                          ...contactInfo,
-                          phone: e.target.value,
-                        })
-                      }
-                    />
-                  ) : (
-                    <span>{contactInfo.phone}</span>
+              >
+                <field.icon />
+                <div>
+                  <SectionHeader title={field.title} />
+                  <div className="mt-1">
+                    {(isEditMode == field.title || isEditMode === true) &&
+                    field.title !== "Email" ? (
+                      field.title === "About" ? (
+                        <Textarea
+                          value={field.value}
+                          onChange={(e) => {
+                            const newFields = [...fields];
+                            newFields[index].value = e.target.value;
+                            setFields(newFields);
+                          }}
+                          rows={4}
+                        />
+                      ) : (
+                        <input
+                          className="p-2 border rounded-sm"
+                          type="text"
+                          value={field.value}
+                          onChange={(e) => {
+                            const newFields = [...fields];
+                            newFields[index].value = e.target.value;
+                            setFields(newFields);
+                          }}
+                        />
+                      )
+                    ) : (
+                      <p
+                        className={clsx({
+                          "text-gray-400": field.title === "Email",
+                          "text-muted-foreground": field.title !== "Email",
+                        })}
+                      >
+                        {field.value}
+                      </p>
+                    )}
+                  </div>
+                  {isEditMode === field.title && field.title !== "Email" && (
+                    <div className="flex items-center gap-4 mt-3">
+                      <Button
+                        className="p-2 h-8 rounded-sm"
+                        onClick={() => setIsEditMode(false)}
+                      >
+                        Save
+                      </Button>
+                      <Button
+                        className="p-2 h-8 rounded-sm"
+                        onClick={() => {
+                          setIsEditMode(false);
+                          const newFields = [...fields];
+                          newFields[index].value = prevValue as string;
+                          setFields(newFields);
+                        }}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
                   )}
                 </div>
-                <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  {isEditMode ? (
-                    <Input
-                      value={contactInfo.email}
-                      disabled
-                      onChange={(e) =>
-                        setContactInfo({
-                          ...contactInfo,
-                          email: e.target.value,
-                        })
-                      }
-                    />
-                  ) : (
-                    <span>{contactInfo.email}</span>
-                  )}
-                </div>
               </div>
-            </div>
-            <div>
-              <SectionHeader title="Location" />
-              <div className="mt-4 flex items-start gap-2">
-                <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                {isEditMode ? (
-                  <Input
-                    value={addressInfo.address}
-                    onChange={(e) =>
-                      setAddressInfo({
-                        ...addressInfo,
-                        address: e.target.value,
-                      })
-                    }
-                    className="flex-1"
-                  />
-                ) : (
-                  <p>{addressInfo.address}</p>
-                )}
-              </div>
-            </div>
+            ))}
           </div>
         </Card>
       </div>
-    </div>
+    </section>
   );
 }
