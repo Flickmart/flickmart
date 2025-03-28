@@ -1,5 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+
 import { Providers } from "@/providers/providers";
 
 const defaultUrl = process.env.VERCEL_URL
@@ -25,7 +27,10 @@ export default function RootLayout({
     // <ClerkProvider>
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text relative">
-        <Providers>{children}</Providers>
+        <Providers>
+          {children}
+          <Toaster richColors position="top-right" />
+        </Providers>
       </body>
     </html>
     // </ClerkProvider>
