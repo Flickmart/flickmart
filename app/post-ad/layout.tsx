@@ -20,8 +20,8 @@ export default function RootLayout({
         }}
       />
 
-      <Navbar />
-      <AuthHeader />
+      {/* <Navbar /> */}
+      {/* <AuthHeader /> */}
       {children}
     </>
   );

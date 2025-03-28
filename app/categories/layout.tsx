@@ -1,5 +1,4 @@
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import NavigationBar from "@/components/NavigationBar";
 
 export default async function Layout({
@@ -9,6 +8,7 @@ export default async function Layout({
 }) {
   return (
     <>
+      <Navbar />
       <NavigationBar />
       {children}
     </>

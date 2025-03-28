@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "../ui/input";
 import Selector from "./Selector";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 const formSchema = z.object({
   businessName: z
@@ -60,6 +63,8 @@ const formSchema = z.object({
 });
 
 const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
+  const user = useQuery(api.users.current);
+  const create = useMutation(api.store.createStore);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -70,9 +75,25 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+
+    if (!user) {
+      return;
+    }
+    const promise =  create({
+      name: values.businessName,
+      location: values.location,
+      description: values.address,
+      image: values.businessName[0],
+      userId: user._id,
+    });
+    toast.promise(promise, {
+      loading: "Creating store...",
+      success: "Store created successfully",
+      error: "Failed to create store",
+    });
     setStage(3);
     console.log(values);
   }
