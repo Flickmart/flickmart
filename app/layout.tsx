@@ -1,6 +1,14 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import ReactQueryProvider from "@/lib/query-provider";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignUpButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -22,10 +30,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    <ClerkProvider>
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text relative">
+      {/* <header className="flex justify-end items-center p-4 gap-4 h-16">
+        <SignedOut>
+          <SignInButton />
+          <SignUpButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+        </header> */}
         <ReactQueryProvider>{children}</ReactQueryProvider>
       </body>
     </html>
+    </ClerkProvider>
   );
 }

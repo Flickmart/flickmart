@@ -1,10 +1,20 @@
 import { type NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
 
-export async function middleware(request: NextRequest) {
-  console.log(request);
-  // return await updateSession(request);
-}
+const isProtectedRoute = createRouteMatcher(['/home(.*)', '/post-ad(.*)', '/chats(.*)', '/'])
+
+export default clerkMiddleware(async (auth, request)=>{
+  console.log("hello from here")
+  if (isProtectedRoute(request)) {
+    await auth.protect()
+  }
+})
+// export async function middleware(request: NextRequest) {
+//   console.log(request);
+//   // return await updateSession(request);
+// }
+
 
 export const config = {
   matcher: [
@@ -17,5 +27,7 @@ export const config = {
      * Feel free to modify this pattern to include more paths.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
+    '/(api|trpc)(.*)',
   ],
 };
