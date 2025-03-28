@@ -11,6 +11,7 @@ import {
   Info,
   User,
   X,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import clsx from "clsx";
 import cloneDeep from "lodash/cloneDeep";
+import Link from "next/link";
 
 interface ProfileField {
   icon: React.ElementType;
@@ -292,6 +294,13 @@ export default function MarketplaceProfile() {
                 </div>
               </div>
             ))}
+            <Link
+              href="#"
+              className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
+            >
+              <Wallet />
+              <span className="text-lg font-semibold">Wallet</span>
+            </Link>
           </div>
         </Card>
       </div>
