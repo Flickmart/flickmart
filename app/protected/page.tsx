@@ -1,18 +1,20 @@
+"use client";
+
+import { SignIn, useUser } from "@clerk/nextjs";
+
 export default async function ProtectedPage() {
   // Authentication has been removed
-  const user = {
-    id: "demo-user",
-    email: "demo@example.com",
-    role: "authenticated",
-    created_at: new Date().toISOString()
-  };
+  const { user } = useUser();
+
+  if (!user) return <SignIn />;
 
   return (
     <div className="flex-1 w-full flex flex-col gap-12">
       <div className="w-full">
         <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
           <div className="text-yellow-500">⚠️</div>
-          This was a protected page, but authentication has been removed from the project.
+          This was a protected page, but authentication has been removed from
+          the project.
         </div>
       </div>
       <div className="flex flex-col gap-2 items-start">

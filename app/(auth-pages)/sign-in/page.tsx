@@ -46,17 +46,6 @@ export default function SignIn() {
     router.push("/home");
   };
 
-  // Automatically redirect to home page
-  useEffect(() => {
-    setLoadingStatus(true);
-    // Short delay to show loading state
-    const timer = setTimeout(() => {
-      router.push("/home");
-      setLoadingStatus(false);
-    }, 1000);
-    
-    return () => clearTimeout(timer);
-  }, [router, setLoadingStatus]);
 
   return (
     <main className="relative h-screen">
