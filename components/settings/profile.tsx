@@ -79,6 +79,16 @@ export default function MarketplaceProfile() {
     },
   ];
   const [fields, setFields] = useState(profileFields);
+  const [phoneError, setPhoneError] = useState(false);
+
+  const validatePhoneNumber = (phoneNumber: string) => {
+    const validation = /^(?:\+234|0)(?:70|80|81|90|91)\d{8}$/; //Only validates Nigerian phone numbers
+    if (!validation.test(phoneNumber)) {
+      setPhoneError(true);
+    } else {
+      setPhoneError(false);
+    }
+  };
 
   useEffect(() => {
     const handleResize = () => {
@@ -94,6 +104,7 @@ export default function MarketplaceProfile() {
   });
 
   const [prevValue, setPrevValue] = useState<string | ProfileField[]>("");
+
   return (
     <section className="min-h-screen bg-white p-4 lg:p-8">
       <div className="max-w-2xl space-y-6">
@@ -146,14 +157,16 @@ export default function MarketplaceProfile() {
             {isEditMode ? (
               <div className="hidden sm:flex gap-4">
                 <Button
-                  onClick={() => setIsEditMode(false)}
+                  onClick={() => {
+                    if (!phoneError) setIsEditMode(false);
+                  }}
                   className="flex gap-0 pl-2 pr-3"
                 >
                   <Check className="mr-2 h-4 w-4" />
                   Save
                 </Button>
                 <Button
-                  className="flex gap-0 bg-red-600 pl-2 pr-4 hover:bg-red-400"
+                  className="flex gap-0 bg-black/85 pl-2 pr-4 hover:bg-black/70"
                   onClick={() => {
                     setIsEditMode(false);
                     setFields(prevValue as ProfileField[]);
@@ -202,28 +215,69 @@ export default function MarketplaceProfile() {
                   <div className="mt-1">
                     {(isEditMode == field.title || isEditMode === true) &&
                     field.title !== "Email" ? (
-                      field.title === "About" ? (
-                        <Textarea
-                          value={field.value}
-                          onChange={(e) => {
-                            const newFields = [...fields];
-                            newFields[index].value = e.target.value;
-                            setFields(newFields);
-                          }}
-                          rows={4}
-                        />
-                      ) : (
-                        <input
-                          className="p-2 border rounded-sm"
-                          type="text"
-                          value={field.value}
-                          onChange={(e) => {
-                            const newFields = [...fields];
-                            newFields[index].value = e.target.value;
-                            setFields(newFields);
-                          }}
-                        />
-                      )
+                      <form>
+                        {field.title === "About" ? (
+                          <Textarea
+                            value={field.value}
+                            onChange={(e) => {
+                              const newFields = [...fields];
+                              newFields[index].value = e.target.value;
+                              setFields(newFields);
+                            }}
+                            rows={4}
+                          />
+                        ) : field.title === "Phone" ? (
+                          <>
+                            <Input
+                              className="p-2 border rounded-sm"
+                              type="tel"
+                              value={field.value}
+                              onChange={(e) => {
+                                const newFields = [...fields];
+                                newFields[index].value = e.target.value;
+                                setFields(newFields);
+                                validatePhoneNumber(e.target.value);
+                              }}
+                            />
+                            {phoneError && (
+                              <p className="text-red-500 text-sm mt-2 font-medium">
+                                Invalid phone number
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <Input
+                            className="p-2 border rounded-sm"
+                            type="text"
+                            value={field.value}
+                            onChange={(e) => {
+                              const newFields = [...fields];
+                              newFields[index].value = e.target.value;
+                              setFields(newFields);
+                            }}
+                          />
+                        )}
+                        <div className="flex items-center gap-4 mt-3 sm:hidden">
+                          <Button
+                            type="submit"
+                            className="p-2 h-8 rounded-sm"
+                            onClick={() => setIsEditMode(false)}
+                          >
+                            Save
+                          </Button>
+                          <Button
+                            className="p-2 h-8 rounded-sm bg-black/85 hover:bg-black/70"
+                            onClick={() => {
+                              setIsEditMode(false);
+                              const newFields = [...fields];
+                              newFields[index].value = prevValue as string;
+                              setFields(newFields);
+                            }}
+                          >
+                            Cancel
+                          </Button>
+                        </div>
+                      </form>
                     ) : (
                       <p
                         className={clsx({
@@ -235,27 +289,6 @@ export default function MarketplaceProfile() {
                       </p>
                     )}
                   </div>
-                  {isEditMode === field.title && field.title !== "Email" && (
-                    <div className="flex items-center gap-4 mt-3">
-                      <Button
-                        className="p-2 h-8 rounded-sm"
-                        onClick={() => setIsEditMode(false)}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        className="p-2 h-8 rounded-sm"
-                        onClick={() => {
-                          setIsEditMode(false);
-                          const newFields = [...fields];
-                          newFields[index].value = prevValue as string;
-                          setFields(newFields);
-                        }}
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  )}
                 </div>
               </div>
             ))}
