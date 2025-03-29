@@ -46,7 +46,7 @@ export default function AddPhoto() {
     <div className="bg-inherit capitalize py-5 text-xs lg:text-sm space-y-5 lg:space-y-3 text-gray-500">
       <h3 className="text-xl font-medium">add photo</h3>
       <p>The first picture would be the face of your advert</p>
-      <div className="flex space-x-3  items-center">
+      <div className="flex space-x-3 overflow-x-auto flex-wrap  items-center">
         <div
           onClick={handleBtnClick}
           className="cursor-pointer hover:bg-flickmart/80 bg-flickmart duration-200 rounded-lg w-20 h-14 flex justify-center items-center"
@@ -66,14 +66,13 @@ export default function AddPhoto() {
         {filePath && fileName ? 
         Array.from({length: filePath.length}).map((_, index)=>{
           return(
-            <div className="relative p-2 rounded-lg w-24 h-24 border border-gray-200">
+            <div key={index} className="relative p-2 rounded-lg w-24 h-24 border border-gray-200">
               <X
                 className="absolute right-1 top-1 cursor-pointer p-0.5"
                 onClick={()=>handleImageRemove(index)}
               />
               <Image
                 id={index.toString()}
-                key={index}
                 src={filePath[index] || ''}
                 alt={fileName[index]}
                 width={300}

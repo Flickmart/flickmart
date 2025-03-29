@@ -3,7 +3,7 @@
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
 
 export default function Home() {
-  const redirectSignIn= process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL
+  const redirectSignIn= process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL
   return (
     <div className="flex gap-3">
       <SignedIn>
