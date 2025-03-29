@@ -24,6 +24,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
+    // <ClerkProvider>
     <html lang="en" className={inter.className} suppressHydrationWarning>
       <body className="bg-background text relative">
         <Providers>
@@ -32,5 +33,6 @@ export default function RootLayout({
         </Providers>
       </body>
     </html>
+    // </ClerkProvider>
   );
 }
