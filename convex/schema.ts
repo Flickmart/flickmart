@@ -35,12 +35,13 @@ export default defineSchema({
     link: v.optional(v.string()),
   }),
   comments: defineTable({
-    productId: v.id("product"),
-    timeStamp: v.string(),
+    // productId: v.id("product"),
+    userId: v.id("users"),
+    timeStamp: v.number(),
     content: v.string(),
     likes: v.number(),
-    dislikes: v.number(),
-  }),
+      dislikes: v.number(),
+    }),
 
   conversations: defineTable({
     user1: v.id("users"),

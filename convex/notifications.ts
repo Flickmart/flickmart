@@ -54,3 +54,30 @@ export const createNotification = internalMutation({
     return notificationId;
   },
 });
+
+
+
+export const test = mutation({
+    handler:async(ctx)=>{
+        const identity = await ctx.auth.getUserIdentity();
+        if (!identity) {
+            throw new Error("Unauthorized");
+        }
+        const user = await getCurrentUser(ctx);
+
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+       
+        const post = await ctx.db.insert("comments", {
+            content: "Test",
+            userId: user._id,
+            timeStamp: Date.now(),
+            likes: 0,
+            dislikes: 0,
+        });
+        return post
+            
+    }
+})
