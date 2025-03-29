@@ -1,7 +1,7 @@
 "use client";
 
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
-
+import Link from "next/link";
 export default function Home() {
   const redirectSignIn= process.env.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL
   return (
@@ -13,6 +13,7 @@ export default function Home() {
         <SignInButton mode="modal"  fallbackRedirectUrl={redirectSignIn}/>
       </SignedOut>
       <span>Flickmart landing page</span>
+      <Link href="/home">Go to home</Link>
     </div>
   );
 }

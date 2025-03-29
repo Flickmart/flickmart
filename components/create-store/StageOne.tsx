@@ -1,7 +1,19 @@
 import Link from "next/link";
-import { Dispatch } from "react";
+import { Dispatch, useEffect } from "react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useRouter } from "next/navigation";
 
 const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
+  const router = useRouter();
+  const userStore = useQuery(api.store.getStoresByUserId);
+
+  useEffect(() => {
+    if (userStore?.[0]) {
+      router.push("/post-ad");
+    }
+  }, [userStore, router]);
+  
   return (
     <div>
       <h2 className="capitalize font-medium text-2xl mb-3 md:text-4xl">
