@@ -40,8 +40,8 @@ export default defineSchema({
     timeStamp: v.number(),
     content: v.string(),
     likes: v.number(),
-      dislikes: v.number(),
-    }),
+    dislikes: v.number(),
+  }),
 
   conversations: defineTable({
     user1: v.id("users"),
@@ -80,5 +80,7 @@ export default defineSchema({
     isRead: v.boolean(),
     timestamp: v.number(),
     link: v.optional(v.string()),
-  }),
+  })
+    .index("byUserId", ["userId"])
+    .index("byUserIdAndIsRead", ["userId", "isRead"]),
 });
