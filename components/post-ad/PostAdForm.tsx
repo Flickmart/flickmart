@@ -11,10 +11,12 @@ import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
 import { createAdPost, uploadImage } from "@/app/post-ad/action";
-import { useMutation } from "@tanstack/react-query";
 import { useOthersStore } from "@/store/useOthersStore";
 import toast from "react-hot-toast";
 import { FormDataType } from "@/types/form";
+import { useMutation as useMutationConvex} from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "@tanstack/react-query";
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -80,30 +82,33 @@ export default function PostAdForm() {
   });
   const { image, setLoadingStatus } = useOthersStore((state) => state);
   const [formData, setFormData] = useState<FormDataType | null>(null);
+  const createNewAd= useMutationConvex(api.product.create)
 
   // Form Submission
-  const { mutate: imgUploadMutate } = useMutation({
-    mutationFn: uploadImage,
-    onSuccess: (data) => {
-      toast.success("Image uploaded successfully");
-      const imgUrl = `https://tbgmruevxeutwcbwmvup.supabase.co/storage/v1/object/public/${data?.fullPath}`;
 
-      // The full object to be inserted
-      if (typeof formData?.title === "string") {
-        const modifiedObj = { ...formData, image: imgUrl };
-        adPostMutate(modifiedObj);
-      }
-    },
-    onError: (err) => {
-      toast.error(err.message);
-      setLoadingStatus(false);
-    },
-  });
+  // Image Uploading Temp disabled
+  // const { mutate: imgUploadMutate } = useMutation({
+  //   mutationFn: uploadImage,
+  //   onSuccess: (data) => {
+  //     toast.success("Image uploaded successfully");
+  //     const imgUrl = `https://tbgmruevxeutwcbwmvup.supabase.co/storage/v1/object/public/${data?.fullPath}`;
+
+  //     // The full object to be inserted
+  //     if (typeof formData?.title === "string") {
+  //       const modifiedObj = { ...formData, image: imgUrl };
+  //       adPostMutate(modifiedObj);
+  //     }
+  //   },
+  //   onError: (err) => {
+  //     toast.error(err.message);
+  //     setLoadingStatus(false);
+  //   },
+  // });
 
   const { mutate: adPostMutate } = useMutation({
-    mutationFn: createAdPost,
+    mutationFn: createNewAd,
     onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success("Ad created successfully...");
       console.log(data);
     },
     onError: (err) => toast.error(err.message),
@@ -112,10 +117,14 @@ export default function PostAdForm() {
 
   const onSubmit: SubmitType = (e) => {
     try {
+      
+      // const modifiedObj = {...e, businessId}
       setLoadingStatus(true);
+      // adPostMutate(modifiedObj);
+
       // store form data in state because we first need to upload image
-      setFormData(e);
-      imgUploadMutate(image);
+      // setFormData(e);
+      // imgUploadMutate(image);
     } finally {
       form.reset();
     }

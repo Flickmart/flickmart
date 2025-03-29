@@ -24,7 +24,7 @@ export default function Selector({
 }) {
   return (
     <div
-      className="border border-gray-300 lg:py- py-2.5 rounded-lg"
+      className="border border-gray-300 lg:py-5 py-2.5 rounded-lg"
     >
       <FormField
         control={form.control}

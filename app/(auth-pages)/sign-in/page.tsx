@@ -18,6 +18,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
+import { SignIn as Login } from '@clerk/nextjs'
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -48,6 +49,7 @@ export default function SignIn() {
 
   return (
     <main className="relative h-screen">
+      {/* <Login /> */}
       <AuthHeader />
       <section className="form-grid">
         <Image
