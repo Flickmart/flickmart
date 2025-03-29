@@ -9,7 +9,6 @@ import Image from "next/image";
 import { useState } from "react";
 const page = () => {
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
-  const [avatar, setAvatar] = useState<string | null>("");
   return (
     <>
       <header className="shadow-lg py-[24px] container-px sticky top-0 bg-white sm:hidden">
@@ -32,12 +31,10 @@ const page = () => {
         {stage === 2 && <StageTwo setStage={setStage} />}
         {stage === 3 && (
           <StageThree
-            avatar={avatar}
-            setAvatar={setAvatar}
             setStage={setStage}
           />
         )}
-        {stage === 4 && <StageFour avatar={avatar} setStage={setStage} />}
+        {stage === 4 && <StageFour />}
       </main>
     </>
   );

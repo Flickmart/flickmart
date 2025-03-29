@@ -1,7 +1,7 @@
 "use client";
 
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
-
+import Link from "next/link";
 export default function Home() {
   return (
     <div className="flex gap-3">
@@ -12,6 +12,7 @@ export default function Home() {
         <SignInButton mode="modal" />
       </SignedOut>
       <span>Flickmart landing page</span>
+      <Link href="/home">Go to home</Link>
     </div>
   );
 }
