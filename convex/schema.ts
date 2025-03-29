@@ -9,11 +9,11 @@ export default defineSchema({
     email: v.optional(v.string()),
   }).index("byExternalId", ["externalId"]),
   store: defineTable({
-    name: v.string(),
-    location: v.string(),
-    description: v.string(),
-    image: v.string(),
-    userId: v.string(),
+    name: v.optional(v.string()),
+    location: v.optional(v.string()),
+    description: v.optional(v.string()),
+    image: v.optional(v.string()),
+    userId: v.id("users"),
   }),
   product: defineTable({
     userId: v.id("users"),

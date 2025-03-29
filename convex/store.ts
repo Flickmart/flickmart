@@ -7,8 +7,8 @@ export const createStore = mutation({
     name: v.string(),
     location: v.string(),
     description: v.string(),
-    image: v.string(),
-    userId: v.string(),
+    image: v.optional(v.string()),
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const storeId = await ctx.db.insert("store", {
@@ -40,11 +40,20 @@ export const getAllStores = query({
 
 // Get stores by userId
 export const getStoresByUserId = query({
-  args: { userId: v.id("users") },
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return [];
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
+      .unique();
+
+    if (!user) return [];
+
     return await ctx.db
       .query("store")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
+      .filter((q) => q.eq(q.field("userId"), user._id))
       .collect();
   },
 });
