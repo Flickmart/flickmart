@@ -12,7 +12,7 @@ export default function Home() {
         <UserButton />
       </SignedIn>
       <SignedOut>
-        <SignInButton mode="modal"  fallbackRedirectUrl={redirectSignIn}/>
+        <SignInButton mode="modal" />
       </SignedOut>
       <span>Flickmart landing page</span>
       <Link href="/home">Go to home</Link>
