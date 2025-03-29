@@ -1,214 +1,165 @@
 "use client";
-import ConversationTab from "@/components/chats/ConversationTab";
-import ProfileTab from "@/components/chats/ProfileTab";
-import Image from "next/image";
-import React, { useState } from "react";
-import ChatItem from "@/components/chats/ChatItem";
-import SearchBar from "@/components/chats/SearchBar";
-import MobileNav from "@/components/MobileNav";
-import { ChevronLeft, EllipsisVertical, Link, Menu } from "lucide-react";
-import { Chat, Profile } from "./layout";
 
-const demoChats: Chat[] = [
-  {
-    userId: "1",
-    chatId: "1",
-    avatar: "/chat-avatars/chat-avatar-1.png",
-    name: "FlickMart",
-    preview: "welcome to flickmart your one stop",
-    timestamp: "7:45 PM",
-    unread: 3,
-  },
-  {
-    userId: "2",
-    chatId: "2",
-    avatar: "/chat-avatars/chat-avatar-2.png",
-    name: "Fisayo",
-    preview:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id labore dolores voluptatum accusamus, itaque mollitia!",
-    timestamp: "02 Dec",
-    unread: 3,
-  },
-  {
-    userId: "3",
-    chatId: "3",
-    avatar: "/chat-avatars/chat-avatar-3.png",
-    name: "Felix",
-    preview:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id labore dolores voluptatum accusamus, itaque mollitia!",
-    timestamp: "03 Apr",
-    unread: 0,
-  },
-  {
-    userId: "4",
-    chatId: "4",
-    avatar: "/chat-avatars/chat-avatar-4.png",
-    name: "Fashola",
-    preview:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Id labore dolores voluptatum accusamus, itaque mollitia!",
-    timestamp: "8:32 PM",
-    unread: 2,
-  },
-];
-const demoProfiles: Profile[] = [
-  {
-    userId: "1",
-    avatar: "/chat-avatars/chat-avatar-1.png",
-    name: "FlickMart",
-    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-    products: [...Array(8)],
-  },
-  {
-    userId: "2",
-    avatar: "/chat-avatars/chat-avatar-2.png",
-    name: "FlickMart",
-    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-    products: [...Array(8)],
-  },
-  {
-    userId: "3",
-    avatar: "/chat-avatars/chat-avatar-3.png",
-    name: "FlickMart",
-    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-    products: [...Array(8)],
-  },
-  {
-    userId: "4",
-    avatar: "/chat-avatars/chat-avatar-4.png",
-    name: "FlickMart",
-    desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae molestias optio cumque molestiae aliquid minus?",
-    products: [...Array(8)],
-  },
-];
+import type React from "react";
 
-export default function page() {
-  const [currentProfile, setCurrentProfile] = useState<string | null>(null);
-  const tabs: string[] = ["all", "unread", "archived"];
-  const [currentConversation, setCurrentConversation] = useState<string | null>(
-    null
-  );
-  const [chat, setChat] = useState<Array<{ message: string; type: string }>>(
-    []
-  );
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { demoChats, demoMessages } from "@/lib/demo-data";
+import WelcomeScreen from "@/components/chats/welcome-screen";
+import ChatSidebar from "@/components/chats/chat-sidebar";
+import ChatHeader from "@/components/chats/chat-header";
+import ChatMessages from "@/components/chats/chat-messages";
+import ChatInput from "@/components/chats/chat-input";
+import { Wallet } from "lucide-react";
 
-  // useEffect(function () {
-  //   const user = JSON.parse(localStorage.getItem("user")!); //temporary
+interface Message {
+  id: string;
+  chatId: string;
+  content: string;
+  role: "user" | "assistant";
+  timestamp: Date;
+}
 
-  //   // Connect to socket server on page load
-  //   context?.socket.on("connect", () => {
-  //     console.log(`${context?.socket.id} socket connected`);
-  //   });
-  //   const name = (user?.user_metadata.name as string)?.split(" ").join("");
+type FilterType = "all" | "unread" | "archived";
 
-  //   // Join room
-  //   context?.socket.emit("join", { name });
+export default function ChatPage() {
+  const [input, setInput] = useState("");
+  const [activeChat, setActiveChat] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<Message[]>(demoMessages);
+  const [isTyping, setIsTyping] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
 
-  //   // Create event to listen for messages from server
-  //   context?.socket.on(
-  //     "privateMessage",
-  //     (data: { message: string; type: string; time: string }) => {
-  //       context.setChat((prev) => [...prev, data]);
-  //     }
-  //   );
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  //   return () => {
-  //     context?.socket.disconnect();
-  //   };
-  // }, []);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    if (activeChat) {
+      scrollToBottom();
+    }
+  }, [chatMessages, activeChat]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() || !activeChat) return;
+
+    // Add user message
+    const newMessage = {
+      id: Date.now().toString(),
+      chatId: activeChat,
+      content: input,
+      role: "user" as const,
+      timestamp: new Date(),
+    };
+
+    setChatMessages([...chatMessages, newMessage]);
+    setInput("");
+
+    // Simulate AI response
+    setIsTyping(true);
+    setTimeout(() => {
+      const aiResponse = {
+        id: (Date.now() + 1).toString(),
+        chatId: activeChat,
+        content: `This is a response to "${input}"`,
+        role: "assistant" as const,
+        timestamp: new Date(),
+      };
+      setChatMessages((prev) => [...prev, aiResponse]);
+      setIsTyping(false);
+    }, 1500);
+  };
+
+  // Filter chats based on the active filter
+  const filteredChats = demoChats.filter((chat) => {
+    // Apply search filter
+    const matchesSearch =
+      chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+
+    // Apply tab filter
+    if (activeFilter === "unread") {
+      return matchesSearch && chat.unread > 0;
+    } else if (activeFilter === "archived") {
+      return matchesSearch && chat.archived;
+    }
+
+    return matchesSearch;
+  });
+
+  const activeMessages = activeChat
+    ? chatMessages.filter((msg) => msg.chatId === activeChat)
+    : [];
+
+  const activeChatData = activeChat
+    ? {
+        name: demoChats.find((chat) => chat.id === activeChat)?.name || "",
+      }
+    : null;
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
 
   return (
-    <main className=" flex">
-      <section
-        className={` ${currentConversation || currentProfile ? "hidden md:block" : ""} py-7 px-3 w-1/4`}
-      >
-        <header className="shadow-lg py-4 px-2 flex items-center justify-between sticky top-0 bg-white md:static md:bg-transparent md:px-4 md:shadow-none md:py-0">
-          <Link
-            href="/home"
-            type="button"
-            className="flex font-light items-center transition-colors text-flickmart-gray hover:text-flickmart duration-300 md:hidden"
-          >
-            <ChevronLeft size={35} strokeWidth={1.5} />
-            Chats
-          </Link>
-          <button
-            type="button"
-            className="transition-colors text-flickmart-gray hover:text-flickmart duration-300 md:hidden"
-          >
-            <EllipsisVertical strokeWidth={1.5} />
-          </button>
-          <h2 className="uppercase text-flickmart font-semibold text-xl hidden md:block">
-            Chats
-          </h2>
-          <button
-            type="button"
-            className="hidden transition-colors text-flickmart-gray hover:text-flickmart duration-300 md:block"
-          >
-            <Menu />
-          </button>
-        </header>
-        <SearchBar />
-        <div className="px-4 mt-5 space-x-3">
-          {tabs.map((tab, index) => (
-            <button
-              type="button"
-              key={tab}
-              className={`capitalize bg-flickmart-chat-gray px-4 py-2 rounded-full text-sm ${index === 0 ? "bg-[#ff810050] text-[#FF8100]" : "text-black/65"} hover:bg-[#FF810050] hover:text-[#FF8100] transition-colors duration-300 `}
-            >
-              {tab}
-            </button>
-          ))}
-        </div>
-        <ul className="mt-5">
-          {demoChats.map((demoChat) => {
-            return (
-              <ChatItem
-                demoChat={demoChat}
-                key={demoChat.chatId}
-                setCurrentConversation={setCurrentConversation}
-                setCurrentProfile={setCurrentProfile}
-              />
-            );
-          })}
-        </ul>
-      </section>
+    <div className="flex h-screen w-full overflow-hidden bg-gray-100">
+      {/* Sidebar */}
+      <ChatSidebar
+        sidebarOpen={sidebarOpen}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        activeFilter={activeFilter}
+        setActiveFilter={setActiveFilter}
+        activeChat={activeChat}
+        setActiveChat={setActiveChat}
+        setSidebarOpen={setSidebarOpen}
+      />
 
-      {currentProfile ? (
-        <ProfileTab
-          currentProfile={demoProfiles.find(
-            (item) => item.userId === currentProfile
-          )}
-          setCurrentProfile={setCurrentProfile}
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+          onClick={() => setSidebarOpen(false)}
         />
-      ) : (
-        <section
-          className={`bg-[#D9D9D926] ${currentConversation ? "" : ""} relative md:h-screen overflow-y-auto flex-grow`}
-        >
-          {currentConversation ? (
-            <ConversationTab
-              currentConversation={demoChats.find(
-                (item) => item.chatId === currentConversation
-              )}
-              setCurrentConversation={setCurrentConversation}
-              setCurrentProfile={setCurrentProfile}
-              setChat={setChat}
-              chat={chat}
-            />
-          ) : (
-            <div className="text-center hidden absolute w-full top-1/2 -translate-y-1/2 md:block">
-              <Image
-                src="/chat-avatars/Character.svg"
-                alt="woman throwing a paper airplane"
-                width={312}
-                height={312}
-                className="mx-auto w-1/2 max-w-[300px]"
-              />
-              <p className="font-light mt-2">
-                Select a chat to view conversation.
-              </p>
-            </div>
-          )}
-        </section>
       )}
-    </main>
+
+      {/* Main chat area */}
+      <div className="flex flex-col flex-1 w-full h-full overflow-hidden">
+        {activeChat ? (
+          <div className="flex flex-col h-full">
+            <ChatHeader
+              toggleSidebar={toggleSidebar}
+              activeChatData={activeChatData}
+              isTyping={isTyping}
+            />
+            <div className="flex-1 overflow-y-auto">
+              <ChatMessages messages={activeMessages} />
+            </div>
+            <div className="fixed bottom-[88px] right-6 z-20">
+              <Button size="icon" className="rounded-full">
+                <Wallet className="w-h h-5" />
+              </Button>
+            </div>
+            <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
+              <ChatInput
+                input={input}
+                setInput={setInput}
+                handleSubmit={handleSubmit}
+              />
+            </div>
+          </div>
+        ) : (
+          <WelcomeScreen onOpenSidebar={toggleSidebar} />
+        )}
+      </div>
+    </div>
   );
 }

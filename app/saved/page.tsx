@@ -28,8 +28,11 @@ export default function SavedPage() {
                     <SavedItem />
                 </div>
             ):(
-                <div className="flex flex-col gap-5">
-
+                <div className="w-[95%] mx-auto flex flex-col gap-3 mt-3">
+                    <SavedItem />
+                    <SavedItem />
+                    <SavedItem />
+                    <SavedItem />
                 </div>
             )}
         </main>
