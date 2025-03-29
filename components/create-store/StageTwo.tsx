@@ -75,23 +75,22 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
     },
   });
 
-   function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
     if (!user) {
       return;
     }
-    const promise =  create({
+    const promise = create({
       name: values.businessName,
       location: values.location,
       description: values.address,
-      image: values.businessName[0],
       userId: user._id,
     });
     toast.promise(promise, {
-      loading: "Creating store...",
-      success: "Store created successfully",
+      loading: "Saving store details...",
+      success: "Details saved  succesfully",
       error: "Failed to create store",
     });
     setStage(3);

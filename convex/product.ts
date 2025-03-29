@@ -65,38 +65,38 @@ export const getByLocation = query({
 // Create a new product
 export const create = mutation({
   args: {
-    name: v.string(),
+    title: v.string(),
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
     businessId: v.id("business"),
     category: v.optional(v.string()),
-    adType: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
-    exchangePossible: v.boolean(),
-    isNew: v.boolean(),
+    plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
+    exchange: v.boolean(),
+    condition: v.boolean(),
     location: v.union(v.literal("Enugu"), v.literal("Nsuka")),
     link: v.optional(v.string()),
-    negotiable: v.boolean(),
-    commentsId: v.id("comment"),
+    negotiable: v.optional(v.boolean()),
+    // commentsId: v.id("comment"),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
 
     const productId = await ctx.db.insert("product", {
       userId: user._id,
-      name: args.name,
+      title: args.title,
       description: args.description,
       images: args.images,
       price: args.price,
       businessId: args.businessId,
+      // commentsId: null, // Adding required commentsId field with null value
       category: args.category,
       likes: 0,
       dislikes: 0,
-      commentsId: args.commentsId,
-      adType: args.adType,
+      plan: args.plan,
       negotiable: args.negotiable,
-      exchangePossible: args.exchangePossible,
-      isNew: args.isNew,
+      exchange: args.exchange,
+      condition: args.condition,
       timeStamp: new Date().toISOString(),
       location: args.location,
       link: args.link,
@@ -119,7 +119,7 @@ export const update = mutation({
       v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
     ),
     exchangePossible: v.optional(v.boolean()),
-    isNew: v.optional(v.boolean()),
+    condition: v.optional(v.boolean()),
     location: v.optional(v.union(v.literal("Enugu"), v.literal("Nsuka"))),
     link: v.optional(v.string()),
   },
@@ -146,7 +146,7 @@ export const update = mutation({
       "category",
       "adType",
       "exchangePossible",
-      "isNew",
+      "condition",
       "location",
       "link",
     ] as const;
@@ -210,7 +210,7 @@ export const likeProduct = mutation({
       type: "new_like",
       relatedId: args.productId,
       title: `${user.name} liked your product`,
-      content: `${user.name} liked your product "${product.name}"`,
+      content: `${user.name} liked your product "${product.title}"`,
       imageUrl: user.imageUrl,
       isRead: false,
       timestamp: Date.now(),
@@ -247,7 +247,7 @@ export const search = query({
     category: v.optional(v.string()),
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
-    isNew: v.optional(v.boolean()),
+    condition: v.optional(v.boolean()),
     exchangePossible: v.optional(v.boolean()),
     sortBy: v.optional(
       v.union(
@@ -265,7 +265,7 @@ export const search = query({
     // Apply text search filter
     products = products.filter(
       (product) =>
-        product.name.toLowerCase().includes(searchQuery) ||
+        product.title.toLowerCase().includes(searchQuery) ||
         product.description.toLowerCase().includes(searchQuery) ||
         (product.category &&
           product.category.toLowerCase().includes(searchQuery))
@@ -295,15 +295,15 @@ export const search = query({
       products = products.filter((product) => product.price <= args.maxPrice!);
     }
 
-    // Apply isNew filter
-    if (args.isNew !== undefined) {
-      products = products.filter((product) => product.isNew === args.isNew);
+    // Apply condition filter
+    if (args.condition !== undefined) {
+      products = products.filter((product) => product.condition === args.condition);
     }
 
     // Apply exchangePossible filter
     if (args.exchangePossible !== undefined) {
       products = products.filter(
-        (product) => product.exchangePossible === args.exchangePossible
+        (product) => product.exchange === args.exchangePossible
       );
     }
 
@@ -317,7 +317,7 @@ export const search = query({
     // Sort products based on criteria and ad type priority
     products.sort((a, b) => {
       // First sort by ad type priority
-      const adTypeDiff = adTypePriority[b.adType] - adTypePriority[a.adType];
+      const adTypeDiff = adTypePriority[b.plan] - adTypePriority[a.plan];
       if (adTypeDiff !== 0) return adTypeDiff;
 
       // Then apply the requested sort order
@@ -377,7 +377,7 @@ export const getRecommendations = query({
         premium: 3,
         pro: 2,
         basic: 1,
-      }[product.adType];
+      }[product.plan];
       score += adTypeScore * 0.3;
 
       // 2. Engagement Score (20% weight)
@@ -462,7 +462,7 @@ export const getTrending = query({
 
       // Calculate final score
       const score =
-        engagementVelocity * (product.adType === "premium" ? 1.5 : 1);
+        engagementVelocity * (product.plan === "premium" ? 1.5 : 1);
 
       return { product, score };
     });
@@ -504,8 +504,8 @@ export const getSimilarProducts = query({
 
       // 1. Name Similarity (30% weight)
       const nameSimilarity = calculateTextSimilarity(
-        targetProduct.name.toLowerCase(),
-        product.name.toLowerCase()
+        targetProduct.title.toLowerCase(),
+        product.title.toLowerCase()
       );
       score += nameSimilarity * 0.3;
 
@@ -536,12 +536,12 @@ export const getSimilarProducts = query({
       score += (locationMatch ? 1 : 0) * 0.05;
 
       // 6. Condition Match (5% weight)
-      const conditionMatch = targetProduct.isNew === product.isNew;
+      const conditionMatch = targetProduct.condition === product.condition;
       score += (conditionMatch ? 1 : 0) * 0.05;
 
       // 7. Exchange Possibility Match (5% weight)
       const exchangeMatch =
-        targetProduct.exchangePossible === product.exchangePossible;
+        targetProduct.exchange === product.exchange;
       score += (exchangeMatch ? 1 : 0) * 0.05;
 
       // Ad Type Boost - Apply a slight multiplier for premium ads
@@ -549,7 +549,7 @@ export const getSimilarProducts = query({
         premium: 1.1,
         pro: 1.05,
         basic: 1,
-      }[product.adType];
+      }[product.plan];
       score *= adTypeBoost;
 
       return { product, score };
