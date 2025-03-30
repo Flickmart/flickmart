@@ -2,10 +2,6 @@ import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
 
-
-
-
-
 export const createNotification = internalMutation({
   args: {
     type: v.union(
@@ -97,6 +93,7 @@ export const getNotifications = query({
     const notifications = await ctx.db
       .query("notifications")
       .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .order("desc")
       .collect();
 
     return notifications;
@@ -121,10 +118,19 @@ export const updateNotification = mutation({
       throw new Error("User not found");
     }
 
-    await ctx.db.patch(args.notificationId, {
-      isRead: args.isRead,
-      link: args.link,
-    });
+    // Create a patch object with only the fields that are provided
+    const patchObj: Record<string, any> = {};
+    if (args.isRead !== undefined) {
+      patchObj.isRead = args.isRead;
+    }
+    if (args.link !== undefined) {
+      patchObj.link = args.link;
+    }
+
+    // Only apply the patch if there are fields to update
+    if (Object.keys(patchObj).length > 0) {
+      await ctx.db.patch(args.notificationId, patchObj);
+    }
   },
 });
 
@@ -180,6 +186,7 @@ export const markAllNotificationsAsRead = mutation({
     return true;
   },
 });
+
 export const deleteAllNotifications = mutation({
   args: {},
   handler: async (ctx) => {

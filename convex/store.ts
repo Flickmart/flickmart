@@ -1,6 +1,7 @@
+import { internal } from "./_generated/api";
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-
+import { getCurrentUser } from "./users";
 // Create a new store
 export const createStore = mutation({
   args: {
@@ -8,18 +9,56 @@ export const createStore = mutation({
     location: v.string(),
     description: v.string(),
     image: v.optional(v.string()),
-    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await getCurrentUser(ctx);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     const storeId = await ctx.db.insert("store", {
       name: args.name,
       location: args.location,
       description: args.description,
       image: args.image,
-      userId: args.userId,
+      userId: user._id,
+    });
+
+    await ctx.runMutation(internal.notifications.createNotification, {
+      title: "New Store Created",
+      content: `Your store ${args.name} has been created successfully`,
+      imageUrl: args.image,
+      isRead: false,
+      timestamp: Date.now(),
+      link: `/store/${storeId}`,
+      type: "advertisement",
+      
     });
 
     return storeId;
+  },
+});
+
+export const addImage = mutation({
+  args: {
+    storeId: v.id("store"),
+    image: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const store = await ctx.db.get(args.storeId);
+    if (!store) {
+      throw new Error("Store not found");
+    }
+    const update = await ctx.db.patch(args.storeId, {
+      image: args.image,
+    });
+    return update;
   },
 });
 

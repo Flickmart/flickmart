@@ -1,8 +1,6 @@
 "use client";
 
 import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
-import {useMutation} from "convex/react"
-import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 export default function Home() {
 
