@@ -81,7 +81,10 @@ export default function Navbar() {
                     <Settings strokeWidth={1.25} className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
-                  <Link href={"#"} className="flex items-center gap-2">
+                  <Link
+                    href="settings/personal"
+                    className="flex items-center gap-2"
+                  >
                     <LogOut strokeWidth={1.25} className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>

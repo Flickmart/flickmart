@@ -8,9 +8,18 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ArrowLeft, EllipsisVertical, Pencil, Trash } from "lucide-react";
+import clsx from "clsx";
+import {
+  ArrowLeft,
+  EllipsisVertical,
+  Pencil,
+  Search,
+  Trash,
+  X,
+} from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -47,6 +56,7 @@ export default function ProductsPage() {
   const [productsMenuStates, setProductsMenuStates] = useState<
     ProductMenuState[]
   >([]);
+  const [searchBarIsVisible, setSearchBarIsVisible] = useState(false);
 
   useEffect(() => {
     setProductsMenuStates(
@@ -62,7 +72,7 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex flex-col gap-8 p-4 lg:px-10">
       <header className="flex items-center">
         {!isMobile ? (
           <SidebarTrigger className="-ml-1" />
@@ -87,7 +97,7 @@ export default function ProductsPage() {
           </BreadcrumbList>
         </Breadcrumb>
       </header>
-      <div className="grid gap-4 md:grid-cols-3">
+      {/* <div className="grid gap-4 md:grid-cols-3">
         <div className="rounded-xl bg-muted/50 p-6">
           <h3 className="text-lg font-semibold">Total Products</h3>
           <p className="text-3xl font-bold mt-2">1,234</p>
@@ -100,9 +110,48 @@ export default function ProductsPage() {
           <h3 className="text-lg font-semibold">Low Stock</h3>
           <p className="text-3xl font-bold mt-2">45</p>
         </div>
+      </div> */}
+      <div className={clsx("flex items-center justify-between h-20 sm:h-32")}>
+        <div
+          className={clsx("flex items-center gap-3", {
+            "hidden lg:flex": searchBarIsVisible,
+          })}
+        >
+          <div className="relative size-20 sm:size-32">
+            <Image src="/store-avatar.png" alt="avatar" fill />
+          </div>
+          <div>
+            <h1 className="text-xl capitalize sm:text-2xl">Mbah Tolu stores</h1>
+            <p className="text-xs text-black/60 sm:text-sm">
+              {" "}
+              Select goods from this store
+            </p>
+          </div>
+        </div>
+        <div
+          className={clsx(" rounded-md overflow-hidden", {
+            "grid grid-cols-[1fr_40px] flex-grow bg-gray-200 h-11 transition-[border] border-[1.5px] focus-within:border-flickmart lg:flex-none":
+              searchBarIsVisible,
+          })}
+        >
+          {searchBarIsVisible && (
+            <Input className="bg-transparent  h-full" placeholder="Search..." />
+          )}
+          <button
+            onClick={() => {
+              setSearchBarIsVisible(!searchBarIsVisible);
+            }}
+            className="flex items-center justify-center"
+          >
+            {searchBarIsVisible ? (
+              <X className="text-[#757474C2] hover:text-flickmart transition-colors duration-300 sm:size-7" />
+            ) : (
+              <Search className="text-[#757474C2] hover:text-flickmart transition-colors duration-300 sm:size-7" />
+            )}
+          </button>
+        </div>
       </div>
-      <div className="rounded-xl bg-muted/50 p-6">
-        <h3 className="text-lg font-semibold mb-4">Product List</h3>
+      <div>
         <ul className="grid gap-4">
           {demoProducts.map((product) => (
             <li

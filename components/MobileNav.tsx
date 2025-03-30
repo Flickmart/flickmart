@@ -76,7 +76,7 @@ export default function MobileNav() {
           <span className="group-hover:text-flickmart duration-500">Chats</span>
         </Link>
         <Link
-          href={"#"}
+          href="settings/personal"
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <UserRound className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />
