@@ -76,7 +76,7 @@ export default function MobileNav() {
           <span className={`${pathname === '/notifications' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Notifications</span>
         </Link>
         <Link
-          href={"/profile"}
+          href="settings/personal"
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <UserRound className={`${pathname === '/profile' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
