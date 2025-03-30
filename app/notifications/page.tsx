@@ -95,7 +95,7 @@ const Page = () => {
 
   const handleMarkAllAsRead = async (): Promise<void> => {
     // Check if there are any unread notifications
-    if (unreadNotifications.length === 0) {
+    if (unreadCount === 0) {
       toast.info("All notifications are already read");
       return;
     }
