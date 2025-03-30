@@ -10,7 +10,6 @@ import MobileHeader from "@/components/MobileHeader";
 
 const page = () => {
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
-  const [avatar, setAvatar] = useState<string | null>("");
   return (
     <>
     <MobileHeader title="Create Store" />
@@ -28,12 +27,10 @@ const page = () => {
         {stage === 2 && <StageTwo setStage={setStage} />}
         {stage === 3 && (
           <StageThree
-            avatar={avatar}
-            setAvatar={setAvatar}
             setStage={setStage}
           />
         )}
-        {stage === 4 && <StageFour avatar={avatar} setStage={setStage} />}
+        {stage === 4 && <StageFour />}
       </main>
     </>
   );

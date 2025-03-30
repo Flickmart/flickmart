@@ -1,20 +1,10 @@
-export interface Chat {
-  userId: string;
-  chatId: string;
-  avatar: string;
-  name: string;
-  preview: string;
-  timestamp: string;
-  unread: number;
-}
-export interface Profile {
-  userId: string;
-  avatar: string;
-  name: string;
-  desc: string;
-  products: undefined[];
-}
+import React from "react";
+const ChatLayout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div>
+      {children}
+    </div>
+  );
+};
 
-export default function layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
-}
+export default ChatLayout;

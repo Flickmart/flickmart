@@ -15,7 +15,7 @@ export async function uploadImage(file: File | null) {
   }
 }
 
-export async function createAdPost(data: FormDataType & { image: string }) {
+export async function createAdPost(data: FormDataType) {
   const response = await fetch("/api/ad-posts", {
     method: "POST",
     headers: {

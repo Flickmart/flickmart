@@ -1,4 +1,5 @@
 "use client";
+import useNav from "@/hooks/useNav";
 import {
   Bookmark,
   House,
@@ -8,12 +9,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function MobileNav() {
   const pathname = usePathname();
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+
+  const isVisible = useNav()
 
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
@@ -22,20 +22,7 @@ export default function MobileNav() {
     return null; // Don't render any component
   }
 
-  function handleScroll() {
-    if (window.scrollY > lastScrollY) {
-      setIsVisible(false); // Hide on scroll down
-    } else {
-      setIsVisible(true); // Show on scroll up
-    }
-    setLastScrollY(window.scrollY);
-  }
-
-  useEffect(() => {
-    addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
-
+ 
   return (
     <header
       className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} transition duration-300 z-40 bg-white lg:hidden w-full fixed bottom-0 text-[12px]`}
