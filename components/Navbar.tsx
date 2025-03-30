@@ -1,22 +1,16 @@
 "use client";
 
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { UserButton,  SignInButton, useUser } from "@clerk/nextjs";
 import {
   Bell,
-  BellDot,
-  Bookmark,
   ChevronDown,
-  CircleUserRound,
   Loader2,
-  LogOut,
   Menu,
   MessageSquareText,
-  Settings,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import {
   DropdownMenu,
@@ -27,11 +21,10 @@ import {
 } from "./ui/dropdown-menu";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import { useUser } from "@clerk/nextjs";
+
+
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const { isSignedIn, isLoaded } = useUser();
   const unreadNotifications =
@@ -39,9 +32,7 @@ export default function Navbar() {
 
   const userStore = useQuery(api.store.getStoresByUserId);
 
-  const toggleProfile = () => {
-    setIsOpen((prev) => !prev);
-  };
+  
 
   const toggleNav = () => {
     setIsNavOpen((prev) => !prev);
@@ -68,7 +59,7 @@ export default function Navbar() {
             <div
               className="relative flex items-center gap-3"
               tabIndex={0} // Makes it focusable
-              onBlur={() => setIsOpen(false)}
+              
             >
               <Link href="/chats">
                 <MessageSquareText

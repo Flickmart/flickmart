@@ -139,12 +139,12 @@ export const getUnreadNotifications = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      return [];
     }
 
     const user = await getCurrentUser(ctx);
     if (!user) {
-      throw new Error("User not found");
+      return [];
     }
 
     const notifications = await ctx.db
