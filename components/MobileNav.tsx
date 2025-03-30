@@ -6,14 +6,20 @@ import {
   MessageSquareText,
   Store,
   UserRound,
+  Bell,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function MobileNav() {
   const pathname = usePathname();
-
-  const isVisible = useNav()
+  const isVisible = useNav();
+  
+  // Fetch unread notifications count
+  const unreadNotifications = useQuery(api.notifications.getUnreadNotifications) || [];
+  const unreadCount = unreadNotifications.length;
 
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
@@ -29,18 +35,18 @@ export default function MobileNav() {
     >
       <div className="relative w-[94%] mx-auto flex justify-between py-3">
         <Link
-          href={"#"}
+          href="/"
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
-          <House className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />
-          <span className="group-hover:text-flickmart duration-500">Home</span>
+          <House className={`${pathname === '/' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
+          <span className={`${pathname === '/' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Home</span>
         </Link>
         <Link
-          href={"#"}
+          href="/saved"
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
-          <Bookmark className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />
-          <span className="group-hover:text-flickmart duration-500">Saved</span>
+          <Bookmark className={`${pathname === '/saved' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
+          <span className={`${pathname === '/saved' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Saved</span>
         </Link>
         <Link
           href={"/create-store"}
@@ -56,18 +62,25 @@ export default function MobileNav() {
           </div>
         </Link>
         <Link
-          href={"/chats"}
-          className="flex flex-col items-center justify-center gap-1.5 group"
+          href={"/notifications"}
+          className="flex flex-col items-center justify-center gap-1.5 group relative"
         >
-          <MessageSquareText className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />
-          <span className="group-hover:text-flickmart duration-500">Chats</span>
+          <div className="relative">
+            <Bell className={`${pathname === '/notifications' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
+            {unreadCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 flex items-center justify-center px-1">
+                {unreadCount > 99 ? '99+' : unreadCount}
+              </span>
+            )}
+          </div>
+          <span className={`${pathname === '/notifications' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Notifications</span>
         </Link>
         <Link
           href="settings/personal"
           className="flex flex-col items-center justify-center gap-1.5 group"
         >
-          <UserRound className="text-flickmart-gray group-hover:text-flickmart duration-500 h-5 w-5" />
-          <span className="group-hover:text-flickmart duration-500">
+          <UserRound className={`${pathname === '/profile' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
+          <span className={`${pathname === '/profile' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>
             Profile
           </span>
         </Link>

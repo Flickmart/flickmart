@@ -11,7 +11,7 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const imagePickerRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const userStore = useQuery(api.store.getStoresByUserId);
-  const mutate = useMutation(api.store.updateStore);
+  const mutate = useMutation(api.store.addImage);
 
   const { startUpload } = useUploadThing("imageUploader");
 
@@ -30,7 +30,7 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
 
         toast.success("Image uploaded successfully");
         await mutate({
-          id: userStore[0]._id!,
+          storeId: userStore[0]._id!,
           image: res[0].ufsUrl,
         });
       }
@@ -100,9 +100,10 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
           <button
             onClick={() => {
               mutate({
-                id: userStore[0]._id!,
-                image: undefined,
+                storeId: userStore[0]._id!,
+                image: "",
               });
+              toast.success("Image removed successfully");
             }}
             type="button"
             className="mt-4 text-sm text-flickmart font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"

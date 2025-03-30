@@ -14,19 +14,19 @@ export default defineSchema({
     description: v.optional(v.string()),
     image: v.optional(v.string()),
     userId: v.id("users"),
-  }),
+  }).index("byUserId", ["userId"]),
   product: defineTable({
     userId: v.id("users"),
     title: v.string(),
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
-    businessId: v.id("business"),
+    storeId: v.id("store"),
     category: v.optional(v.string()),
     likes: v.number(),
     dislikes: v.number(),
     negotiable: v.optional(v.boolean()),
-    // commentsId: v.id("comment"),
+    commentsId: v.id("comments"),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
     exchange: v.boolean(),
     condition: v.boolean(),
@@ -36,7 +36,8 @@ export default defineSchema({
   }),
   comments: defineTable({
     productId: v.id("product"),
-    timeStamp: v.string(),
+    userId: v.id("users"),
+    timeStamp: v.number(),
     content: v.string(),
     likes: v.number(),
     dislikes: v.number(),
@@ -55,23 +56,25 @@ export default defineSchema({
     conversationId: v.id("conversations"),
   }),
   notifications: defineTable({
-    userId: v.id("users"),
     title: v.string(),
+    userId: v.id("users"),
     type: v.union(
       v.literal("new_message"),
       v.literal("new_like"),
       v.literal("new_comment"),
       v.literal("new_sale"),
+      v.literal("new_store"),
       v.literal("advertisement"),
-      v.literal("reminder")
+      v.literal("reminder"),
     ),
     relatedId: v.optional(
       v.union(
         v.id("product"),
         v.id("message"),
         v.id("comments"),
+        v.id("store"),
         v.id("conversations"),
-        v.id("users")
+        v.id("users"),
       )
     ),
     content: v.string(),
@@ -79,5 +82,7 @@ export default defineSchema({
     isRead: v.boolean(),
     timestamp: v.number(),
     link: v.optional(v.string()),
-  }),
+  })
+    .index("byUserId", ["userId"])
+    .index("byUserIdAndIsRead", ["userId", "isRead"]),
 });
