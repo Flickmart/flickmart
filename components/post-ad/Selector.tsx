@@ -24,20 +24,23 @@ export default function Selector({
 }) {
   return (
     <div
-      className="border border-gray-300 lg:py- py-2.5 rounded-lg"
+      className="border border-gray-300 lg:py-5 py-2.5 rounded-lg"
     >
       <FormField
         control={form.control}
         name={name}
         render={({ field }) => {
-          let value = "";
-          if (typeof field.value === "string") {
-            value = field.value;
+          let value= "";
+          if (typeof field.value === "string" || typeof field.value === "boolean") {
+            value = field.value === true ? "yes" : field.value === false? "no" : field.value;
           }
           return (
             <Select
               required
-              onValueChange={field.onChange}
+              onValueChange={(val) => { 
+                const modVal  = val === "yes"? true : val === "no"? false : val;
+                field.onChange(modVal);
+              }}
               {...field}
               defaultValue={value}
               value={value}

@@ -1,6 +1,6 @@
 "use client";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SubmitErrorHandler, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import InputField from "./InputField";
@@ -10,36 +10,40 @@ import Selector from "./Selector";
 import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
-import { createAdPost, uploadImage } from "@/app/post-ad/action";
-import { useMutation } from "@tanstack/react-query";
 import { useOthersStore } from "@/store/useOthersStore";
-import toast from "react-hot-toast";
 import { FormDataType } from "@/types/form";
+import { useMutation as useMutationConvex} from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { Id } from "@/convex/_generated/dataModel";
+import { ClipLoader } from "react-spinners";
 
 type SubmitType = SubmitHandler<{
   category: string;
-  location: string;
-  exchange: string;
-  condition: string;
+  location: "enugu" | "nsukka";
+  exchange: boolean;
+  condition: "brand new" | "used";
   title: string;
   description: string;
-  price: string;
+  price: number | string;
   store: string;
   phone: string;
-  plan: string;
+  plan: "basic" | "pro" | "premium";
 }>;
 
 type ErrorType = SubmitErrorHandler<{
   category: string;
-  location: string;
-  exchange: string;
-  condition: string;
+  location: "enugu" | "nsukka";
+  exchange: boolean;
+  condition: "brand new" | "used";
   title: string;
   description: string;
-  price: string;
+  price: number | string;
   store: string;
   phone: string;
-  plan: string;
+  plan: "basic" | "pro" | "premium";
 }>;
 
 const categories = ["electronics", "fashion", "beauty"];
@@ -47,77 +51,79 @@ const location = ["enugu", "nsukka"];
 const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
 
-export default function PostAdForm() {
+export default function PostAdForm({businessId, clear, setClear}: {
+    businessId: Id<"store">;
+    clear: boolean;
+    setClear: React.Dispatch<React.SetStateAction<boolean>>
+  }) {
   const formSchema = z.object({
     category: z.string(),
-    location: z.string(),
-    exchange: z.string(),
-    condition: z.string(),
+    location: z.union([z.literal("enugu"), z.literal("nsukka")]),
+    exchange: z.boolean(),
+    condition: z.union([z.literal("brand new"), z.literal("used")]),
     title: z
       .string()
       .min(5, { message: "Title length is too short" })
       .max(100, { message: "Maximum character length reached" }),
     description: z.string().min(30, { message: "description is too short" }),
-    price: z.string(),
+    price: z.union([z.string(), z.number({
+      required_error: "Price is required",
+    })]),
     store: z.string(),
     phone: z.string(),
-    plan: z.string(),
+    plan: z.union([z.literal("basic"), z.literal("pro"), z.literal("premium")]),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "",
-      location: "",
+      location: undefined,
       title: "",
-      exchange: "",
-      condition: "",
+      exchange: undefined,
+      condition: undefined,
       description: "",
-      price: "",
+      price: 0,
       store: "",
       phone: "",
-      plan: "",
+      plan: undefined,
     },
   });
-  const { image, setLoadingStatus } = useOthersStore((state) => state);
-  const [formData, setFormData] = useState<FormDataType | null>(null);
+  const { images } = useOthersStore((state) => state);
+  const router= useRouter()
+  const createNewAd= useMutationConvex(api.product.create)
+  let postToastId: ReturnType<typeof toast.loading>;
+  const [allowAdPost, setAllowAdPost]= useState<boolean>(false)
+
+
+  // Clear Form
+  useEffect(()=>{
+    if(clear){
+      console.log("Clicked", clear)
+      form.reset()
+      setClear(false)
+    }
+
+  }, [clear])
 
   // Form Submission
-  const { mutate: imgUploadMutate } = useMutation({
-    mutationFn: uploadImage,
+  const { mutate: adPostMutate, isPending } = useMutation({
+    mutationFn: createNewAd,
     onSuccess: (data) => {
-      toast.success("Image uploaded successfully");
-      const imgUrl = `https://tbgmruevxeutwcbwmvup.supabase.co/storage/v1/object/public/${data?.fullPath}`;
-
-      // The full object to be inserted
-      if (typeof formData?.title === "string") {
-        const modifiedObj = { ...formData, image: imgUrl };
-        adPostMutate(modifiedObj);
-      }
-    },
-    onError: (err) => {
-      toast.error(err.message);
-      setLoadingStatus(false);
-    },
-  });
-
-  const { mutate: adPostMutate } = useMutation({
-    mutationFn: createAdPost,
-    onSuccess: (data) => {
-      toast.success(data.message);
+      toast.success("Ad posted successfully...");
       console.log(data);
+      router.push("/home")
     },
     onError: (err) => toast.error(err.message),
-    onSettled: () => setLoadingStatus(false),
+    onSettled: () => toast.dismiss(postToastId),
   });
 
   const onSubmit: SubmitType = (e) => {
     try {
-      setLoadingStatus(true);
-      // store form data in state because we first need to upload image
-      setFormData(e);
-      imgUploadMutate(image);
+      postToastId= toast.loading("Posting Ad...")
+      const modifiedObj = {...e, businessId, images, price: +e.price}
+      adPostMutate(modifiedObj);
     } finally {
-      form.reset();
+      // form.reset();
     }
   };
 
@@ -141,7 +147,7 @@ export default function PostAdForm() {
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
           <Selector form={form} options={categories} name="category" />
-          <AddPhoto />
+          <AddPhoto setAllowAdPost={setAllowAdPost} />
           <Selector
             options={location}
             form={form}
@@ -178,10 +184,11 @@ export default function PostAdForm() {
           </div>
           <AdPromotion form={form} />
           <Button
+            disabled={isPending}
             type="submit"
             className="capitalize  bg-flickmart w-full py-7 lg:py-9 lg:rounded-none text-xl"
           >
-            post ad
+            {isPending? <ClipLoader/> :"post ad"}
           </Button>
           <p className="lg:w-2/4 text-center font-light capitalize leading-relaxed lg:text-sm text-xs">
             By clicking on Post Ad you accepted the{" "}

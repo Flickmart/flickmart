@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
-import ReactQueryProvider from "@/lib/query-provider";
+import { Toaster } from "@/components/ui/sonner";
+
+import { Providers } from "@/providers/providers";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -22,10 +24,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    // <ClerkProvider>
+    <html lang="en" className={`${inter.className} scroll-smooth`} suppressHydrationWarning>
       <body className="bg-background text relative">
-        <ReactQueryProvider>{children}</ReactQueryProvider>
+        <Providers>
+          {children}
+          <Toaster richColors position="top-right" />
+        </Providers>
       </body>
     </html>
+    // </ClerkProvider>
   );
 }

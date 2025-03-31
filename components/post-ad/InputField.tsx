@@ -43,11 +43,11 @@ export default function InputField({
                     <Input
                       required
                       className="w-full placeholder:capitalize  border  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
-                      placeholder={`${name}*`}
+                      placeholder={`${name === "phone"? "08123456789": `${name}*`}`}
                       {...field}
                       value={value}
                     />
-                    <p className="capitalize py-3 font-medium  text-red-500">
+                    <p className="py-3 font-medium  text-red-500">
                       {errors[name]?.message}
                     </p>
                   </div>
