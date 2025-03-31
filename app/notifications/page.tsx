@@ -27,7 +27,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
+import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 export interface Notification {
   icon: string;
@@ -74,7 +74,7 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [selectedType, setSelectedType] = useState<NotificationType>("all");
 
-  const user = useQuery(api.users.current);
+  const user = useUser();
   const allNotifications = useQuery(api.notifications.getNotifications) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];

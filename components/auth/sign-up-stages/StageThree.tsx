@@ -2,20 +2,29 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 const StageThree = () => {
   const [redirectTimer, setRedirectTimer] = useState(5);
   const router = useRouter();
-  useEffect(function () {
-    setInterval(() => {
-      if (redirectTimer < 1) {
-        console.log("time up");
-        router.push("/sign-in");
+  const { user, isLoaded } = useUser();
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (redirectTimer <= 0) {
+        router.push("/home");
       } else {
         setRedirectTimer((prev) => prev - 1);
       }
     }, 1000);
-  }, []);
+    
+    return () => clearInterval(interval);
+  }, [redirectTimer, router]);
+  
+  const handleGetStarted = () => {
+    router.push("/home");
+  };
+
   return (
     <main className="container-px text-center fixed abs-center-x abs-center-y w-full max-w-[700px]">
       <Image
@@ -26,12 +35,16 @@ const StageThree = () => {
         className="mx-auto"
       />
       <h3 className="text-3xl mt-10 mb-7 md:text-4xl">
-        Mbah, your account has been created
+        {isLoaded && user?.firstName ? user.firstName : 'Your'} account has been created
       </h3>
       <h2 className="text-sm font-light mb-32 md:text-base">
         Welcome to flickmart, where possibility meets passion.
       </h2>
-      <Button className="submit-btn sm:w-4/5" type="button">
+      <Button 
+        className="submit-btn sm:w-4/5" 
+        type="button"
+        onClick={handleGetStarted}
+      >
         Get started
       </Button>
       <p className="mt-5">
@@ -41,4 +54,5 @@ const StageThree = () => {
     </main>
   );
 };
+
 export default StageThree;
