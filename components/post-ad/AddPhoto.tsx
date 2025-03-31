@@ -1,35 +1,80 @@
 "use client";
-import { Plus, X } from "lucide-react";
-import React, { useRef, useState } from "react";
+import { Plus, Upload, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
 import Image from "next/image";
+import { useUploadThing } from "@/utils/uploadthing";
+import { toast } from "sonner";
+import { MoonLoader } from "react-spinners";
 
-export default function AddPhoto() {
+export default function AddPhoto({ setAllowAdPost }: {
+  setAllowAdPost: React.Dispatch<React.SetStateAction<boolean>>
+}) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<Array<string>>([]);
   const [filePath, setFilePath] = useState<Array<string | null>>([]);
   const storeImage = useOthersStore((state) => state.storeImage);
   const [error, setError] = useState<string>("")
+  const [isError, setIsError] = useState<boolean>(false)
 
+  const {startUpload, isUploading}= useUploadThing("imageUploader", {
+    onClientUploadComplete: ()=> {
+      toast.success("Image Uploaded")
+    },
+    onUploadError: (err)=> {
+      console.log(err)
+      setIsError(true)
+      toast.error("Upload Error")
+    }
+  })
   const handleBtnClick = () => {
-    if (fileRef.current) {
+    if (fileRef.current && !isUploading) {
+      setFilePath([]);
+      setFileName([]);
       fileRef.current.click();
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.files)
+  useEffect(function(){
+    let toastId: ReturnType<typeof toast.loading>;
+    if(isUploading){
+      toastId = toast.loading("Uploading Images...");
+      // setAllowAdPost(false);
+    }else{
+      // setAllowAdPost(true);
+    }
+
+    return () =>{
+      if(toastId){
+         toast.dismiss(toastId)
+      }
+    } 
+  },[isUploading])
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length < 2 || files.length > 5) {
       setError("*Images must not be less than two or greater than five")
     }else{
       setError("")
-      const imageFilesArr = Array.from(files)
-      imageFilesArr.map( file => {
-        setFilePath(prev=> [...prev, URL.createObjectURL(file)]);
-        setFileName(prev => [...prev, file.name]);
-        storeImage(file);
-      })
+
+      try{
+        const imageFilesArr = Array.from(files)
+
+        imageFilesArr.map( file => {
+          setFilePath(prev=> [...prev, URL.createObjectURL(file)]);
+          setFileName(prev => [...prev, file.name]);
+        })
+
+        const uploadedImg = await startUpload(imageFilesArr)
+        const images = uploadedImg?.map(item=> item.ufsUrl)
+        if(images){
+           storeImage(images);
+        }
+
+      }catch(err){
+        toast.error(err as string)
+      }
     
     }
   };
@@ -39,7 +84,7 @@ export default function AddPhoto() {
 
     setFilePath(newFilePath);
     setFileName(newFileName);
-    storeImage(null);
+    storeImage([]);
   };
 
   return (
@@ -49,10 +94,10 @@ export default function AddPhoto() {
       <div className="flex space-x-3 overflow-x-auto flex-wrap  items-center">
         <div
           onClick={handleBtnClick}
-          className="cursor-pointer hover:bg-flickmart/80 bg-flickmart duration-200 rounded-lg w-20 h-14 flex justify-center items-center"
+          className={`cursor-pointer ${isUploading? "bg-flickmart/20" : "bg-flickmart hover:bg-flickmart/80"}   duration-200 rounded-lg w-20 h-14 flex justify-center items-center`}
         >
-          <button type="button" className="bg-white rounded-full h-6 w-6 ">
-            <Plus className="p-1 text-flickmart" />
+          <button disabled={isUploading} type="button" className="bg-white rounded-full h-6 w-6 ">
+            <Plus className={`p-1 ${isUploading? "text-flickmart/20" : "text-flickmart"}`} />
             <input
               multiple
               onChange={handleFileChange}
@@ -67,18 +112,36 @@ export default function AddPhoto() {
         Array.from({length: filePath.length}).map((_, index)=>{
           return(
             <div key={index} className="relative p-2 rounded-lg w-24 h-24 border border-gray-200">
-              <X
-                className="absolute right-1 top-1 cursor-pointer p-0.5"
-                onClick={()=>handleImageRemove(index)}
-              />
-              <Image
-                id={index.toString()}
-                src={filePath[index] || ''}
-                alt={fileName[index]}
-                width={300}
-                height={300}
-                className="h-full w-full object-cover"
-              />
+              {isUploading?
+                <div className="absolute inset-0 flex justify-center items-center ">
+                  <X
+                    className="absolute right-1 top-1 cursor-pointer p-0.5"
+                    onClick={()=>handleImageRemove(index)}
+                  />
+                  <MoonLoader
+                  size={35}
+                  />
+                </div>:
+                <>
+                  <X
+                  className="absolute z-20 right-1 top-1 cursor-pointer p-0.5"
+                  onClick={()=>handleImageRemove(index)}
+                  />
+                  {!isError? 
+                    <Image
+                        id={index.toString()}
+                        src={filePath[index] || ''}
+                        alt={fileName[index]}
+                        width={300}
+                        height={300}
+                        className="h-full w-full object-cover"
+                    /> :
+                    <div className="absolute inset-0 flex justify-center items-center ">
+                      <Upload className="cursor-pointer" size={35} onClick={()=> console.log("re uploading")}/>
+                    </div>
+                  }
+                </>
+              }
             </div>
           ) 
         }) : null}

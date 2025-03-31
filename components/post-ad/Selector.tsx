@@ -30,14 +30,17 @@ export default function Selector({
         control={form.control}
         name={name}
         render={({ field }) => {
-          let value = "";
-          if (typeof field.value === "string") {
-            value = field.value;
+          let value= "";
+          if (typeof field.value === "string" || typeof field.value === "boolean") {
+            value = field.value === true ? "yes" : field.value === false? "no" : field.value;
           }
           return (
             <Select
               required
-              onValueChange={field.onChange}
+              onValueChange={(val) => { 
+                const modVal  = val === "yes"? true : val === "no"? false : val;
+                field.onChange(modVal);
+              }}
               {...field}
               defaultValue={value}
               value={value}

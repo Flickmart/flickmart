@@ -1,16 +1,16 @@
 import { UseFormReturn } from "react-hook-form";
 
 export interface FormDataType {
+  store: string;
   category: string;
-  location: string;
-  exchange: string;
-  condition: string;
+  location: "enugu" | "nsukka";
+  exchange: boolean;
+  condition: "brand new" | "used";
   title: string;
   description: string;
-  price: string;
-  store: string;
+  price: number;
   phone: string;
-  plan: string;
+  plan: "basic" | "pro" | "premium";
 }
 
 export type NameType =
@@ -26,14 +26,14 @@ export type NameType =
   | "plan";
 
 export type FormType = UseFormReturn<{
+  store: string;
   category: string;
-  location: string;
-  exchange: string;
-  condition: string;
+  location: "enugu" | "nsukka";
+  exchange: boolean;
+  condition: "brand new" | "used";
   title: string;
   description: string;
-  price: string;
-  store: string;
+  price: number | string;
   phone: string;
-  plan: string;
+  plan: "basic" | "pro" | "premium";
 }>;

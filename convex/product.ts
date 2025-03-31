@@ -31,7 +31,7 @@ export const getByUserId = query({
 
 // Get products by business ID
 export const getByBusinessId = query({
-  args: { businessId: v.id("business") },
+  args: { businessId: v.id("store") },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("product")
@@ -69,15 +69,16 @@ export const create = mutation({
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
-    businessId: v.id("business"),
+    businessId: v.id("store"),
     category: v.optional(v.string()),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
     exchange: v.boolean(),
-    condition: v.boolean(),
-    location: v.union(v.literal("Enugu"), v.literal("Nsuka")),
+    condition: v.union(v.literal("brand new"), v.literal("used")),
+    location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),
+    commentsId: v.optional(v.id("comments")),
     negotiable: v.optional(v.boolean()),
-    // commentsId: v.id("comment"),
+    phone: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -89,7 +90,7 @@ export const create = mutation({
       images: args.images,
       price: args.price,
       businessId: args.businessId,
-      // commentsId: null, // Adding required commentsId field with null value
+      commentsId: args.commentsId,
       category: args.category,
       likes: 0,
       dislikes: 0,
@@ -100,6 +101,7 @@ export const create = mutation({
       timeStamp: new Date().toISOString(),
       location: args.location,
       link: args.link,
+      phone: args.phone
     });
 
     return productId;
@@ -110,15 +112,15 @@ export const create = mutation({
 export const update = mutation({
   args: {
     productId: v.id("product"),
-    name: v.optional(v.string()),
+    title: v.optional(v.string()),
     description: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
     price: v.optional(v.number()),
     category: v.optional(v.string()),
-    adType: v.optional(
+    plan: v.optional(
       v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
     ),
-    exchangePossible: v.optional(v.boolean()),
+    exchange: v.optional(v.boolean()),
     condition: v.optional(v.boolean()),
     location: v.optional(v.union(v.literal("Enugu"), v.literal("Nsuka"))),
     link: v.optional(v.string()),
@@ -139,13 +141,13 @@ export const update = mutation({
 
     // Build updates object with only the fields that were provided
     const updateFields = [
-      "name",
+      "title",
       "description",
       "images",
       "price",
       "category",
-      "adType",
-      "exchangePossible",
+      "plan",
+      "exchange",
       "condition",
       "location",
       "link",
@@ -243,11 +245,11 @@ export const dislikeProduct = mutation({
 export const search = query({
   args: {
     query: v.string(),
-    location: v.optional(v.union(v.literal("Enugu"), v.literal("Nsuka"))),
+    location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
     category: v.optional(v.string()),
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
-    condition: v.optional(v.boolean()),
+    condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
     exchangePossible: v.optional(v.boolean()),
     sortBy: v.optional(
       v.union(

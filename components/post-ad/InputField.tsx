@@ -47,7 +47,7 @@ export default function InputField({
                       {...field}
                       value={value}
                     />
-                    <p className="capitalize py-3 font-medium  text-red-500">
+                    <p className="py-3 font-medium  text-red-500">
                       {errors[name]?.message}
                     </p>
                   </div>

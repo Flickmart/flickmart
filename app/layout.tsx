@@ -25,7 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     // <ClerkProvider>
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={`${inter.className} scroll-smooth`} suppressHydrationWarning>
       <body className="bg-background text relative">
         <Providers>
           {children}
