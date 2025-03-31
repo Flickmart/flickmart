@@ -19,8 +19,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
+import { AnimatePresence, motion } from "motion/react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+
 
 export default function Navbar() {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -104,79 +106,86 @@ export default function Navbar() {
           </button>
         </div>
       </div>
-      {isNavOpen && (
-        <div className="lg:hidden absolute inset-0 z-30 w-full h-screen bg-white">
-          <div className="w-[95%] mx-auto h-full">
-            <div className="w-full flex items-center justify-between py-1">
-              <div className="flex gap-1 items-center">
-                <Image
-                  src="/flickmart-logo.svg"
-                  width={500}
-                  height={500}
-                  className="h-12 w-12"
-                  alt=""
-                />
-                <h1 className="font-bold text-xl mt-2">
-                  Flick<span className="text-flickmart">Mart</span>
-                </h1>
+      <AnimatePresence initial={false}>
+        {isNavOpen && (
+          <motion.div 
+          initial={{ opacity: 0, y: -100 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -100 }}
+          key="box"
+          className="lg:hidden absolute inset-0 z-30 w-full h-screen bg-white">
+            <div className="w-[95%] mx-auto h-full">
+              <div className="w-full flex items-center justify-between py-1">
+                <div className="flex gap-1 items-center">
+                  <Image
+                    src="/flickmart-logo.svg"
+                    width={500}
+                    height={500}
+                    className="h-12 w-12"
+                    alt=""
+                  />
+                  <h1 className="font-bold text-xl mt-2">
+                    Flick<span className="text-flickmart">Mart</span>
+                  </h1>
+                </div>
+                <button onClick={toggleNav} className="lg:hidden">
+                  <X className="" strokeWidth={1.25} />
+                </button>
               </div>
-              <button onClick={toggleNav} className="lg:hidden">
-                <X className="" strokeWidth={1.25} />
-              </button>
+              <div className="w-full flex flex-col justify-between h-4/6">
+                <div className="w-full flex flex-col font-medium">
+                  <Link href={"#"} className="border-b border-[#E8ECEF] py-4">
+                    Fund Account
+                  </Link>
+                  <Link
+                    href={"#"}
+                    className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
+                  >
+                    <span>Setting</span>
+                    <ChevronDown />
+                  </Link>
+                  <Link
+                    href={"#"}
+                    className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
+                  >
+                    <span>About Us</span>
+                    <ChevronDown />
+                  </Link>
+                  <Link href={"#"} className="border-b border-[#E8ECEF] py-4">
+                    Contact Us
+                  </Link>
+                </div>
+                <div className="text-[#6C7275]">
+                  <Link
+                    href={"#"}
+                    className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
+                  >
+                    <span>Notification</span>
+                    <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
+                      <span className="mt-0.5">2</span>
+                    </span>
+                  </Link>
+                  <Link
+                    href={"#"}
+                    className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
+                  >
+                    <span>Wishlist</span>
+                    <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
+                      <span className="mt-[1px]">2</span>
+                    </span>
+                  </Link>
+                  <Link
+                    href={"#"}
+                    className="bg-black text-white rounded-md py-4 flex justify-center items-center mt-2"
+                  >
+                    <span>Logout</span>
+                  </Link>
+                </div>
+              </div>
             </div>
-            <div className="w-full flex flex-col justify-between h-4/6">
-              <div className="w-full flex flex-col font-medium">
-                <Link href={"#"} className="border-b border-[#E8ECEF] py-4">
-                  Fund Account
-                </Link>
-                <Link
-                  href={"#"}
-                  className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
-                >
-                  <span>Setting</span>
-                  <ChevronDown />
-                </Link>
-                <Link
-                  href={"#"}
-                  className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
-                >
-                  <span>About Us</span>
-                  <ChevronDown />
-                </Link>
-                <Link href={"#"} className="border-b border-[#E8ECEF] py-4">
-                  Contact Us
-                </Link>
-              </div>
-              <div className="text-[#6C7275]">
-                <Link
-                  href={"#"}
-                  className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
-                >
-                  <span>Notification</span>
-                  <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
-                    <span className="mt-0.5">2</span>
-                  </span>
-                </Link>
-                <Link
-                  href={"#"}
-                  className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
-                >
-                  <span>Wishlist</span>
-                  <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
-                    <span className="mt-[1px]">2</span>
-                  </span>
-                </Link>
-                <Link
-                  href={"#"}
-                  className="bg-black text-white rounded-md py-4 flex justify-center items-center mt-2"
-                >
-                  <span>Logout</span>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }
