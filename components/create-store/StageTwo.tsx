@@ -63,7 +63,6 @@ const formSchema = z.object({
 });
 
 const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
-  const user = useQuery(api.users.current);
   const create = useMutation(api.store.createStore);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -79,14 +78,10 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
 
-    if (!user) {
-      return;
-    }
     const promise = create({
       name: values.businessName,
       location: values.location,
       description: values.address,
-      userId: user._id,
     });
     toast.promise(promise, {
       loading: "Saving store details...",

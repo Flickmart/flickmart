@@ -1,20 +1,16 @@
 "use client";
 
-import { UserButton, SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 import {
   Bell,
-  Bookmark,
   ChevronDown,
-  CircleUserRound,
-  LogOut,
+  Loader2,
   Menu,
   MessageSquareText,
-  Settings,
   X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import React, { useState } from "react";
 import {
   DropdownMenu,
@@ -25,17 +21,14 @@ import {
 } from "./ui/dropdown-menu";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
 
 export default function Navbar() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const { isSignedIn, isLoaded } = useUser();
+  const unreadNotifications =
+    useQuery(api.notifications.getUnreadNotifications) || [];
 
   const userStore = useQuery(api.store.getStoresByUserId);
-
-  const toggleProfile = () => {
-    setIsOpen((prev) => !prev);
-  };
 
   const toggleNav = () => {
     setIsNavOpen((prev) => !prev);
@@ -62,20 +55,40 @@ export default function Navbar() {
             <div
               className="relative flex items-center gap-3"
               tabIndex={0} // Makes it focusable
-              onBlur={() => setIsOpen(false)}
             >
               <Link href="/chats">
-                <MessageSquareText strokeWidth={1.25} className="h-8 w-8" />
+                <MessageSquareText
+                  size={32}
+                  strokeWidth={2.5}
+                  absoluteStrokeWidth
+                  className="h-8 w-8"
+                />
               </Link>
               <Link href="/notifications">
-                <Bell strokeWidth={1.25} className="h-8 w-8" />
+                <div className="relative">
+                  {unreadNotifications.length > 0 && (
+                    <div className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadNotifications.length}
+                    </div>
+                  )}
+                  <Bell
+                    size={32}
+                    strokeWidth={3}
+                    absoluteStrokeWidth
+                    className="h-8 w-8"
+                  />
+                </div>
               </Link>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-              <SignedOut>
-                <SignInButton mode="modal" />
-              </SignedOut>
+              {isSignedIn && <UserButton />}
+              {!isLoaded && <Loader2 className="h-8 w-8 animate-spin" />}
+              {isLoaded && !isSignedIn && (
+                <Link
+                  href="/sign-in"
+                  className="text-flickmart font-medium hover:underline"
+                >
+                  Sign in
+                </Link>
+              )}
             </div>
             <button className="text-sm font-bold rounded-md bg-flickmart text-white">
               <Link

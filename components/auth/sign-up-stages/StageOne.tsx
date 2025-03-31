@@ -16,8 +16,11 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
-import React, { Dispatch, SetStateAction } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import useUserStore from "@/store/useUserStore";
+import { useSignUp } from "@clerk/nextjs";
+import { OAuthStrategy } from '@clerk/types'
+import { toast } from "sonner";
 
 export const formSchema = z.object({
   firstName: z
@@ -41,6 +44,8 @@ export default function StageOne({
   setStage: Dispatch<SetStateAction<number>>;
 }) {
   const updateEmail = useUserStore((state) => state.updateEmail);
+  const [isLoading, setIsLoading] = useState(false);
+  const { isLoaded, signUp } = useSignUp();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -53,10 +58,55 @@ export default function StageOne({
     },
   });
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setStage(2);
-    updateEmail(values.email);
+  const signUpWith = (strategy: OAuthStrategy) => {
+    return signUp?.authenticateWithRedirect({
+      strategy,
+      redirectUrl: '/sign-up/sso-callback',
+      redirectUrlComplete: '/home',
+    })
+      .then((res) => {
+        console.log(res)
+      })
+      .catch((err: any) => {
+        // See https://clerk.com/docs/custom-flows/error-handling
+        // for more info on error handling
+        console.log(err.errors)
+        console.error(err, null, 2)
+      })
+  }
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!isLoaded) return;
+
+    try {
+      setIsLoading(true);
+
+      // Start the sign-up process with Clerk
+      await signUp.create({
+        firstName: values.firstName,
+        lastName: values.lastName,
+        emailAddress: values.email,
+        password: values.password,
+      });
+
+      // Send the user an email with the verification code
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
+      });
+
+      // Update email in the store for use in next stage
+      updateEmail(values.email);
+
+      // Move to the next stage
+      setStage(2);
+    } catch (err: any) {
+      toast.error(err.errors?.[0]?.message || "An error occurred during sign up");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   return (
     <main className="relative min-h-screen">
@@ -132,17 +182,30 @@ export default function StageOne({
                 )}
               />
               <div className="flex items-center space-y-4 flex-col pb-3">
-                <Button className="submit-btn" type="submit">
-                  Sign Up
+                {/* captcha to protect from bots */}
+              <div id="clerk-captcha"></div>
+                <Button
+                  className="submit-btn"
+                  type="submit"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Processing..." : "Sign Up"}
                 </Button>
-                <Image
-                  onClick={() => {}}
-                  src="/icons/google.png"
-                  alt="google"
-                  width={500}
-                  height={500}
-                  className="h-10 w-10  object-cover rounded-full hover cursor-pointer hover:bg-black/5 duration-300"
-                />
+                <Button
+                  className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"
+                  variant="secondary"
+                  type="button"
+                  onClick={() => signUpWith('oauth_google')}
+                >
+                  <Image
+                    src="/icons/google.png"
+                    alt="google"
+                    width={500}
+                    height={500}
+                    className="h-10 w-10 object-cover rounded-full hover cursor-pointer hover:bg-black/5 duration-300"
+                  />
+                  Sign in with Google
+                </Button>
               </div>
             </form>
           </Form>

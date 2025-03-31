@@ -299,7 +299,9 @@ export const search = query({
 
     // Apply condition filter
     if (args.condition !== undefined) {
-      products = products.filter((product) => product.condition === args.condition);
+      products = products.filter(
+        (product) => product.condition === args.condition
+      );
     }
 
     // Apply exchangePossible filter
@@ -463,8 +465,7 @@ export const getTrending = query({
       const engagementVelocity = (product.likes - product.dislikes) / daysOld;
 
       // Calculate final score
-      const score =
-        engagementVelocity * (product.plan === "premium" ? 1.5 : 1);
+      const score = engagementVelocity * (product.plan === "premium" ? 1.5 : 1);
 
       return { product, score };
     });
@@ -530,7 +531,7 @@ export const getSimilarProducts = query({
       const priceDiff = Math.abs(targetProduct.price - product.price);
       const maxPrice = Math.max(targetProduct.price, product.price);
       const minPrice = Math.min(1, maxPrice); // Avoid division by zero
-      const priceSimilarity = 1 - (priceDiff / (maxPrice || 1));
+      const priceSimilarity = 1 - priceDiff / (maxPrice || 1);
       score += priceSimilarity * 0.1;
 
       // 5. Location Match (5% weight)
@@ -542,8 +543,7 @@ export const getSimilarProducts = query({
       score += (conditionMatch ? 1 : 0) * 0.05;
 
       // 7. Exchange Possibility Match (5% weight)
-      const exchangeMatch =
-        targetProduct.exchange === product.exchange;
+      const exchangeMatch = targetProduct.exchange === product.exchange;
       score += (exchangeMatch ? 1 : 0) * 0.05;
 
       // Ad Type Boost - Apply a slight multiplier for premium ads
@@ -570,13 +570,13 @@ export const getSimilarProducts = query({
 // Helper function to calculate text similarity using Jaccard similarity
 function calculateTextSimilarity(text1: string, text2: string): number {
   // Split texts into words and create sets
-  const words1 = new Set(text1.split(/\s+/).filter(word => word.length > 2));
-  const words2 = new Set(text2.split(/\s+/).filter(word => word.length > 2));
-  
+  const words1 = new Set(text1.split(/\s+/).filter((word) => word.length > 2));
+  const words2 = new Set(text2.split(/\s+/).filter((word) => word.length > 2));
+
   // Calculate intersection and union sizes
-  const intersection = new Set([...words1].filter(word => words2.has(word)));
+  const intersection = new Set([...words1].filter((word) => words2.has(word)));
   const union = new Set([...words1, ...words2]);
-  
+
   // Jaccard similarity: size of intersection / size of union
   return union.size === 0 ? 0 : intersection.size / union.size;
 }
