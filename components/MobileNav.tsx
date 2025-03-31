@@ -16,7 +16,7 @@ import { api } from "@/convex/_generated/api";
 export default function MobileNav() {
   const pathname = usePathname();
   const isVisible = useNav();
-  
+
   // Fetch unread notifications count
   const unreadNotifications = useQuery(api.notifications.getUnreadNotifications) || [];
   const unreadCount = unreadNotifications.length;
@@ -28,7 +28,7 @@ export default function MobileNav() {
     return null; // Don't render any component
   }
 
- 
+
   return (
     <header
       className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} transition duration-300 z-40 bg-white lg:hidden w-full fixed bottom-0 text-[12px]`}
@@ -62,18 +62,18 @@ export default function MobileNav() {
           </div>
         </Link>
         <Link
-          href={"/notifications"}
+          href={"/chats"}
           className="flex flex-col items-center justify-center gap-1.5 group relative"
         >
           <div className="relative">
-            <Bell className={`${pathname === '/notifications' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
+            <MessageSquareText className={`${pathname === '/chats' ? 'text-flickmart' : 'text-flickmart-gray'} group-hover:text-flickmart duration-500 h-5 w-5`} />
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 flex items-center justify-center px-1">
                 {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </div>
-          <span className={`${pathname === '/notifications' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Notifications</span>
+          <span className={`${pathname === '/chats' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Chats</span>
         </Link>
         <Link
           href="settings/personal"

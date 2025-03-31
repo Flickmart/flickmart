@@ -3,25 +3,21 @@
 import { UserButton, SignInButton, useUser, SignOutButton } from "@clerk/nextjs";
 import {
   Bell,
-  ChevronDown,
   Loader2,
   Menu,
   MessageSquareText,
-  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-import { Button } from "./ui/button";
 
 export default function Navbar() {
   const { isSignedIn, isLoaded } = useUser();
@@ -98,7 +94,7 @@ export default function Navbar() {
           </div>
           <Sheet >
             <SheetTrigger asChild>
-              <div className="relative">
+              <div className="relative  lg:hidden ">
                 {unreadNotifications.length > 0 && (
                   <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center" />
                 )}
@@ -131,7 +127,7 @@ export default function Navbar() {
                   <div className="w-full flex flex-col justify-between h-4/6">
                     <div className="w-full flex flex-col font-medium">
                       <Link href={"#"} className="border-b border-[#E8ECEF] py-4">
-                        Fund Account
+                        Wallet
                       </Link>
                       <Link
                         href="/settings"
@@ -172,12 +168,11 @@ export default function Navbar() {
                       </Link>
                       <SignOutButton
                       >
-                        <Button
+                        <button
                           className="bg-black text-white rounded-md py-3 w-full mt-2"
-                          variant="secondary"
                         >
-                          <span>Logout</span>
-                        </Button>
+                          Logout
+                        </button>
                       </SignOutButton>
                     </div>
                   </div>
