@@ -1,6 +1,6 @@
 "use client";
 
-import { UserButton,  SignInButton, useUser } from "@clerk/nextjs";
+import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 import {
   Bell,
   ChevronDown,
@@ -22,8 +22,6 @@ import {
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-
-
 export default function Navbar() {
   const [isNavOpen, setIsNavOpen] = useState(false);
   const { isSignedIn, isLoaded } = useUser();
@@ -31,8 +29,6 @@ export default function Navbar() {
     useQuery(api.notifications.getUnreadNotifications) || [];
 
   const userStore = useQuery(api.store.getStoresByUserId);
-
-  
 
   const toggleNav = () => {
     setIsNavOpen((prev) => !prev);
@@ -59,7 +55,6 @@ export default function Navbar() {
             <div
               className="relative flex items-center gap-3"
               tabIndex={0} // Makes it focusable
-              
             >
               <Link href="/chats">
                 <MessageSquareText
@@ -83,11 +78,17 @@ export default function Navbar() {
                     className="h-8 w-8"
                   />
                 </div>
-               
               </Link>
               {isSignedIn && <UserButton />}
               {!isLoaded && <Loader2 className="h-8 w-8 animate-spin" />}
-              {isLoaded && !isSignedIn && <SignInButton mode="modal" />}
+              {isLoaded && !isSignedIn && (
+                <Link
+                  href="/sign-in"
+                  className="text-flickmart font-medium hover:underline"
+                >
+                  Sign in
+                </Link>
+              )}
             </div>
             <button className="text-sm font-bold rounded-md bg-flickmart text-white">
               <Link
