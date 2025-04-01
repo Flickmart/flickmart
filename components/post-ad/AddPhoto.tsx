@@ -39,7 +39,6 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted, 
     }
   };
 
-  console.log(clear)
   useEffect(function(){
     if(isSubmitted || clear){
       setFilePath([]);

@@ -34,7 +34,7 @@ export default function Slider() {
       <CarouselContent>
         {Array.from({ length: 3 }).map((_, index) => (
           <CarouselItem key={index}>
-            <div className="slide   rounded-2xl lg:py-3 lg:px-5   pb-2 p-7 capitalize h-full lg:min-h-60 flex flex-col justify-center   items-center lg:space-y-7 space-y-2.5">
+            <div className="slide rounded-2xl lg:py-3 lg:px-5   pb-2 p-7 capitalize h-full lg:min-h-60 flex flex-col justify-center   items-center lg:space-y-7 space-y-2.5">
               <div className=" text-center">
                 <h1 className="font-medium lg:text-4xl text-xl">
                   this is slide one

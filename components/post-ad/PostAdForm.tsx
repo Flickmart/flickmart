@@ -109,9 +109,21 @@ export default function PostAdForm({clear, setClear}: {
   // Form Submission
   const { mutate: adPostMutate, isPending } = useMutation({
     mutationFn: createNewAd,
-    onSuccess: (data) => {
-      toast.success("Ad posted successfully...");
-      router.push("/home")
+    onSuccess: () => {
+      // Show success toast
+      toast.success("Ad posted successfully...",{ 
+        duration: 2000
+      })
+
+      // Show a loading toast for redirection
+      setTimeout(() => {
+        toast.loading("Redirecting to home...", { duration: 3000 });
+      }, 2000);
+
+      // Short delay before redirect
+      setTimeout(() => {
+        router.push("/dashboard");
+      }, 6000);
     },
     onError: (err) => toast.error(err.message),
     onSettled: () => toast.dismiss(postToastId),
@@ -125,7 +137,6 @@ export default function PostAdForm({clear, setClear}: {
       }
       postToastId= toast.loading("Posting Ad...")
       const modifiedObj = {...e, businessId, images, price: +e.price}
-      console.log(modifiedObj)
       adPostMutate(modifiedObj);
     } finally {
       setIsSubmitted(true)
