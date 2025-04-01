@@ -117,11 +117,6 @@
 }
 
 @layer components {
-  .slide {
-    background-image: url("/slide-img.png");
-    background-repeat: no-repeat;
-    background-size: cover;
-  }
   .fill-primary {
     @apply !fill-flickmartLight;
   }
