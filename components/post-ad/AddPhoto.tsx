@@ -91,10 +91,9 @@ export default function AddPhoto({
         setImageFilesArr(imageFiles);
 
        const compressedPromises= imageFiles.map(async (file) => {
+         const compressedFile = await imageCompression(file, options);
          setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
          setFileName((prev) => [...prev, file.name]);
-         const compressedFile = await imageCompression(file, options);
-         console.log("Image compressed successfully")
          return compressedFile
         });
 
