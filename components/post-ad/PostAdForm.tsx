@@ -117,12 +117,14 @@ export default function PostAdForm({clear, setClear}: {
       })
 
       // Show a loading toast for redirection
+      let id: ReturnType<typeof toast.loading>;
       setTimeout(() => {
-        toast.loading("Redirecting to home...", { duration: 3000 });
+        id = toast.loading("Redirecting to home...", { duration: 3000 });
       }, 2000);
 
       // Short delay before redirect
       setTimeout(() => {
+        toast.dismiss(id);
         router.push("/home");
       }, 6000);
     },
