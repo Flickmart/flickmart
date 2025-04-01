@@ -12,7 +12,7 @@ import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
 import { useOthersStore } from "@/store/useOthersStore";
 import { FormDataType } from "@/types/form";
-import { useMutation as useMutationConvex} from "convex/react";
+import { useMutation as useMutationConvex, useQuery} from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -51,8 +51,7 @@ const location = ["enugu", "nsukka"];
 const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
 
-export default function PostAdForm({businessId, clear, setClear}: {
-    businessId: Id<"store">;
+export default function PostAdForm({clear, setClear}: {
     clear: boolean;
     setClear: React.Dispatch<React.SetStateAction<boolean>>
   }) {
@@ -93,6 +92,8 @@ export default function PostAdForm({businessId, clear, setClear}: {
   const createNewAd= useMutationConvex(api.product.create)
   let postToastId: ReturnType<typeof toast.loading>;
   const [allowAdPost, setAllowAdPost]= useState<boolean>(false)
+  const userStore =  useQuery(api.store.getStoresByUserId);
+  const businessId = userStore?.[0]?._id as Id<"store">
 
 
   // Clear Form
@@ -110,7 +111,6 @@ export default function PostAdForm({businessId, clear, setClear}: {
     mutationFn: createNewAd,
     onSuccess: (data) => {
       toast.success("Ad posted successfully...");
-      console.log(data);
       router.push("/home")
     },
     onError: (err) => toast.error(err.message),
@@ -121,9 +121,10 @@ export default function PostAdForm({businessId, clear, setClear}: {
     try {
       postToastId= toast.loading("Posting Ad...")
       const modifiedObj = {...e, businessId, images, price: +e.price}
+      console.log(modifiedObj)
       adPostMutate(modifiedObj);
     } finally {
-      // form.reset();
+      form.reset();
     }
   };
 

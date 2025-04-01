@@ -93,7 +93,7 @@ export default function Navbar() {
             <button className="text-sm font-bold rounded-md bg-flickmart text-white">
               <Link
                 className="py-2 px-8 inline-block"
-                href={userStore?.[0] ? `/post-ad/${userStore?.[0]._id}` : "/create-store"}
+                href={userStore?.[0] ? "/post-ad" : "/create-store"}
               >
                 SELL
               </Link>
