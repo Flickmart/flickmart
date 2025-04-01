@@ -22,9 +22,9 @@ export default defineSchema({
     images: v.array(v.string()),
     price: v.number(),
     businessId: v.id("store"),
-    category: v.optional(v.string()),
-    likes: v.number(),
-    dislikes: v.number(),
+    category: v.string(),
+    likes: v.optional(v.number()),
+    dislikes: v.optional(v.number()),
     negotiable: v.optional(v.boolean()),
     commentsId: v.optional(v.id("comments")),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
@@ -33,7 +33,8 @@ export default defineSchema({
     timeStamp: v.string(),
     location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),
-    phone: v.string()
+    phone: v.string(),
+    store: v.string()
   }),
   comments: defineTable({
     productId: v.id("product"),

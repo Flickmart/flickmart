@@ -96,15 +96,12 @@ export default function PostAdForm({clear, setClear}: {
   const businessId = userStore?.[0]?._id as Id<"store">
   const [isSubmitted, setIsSubmitted]= useState<boolean>(false)
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
-  console.log(businessId)
-
 
   // Clear Form
   useEffect(()=>{
     if(clear){
       setTextAreaLength(0)
       form.reset()
-      setClear(false)
     }
 
   }, [clear])
@@ -161,6 +158,8 @@ export default function PostAdForm({clear, setClear}: {
             setAllowAdPost={setAllowAdPost} 
             setIsSubmitted={setIsSubmitted} 
             isSubmitted={isSubmitted} 
+            clear={clear}
+            setClear={setClear}
           />
           <Selector
             options={location}

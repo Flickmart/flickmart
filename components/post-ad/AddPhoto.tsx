@@ -7,10 +7,12 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { MoonLoader } from "react-spinners";
 
-export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }: {
+export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted, clear, setClear }: {
+  setAllowAdPost: React.Dispatch<React.SetStateAction<boolean>>
   isSubmitted: boolean
   setIsSubmitted: React.Dispatch<React.SetStateAction<boolean>>
-  setAllowAdPost: React.Dispatch<React.SetStateAction<boolean>>
+  clear: boolean
+  setClear: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [fileName, setFileName] = useState<Array<string>>([]);
@@ -18,13 +20,13 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }
   const storeImage = useOthersStore((state) => state.storeImage);
   const [error, setError] = useState<string>("")
   const [isError, setIsError] = useState<boolean>(false)
+  const [imageFilesArr, setImageFilesArr] = useState<Array<File>>([])
 
   const {startUpload, isUploading}= useUploadThing("imageUploader", {
     onClientUploadComplete: ()=> {
       toast.success("Images Uploaded")
     },
     onUploadError: (err)=> {
-      console.log(err)
       setIsError(true)
       toast.error("Upload Error")
     }
@@ -37,12 +39,14 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }
     }
   };
 
+  console.log(clear)
   useEffect(function(){
-    if(isSubmitted){
+    if(isSubmitted || clear){
       setFilePath([]);
       setFileName([]);
       storeImage([]);
-      setIsSubmitted(false);
+      clear && setClear(false)
+      isSubmitted && setIsSubmitted(false);
       return;
     }
     let toastId: ReturnType<typeof toast.loading>;
@@ -58,7 +62,7 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }
          toast.dismiss(toastId)
       }
     } 
-  },[isUploading, isSubmitted])
+  },[isUploading, isSubmitted, clear])
 
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,14 +73,15 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }
       setError("")
 
       try{
-        const imageFilesArr = Array.from(files)
+        const imageFiles = Array.from(files)
+        setImageFilesArr(imageFiles)
 
-        imageFilesArr.map( file => {
+        imageFiles.map( file => {
           setFilePath(prev=> [...prev, URL.createObjectURL(file)]);
           setFileName(prev => [...prev, file.name]);
         })
 
-        const uploadedImg = await startUpload(imageFilesArr)
+        const uploadedImg = await startUpload(imageFiles)
         const images = uploadedImg?.map(item=> item.ufsUrl)
         if(images){
            storeImage(images);
@@ -147,10 +152,18 @@ export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }
                         className="h-full w-full object-cover"
                     /> :
                     <div className="absolute inset-0 flex justify-center items-center ">
-                      <Upload className="cursor-pointer" size={35} onClick={()=> console.log("re uploading")}/>
+                      <Upload className="cursor-pointer" size={35} 
+                        onClick={async ()=> {
+                          const uploadedImg = await startUpload(imageFilesArr)
+                            if(uploadedImg?.length === imageFilesArr.length){
+                              setIsError(false)
+                            }
+                          } 
+                        }
+                      />
                     </div>
                   }
-                </>
+                </> 
               }
             </div>
           ) 

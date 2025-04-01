@@ -70,7 +70,7 @@ export const create = mutation({
     images: v.array(v.string()),
     price: v.number(),
     businessId: v.id("store"),
-    category: v.optional(v.string()),
+    category: v.string(),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
     exchange: v.boolean(),
     condition: v.union(v.literal("brand new"), v.literal("used")),
@@ -79,6 +79,7 @@ export const create = mutation({
     commentsId: v.optional(v.id("comments")),
     negotiable: v.optional(v.boolean()),
     phone: v.string(),
+    store: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -101,7 +102,8 @@ export const create = mutation({
       timeStamp: new Date().toISOString(),
       location: args.location,
       link: args.link,
-      phone: args.phone
+      phone: args.phone,
+      store: args.store
     });
 
     return productId;
@@ -336,7 +338,7 @@ export const search = query({
               new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
             );
           case "popular":
-            return b.likes - b.dislikes - (a.likes - a.dislikes);
+            return (b?.likes ?? 0) - (b?.dislikes ?? 0) - ((a?.likes ?? 0) - (a?.dislikes ?? 0));
         }
       }
       return 0;
@@ -386,8 +388,8 @@ export const getRecommendations = query({
 
       // 2. Engagement Score (20% weight)
       const engagementScore =
-        (product.likes - product.dislikes) /
-        (product.likes + product.dislikes + 1); // Add 1 to avoid division by zero
+        ((product.likes ?? 0) - (product.dislikes ?? 0)) /
+        ((product.likes ?? 0) + (product.dislikes ?? 0) + 1); // Add 1 to avoid division by zero
       score += engagementScore * 0.2;
 
       // 3. Recency Score (20% weight)
@@ -462,7 +464,7 @@ export const getTrending = query({
 
       // Calculate engagement velocity (likes per day)
       const daysOld = (now - timestamp) / (1000 * 60 * 60 * 24);
-      const engagementVelocity = (product.likes - product.dislikes) / daysOld;
+      const engagementVelocity = ((product.likes ?? 0) - (product.dislikes ?? 0)) / daysOld;
 
       // Calculate final score
       const score = engagementVelocity * (product.plan === "premium" ? 1.5 : 1);
