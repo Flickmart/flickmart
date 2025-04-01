@@ -23,6 +23,8 @@ export default function MobileNav() {
 
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
+  const userStore = useQuery(api.store.getStoresByUserId);
+
 
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component
@@ -49,7 +51,7 @@ export default function MobileNav() {
           <span className={`${pathname === '/saved' ? 'text-flickmart' : ''} group-hover:text-flickmart duration-500`}>Saved</span>
         </Link>
         <Link
-          href={"/create-store"}
+          href={userStore?.[0] ? "/post-ad" : "/create-store"}
           className="mx-6 flex flex-col items-center justify-center gap-1.5 group"
         >
           <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">

@@ -110,6 +110,7 @@ export default function PostAdForm({clear, setClear}: {
   const { mutate: adPostMutate, isPending } = useMutation({
     mutationFn: createNewAd,
     onSuccess: () => {
+      toast.dismiss(postToastId)
       // Show success toast
       toast.success("Ad posted successfully...",{ 
         duration: 2000
@@ -122,11 +123,13 @@ export default function PostAdForm({clear, setClear}: {
 
       // Short delay before redirect
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/home");
       }, 6000);
     },
-    onError: (err) => toast.error(err.message),
-    onSettled: () => toast.dismiss(postToastId),
+    onError: (err) => {
+      toast.dismiss(postToastId)
+      toast.error(err.message)
+    },
   });
 
   const onSubmit: SubmitType = (e) => {
