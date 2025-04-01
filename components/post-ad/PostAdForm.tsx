@@ -94,12 +94,15 @@ export default function PostAdForm({clear, setClear}: {
   const [allowAdPost, setAllowAdPost]= useState<boolean>(false)
   const userStore =  useQuery(api.store.getStoresByUserId);
   const businessId = userStore?.[0]?._id as Id<"store">
+  const [isSubmitted, setIsSubmitted]= useState<boolean>(false)
+  const [textAreaLength, setTextAreaLength] = useState<number>(0);
+  console.log(businessId)
 
 
   // Clear Form
   useEffect(()=>{
     if(clear){
-      console.log("Clicked", clear)
+      setTextAreaLength(0)
       form.reset()
       setClear(false)
     }
@@ -119,11 +122,17 @@ export default function PostAdForm({clear, setClear}: {
 
   const onSubmit: SubmitType = (e) => {
     try {
+      if (!userStore?.[0]?._id) {
+        toast.error("Please create a store first");
+        return;
+      }
       postToastId= toast.loading("Posting Ad...")
       const modifiedObj = {...e, businessId, images, price: +e.price}
       console.log(modifiedObj)
       adPostMutate(modifiedObj);
     } finally {
+      setIsSubmitted(true)
+      setTextAreaLength(0)
       form.reset();
     }
   };
@@ -148,7 +157,11 @@ export default function PostAdForm({clear, setClear}: {
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
           <Selector form={form} options={categories} name="category" />
-          <AddPhoto setAllowAdPost={setAllowAdPost} />
+          <AddPhoto 
+            setAllowAdPost={setAllowAdPost} 
+            setIsSubmitted={setIsSubmitted} 
+            isSubmitted={isSubmitted} 
+          />
           <Selector
             options={location}
             form={form}
@@ -163,7 +176,12 @@ export default function PostAdForm({clear, setClear}: {
             label="exchange possible"
           />
           <Selector form={form} options={condition} name="condition" />
-          <InputField name="description" form={form} type="textArea" />
+          <InputField 
+            name="description" 
+            form={form} type="textArea" 
+            textAreaLength={textAreaLength}
+            setTextAreaLength={setTextAreaLength}
+           />
           <InputField name="price" form={form} />
         </div>
 
@@ -185,7 +203,7 @@ export default function PostAdForm({clear, setClear}: {
           </div>
           <AdPromotion form={form} />
           <Button
-            disabled={isPending}
+            disabled={isPending || !allowAdPost}
             type="submit"
             className="capitalize  bg-flickmart w-full py-7 lg:py-9 lg:rounded-none text-xl"
           >

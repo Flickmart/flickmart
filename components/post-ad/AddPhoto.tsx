@@ -7,7 +7,9 @@ import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { MoonLoader } from "react-spinners";
 
-export default function AddPhoto({ setAllowAdPost }: {
+export default function AddPhoto({ setAllowAdPost, isSubmitted, setIsSubmitted }: {
+  isSubmitted: boolean
+  setIsSubmitted: React.Dispatch<React.SetStateAction<boolean>>
   setAllowAdPost: React.Dispatch<React.SetStateAction<boolean>>
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
@@ -19,7 +21,7 @@ export default function AddPhoto({ setAllowAdPost }: {
 
   const {startUpload, isUploading}= useUploadThing("imageUploader", {
     onClientUploadComplete: ()=> {
-      toast.success("Image Uploaded")
+      toast.success("Images Uploaded")
     },
     onUploadError: (err)=> {
       console.log(err)
@@ -36,12 +38,19 @@ export default function AddPhoto({ setAllowAdPost }: {
   };
 
   useEffect(function(){
+    if(isSubmitted){
+      setFilePath([]);
+      setFileName([]);
+      storeImage([]);
+      setIsSubmitted(false);
+      return;
+    }
     let toastId: ReturnType<typeof toast.loading>;
     if(isUploading){
       toastId = toast.loading("Uploading Images...");
-      // setAllowAdPost(false);
+      setAllowAdPost(false);
     }else{
-      // setAllowAdPost(true);
+      setAllowAdPost(true);
     }
 
     return () =>{
@@ -49,7 +58,8 @@ export default function AddPhoto({ setAllowAdPost }: {
          toast.dismiss(toastId)
       }
     } 
-  },[isUploading])
+  },[isUploading, isSubmitted])
+
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
