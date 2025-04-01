@@ -7,14 +7,12 @@ import Slider from "@/components/home/Slider";
 export default async function Home() {
   return (
     <>
-    <div className="py-5 lg:py-10 px-1 lg:px-2">    
       <Slider />
-    </div>
-    <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">    
-        <Categories />
-        <BestSellers />
-        <NewArrivals />
-    </div>
+      <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">    
+          <Categories />
+          <BestSellers />
+          <NewArrivals />
+      </div>
     </>
   );
 }

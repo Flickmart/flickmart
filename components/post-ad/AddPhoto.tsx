@@ -89,17 +89,16 @@ export default function AddPhoto({
       try {
         const imageFiles = Array.from(files);
         setImageFilesArr(imageFiles);
-        console.log(imageFiles)
 
        const compressedPromises= imageFiles.map(async (file) => {
-          const compressedFile = await imageCompression(file, options);
-          setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
-          setFileName((prev) => [...prev, file.name]);
-          return compressedFile
+         setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
+         setFileName((prev) => [...prev, file.name]);
+         const compressedFile = await imageCompression(file, options);
+         console.log("Image compressed successfully")
+         return compressedFile
         });
 
       const compressedFiles= await Promise.all(compressedPromises)
-      console.log(compressedFiles)
 
         const uploadedImg = await startUpload(compressedFiles);
         const images = uploadedImg?.map((item) => item.ufsUrl);
@@ -204,7 +203,7 @@ export default function AddPhoto({
       {fileName && (
         <p className="text-black ">
           {fileName.length
-            ? `Uploaded: ${fileName.map((item) => `${item}, `)}`
+            ? `Uploaded: ${fileName.map((item) => ` ${item}`)}`
             : null}
         </p>
       )}

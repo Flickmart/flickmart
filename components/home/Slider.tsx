@@ -54,47 +54,37 @@ export default function Slider() {
     [api, current, count]
   );
   return (
-    <Carousel setApi={setApi} ref={catRef}>
-      <CarouselContent>
-        {banners.map((img, index) => (
-          <CarouselItem key={index}>
-            <div
-              style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/${img})` }}
-              className={`lg:py-3 bg-no-repeat bg-center bg-cover text-gray-200  lg:px-5 pb-2 p-7 capitalize h-full lg:min-h-60 flex flex-col justify-center   items-center lg:space-y-7 space-y-2.5`}>
-              <div className=" text-center">
-                <h1 className="font-medium lg:text-4xl text-xl">
-                  this is slide one
-                </h1>
-                <p className="font-light leading-normal lg:leading-loose lg:text-base text-xs ">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit. Ab
-                  reiciendis consequuntur
-                </p>
+    <div className="py-3 lg:py-5 px-1 lg:px-2" ref={catRef}>
+      <Carousel setApi={setApi}>
+        <CarouselContent>
+          {banners.map((img, index) => (
+            <CarouselItem key={index}>
+              <div
+                style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/${img})` }}
+                className={`lg:py-3 bg-no-repeat bg-center bg-cover text-gray-200  lg:px-5 pb-2 p-7 capitalize h-32 lg:min-h-60 flex items-end justify-center lg:space-y-7 space-y-2.5`}>
+                <RadioGroup
+                  value={current.toString()}
+                  defaultValue="1"
+                  className="flex"
+                >
+                  {Array.from({ length: count }).map((_, index) => (
+                    <RadioGroupItem
+                      onClick={() =>
+                        index + 1 > current
+                          ? api?.scrollNext()
+                          : api?.scrollPrev()
+                      }
+                      key={index}
+                      value={(index + 1).toString()}
+                      className=" lg:w-6 lg:h-6 border  border-flickmartLight"
+                    />
+                  ))}
+                </RadioGroup>
               </div>
-              <Button className="rounded-3xl capitalize p-2 lg:w-1/6 w-2/4 bg-black text-sm  lg:text-xl lg:px-10 lg:py-6">
-                button
-              </Button>
-              <RadioGroup
-                value={current.toString()}
-                defaultValue="1"
-                className="flex"
-              >
-                {Array.from({ length: count }).map((_, index) => (
-                  <RadioGroupItem
-                    onClick={() =>
-                      index + 1 > current
-                        ? api?.scrollNext()
-                        : api?.scrollPrev()
-                    }
-                    key={index}
-                    value={(index + 1).toString()}
-                    className=" lg:w-6 lg:h-6 border  border-flickmartLight"
-                  />
-                ))}
-              </RadioGroup>
-            </div>
-          </CarouselItem>
-        ))}
-      </CarouselContent>
-    </Carousel>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+      </Carousel>
+    </div>
   );
 }
