@@ -1,7 +1,7 @@
-import { Menu, Search } from "lucide-react";
+import { Menu, Search, Archive } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { demoChats } from "@/lib/demo-data";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
@@ -9,9 +9,17 @@ interface ChatSidebarProps {
   setSearchQuery: (query: string) => void;
   activeFilter: "all" | "unread" | "archived";
   setActiveFilter: (filter: "all" | "unread" | "archived") => void;
-  activeChat: string | null;
-  setActiveChat: (chatId: string | null) => void;
+  activeChat: Id<"conversations"> | null;
+  setActiveChat: (chatId: Id<"conversations">) => void;
   setSidebarOpen: (open: boolean) => void;
+  conversations: Array<{
+    id: Id<"conversations">;
+    name: string;
+    lastMessage: string;
+    time: string;
+    unread: number;
+    archived: boolean;
+  }>;
 }
 
 export default function ChatSidebar({
@@ -23,21 +31,13 @@ export default function ChatSidebar({
   activeChat,
   setActiveChat,
   setSidebarOpen,
+  conversations,
 }: ChatSidebarProps) {
-  // Filter chats based on the active filter
-  const filteredChats = demoChats.filter((chat) => {
-    const matchesSearch =
-      chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (activeFilter === "unread") {
-      return matchesSearch && chat.unread > 0;
-    } else if (activeFilter === "archived") {
-      return matchesSearch && chat.archived;
-    }
-
-    return matchesSearch;
-  });
+  // Count total unread messages
+  const totalUnread = conversations.reduce((sum, chat) => sum + chat.unread, 0);
+  
+  // Count archived conversations
+  const archivedCount = conversations.filter(chat => chat.archived).length;
 
   return (
     <div
@@ -83,7 +83,7 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium",
+            "flex-1 py-2 text-sm font-medium relative",
             activeFilter === "unread"
               ? "text-orange-500 border-b-2 border-orange-500"
               : "text-gray-500 hover:text-orange-500"
@@ -91,10 +91,15 @@ export default function ChatSidebar({
           onClick={() => setActiveFilter("unread")}
         >
           Unread
+          {totalUnread > 0 && (
+            <span className="absolute top-0 right-2 bg-orange-500 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {totalUnread}
+            </span>
+          )}
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium",
+            "flex-1 py-2 text-sm font-medium relative",
             activeFilter === "archived"
               ? "text-orange-500 border-b-2 border-orange-500"
               : "text-gray-500 hover:text-orange-500"
@@ -102,13 +107,23 @@ export default function ChatSidebar({
           onClick={() => setActiveFilter("archived")}
         >
           Archived
+          {archivedCount > 0 && (
+            <span className="absolute top-0 right-1 bg-gray-400 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {archivedCount}
+            </span>
+          )}
         </button>
       </div>
 
       {/* Chat List */}
       <div className="overflow-y-auto h-[calc(100%-150px)]">
+        {conversations.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">
+            No conversations found
+          </div>
+        ) : (
         <div className="space-y-1">
-          {filteredChats.map((chat) => (
+            {conversations.map((chat) => (
             <div
               key={chat.id}
               className={cn(
@@ -139,11 +154,17 @@ export default function ChatSidebar({
                     )}
                   >
                     {chat.name}
+                      {chat.archived && (
+                        <Archive className="h-3 w-3 inline ml-1 text-gray-400" />
+                      )}
                   </h3>
                   <span className="text-xs text-gray-500">{chat.time}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <p className="text-sm text-gray-600 truncate">
+                    <p className={cn(
+                      "text-sm truncate",
+                      chat.unread > 0 ? "text-gray-800 font-medium" : "text-gray-600"
+                    )}>
                     {chat.lastMessage}
                   </p>
                   {chat.unread > 0 && (
@@ -156,6 +177,7 @@ export default function ChatSidebar({
             </div>
           ))}
         </div>
+        )}
       </div>
     </div>
   );
