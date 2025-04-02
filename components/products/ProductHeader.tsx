@@ -9,7 +9,7 @@ import {toast} from "sonner"
 export default function ProductHeader() {
   const router = useRouter()
   const user = useQuery(api.users.current)
-  const vendor = "k974cc7sx3gbqrzc8bg47jtr997d36nf" as Id<'users'>
+  const vendor = "j572dfwwtmyqy0g3wgnn3rdk9x7d2p48" as Id<'users'>
 
   const handleChat = async () => {
     if (!user) {
