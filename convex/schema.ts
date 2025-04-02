@@ -49,6 +49,9 @@ export default defineSchema({
     user1: v.id("users"),
     user2: v.id("users"),
     lastMessageId: v.optional(v.id("message")),
+    archivedByUsers: v.optional(v.array(v.id("users"))),
+    unreadCount: v.optional(v.record(v.string(), v.number())),
+    updatedAt: v.optional(v.number()),
   })
     .index("byUser1Id", ["user1"])
     .index("byUser2Id", ["user2"]),
@@ -56,6 +59,8 @@ export default defineSchema({
     senderId: v.id("users"),
     content: v.string(),
     conversationId: v.id("conversations"),
+    readByUsers: v.optional(v.array(v.id("users"))),
+    
   }),
   notifications: defineTable({
     title: v.string(),
