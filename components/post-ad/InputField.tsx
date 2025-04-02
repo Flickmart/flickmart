@@ -12,12 +12,16 @@ type FieldType = {
 };
 
 export default function InputField({
+  val,
+  disabled,
   textAreaLength,
   setTextAreaLength,
   name,
   form,
   type = "textField",
 }: FieldType & {
+  val?: string;
+  disabled?: boolean;
   textAreaLength?: number;
   setTextAreaLength?: React.Dispatch<React.SetStateAction<number>>;
 }) {
@@ -45,6 +49,7 @@ export default function InputField({
                 {type === "textField" ? (
                   <div>
                     <Input
+                      disabled={disabled}
                       required
                       className="w-full placeholder:capitalize  border lg:!text-lg  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
                       placeholder={`${name === "phone" ? "08123456789" : `${name}*`}`}
@@ -66,7 +71,7 @@ export default function InputField({
                       placeholder={`${name}*`}
                       className="placeholder:capitalize placeholder:text-lg h-48 placeholder:text-gray-500 lg:!text-lg"
                       {...field}
-                      value={value}
+                      value={val || value}
                     />
                     <p className="capitalize py-3 font-medium  text-red-500">
                       {errors[name]?.message}

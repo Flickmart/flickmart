@@ -92,8 +92,8 @@ export default function PostAdForm({clear, setClear}: {
   const createNewAd= useMutationConvex(api.product.create)
   let postToastId: ReturnType<typeof toast.loading>;
   const [allowAdPost, setAllowAdPost]= useState<boolean>(false)
-  const userStore =  useQuery(api.store.getStoresByUserId);
-  const businessId = userStore?.[0]?._id as Id<"store">
+  const userStore =  useQuery(api.store.getStoresByUserId)?.[0];
+  const businessId = userStore?._id as Id<"store">
   const [isSubmitted, setIsSubmitted]= useState<boolean>(false)
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
 
@@ -136,7 +136,7 @@ export default function PostAdForm({clear, setClear}: {
 
   const onSubmit: SubmitType = (e) => {
     try {
-      if (!userStore?.[0]?._id) {
+      if (!userStore?._id) {
         toast.error("Please create a store first");
         return;
       }
@@ -203,7 +203,7 @@ export default function PostAdForm({clear, setClear}: {
         <Separator className="h-5 bg-gray-100 w-full" />
 
         <div className="bg-inherit lg:w-3/4 space-y-3 lg:space-y-6   lg:px-10 w-full p-5  ">
-          <InputField name="store" form={form} />
+          <InputField name="store" form={form} disabled={true} val={userStore?.name} />
           <InputField name="phone" form={form} />
         </div>
 
