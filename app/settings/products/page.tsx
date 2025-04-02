@@ -8,7 +8,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import clsx from "clsx";
@@ -22,6 +21,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
+import AnimatedSearchBar from "@/components/AnimatedSearchBar";
 
 const demoProducts = [
   {
@@ -56,7 +56,6 @@ export default function ProductsPage() {
   const [productsMenuStates, setProductsMenuStates] = useState<
     ProductMenuState[]
   >([]);
-  const [searchBarIsVisible, setSearchBarIsVisible] = useState(false);
 
   useEffect(() => {
     setProductsMenuStates(
@@ -70,6 +69,7 @@ export default function ProductsPage() {
     }
     return desc;
   };
+  const [isExpanded, setIsExpanded] = useState(true);
 
   return (
     <div className="flex flex-col gap-8 p-4 lg:px-10">
@@ -97,24 +97,14 @@ export default function ProductsPage() {
           </BreadcrumbList>
         </Breadcrumb>
       </header>
-      {/* <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl bg-muted/50 p-6">
-          <h3 className="text-lg font-semibold">Total Products</h3>
-          <p className="text-3xl font-bold mt-2">1,234</p>
-        </div>
-        <div className="rounded-xl bg-muted/50 p-6">
-          <h3 className="text-lg font-semibold">Out of Stock</h3>
-          <p className="text-3xl font-bold mt-2">12</p>
-        </div>
-        <div className="rounded-xl bg-muted/50 p-6">
-          <h3 className="text-lg font-semibold">Low Stock</h3>
-          <p className="text-3xl font-bold mt-2">45</p>
-        </div>
-      </div> */}
-      <div className={clsx("flex items-center justify-between h-20 sm:h-32")}>
+      <div
+        className={clsx("flex relative items-center justify-between h-20 sm:h-32", {
+          "!justify-end": isExpanded,
+        })}
+      >
         <div
-          className={clsx("flex items-center gap-3", {
-            "hidden lg:flex": searchBarIsVisible,
+          className={clsx("flex flex-grow items-center gap-3 transition-opacity duration-300 relative", {
+            "opacity-0 lg:flex": isExpanded,
           })}
         >
           <div className="relative size-20 sm:size-32">
@@ -128,28 +118,24 @@ export default function ProductsPage() {
             </p>
           </div>
         </div>
-        <div
-          className={clsx(" rounded-md overflow-hidden", {
-            "grid grid-cols-[1fr_40px] flex-grow bg-gray-200 h-11 transition-[border] border-[1.5px] focus-within:border-flickmart lg:flex-none":
-              searchBarIsVisible,
-          })}
+        <AnimatedSearchBar
+          placeholder="Search for anything..."
+          isExpanded={isExpanded}
+          setIsExpanded={setIsExpanded}
+        />
+        <button
+          onClick={() => {
+            setIsExpanded(!isExpanded);
+          }}
+          type="button"
+          className="absolute right-2 hover:text-flickmart"
         >
-          {searchBarIsVisible && (
-            <Input className="bg-transparent  h-full" placeholder="Search..." />
+          {isExpanded ? (
+            <X className="size-6 sm:size-8 transition-all duration-300" />
+          ) : (
+            <Search className="size-6 sm:size-8 transition-all duration-300" />
           )}
-          <button
-            onClick={() => {
-              setSearchBarIsVisible(!searchBarIsVisible);
-            }}
-            className="flex items-center justify-center"
-          >
-            {searchBarIsVisible ? (
-              <X className="text-[#757474C2] hover:text-flickmart transition-colors duration-300 sm:size-7" />
-            ) : (
-              <Search className="text-[#757474C2] hover:text-flickmart transition-colors duration-300 sm:size-7" />
-            )}
-          </button>
-        </div>
+        </button>
       </div>
       <div>
         <ul className="grid gap-4">

@@ -111,8 +111,42 @@
   .submit-btn {
     @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300;
   }
-  .conditional-no-hover-effect:has(button:hover){
-    @apply !bg-white
+  .conditional-no-hover-effect:has(button:hover) {
+    @apply !bg-white;
+  }
+  .rounded-nav-link {
+    @apply bg-white p-2 rounded-full;
+  }
+
+  .expand {
+    animation: expand 0.4s linear forwards;
+  }
+  .contract {
+    animation: contract 0.4s linear forwards;
+  }
+
+  @keyframes expand {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+  @keyframes contract {
+    0% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    50%{
+      opacity: .6;
+    }
+    100% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
   }
 }
 

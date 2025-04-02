@@ -41,6 +41,8 @@ export default function Navbar() {
     setIsNavOpen((prev) => !prev);
   };
 
+  const pathname = usePathname();
+
   return (
     <header className="fixed z-30 top-0 w-full bg-flickmartLight shadow-sm shadow-black/20">
       <div className="w-[95%] mx-auto py-1">
@@ -64,10 +66,16 @@ export default function Navbar() {
               tabIndex={0} // Makes it focusable
               onBlur={() => setIsOpen(false)}
             >
-              <Link href="/chats">
+              <Link
+                className={pathname !== "/home" ? "rounded-nav-link" : ""}
+                href="/chats"
+              >
                 <MessageSquareText strokeWidth={1.25} className="h-8 w-8" />
               </Link>
-              <Link href="/notifications">
+              <Link
+                className={pathname !== "/home" ? "rounded-nav-link" : ""}
+                href="/notifications"
+              >
                 <Bell strokeWidth={1.25} className="h-8 w-8" />
               </Link>
               <SignedIn>
