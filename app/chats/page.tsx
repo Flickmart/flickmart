@@ -45,7 +45,9 @@ type FilterType = "all" | "unread" | "archived";
 
 export default function ChatPage() {
   const [input, setInput] = useState("");
-  const [activeChat, setActiveChat] = useState<Id<"conversations"> | null>(null);
+  const [activeChat, setActiveChat] = useState<Id<"conversations"> | null>(
+    null
+  );
   const [isTyping, setIsTyping] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -56,9 +58,13 @@ export default function ChatPage() {
   const searchParams = useSearchParams();
 
   // Get conversation ID from URL path or query params
-  const conversationId = params?.conversationId as Id<"conversations"> | undefined;
-  const vendorId = searchParams?.get('vendorId') as Id<"users"> | null;
-  const activeConversationParam = searchParams?.get('active') as Id<"conversations"> | null;
+  const conversationId = params?.conversationId as
+    | Id<"conversations">
+    | undefined;
+  const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
+  const activeConversationParam = searchParams?.get(
+    "active"
+  ) as Id<"conversations"> | null;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -81,12 +87,14 @@ export default function ChatPage() {
   const unarchiveConversation = useMutation(api.chat.unarchiveConversation);
 
   // Fetch user's conversations
-  const conversations = useQuery(api.chat.getConversations,
+  const conversations = useQuery(
+    api.chat.getConversations,
     user?._id ? { userId: user._id } : "skip"
   );
 
   // Fetch messages for active conversation
-  const messages = useQuery(api.chat.getMessages,
+  const messages = useQuery(
+    api.chat.getMessages,
     activeChat ? { conversationId: activeChat } : "skip"
   );
 
@@ -95,7 +103,7 @@ export default function ChatPage() {
     const ids = new Set<Id<"users">>();
 
     // Add other users from conversations
-    conversations?.forEach(conversation => {
+    conversations?.forEach((conversation) => {
       if (conversation.user1 !== user?._id) ids.add(conversation.user1);
       if (conversation.user2 !== user?._id) ids.add(conversation.user2);
     });
@@ -107,18 +115,20 @@ export default function ChatPage() {
   }, [conversations, user?._id, vendorId]);
 
   // Get all users' data in a single query
-  const allUsers = useQuery(api.users.getMultipleUsers,
+  const allUsers = useQuery(
+    api.users.getMultipleUsers,
     allUserIds.length > 0 ? { userIds: allUserIds } : "skip"
   );
 
   // Get all conversations' last messages
-  const conversationIds = useMemo(() =>
-    conversations?.map(conv => conv._id) || [],
+  const conversationIds = useMemo(
+    () => conversations?.map((conv) => conv._id) || [],
     [conversations]
   );
 
   // Get messages for all conversations
-  const allConversationMessages = useQuery(api.chat.getAllConversationsMessages,
+  const allConversationMessages = useQuery(
+    api.chat.getAllConversationsMessages,
     conversationIds.length > 0 ? { conversationIds } : "skip"
   );
 
@@ -136,10 +146,14 @@ export default function ChatPage() {
     if (!user?._id || !activeChat) return;
 
     try {
-      const activeConversationData = conversations?.find(c => c._id === activeChat);
+      const activeConversationData = conversations?.find(
+        (c) => c._id === activeChat
+      );
       if (!activeConversationData) return;
 
-      const isArchived = activeConversationData.archivedByUsers?.includes(user._id);
+      const isArchived = activeConversationData.archivedByUsers?.includes(
+        user._id
+      );
 
       if (isArchived) {
         // Unarchive
@@ -187,7 +201,8 @@ export default function ChatPage() {
         try {
           // Check if the conversation already exists
           const existingConv = conversations?.find(
-            conv => (conv.user1 === vendorId && conv.user2 === user._id) ||
+            (conv) =>
+              (conv.user1 === vendorId && conv.user2 === user._id) ||
               (conv.user1 === user._id && conv.user2 === vendorId)
           );
 
@@ -200,7 +215,7 @@ export default function ChatPage() {
             // Create new conversation
             const newConversationId = await startConversation({
               user1Id: user._id,
-              user2Id: vendorId
+              user2Id: vendorId,
             });
             setActiveChat(newConversationId);
             // Update URL to remove query param
@@ -222,7 +237,7 @@ export default function ChatPage() {
     } else if (activeConversationParam) {
       setActiveChat(activeConversationParam);
       // Clean URL
-      router.replace('/chats');
+      router.replace("/chats");
     }
   }, [conversationId, activeConversationParam, router]);
 
@@ -239,24 +254,24 @@ export default function ChatPage() {
   // Determine if the other user is typing
   const otherUserIsTyping = useMemo(() => {
     if (!user?._id || !conversationPresence || !activeChat) return false;
-    
-    const otherUser = 
-      conversationPresence.user1.userId === user._id 
-        ? conversationPresence.user2 
+
+    const otherUser =
+      conversationPresence.user1.userId === user._id
+        ? conversationPresence.user2
         : conversationPresence.user1;
-    
+
     return otherUser.isTyping;
   }, [user?._id, conversationPresence, activeChat]);
 
   // Determine if the other user is online
   const otherUserIsOnline = useMemo(() => {
     if (!user?._id || !conversationPresence || !activeChat) return false;
-    
-    const otherUser = 
-      conversationPresence.user1.userId === user._id 
-        ? conversationPresence.user2 
+
+    const otherUser =
+      conversationPresence.user1.userId === user._id
+        ? conversationPresence.user2
         : conversationPresence.user1;
-    
+
     return otherUser.status === "online";
   }, [user?._id, conversationPresence, activeChat]);
 
@@ -283,7 +298,7 @@ export default function ChatPage() {
       // Update to offline when leaving
       updatePresence({
         userId: user._id,
-        status: "offline", 
+        status: "offline",
         isTyping: false,
         typingInConversation: undefined,
       });
@@ -293,7 +308,7 @@ export default function ChatPage() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newInput = e.target.value;
     setInput(newInput);
-    
+
     // Update typing status when input changes
     if (user?._id && activeChat) {
       // If input is not empty, set typing to true
@@ -305,7 +320,7 @@ export default function ChatPage() {
           conversationId: activeChat,
         });
       }
-      
+
       // If input is empty, set typing to false
       if (newInput.trim().length === 0 && isTyping) {
         setIsTyping(false);
@@ -321,7 +336,7 @@ export default function ChatPage() {
   // Add debounce effect for typing status
   useEffect(() => {
     if (!user?._id || !activeChat) return;
-    
+
     // When user stops typing for 2 seconds, reset typing status
     if (isTyping) {
       const typingTimer = setTimeout(() => {
@@ -332,7 +347,7 @@ export default function ChatPage() {
           conversationId: undefined,
         });
       }, 2000);
-      
+
       return () => clearTimeout(typingTimer);
     }
   }, [input, isTyping, user?._id, activeChat, updateTypingStatus]);
@@ -347,22 +362,27 @@ export default function ChatPage() {
 
   // Transform conversations data to match UI requirements
   const formattedConversations = useMemo(() => {
-    if (!conversations || !allUsers || !allConversationMessages || !user?._id) return [];
+    if (!conversations || !allUsers || !allConversationMessages || !user?._id)
+      return [];
 
-    return conversations.map(conversation => {
+    return conversations.map((conversation) => {
       // Determine the other participant (not the current user)
-      const otherUserId = conversation.user1 === user._id ? conversation.user2 : conversation.user1;
+      const otherUserId =
+        conversation.user1 === user._id
+          ? conversation.user2
+          : conversation.user1;
 
       // Find user in our pre-fetched users
-      const otherUser = allUsers.find(u => u._id === otherUserId);
+      const otherUser = allUsers.find((u) => u._id === otherUserId);
 
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
-        .filter(msg => msg.conversationId === conversation._id)
+        .filter((msg) => msg.conversationId === conversation._id)
         .sort((a, b) => b._creationTime - a._creationTime);
 
       // Get the last message
-      const lastMessage = conversationMessages.length > 0 ? conversationMessages[0] : null;
+      const lastMessage =
+        conversationMessages.length > 0 ? conversationMessages[0] : null;
 
       // Format timestamp from the last message
       const lastMessageTime = lastMessage
@@ -370,19 +390,19 @@ export default function ChatPage() {
         : "";
 
       // Check if conversation is archived by this user
-      const isArchived = conversation.archivedByUsers?.includes(user._id) || false;
+      const isArchived =
+        conversation.archivedByUsers?.includes(user._id) || false;
 
       // Get unread count for current user
-      const userUnreadCount = conversation.unreadCount && user._id in conversation.unreadCount
-        ? conversation.unreadCount[user._id as string]
-        : 0;
+      const userUnreadCount =
+        conversation.unreadCount && user._id in conversation.unreadCount
+          ? conversation.unreadCount[user._id as string]
+          : 0;
 
       return {
         id: conversation._id,
         name: otherUser?.name || "Unknown User",
-        lastMessage: lastMessage
-          ? lastMessage.content
-          : "No messages yet",
+        lastMessage: lastMessage ? lastMessage.content : "No messages yet",
         time: lastMessageTime,
         unread: userUnreadCount,
         archived: isArchived,
@@ -393,32 +413,35 @@ export default function ChatPage() {
   // Filter conversations based on the active filter
   const filteredConversations = useMemo(() => {
     return formattedConversations.filter((chat) => {
-    // Apply search filter
-    const matchesSearch =
-      chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+      // Apply search filter
+      const matchesSearch =
+        chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Apply tab filter
-    if (activeFilter === "unread") {
-      return matchesSearch && chat.unread > 0;
-    } else if (activeFilter === "archived") {
-      return matchesSearch && chat.archived;
-    }
+      // Apply tab filter
+      if (activeFilter === "unread") {
+        return matchesSearch && chat.unread > 0;
+      } else if (activeFilter === "archived") {
+        return matchesSearch && chat.archived;
+      }
 
-    return matchesSearch;
-  });
+      return matchesSearch;
+    });
   }, [formattedConversations, searchQuery, activeFilter]);
 
   // Format messages for the UI ensuring they have the correct role type
   const formattedMessages = useMemo(() => {
-    return (messages || []).map(message => {
-      const role: "user" | "assistant" = message.senderId === user?._id ? "user" : "assistant";
+    return (messages || []).map((message) => {
+      const role: "user" | "assistant" =
+        message.senderId === user?._id ? "user" : "assistant";
 
       // Determine message status (sent, delivered, read)
       let status: "sent" | "delivered" | "read" = "sent";
 
       if (message.readByUsers && message.readByUsers.length > 0) {
-        const otherUserRead = message.readByUsers.some(id => id !== user?._id);
+        const otherUserRead = message.readByUsers.some(
+          (id) => id !== user?._id
+        );
         status = otherUserRead ? "read" : "delivered";
       }
 
@@ -434,8 +457,8 @@ export default function ChatPage() {
   }, [messages, user?._id]);
 
   // Get conversation data for the active chat
-  const activeConversation = useMemo(() =>
-    conversations?.find(conv => conv._id === activeChat),
+  const activeConversation = useMemo(
+    () => conversations?.find((conv) => conv._id === activeChat),
     [conversations, activeChat]
   );
 
@@ -447,8 +470,8 @@ export default function ChatPage() {
   }, [activeConversation, user?._id]);
 
   // Find the other user in our pre-fetched users
-  const otherUser = useMemo(() =>
-    otherUserId ? allUsers?.find(u => u._id === otherUserId) : null,
+  const otherUser = useMemo(
+    () => (otherUserId ? allUsers?.find((u) => u._id === otherUserId) : null),
     [allUsers, otherUserId]
   );
 
@@ -458,10 +481,13 @@ export default function ChatPage() {
     return activeConversation.archivedByUsers?.includes(user._id) || false;
   }, [activeConversation, user?._id]);
 
-  const activeChatData = useMemo(() =>
-    activeChat && otherUser ? {
-      name: otherUser.name || "Unknown User",
-    } : null,
+  const activeChatData = useMemo(
+    () =>
+      activeChat && otherUser
+        ? {
+            name: otherUser.name || "Unknown User",
+          }
+        : null,
     [activeChat, otherUser]
   );
 
@@ -498,7 +524,9 @@ export default function ChatPage() {
 
   const handleInputWrapper = (value: string) => {
     // Call your existing function with a simulated event
-    handleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>);
+    handleInputChange({
+      target: { value },
+    } as React.ChangeEvent<HTMLInputElement>);
   };
 
   return (
@@ -544,7 +572,11 @@ export default function ChatPage() {
                 className="rounded-full"
                 variant={isActiveConversationArchived ? "outline" : "default"}
                 onClick={handleArchiveToggle}
-                title={isActiveConversationArchived ? "Unarchive conversation" : "Archive conversation"}
+                title={
+                  isActiveConversationArchived
+                    ? "Unarchive conversation"
+                    : "Archive conversation"
+                }
               >
                 {isActiveConversationArchived ? (
                   <ArchiveRestore className="w-5 h-5" />
