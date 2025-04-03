@@ -100,7 +100,7 @@ export default function Navbar() {
                 )}
                 <Menu
                   size={32}
-                  strokeWidth={3}
+                  strokeWidth={2}
                   absoluteStrokeWidth
                   className="h-8 w-8"
                 />

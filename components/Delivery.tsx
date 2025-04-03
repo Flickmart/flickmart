@@ -1,8 +1,30 @@
+"use client";
+
 import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
+import { usePathname } from "next/navigation";
 
 export default function Delivery() {
+  const pathname = usePathname();
+
+  // Pages where SearchBox should not be shown
+  const hiddenPages = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/notifications",
+    "/home",
+    "/settings",
+    "post-ad",
+    "/create-store",
+    "/saved",
+    "/chats",
+  ];
+
+  if (hiddenPages.includes(pathname)) {
+    return null; // Don't render any component
+  }
   return (
     <div className="lg:h-96 bg-flickmartLight lg:flex gap-8 justify-between">
       <Image
