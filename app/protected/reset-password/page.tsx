@@ -8,11 +8,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Image from "next/image";
-import AuthHeader from "@/components/auth/AuthHeader";
 import { Form } from "@/components/ui/form";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
+import MobileHeader from "@/components/MobileHeader";
 
 const formSchema = z
   .object({
@@ -59,7 +59,7 @@ export default function ResetPassword() {
 
   return (
     <main>
-      <AuthHeader />
+      <MobileHeader/>
       <section className="form-grid">
         <Image
           src="/reset-password.svg"

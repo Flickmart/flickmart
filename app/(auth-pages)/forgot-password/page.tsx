@@ -3,12 +3,12 @@ import { FormMessage, Message } from "@/components/form-message";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
+import MobileHeader from "@/components/MobileHeader";
 
 export default function ForgotPassword() {
   const router = useRouter();
@@ -22,13 +22,13 @@ export default function ForgotPassword() {
       router.push("/home");
       setLoadingStatus(false);
     }, 1000);
-    
+
     return () => clearTimeout(timer);
   }, [router, setLoadingStatus]);
 
   return (
     <>
-      <AuthHeader />
+      <MobileHeader />
       <section className="form-grid">
         <Image
           src="/forgot-password.svg"
@@ -41,7 +41,8 @@ export default function ForgotPassword() {
           <div>
             <h1 className="text-[32px] font-medium">Forgot Password?</h1>
             <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm mt-4">
-              Authentication has been removed. You will be redirected to the home page automatically.
+              Authentication has been removed. You will be redirected to the
+              home page automatically.
             </div>
             <p className="text-flickmart-gray mt-8">
               Enter your email to reset password.

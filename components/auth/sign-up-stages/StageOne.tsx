@@ -1,5 +1,4 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +17,7 @@ import CustomInput from "@/components/auth/CustomInput";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction } from "react";
 import useUserStore from "@/store/useUserStore";
+import MobileHeader from "@/components/MobileHeader";
 
 export const formSchema = z.object({
   firstName: z
@@ -60,7 +60,7 @@ export default function StageOne({
 
   return (
     <main className="relative min-h-screen">
-      <AuthHeader />
+      <MobileHeader/>
       <section className="form-grid">
         <Image
           src="/sign-up-illustration.svg"

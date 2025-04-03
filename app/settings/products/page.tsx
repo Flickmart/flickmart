@@ -22,6 +22,12 @@ import {
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import AnimatedSearchBar from "@/components/AnimatedSearchBar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const demoProducts = [
   {
@@ -69,7 +75,7 @@ export default function ProductsPage() {
     }
     return desc;
   };
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <div className="flex flex-col gap-8 p-4 lg:px-10">
@@ -98,14 +104,20 @@ export default function ProductsPage() {
         </Breadcrumb>
       </header>
       <div
-        className={clsx("flex relative items-center justify-between h-20 sm:h-32", {
-          "!justify-end": isExpanded,
-        })}
+        className={clsx(
+          "flex relative items-center justify-between h-20 sm:h-32",
+          {
+            "!justify-end": isExpanded,
+          }
+        )}
       >
         <div
-          className={clsx("flex flex-grow items-center gap-3 transition-opacity duration-300 relative", {
-            "opacity-0 lg:flex": isExpanded,
-          })}
+          className={clsx(
+            "flex flex-grow items-center gap-3 transition-opacity duration-300 relative",
+            {
+              "opacity-0 lg:flex": isExpanded,
+            }
+          )}
         >
           <div className="relative size-20 sm:size-32">
             <Image src="/store-avatar.png" alt="avatar" fill />
@@ -142,65 +154,42 @@ export default function ProductsPage() {
           {demoProducts.map((product) => (
             <li
               key={product.id}
-              className="flex gap-3 bg-white p-[6px] rounded-sm items-center shadow-md relative sm:p-2"
+              className="flex justify-between bg-white p-[6px] rounded-sm items-center shadow-md relative sm:p-2"
             >
-              <div className="size-20 sm:size-28 relative flex-shrink-0">
-                <Image
-                  className="object-cover rounded-sm"
-                  fill
-                  src={product.image}
-                  alt={product.name}
-                ></Image>
-              </div>
-              <div>
-                <h2 className="sm:text-lg font-bold">{product.name}</h2>
-                <p className="text-xs sm:text-sm font-light mb-1 sm:mb-2 md:mb-4">
-                  {formatDesc(product.desc)}
-                </p>
-                <span className="text-xs sm:text-sm font-bold text-flickmart">
-                  &#8358;{product.price}
-                </span>
-              </div>
-              <button
-                onClick={() => {
-                  setProductsMenuStates((prev) =>
-                    prev.map((state) =>
-                      state.id === product.id
-                        ? { ...state, isOpen: !state.isOpen }
-                        : { ...state, isOpen: false }
-                    )
-                  );
-                }}
-                className="absolute top-3 right-1"
-                type="button"
-              >
-                <EllipsisVertical className="hover:text-flickmart transition-all duration-300 size-4 sm:size-5 md:size-6" />
-              </button>
-              {productsMenuStates.find((state) => state.id === product.id)
-                ?.isOpen && (
-                <div className="absolute top-8 right-2 bg-white text-sm shadow-[0_3px_10px_#00000040] rounded-sm font-semibold overflow-hidden sm:text-sm sm:top-10">
-                  <ul className="flex flex-col">
-                    <li>
-                      <button
-                        className="hover:bg-gray-200 transition-all duration-300 flex flex-row items-center gap-2 w-full px-2 py-1 sm:p-2"
-                        type="button"
-                      >
-                        <Pencil className="size-4 sm:size-[18px]" />
-                        <span>Edit</span>
-                      </button>
-                    </li>
-                    <li>
-                      <button
-                        className="hover:bg-gray-200 transition-all duration-300 flex flex-row items-center gap-2 w-full px-2 py-1 sm:p-2 text-red-600"
-                        type="button"
-                      >
-                        <Trash className="size-4 sm:size-[18px]" />
-                        <span>Delete</span>
-                      </button>
-                    </li>
-                  </ul>
+              <div className="flex gap-3 items-center">
+                <div className="size-20 sm:size-28 relative flex-shrink-0">
+                  <Image
+                    className="object-cover rounded-sm"
+                    fill
+                    src={product.image}
+                    alt={product.name}
+                  ></Image>
                 </div>
-              )}
+                <div>
+                  <h2 className="sm:text-lg font-bold">{product.name}</h2>
+                  <p className="text-xs sm:text-sm font-light mb-1 sm:mb-2 md:mb-4">
+                    {formatDesc(product.desc)}
+                  </p>
+                  <span className="text-xs sm:text-sm font-bold text-flickmart">
+                    &#8358;{product.price}
+                  </span>
+                </div>
+              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger>
+                  <EllipsisVertical className="cursor-pointer" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-28 min-w-0">
+                  <DropdownMenuItem>
+                    <Pencil className="mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="!text-red-500">
+                    <Trash className="mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </li>
           ))}
         </ul>

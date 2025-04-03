@@ -1,5 +1,5 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
+import MobileHeader from "@/components/MobileHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +18,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
-import { SignIn as Login } from '@clerk/nextjs'
+import { SignIn as Login } from "@clerk/nextjs";
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -46,11 +46,10 @@ export default function SignIn() {
     router.push("/home");
   };
 
-
   return (
     <main className="relative h-screen">
       {/* <Login /> */}
-      <AuthHeader />
+      <MobileHeader/>
       <section className="form-grid">
         <Image
           priority
@@ -63,7 +62,8 @@ export default function SignIn() {
         <div className="mt-16 container-px lg:mt-0 space-y-8">
           <h1 className="mb-5">Sign in</h1>
           <div className="bg-yellow-50 p-3 rounded-md text-yellow-700 text-sm">
-            Authentication has been removed. You will be redirected to the home page automatically.
+            Authentication has been removed. You will be redirected to the home
+            page automatically.
           </div>
           <Form {...form}>
             <form
@@ -111,7 +111,7 @@ export default function SignIn() {
                   Sign In
                 </Button>
                 <Image
-                  onClick={()=>{}}
+                  onClick={() => {}}
                   src="/icons/google.png"
                   alt="google"
                   width={500}

@@ -14,7 +14,7 @@ import { createAdPost, uploadImage } from "@/app/post-ad/action";
 import { useOthersStore } from "@/store/useOthersStore";
 import toast from "react-hot-toast";
 import { FormDataType } from "@/types/form";
-import { useMutation as useMutationConvex} from "convex/react";
+import { useMutation as useMutationConvex } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "@tanstack/react-query";
 
@@ -82,7 +82,7 @@ export default function PostAdForm() {
   });
   const { image, setLoadingStatus } = useOthersStore((state) => state);
   const [formData, setFormData] = useState<FormDataType | null>(null);
-  const createNewAd= useMutationConvex(api.product.create)
+  const createNewAd = useMutationConvex(api.product.create);
 
   // Form Submission
 
@@ -117,7 +117,6 @@ export default function PostAdForm() {
 
   const onSubmit: SubmitType = (e) => {
     try {
-      
       // const modifiedObj = {...e, businessId}
       setLoadingStatus(true);
       // adPostMutate(modifiedObj);
@@ -146,7 +145,7 @@ export default function PostAdForm() {
       <form
         onKeyDown={handleKeyPress}
         onSubmit={form.handleSubmit(onSubmit, onError)}
-        className="bg-white lg:w-5/6 w-full  grid place-items-center rounded-lg space-y-10"
+        className="bg-white lg:w-5/6 w-full grid place-items-center rounded-lg space-y-10"
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
           <Selector form={form} options={categories} name="category" />

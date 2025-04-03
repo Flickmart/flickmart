@@ -1,4 +1,3 @@
-import AuthHeader from "../AuthHeader";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -20,6 +19,7 @@ import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { Dispatch, SetStateAction, useState } from "react";
 
 import useUserStore from "@/store/useUserStore";
+import MobileHeader from "@/components/MobileHeader";
 
 const formSchema = z.object({
   otp: z
@@ -46,7 +46,7 @@ const StageTwo = ({
   };
   return (
     <main className="relative h-screen">
-      <AuthHeader />
+      <MobileHeader />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}

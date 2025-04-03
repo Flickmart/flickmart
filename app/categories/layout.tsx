@@ -1,3 +1,5 @@
+import MobileHeader from "@/components/MobileHeader";
+import MobileNav from "@/components/MobileNav";
 import Navbar from "@/components/Navbar";
 import NavigationBar from "@/components/NavigationBar";
 
@@ -9,7 +11,7 @@ export default async function Layout({
   return (
     <>
       <Navbar />
-      <NavigationBar />
+      <MobileHeader title="find category"/>
       {children}
     </>
   );
