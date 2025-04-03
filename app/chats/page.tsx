@@ -65,6 +65,11 @@ export default function ChatPage() {
   // Fetch current user
   const user = useQuery(api.users.current);
 
+  // Presence-related mutations
+  const updatePresence = useMutation(api.presence.updatePresence);
+  const updateTypingStatus = useMutation(api.presence.updateTypingStatus);
+  const heartbeat = useMutation(api.presence.heartbeat);
+
   // Start conversation mutation
   const startConversation = useMutation(api.chat.startConversation);
 
@@ -119,6 +124,12 @@ export default function ChatPage() {
 
   // Mutation to send a message
   const sendMessage = useMutation(api.chat.sendMessage);
+
+  // Get presence information for the active conversation
+  const conversationPresence = useQuery(
+    api.presence.getConversationPresence,
+    activeChat ? { conversationId: activeChat } : "skip"
+  );
 
   // Handle archiving/unarchiving a conversation
   const handleArchiveToggle = async () => {
@@ -225,30 +236,106 @@ export default function ChatPage() {
     }
   }, [messages, activeChat]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-  };
+  // Determine if the other user is typing
+  const otherUserIsTyping = useMemo(() => {
+    if (!user?._id || !conversationPresence || !activeChat) return false;
+    
+    const otherUser = 
+      conversationPresence.user1.userId === user._id 
+        ? conversationPresence.user2 
+        : conversationPresence.user1;
+    
+    return otherUser.isTyping;
+  }, [user?._id, conversationPresence, activeChat]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (!input.trim() || !activeChat || !user?._id) return;
+  // Determine if the other user is online
+  const otherUserIsOnline = useMemo(() => {
+    if (!user?._id || !conversationPresence || !activeChat) return false;
+    
+    const otherUser = 
+      conversationPresence.user1.userId === user._id 
+        ? conversationPresence.user2 
+        : conversationPresence.user1;
+    
+    return otherUser.status === "online";
+  }, [user?._id, conversationPresence, activeChat]);
 
-    // Clear input right away for better UX
-    const message = input;
-    setInput("");
+  // Update online presence with heartbeat
+  useEffect(() => {
+    if (!user?._id) return;
 
-    try {
-      // Send message to server
-      await sendMessage({
-        senderId: user._id,
-        content: message,
-        conversationId: activeChat,
+    // Initial presence update
+    updatePresence({
+      userId: user._id,
+      status: "online",
+      isTyping: false,
+      typingInConversation: undefined,
+    });
+
+    // Set up regular heartbeat interval
+    const intervalId = setInterval(() => {
+      heartbeat({ userId: user._id });
+    }, 5000); // Send heartbeat every 5 seconds
+
+    // Clean up on unmount
+    return () => {
+      clearInterval(intervalId);
+      // Update to offline when leaving
+      updatePresence({
+        userId: user._id,
+        status: "offline", 
+        isTyping: false,
+        typingInConversation: undefined,
       });
-    } catch (error) {
-      console.error("Failed to send message:", error);
-      toast.error("Failed to send message");
+    };
+  }, [user?._id, updatePresence, heartbeat]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newInput = e.target.value;
+    setInput(newInput);
+    
+    // Update typing status when input changes
+    if (user?._id && activeChat) {
+      // If input is not empty, set typing to true
+      if (newInput.trim().length > 0 && !isTyping) {
+        setIsTyping(true);
+        updateTypingStatus({
+          userId: user._id,
+          isTyping: true,
+          conversationId: activeChat,
+        });
+      }
+      
+      // If input is empty, set typing to false
+      if (newInput.trim().length === 0 && isTyping) {
+        setIsTyping(false);
+        updateTypingStatus({
+          userId: user._id,
+          isTyping: false,
+          conversationId: undefined,
+        });
+      }
     }
   };
+
+  // Add debounce effect for typing status
+  useEffect(() => {
+    if (!user?._id || !activeChat) return;
+    
+    // When user stops typing for 2 seconds, reset typing status
+    if (isTyping) {
+      const typingTimer = setTimeout(() => {
+        setIsTyping(false);
+        updateTypingStatus({
+          userId: user._id,
+          isTyping: false,
+          conversationId: undefined,
+        });
+      }, 2000);
+      
+      return () => clearTimeout(typingTimer);
+    }
+  }, [input, isTyping, user?._id, activeChat, updateTypingStatus]);
 
   // Handle chat selection from sidebar
   const handleChatSelect = (chatId: Id<"conversations">) => {
@@ -382,6 +469,38 @@ export default function ChatPage() {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!input.trim() || !user?._id || !activeChat) return;
+
+    try {
+      // Reset typing status
+      setIsTyping(false);
+      updateTypingStatus({
+        userId: user._id,
+        isTyping: false,
+        conversationId: undefined,
+      });
+
+      // Send message
+      await sendMessage({
+        senderId: user._id,
+        content: input,
+        conversationId: activeChat,
+      });
+
+      setInput("");
+    } catch (error) {
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message");
+    }
+  };
+
+  const handleInputWrapper = (value: string) => {
+    // Call your existing function with a simulated event
+    handleInputChange({ target: { value } } as React.ChangeEvent<HTMLInputElement>);
+  };
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-gray-100">
       {/* Sidebar */}
@@ -412,7 +531,8 @@ export default function ChatPage() {
             <ChatHeader
               toggleSidebar={toggleSidebar}
               activeChatData={activeChatData}
-              isTyping={isTyping}
+              isTyping={otherUserIsTyping!}
+              isOnline={otherUserIsOnline}
             />
             <div className="flex-1 overflow-y-auto">
               <ChatMessages messages={formattedMessages} />
@@ -439,7 +559,7 @@ export default function ChatPage() {
             <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
               <ChatInput
                 input={input}
-                setInput={setInput}
+                setInput={handleInputWrapper}
                 handleSubmit={handleSubmit}
               />
             </div>

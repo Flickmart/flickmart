@@ -92,4 +92,14 @@ export default defineSchema({
   })
     .index("byUserId", ["userId"])
     .index("byUserIdAndIsRead", ["userId", "isRead"]),
+
+  presence: defineTable({
+    userId: v.id("users"),
+    status: v.union(v.literal("online"), v.literal("offline")),
+    lastUpdated: v.number(),
+    isTyping:v.optional(  v.boolean() ),
+    typingInConversation: v.optional(v.id("conversations")),
+  })
+    .index("byUserId", ["userId"])
+    .index("byTypingInConversation", ["typingInConversation"]),
 });
