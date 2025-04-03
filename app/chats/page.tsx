@@ -57,6 +57,12 @@ export default function ChatPage() {
   const params = useParams();
   const searchParams = useSearchParams();
 
+
+  useEffect(( ) => {
+    if (window.innerWidth < 768) {
+      setSidebarOpen(true);
+    }
+  }, [window.innerWidth]);
   // Get conversation ID from URL path or query params
   const conversationId = params?.conversationId as
     | Id<"conversations">
@@ -97,6 +103,7 @@ export default function ChatPage() {
     api.chat.getMessages,
     activeChat ? { conversationId: activeChat } : "skip"
   );
+
 
   // Fetch all users we need information about
   const allUserIds = useMemo(() => {
@@ -530,7 +537,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-gray-100">
+    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100 mt-14">
       {/* Sidebar */}
       <ChatSidebar
         sidebarOpen={sidebarOpen}
@@ -543,14 +550,6 @@ export default function ChatPage() {
         setSidebarOpen={setSidebarOpen}
         conversations={filteredConversations}
       />
-
-      {/* Overlay for mobile */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
 
       {/* Main chat area */}
       <div className="flex flex-col flex-1 w-full h-full overflow-hidden">

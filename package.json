@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev  --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
     "build": "next build",
     "start": "next start"

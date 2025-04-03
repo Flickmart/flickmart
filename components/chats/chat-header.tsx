@@ -30,7 +30,7 @@ export default function ChatHeader({
       <Avatar>
         <AvatarImage src={activeChatData?.name} alt={activeChatData?.name} />
         <AvatarFallback className="bg-flickmart text-white">
-          {activeChatData?.name.charAt(0)}
+          {activeChatData?.name?.charAt(0) || "?"}
         </AvatarFallback>
       </Avatar>
       <div className="ml-3 flex-1 truncate">

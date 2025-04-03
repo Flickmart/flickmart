@@ -22,7 +22,7 @@ export default function MobileNav() {
   const unreadCount = unreadNotifications.length;
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
+  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats"];
   const userStore = useQuery(api.store.getStoresByUserId);
 
 
