@@ -13,10 +13,12 @@ import React, { useState } from "react";
 import {
   Sheet,
   SheetContent,
+  SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Button } from "./ui/button";
 
 
 export default function Navbar() {
@@ -92,9 +94,9 @@ export default function Navbar() {
               </Link>
             </button>
           </div>
-          <Sheet >
+          <Sheet>
             <SheetTrigger asChild>
-              <div className="relative  lg:hidden ">
+            <div className="relative  lg:hidden ">
                 {unreadNotifications.length > 0 && (
                   <div className="absolute -top-0 -right-0 bg-red-500 text-white text-xs rounded-full w-3 h-3 flex items-center justify-center" />
                 )}

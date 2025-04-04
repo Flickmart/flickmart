@@ -57,7 +57,6 @@ export default function ProductPage() {
   const productId = params.id as Id<"product">
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
-  console.log(productData?.images)
 
 
   return (
