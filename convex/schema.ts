@@ -14,6 +14,7 @@ export default defineSchema({
     description: v.optional(v.string()),
     image: v.optional(v.string()),
     userId: v.id("users"),
+    phone: v.string()
   }).index("byUserId", ["userId"]),
   product: defineTable({
     userId: v.id("users"),

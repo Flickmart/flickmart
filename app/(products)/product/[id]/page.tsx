@@ -35,6 +35,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
+import { useParams } from "next/navigation";
+import { useIsMobile } from "@/hooks/use-mobile";
+import Link from "next/link";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { Id } from "@/convex/_generated/dataModel";
+import Slider from "@/components/home/Slider";
+
 const productIcons = [
   { label: "likes", icon: <ThumbsUp /> },
   { label: "dislikes", icon: <ThumbsDown /> },
@@ -43,22 +51,28 @@ const productIcons = [
 ];
 
 export default function ProductPage() {
-  const [isCommentDrawerOpen, setIsCommentDrawerOpen] = useState(false);
   const isVisible = useNav();
-  const [isMobile, setIsMobile] = useState(true);
+  const isMobile = useIsMobile();
+  const params = useParams();
+  const productId = params.id as Id<"product">
+  const productData = productId? useQuery(api.product.getById, { productId }) : null;
+  const exchangePossible= productData?.exchange=== true? "yes" : "no"
+  console.log(productData?.images)
+
 
   return (
     <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
       <div className="lg:flex gap-5 space-y-3">
         <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-          <Image
+          {/* <Image
             src="/airpods-demo.png"
             alt="airpods"
             width={500}
             height={500}
             className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
-          />
-          {isMobile ? <ProductHeader /> : null}
+          /> */}
+          <Slider/>
+          {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />: null}
           <div className="bg-white rounded-md flex justify-around w-full p-5">
             {productIcons.map((item) => (
               <div
@@ -75,28 +89,22 @@ export default function ProductPage() {
         </div>
         <div className=" lg:w-2/4 flex flex-col justify-center space-y-3">
           {isMobile ? <Comment /> : null}
-          {isMobile ? null : <ProductHeader />}
+          {isMobile ? null : <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />}
           <div className="space-y-2 bg-white rounded-md p-5">
             <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">
               Description
             </h3>
             <p className="text-justify text-sm leading-snug">
-              Get the best sound from Airpod pro 2nd Gen, It last long and its
-              very durable and noiseless Get the best sound from Airpod pro 2nd
-              Gen, It last long and its very durable and noiseless Get the best
-              sound from Airpod pro 2nd Gen, It last long and its very durable
-              and noiseless Get the best sound from Airpod pro Gen, It last long
-              and its very durable and noiseless Get the best sound from Airpod
-              pro 2nd Gen, It last long and its very durable and noiseless{" "}
+              {productData?.description}
             </p>
           </div>
           <div className="grid-cols-2 grid grid-rows-3 capitalize bg-white rounded-md p-5 gap-5">
             <span>condition</span>
-            <span className="font-semibold">used</span>
+            <span className="font-semibold">{productData?.condition}</span>
             <span>category</span>
-            <span className="font-semibold">electronics</span>
+            <span className="font-semibold">{productData?.category}</span>
             <span>exchange possible</span>
-            <span className="font-semibold">no</span>
+            <span className="font-semibold">{exchangePossible}</span>
           </div>
           <div className="bg-white px-5 rounded-md">
             <Accordion type="multiple">
@@ -137,7 +145,9 @@ export default function ProductPage() {
             </div>
             <button className="bg-flickmart-chat-orange flex text-white py-4 capitalize gap-10 font-medium items-center rounded-md w-full justify-center">
               <Store size={25} className="!font-thin" />
-              <span className="text-lg">post ads like this</span>
+              <Link href="/post-ad">
+                <span className="text-lg">post ads like this</span>
+              </Link>
             </button>
           </div>
         </div>

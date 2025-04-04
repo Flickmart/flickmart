@@ -33,9 +33,9 @@ export default function InputField({
       control={form.control}
       name={name}
       render={({ field }) => {
-        let value = "";
+        let value ="";
         if (typeof field.value === "string") {
-          value = field.value;
+          value =val || field.value;
         }
         return (
           <div className={`${type === "textArea" && "mt-5"}`}>

@@ -19,6 +19,8 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 import { ClipLoader } from "react-spinners";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -99,17 +101,20 @@ export default function PostAdForm({clear, setClear}: {
 
   // Clear Form
   useEffect(()=>{
+    userStore?.name && form.setValue("store", userStore.name)
+    userStore?.phone && form.setValue("phone", userStore.phone)
+    // clear form
     if(clear){
       setTextAreaLength(0)
       form.reset()
     }
 
-  }, [clear])
+  }, [clear, userStore])
 
   // Form Submission
   const { mutate: adPostMutate, isPending } = useMutation({
     mutationFn: createNewAd,
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast.dismiss(postToastId)
       // Show success toast
       toast.success("Ad posted successfully...",{ 
@@ -119,13 +124,13 @@ export default function PostAdForm({clear, setClear}: {
       // Show a loading toast for redirection
       let id: ReturnType<typeof toast.loading>;
       setTimeout(() => {
-        id = toast.loading("Redirecting to home...", { duration: 3000 });
+        id = toast.loading("Redirecting to product page...", { duration: 3000 });
       }, 2000);
 
       // Short delay before redirect
       setTimeout(() => {
         toast.dismiss(id);
-        router.push("/home");
+          router.push(`/product/${data}`);
       }, 6000);
     },
     onError: (err) => {
@@ -204,7 +209,7 @@ export default function PostAdForm({clear, setClear}: {
 
         <div className="bg-inherit lg:w-3/4 space-y-3 lg:space-y-6   lg:px-10 w-full p-5  ">
           <InputField name="store" form={form} disabled={true} val={userStore?.name} />
-          <InputField name="phone" form={form} />
+          <InputField name="phone" form={form} disabled={true} val={userStore?.phone}/>
         </div>
 
         <Separator className="h-5 bg-gray-100 w-full" />
@@ -217,13 +222,45 @@ export default function PostAdForm({clear, setClear}: {
             </p>
           </div>
           <AdPromotion form={form} />
-          <Button
-            disabled={isPending || !allowAdPost}
-            type="submit"
-            className="capitalize  bg-flickmart w-full py-7 lg:py-9 lg:rounded-none text-xl"
-          >
-            {isPending? <ClipLoader/> :"post ad"}
-          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                disabled={isPending || !allowAdPost}
+                className="capitalize  bg-flickmart w-full py-7 lg:py-9 lg:rounded-none text-xl"
+                >
+                {isPending? <ClipLoader/> :"post ad"}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className='h-1/3 lg:p-10'>
+              <DialogHeader className='flex flex-col justify-center space-y-2'>
+                  <DialogTitle className='text-center'>Are you sure you want to post this Ad?</DialogTitle>
+                  <DialogDescription className='text-center'>You will be redirected to the product page after this ad has been posted</DialogDescription>
+              </DialogHeader>
+              <DialogFooter>
+                <div className="w-full flex justify-center space-x-3 items-center">
+                  <DialogClose className="w-1/4" asChild
+                  >
+                    <Button 
+                      type="submit" 
+                      onClick={() => {
+                        form.handleSubmit(onSubmit, onError)();
+                      }}
+                      className='bg-flickmart text-white py-3 rounded-xl'
+                      >
+                      Yes
+                    </Button>
+                  </DialogClose>
+                  <DialogClose className="w-2/4" asChild>
+                    <Button 
+                        className='border border-flickmart hover:text-white w-1/4 bg-white text-gray-800 rounded-xl py-3'
+                      >
+                        No
+                    </Button>
+                  </DialogClose>
+                </div>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
           <p className="lg:w-2/4 text-center font-light capitalize leading-relaxed lg:text-sm text-xs">
             By clicking on Post Ad you accepted the{" "}
             <span className="text-flickmart cursor-pointer">Sell Policy </span>

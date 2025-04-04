@@ -35,6 +35,7 @@ export default function AddPhoto({
     },
     onUploadError: (err) => {
       setIsError(true);
+      console.log(err)
       toast.error("Upload Error");
     },
   });
@@ -97,7 +98,8 @@ export default function AddPhoto({
          return compressedFile
         });
 
-      const compressedFiles= await Promise.all(compressedPromises)
+        const compressedFiles= await Promise.all(compressedPromises)
+        setImageFilesArr(compressedFiles);
 
         const uploadedImg = await startUpload(compressedFiles);
         const images = uploadedImg?.map((item) => item.ufsUrl);
@@ -206,7 +208,10 @@ export default function AddPhoto({
             : null}
         </p>
       )}
-      <p>Supported formats are * .jpg and *.png</p>
+      <div className="space-y-1 font-medium text-sm">
+        <p>Supported formats are * .jpg and *.png</p>
+        <p className="normal-case">Max image size allowed is 2MB</p>
+      </div>
       <p className="text-red-500 font-medium text-xs normal-case">{error}</p>
     </div>
   );
