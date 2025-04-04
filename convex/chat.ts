@@ -27,12 +27,32 @@ export const startConversation = mutation({
       )
       .first();
     if (existingConversation) {
+      // If the conversation was archived, unarchive it for the current user
+      if (existingConversation.archivedByUsers?.includes(args.user1Id)) {
+        const updatedArchivedUsers =
+          existingConversation.archivedByUsers.filter(
+            (id) => id !== args.user1Id
+          );
+
+        await ctx.db.patch(existingConversation._id, {
+          archivedByUsers: updatedArchivedUsers,
+        });
+      }
       return existingConversation._id;
     }
+
+    // Initialize unreadCount object with 0 for both users
+    const unreadCount: Record<string, number> = {};
+    unreadCount[args.user1Id] = 0;
+    unreadCount[args.user2Id] = 0;
+
     const conversationId = await ctx.db.insert("conversations", {
       user1: args.user1Id,
       user2: args.user2Id,
       lastMessageId: undefined,
+      archivedByUsers: [],
+      unreadCount,
+      updatedAt: Date.now(),
     });
     return conversationId;
   },
@@ -49,40 +69,172 @@ export const sendMessage = mutation({
     if (!identity) {
       throw new Error("Unauthorized");
     }
+
+    // Get the conversation to find the recipient and update unread count
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    // Get current timestamp
+    const now = Date.now();
+
+    // Create the message with the sender already marked as having read it
     const messageId = await ctx.db.insert("message", {
       senderId: args.senderId,
       content: args.content,
       conversationId: args.conversationId,
+      readByUsers: [args.senderId], // The sender has read their own message
     });
+
+    // Determine the recipient
+    const recipientId =
+      conversation.user1 === args.senderId
+        ? conversation.user2
+        : conversation.user1;
+
+    // Update the conversation with the last message ID and increment unread count
+    const unreadCount: Record<string, number> = conversation.unreadCount
+      ? { ...conversation.unreadCount }
+      : {};
+
+    // Increment unread count for recipient
+    unreadCount[recipientId] = (unreadCount[recipientId] || 0) + 1;
+
+    // Update conversation
     await ctx.db.patch(args.conversationId, {
       lastMessageId: messageId,
+      unreadCount,
+      updatedAt: now,
+      // If this conversation was archived by any users, unarchive it
+      archivedByUsers:
+        conversation.archivedByUsers?.filter(
+          (id) => id !== args.senderId && id !== recipientId
+        ) || [],
     });
+
+    const sender = await ctx.db.get(args.senderId);
+
+    // Create notification for the recipient
+    await ctx.db.insert("notifications", {
+      userId: recipientId,
+      type: "new_message",
+      relatedId: messageId,
+      title: `${sender?.name || "Someone"} sent you a message`,
+      content: args.content,
+      imageUrl: sender?.imageUrl,
+      isRead: false,
+      timestamp: now,
+      link: `/chats?active=${args.conversationId}`,
+    });
+
+    return messageId;
+  },
+});
+
+export const markMessagesAsRead = mutation({
+  args: {
+    userId: v.id("users"),
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    // Get all unread messages in this conversation for this user
+    const messages = await ctx.db
+      .query("message")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("conversationId"), args.conversationId),
+          q.neq(q.field("senderId"), args.userId)
+        )
+      )
+      .collect();
+
+    // Update each message to mark it as read
+    for (const message of messages) {
+      const readByUsers = message.readByUsers || [];
+      if (!readByUsers.includes(args.userId)) {
+        await ctx.db.patch(message._id, {
+          readByUsers: [...readByUsers, args.userId],
+        });
+      }
+    }
+
+    // Reset unread count for this user in the conversation
+    const conversation = await ctx.db.get(args.conversationId);
+    if (conversation) {
+      const unreadCount: Record<string, number> = conversation.unreadCount
+        ? { ...conversation.unreadCount }
+        : {};
+      unreadCount[args.userId] = 0;
+
+      await ctx.db.patch(args.conversationId, {
+        unreadCount,
+      });
+    }
+
+    return { success: true, readCount: messages.length };
+  },
+});
+
+export const archiveConversation = mutation({
+  args: {
+    userId: v.id("users"),
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
 
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
       throw new Error("Conversation not found");
     }
 
-    const reciverId =
-      conversation.user1 === args.senderId
-        ? conversation.user2
-        : conversation.user1;
+    // Add this user to the archivedByUsers array if not already there
+    const archivedByUsers = conversation.archivedByUsers || [];
+    if (!archivedByUsers.includes(args.userId)) {
+      await ctx.db.patch(args.conversationId, {
+        archivedByUsers: [...archivedByUsers, args.userId],
+      });
+    }
 
-    const sender = await ctx.db.get(args.senderId);
+    return { success: true };
+  },
+});
 
-    await ctx.db.insert("notifications", {
-      userId: reciverId,
-      type: "new_message",
-      relatedId: messageId,
-      title: `${sender?.name} sent you a message`,
-      content: args.content,
-      imageUrl: sender?.imageUrl,
-      isRead: false,
-      timestamp: Date.now(),
-      link: `/conversations/${args.conversationId}`,
+export const unarchiveConversation = mutation({
+  args: {
+    userId: v.id("users"),
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    // Remove this user from the archivedByUsers array
+    const archivedByUsers = (conversation.archivedByUsers || []).filter(
+      (id) => id !== args.userId
+    );
+
+    await ctx.db.patch(args.conversationId, {
+      archivedByUsers,
     });
 
-    return messageId;
+    return { success: true };
   },
 });
 
@@ -103,6 +255,7 @@ export const getConversations = query({
           q.eq(q.field("user2"), args.userId)
         )
       )
+      .order("desc")
       .collect();
     return conversations;
   },
@@ -118,5 +271,31 @@ export const getMessages = query({
       .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
       .collect();
     return messages;
+  },
+});
+
+export const getAllConversationsMessages = query({
+  args: {
+    conversationIds: v.array(v.id("conversations")),
+  },
+  handler: async (ctx, args) => {
+    if (args.conversationIds.length === 0) {
+      return [];
+    }
+
+    // Get all messages for all the specified conversations
+    const allMessages = [];
+
+    // Process each conversation separately to avoid using .in() which is not available
+    for (const conversationId of args.conversationIds) {
+      const messages = await ctx.db
+        .query("message")
+        .filter((q) => q.eq(q.field("conversationId"), conversationId))
+        .collect();
+
+      allMessages.push(...messages);
+    }
+
+    return allMessages;
   },
 });

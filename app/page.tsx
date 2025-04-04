@@ -1,23 +1,18 @@
-"use client";
-import { SignedIn, SignedOut, UserButton, SignInButton } from "@clerk/nextjs";
-import Link from "next/link";
-// import { useRouter } from "next/navigation";
-// import { useEffect } from "react";
-export default function Home() {
-  // const router= useRouter()
-  // useEffect(function(){
-  //   router.push("home")
-  // },[])
+import BestSellers from "@/components/home/BestSellers";
+import Categories from "@/components/home/Categories";
+import NewArrivals from "@/components/home/NewArrivals";
+import Slider from "@/components/home/Slider";
+
+
+export default async function Home() {
   return (
-    <div className="flex gap-3">
-      <SignedIn>
-        <UserButton />
-      </SignedIn>
-      <SignedOut>
-        <SignInButton mode="modal" />
-      </SignedOut>
-      <span>Flickmart landing page</span>
-      <Link href="/home">Go to home</Link>
-    </div>
+    <>
+      <Slider />
+      <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">
+        <Categories />
+        <BestSellers />
+        <NewArrivals />
+      </div>
+    </>
   );
 }

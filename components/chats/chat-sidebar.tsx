@@ -1,7 +1,15 @@
-import { Menu, Search } from "lucide-react";
+import {
+  Menu,
+  Search,
+  Archive,
+  PanelLeftOpen,
+  ChevronLeft,
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { demoChats } from "@/lib/demo-data";
+import { Id } from "@/convex/_generated/dataModel";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
@@ -9,9 +17,17 @@ interface ChatSidebarProps {
   setSearchQuery: (query: string) => void;
   activeFilter: "all" | "unread" | "archived";
   setActiveFilter: (filter: "all" | "unread" | "archived") => void;
-  activeChat: string | null;
-  setActiveChat: (chatId: string | null) => void;
+  activeChat: Id<"conversations"> | null;
+  setActiveChat: (chatId: Id<"conversations">) => void;
   setSidebarOpen: (open: boolean) => void;
+  conversations: Array<{
+    id: Id<"conversations">;
+    name: string;
+    lastMessage: string;
+    time: string;
+    unread: number;
+    archived: boolean;
+  }>;
 }
 
 export default function ChatSidebar({
@@ -23,36 +39,23 @@ export default function ChatSidebar({
   activeChat,
   setActiveChat,
   setSidebarOpen,
+  conversations,
 }: ChatSidebarProps) {
-  // Filter chats based on the active filter
-  const filteredChats = demoChats.filter((chat) => {
-    const matchesSearch =
-      chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+  // Count total unread messages
+  const totalUnread = conversations.reduce((sum, chat) => sum + chat.unread, 0);
 
-    if (activeFilter === "unread") {
-      return matchesSearch && chat.unread > 0;
-    } else if (activeFilter === "archived") {
-      return matchesSearch && chat.archived;
-    }
+  // Count archived conversations
+  const archivedCount = conversations.filter((chat) => chat.archived).length;
 
-    return matchesSearch;
-  });
-
-  return (
-    <div
-      className={cn(
-        "fixed md:relative z-30 h-full bg-white transition-transform duration-300 ease-in-out border-r border-gray-200",
-        "w-full md:w-[320px]",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-      )}
-    >
+  // Content of the sidebar
+  const SidebarContent = () => (
+    <>
       {/* Sidebar Header */}
       <div className="px-3 py-2 flex items-center justify-between">
         <div className="flex items-center">
           <h2 className="text-flickmart font-bold text-xl">Chats</h2>
         </div>
-        <Menu />
+        <Menu className="md:block hidden" />
       </div>
 
       {/* Search */}
@@ -83,7 +86,7 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium",
+            "flex-1 py-2 text-sm font-medium relative",
             activeFilter === "unread"
               ? "text-orange-500 border-b-2 border-orange-500"
               : "text-gray-500 hover:text-orange-500"
@@ -91,10 +94,15 @@ export default function ChatSidebar({
           onClick={() => setActiveFilter("unread")}
         >
           Unread
+          {totalUnread > 0 && (
+            <span className="absolute top-0 right-2 bg-orange-500 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {totalUnread}
+            </span>
+          )}
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium",
+            "flex-1 py-2 text-sm font-medium relative",
             activeFilter === "archived"
               ? "text-orange-500 border-b-2 border-orange-500"
               : "text-gray-500 hover:text-orange-500"
@@ -102,61 +110,100 @@ export default function ChatSidebar({
           onClick={() => setActiveFilter("archived")}
         >
           Archived
+          {archivedCount > 0 && (
+            <span className="absolute top-0 right-1 bg-gray-400 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+              {archivedCount}
+            </span>
+          )}
         </button>
       </div>
 
       {/* Chat List */}
       <div className="overflow-y-auto h-[calc(100%-150px)]">
-        <div className="space-y-1">
-          {filteredChats.map((chat) => (
-            <div
-              key={chat.id}
-              className={cn(
-                "flex items-center p-3 cursor-pointer hover:bg-gray-100",
-                activeChat === chat.id && "bg-orange-50"
-              )}
-              onClick={() => {
-                setActiveChat(chat.id);
-                if (window.innerWidth < 768) {
-                  setSidebarOpen(false);
-                }
-              }}
-            >
+        {conversations.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">
+            No conversations found
+          </div>
+        ) : (
+          <div className="space-y-1">
+            {conversations.map((chat) => (
               <div
+                key={chat.id}
                 className={cn(
-                  "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold",
-                  chat.unread > 0 ? "bg-orange-500" : "bg-orange-300"
+                  "flex items-center p-3 cursor-pointer hover:bg-gray-100",
+                  activeChat === chat.id && "bg-orange-50"
                 )}
+                onClick={() => {
+                  setActiveChat(chat.id);
+                  if (window.innerWidth < 768) {
+                    setSidebarOpen(false);
+                  }
+                }}
               >
-                {chat.name.charAt(0)}
-              </div>
-              <div className="ml-3 flex-1 overflow-hidden">
-                <div className="flex justify-between items-center">
-                  <h3
-                    className={cn(
-                      "font-medium truncate",
-                      chat.unread > 0 && "font-semibold"
-                    )}
-                  >
-                    {chat.name}
-                  </h3>
-                  <span className="text-xs text-gray-500">{chat.time}</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <p className="text-sm text-gray-600 truncate">
-                    {chat.lastMessage}
-                  </p>
-                  {chat.unread > 0 && (
-                    <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {chat.unread}
-                    </span>
+                <div
+                  className={cn(
+                    "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold",
+                    chat.unread > 0 ? "bg-orange-500" : "bg-orange-300"
                   )}
+                >
+                  {chat.name.charAt(0)}
+                </div>
+                <div className="ml-3 flex-1 overflow-hidden">
+                  <div className="flex justify-between items-center">
+                    <h3
+                      className={cn(
+                        "font-medium truncate",
+                        chat.unread > 0 && "font-semibold"
+                      )}
+                    >
+                      {chat.name}
+                      {chat.archived && (
+                        <Archive className="h-3 w-3 inline ml-1 text-gray-400" />
+                      )}
+                    </h3>
+                    <span className="text-xs text-gray-500">{chat.time}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <p
+                      className={cn(
+                        "text-sm truncate",
+                        chat.unread > 0
+                          ? "text-gray-800 font-medium"
+                          : "text-gray-600"
+                      )}
+                    >
+                      {chat.lastMessage}
+                    </p>
+                    {chat.unread > 0 && (
+                      <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                        {chat.unread}
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
-} 
+
+  return (
+    <>
+      {/* Mobile sidebar as Sheet */}
+      <div className="md:hidden">
+        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
+          <SheetContent side="left" className="w-full p-0">
+            <SidebarContent />
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop sidebar as permanent element */}
+      <div className="hidden md:block w-[320px] border-r border-gray-200 bg-white mt-14 md:mt-0">
+        <SidebarContent />
+      </div>
+    </>
+  );
+}
