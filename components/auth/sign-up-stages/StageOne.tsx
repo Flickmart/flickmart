@@ -20,6 +20,7 @@ import useUserStore from "@/store/useUserStore";
 import { useSignUp } from "@clerk/nextjs";
 import { OAuthStrategy } from '@clerk/types'
 import { toast } from "sonner";
+import MobileHeader from "@/components/MobileHeader";
 
 export const formSchema = z.object({
   firstName: z
