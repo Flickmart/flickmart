@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import CategoryItem from "./CategoryItem";
 import Container from "./Container";

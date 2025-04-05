@@ -1,7 +1,7 @@
 import { Dispatch } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { FieldErrors, useForm } from "react-hook-form";
 import parsePhoneNumberFromString from "libphonenumber-js";
 
 import {
@@ -77,24 +77,37 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    console.log(values)
 
     const promise = create({
       name: values.businessName,
       location: values.location,
-      description: values.address,
-    });
+      description: values.address, 
+      phone: values.phoneNumber,
+       });
     toast.promise(promise, {
       loading: "Saving store details...",
       success: "Details saved  succesfully",
       error: "Failed to create store",
     });
     setStage(3);
-    console.log(values);
+  }
+
+  // Handle Error
+  function onError(error: FieldErrors<{
+    businessName: string;
+    location: string;
+    address: string;
+    phoneNumber: string & {
+        __tag: "E164Number";
+    };
+}>) {
+    console.log(error);
   }
   const locations: string[] = ["enugu", "nsukka"];
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)}>
+      <form onSubmit={form.handleSubmit(onSubmit, onError)}>
         <h2 className="capitalize font-medium text-3xl mb-1 md:text-4xl">
           Create store
         </h2>
@@ -167,7 +180,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             )}
           />
         </section>
-        <button className="submit-btn text-white rounded-lg capitalize mb-4">
+        <button type="submit" className="submit-btn text-white rounded-lg capitalize mb-4">
           next
         </button>
       </form>

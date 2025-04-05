@@ -2,10 +2,31 @@
 import { ChevronDown } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 export default function Footer() {
   const [isExpanded, setIsExpanded] = useState(false);
+  const pathname = usePathname();
+
+  // Pages where Footer should not be shown
+  const hiddenPages = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/notifications",
+    "/home",
+    "/settings",
+    "post-ad",
+    "/create-store",
+    "/saved",
+    "/chats",
+    "/business",
+  ];
+
+  if (hiddenPages.includes(pathname)) {
+    return null; // Don't render any component
+  }
 
   const toggleExpanded = () => {
     setIsExpanded((prev) => !prev);

@@ -6,7 +6,19 @@ export default function SearchBox() {
   const pathname = usePathname();
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password"];
+  const hiddenPages = [
+    "/sign-in",
+    "/sign-up",
+    "/forgot-password",
+    "/notifications",
+    "/home",
+    "/settings",
+    "post-ad",
+    "/create-store",
+    "/saved",
+    "/chats",
+    "/business",
+  ];
 
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component

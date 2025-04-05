@@ -14,6 +14,7 @@ export default defineSchema({
     description: v.optional(v.string()),
     image: v.optional(v.string()),
     userId: v.id("users"),
+    phone: v.string()
   }).index("byUserId", ["userId"]),
   product: defineTable({
     userId: v.id("users"),
@@ -21,18 +22,20 @@ export default defineSchema({
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
-    storeId: v.id("store"),
-    category: v.optional(v.string()),
-    likes: v.number(),
-    dislikes: v.number(),
+    businessId: v.id("store"),
+    category: v.string(),
+    likes: v.optional(v.number()),
+    dislikes: v.optional(v.number()),
     negotiable: v.optional(v.boolean()),
-    commentsId: v.id("comments"),
+    commentsId: v.optional(v.id("comments")),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
     exchange: v.boolean(),
-    condition: v.boolean(),
+    condition: v.union(v.literal("brand new"), v.literal("used")),
     timeStamp: v.string(),
-    location: v.union(v.literal("Enugu"), v.literal("Nsuka")),
+    location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),
+    phone: v.string(),
+    store: v.string()
   }),
   comments: defineTable({
     productId: v.id("product"),
@@ -47,6 +50,9 @@ export default defineSchema({
     user1: v.id("users"),
     user2: v.id("users"),
     lastMessageId: v.optional(v.id("message")),
+    archivedByUsers: v.optional(v.array(v.id("users"))),
+    unreadCount: v.optional(v.record(v.string(), v.number())),
+    updatedAt: v.optional(v.number()),
   })
     .index("byUser1Id", ["user1"])
     .index("byUser2Id", ["user2"]),
@@ -54,6 +60,8 @@ export default defineSchema({
     senderId: v.id("users"),
     content: v.string(),
     conversationId: v.id("conversations"),
+    readByUsers: v.optional(v.array(v.id("users"))),
+    
   }),
   notifications: defineTable({
     title: v.string(),
@@ -85,4 +93,14 @@ export default defineSchema({
   })
     .index("byUserId", ["userId"])
     .index("byUserIdAndIsRead", ["userId", "isRead"]),
+
+  presence: defineTable({
+    userId: v.id("users"),
+    status: v.union(v.literal("online"), v.literal("offline")),
+    lastUpdated: v.number(),
+    isTyping:v.optional(  v.boolean() ),
+    typingInConversation: v.optional(v.id("conversations")),
+  })
+    .index("byUserId", ["userId"])
+    .index("byTypingInConversation", ["typingInConversation"]),
 });

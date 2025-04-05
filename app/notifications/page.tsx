@@ -27,8 +27,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
-
+import { useUser } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 export interface Notification {
   icon: string;
   text: string;
@@ -74,6 +74,7 @@ const Page = () => {
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [selectedType, setSelectedType] = useState<NotificationType>("all");
 
+  const user = useUser();
   const allNotifications = useQuery(api.notifications.getNotifications) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
@@ -95,7 +96,7 @@ const Page = () => {
 
   const handleMarkAllAsRead = async (): Promise<void> => {
     // Check if there are any unread notifications
-    if (unreadNotifications.length === 0) {
+    if (unreadCount === 0) {
       toast.info("All notifications are already read");
       return;
     }
@@ -127,18 +128,20 @@ const Page = () => {
   }
 
   useEffect(() => {
+    if (!user) {
+      redirect("/sign-in");
+    }
+  }, [user]);
+
+  useEffect(() => {
     addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-
-  // Set up auto-refresh of notifications every 30 seconds
+  
   useEffect(() => {
-    const interval = setInterval(() => {
-      // This will trigger a re-query of the notifications
-      // Convex will handle only fetching changes
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(interval);
+    return ()=>{
+      markAllAsRead();
+    }
   }, []);
 
   // Group notifications by day (today, yesterday, older)

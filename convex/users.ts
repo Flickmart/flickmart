@@ -9,6 +9,29 @@ export const current = query({
   },
 });
 
+export const getUser = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db.get(args.userId);
+  },
+});
+
+export const getMultipleUsers = query({
+  args: { userIds: v.array(v.id("users")) },
+  handler: async (ctx, args) => {
+    if (args.userIds.length === 0) {
+      return [];
+    }
+    
+    const users = await Promise.all(
+      args.userIds.map(userId => ctx.db.get(userId))
+    );
+    
+    // Filter out any nulls (in case a user id doesn't exist)
+    return users.filter(user => user !== null);
+  },
+});
+
 export const upsertFromClerk = internalMutation({
   args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
   async handler(ctx, { data }) {
@@ -51,6 +74,7 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
+  
   if (identity === null) {
     return null;
   }
