@@ -2,7 +2,7 @@ import { Check, CheckCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Id } from "@/convex/_generated/dataModel";
 interface MessageBubbleProps {
-  id: Id<"message">;
+  id: string;
   message: string
   isUser: boolean
   timestamp: string
