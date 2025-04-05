@@ -203,7 +203,7 @@ const Page = () => {
 
   return (
     <main>
-      <MobileHeader title="Notifications">
+      <MobileHeader>
         <button
           type="button"
           onClick={handleMarkAllAsRead}

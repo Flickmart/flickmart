@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { EllipsisVertical, Trash, CheckCheck, Eye } from "lucide-react";
-import { Notification } from "@/app/notifications/page";
+import { Notification } from "@/app/(main-pages)/notifications/page";
 import Link from "next/link";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
