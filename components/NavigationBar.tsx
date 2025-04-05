@@ -16,7 +16,7 @@ const NavigationBar = () => {
     const isActive = activePaths.includes(cPath);
     const isPage = pagesWithoutTitle.includes(cPath);
     return (
-        <header className={isActive ? "w-full shadow-lg py-3" : "w-full shadow-lg py-3 mt-14"}>
+        <header className={isActive ? "w-full shadow-lg py-3" : "w-full shadow-lg py-3"}>
             <div className="w-[98%] mx-auto">
                 <button onClick={()=> router.back()} className="flex font-light items-center transition-colors text-flickmart-gray hover:text-flickmart duration-300 capitalize text-sm">
                     <ChevronLeft size={35} strokeWidth={1.5} />

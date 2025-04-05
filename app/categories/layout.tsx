@@ -8,8 +8,9 @@ export default async function Layout({
 }) {
   return (
     <>
-      <Navbar />
-      <NavigationBar />
+      <div className="hidden lg:block w-full mb-14">
+        <Navbar />
+      </div>
       {children}
     </>
   );
