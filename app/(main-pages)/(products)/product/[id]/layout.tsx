@@ -1,4 +1,3 @@
-import MobileHeader from '@/components/MobileHeader'
 import React from 'react'
 
 export default function RootLayout({children}: Readonly<{
@@ -6,7 +5,6 @@ export default function RootLayout({children}: Readonly<{
   }>) {
   return (
     <>
-      <MobileHeader title="Back" />
       {children}
     </>
   )
