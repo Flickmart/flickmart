@@ -4,6 +4,10 @@ import { Bookmark, ChevronDown, ChevronRight, LayoutGrid, LayoutPanelLeft } from
 import Image from "next/image";
 import Link from "next/link";
 
+interface PageProps {
+    params: { slug: string };
+}
+
 type Category = {
     id: number;
     title: string;
@@ -20,7 +24,7 @@ const categoryData: Category[] = [
 ];
   
 export default async function DetailedCategoryPage (
-    { params, }: { params: { slug: string } }) {
+    { params }: PageProps) {
 
     const { slug } = params;
     return (
