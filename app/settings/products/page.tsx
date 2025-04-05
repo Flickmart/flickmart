@@ -20,7 +20,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AnimatedSearchBar from "@/components/AnimatedSearchBar";
 import {
   DropdownMenu,
@@ -52,22 +52,9 @@ const demoProducts = [
     image: "/car.jpeg",
   },
 ];
-interface ProductMenuState {
-  id: number;
-  isOpen: boolean;
-}
 
 export default function ProductsPage() {
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
-  const [productsMenuStates, setProductsMenuStates] = useState<
-    ProductMenuState[]
-  >([]);
-
-  useEffect(() => {
-    setProductsMenuStates(
-      demoProducts.map((product) => ({ id: product.id, isOpen: false }))
-    );
-  }, []);
 
   const formatDesc = (desc: string) => {
     if (desc.length > 50) {
@@ -133,7 +120,6 @@ export default function ProductsPage() {
         <AnimatedSearchBar
           placeholder="Search for anything..."
           isExpanded={isExpanded}
-          setIsExpanded={setIsExpanded}
         />
         <button
           onClick={() => {

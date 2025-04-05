@@ -1,22 +1,26 @@
-import { Dispatch, SetStateAction } from "react";
-import clsx from "clsx";
+import { useState, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 const AnimatedSearchBar = ({
   placeholder,
   isExpanded,
-  setIsExpanded,
 }: {
   placeholder: string;
   isExpanded: boolean;
-  setIsExpanded: Dispatch<SetStateAction<boolean>>;
 }) => {
+  const [userInteractionOccurred, setUserInteractionOccurred] = useState(false);
+  useEffect(() => {
+    if (isExpanded) {
+      setUserInteractionOccurred(true);
+    }
+  }, [isExpanded]);
   return (
     <div
-      className={clsx(
-        "rounded-md flex items-center origin-right sm:h-12 absolute w-full right-0 bg-gray-200",
+      className={cn(
+        "rounded-md flex items-center origin-right sm:h-12 absolute w-full right-0 bg-gray-200 scale-x-0",
         {
           expand: isExpanded,
-          contract: !isExpanded,
+          contract: !isExpanded && userInteractionOccurred,
         }
       )}
     >
