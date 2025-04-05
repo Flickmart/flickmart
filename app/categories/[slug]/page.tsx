@@ -23,8 +23,7 @@ const categoryData: Category[] = [
     { id: 4, title: "Phones & Tablets Accessories", noAds: 452, image: "/mobiles.png", path: "/categories/accessories" },
 ];
   
-export default async function DetailedCategoryPage (
-    { params }: PageProps) {
+export default async function DetailedCategoryPage ({ params }: PageProps): Promise<JSX.Element> {
 
     const { slug } = params;
     return (
