@@ -28,10 +28,9 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import SimilarAdverts from "@/components/products/SimilarAdverts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+    AccordionTrigger,
+  } from "@/components/ui/accordion";
+  import SimilarAdverts from "@/components/products/SimilarAdverts";
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
@@ -42,6 +41,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Slider from "@/components/home/Slider";
+
 
 const productIcons = [
   { label: "likes", icon: <ThumbsUp /> },
@@ -56,6 +56,7 @@ export default function ProductPage() {
   const params = useParams();
   const productId = params.id as Id<"product">
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
+
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
 
 
@@ -71,7 +72,7 @@ export default function ProductPage() {
             className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
           /> */}
           <Slider/>
-          {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />: null}
+          {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />: null}
           <div className="bg-white rounded-md flex justify-around w-full p-5">
             {productIcons.map((item) => (
               <div
@@ -88,7 +89,7 @@ export default function ProductPage() {
         </div>
         <div className=" lg:w-2/4 flex flex-col justify-center space-y-3">
           {isMobile ? <Comment /> : null}
-          {isMobile ? null : <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />}
+          {isMobile ? null : <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />}
           <div className="space-y-2 bg-white rounded-md p-5">
             <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">
               Description
