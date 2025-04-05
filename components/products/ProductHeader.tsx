@@ -72,7 +72,7 @@ export default function ProductHeader({location, title, price, timestamp, userId
     </div>
     <div className=" flex  gap-3 text-white">
       <button className="p-2 px-3 min-w-1/4 font-medium bg-flickmart-chat-orange rounded-md flex items-center gap-2" onClick={handleChat}> <MessageCircle/> Chat vendor</button>
-      <Dialog>
+    <Dialog>
       <DialogTrigger asChild>
         <button className="p-2 px-3 min-w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center gap-2"> <Share2/> Share</button>
       </DialogTrigger>
