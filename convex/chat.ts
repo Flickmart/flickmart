@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { getCurrentUser } from "./users";
 
 export const startConversation = mutation({
   args: {
@@ -299,3 +300,35 @@ export const getAllConversationsMessages = query({
     return allMessages;
   },
 });
+
+
+export const editMessage = mutation({
+  args: {
+    messageId: v.id("message"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await getCurrentUser(ctx)
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const message = await ctx.db.get(args.messageId);
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+  
+
+    await ctx.db.patch(args.messageId, {
+      content: args.content,
+    });
+  },
+});
+
