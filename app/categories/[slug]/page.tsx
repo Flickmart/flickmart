@@ -4,9 +4,11 @@ import { Bookmark, ChevronDown, ChevronRight, LayoutGrid, LayoutPanelLeft } from
 import Image from "next/image";
 import Link from "next/link";
 
-interface PageProps {
-    params: { slug: string };
-}
+type PageProps = {
+    params: {
+      slug?: string; // optional
+    };
+};
 
 type Category = {
     id: number;
@@ -25,7 +27,7 @@ const categoryData: Category[] = [
   
 export default function DetailedCategoryPage ({ params }: PageProps) {
 
-    const { slug } = params;
+    const slug = params?.slug;
     return (
         <>
             <CategoryNav />
