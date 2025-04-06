@@ -3,11 +3,10 @@ import CategoryNav from "@/components/CategoryNav";
 import { Bookmark, ChevronDown, ChevronRight, LayoutGrid, LayoutPanelLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata, ResolvingMetadata } from 'next'
 
 type PageProps = {
-    params: {
-      slug?: string; // optional
-    };
+    params: Promise<{ slug: string }>
 };
 
 type Category = {
@@ -18,6 +17,27 @@ type Category = {
     path: string;
 };
 
+export async function generateMetadata(
+    { params }: PageProps,
+    parent: ResolvingMetadata
+  ): Promise<Metadata> {
+    // read route params
+    const { slug } = await params
+   
+    // fetch data
+    const product = await fetch(`https://.../${slug}`).then((res) => res.json())
+   
+    // optionally access and extend (rather than replace) parent metadata
+    const previousImages = (await parent).openGraph?.images || []
+   
+    return {
+      title: product.title,
+      openGraph: {
+        images: ['/some-specific-page-image.jpg', ...previousImages],
+      },
+    }
+  }
+
 const categoryData: Category[] = [
     { id: 1, title: "Apple Phones", noAds: 202, image: "/mobiles.png", path: "/categories/applephones" },
     { id: 2, title: "Android Phones", noAds: 180, image: "/mobiles.png", path: "/categories/androidphones" },
@@ -25,9 +45,10 @@ const categoryData: Category[] = [
     { id: 4, title: "Phones & Tablets Accessories", noAds: 452, image: "/mobiles.png", path: "/categories/accessories" },
 ];
   
-export default function DetailedCategoryPage ({ params }: PageProps) {
+export default async function DetailedCategoryPage ({ params }: PageProps) {
 
-    const slug = params?.slug;
+    const { slug } = await params;
+
     return (
         <>
             <CategoryNav />
