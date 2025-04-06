@@ -4,7 +4,7 @@ import { Bookmark, ChevronDown, ChevronRight, LayoutGrid, LayoutPanelLeft } from
 import Image from "next/image";
 import Link from "next/link";
 
-interface PageProps {
+type Props = {
     params: { slug: string };
 }
 
@@ -23,7 +23,7 @@ const categoryData: Category[] = [
     { id: 4, title: "Phones & Tablets Accessories", noAds: 452, image: "/mobiles.png", path: "/categories/accessories" },
 ];
   
-export default function DetailedCategoryPage ({ params }: PageProps) {
+export default async function DetailedCategoryPage ({ params }: Props) {
 
     const { slug } = params;
     return (
