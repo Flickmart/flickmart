@@ -12,7 +12,6 @@ import MobileNav from "@/components/MobileNav";
 export default async function Home() {
   return (
     <>
-      <Navbar />
       <MobileNav />
       <SearchBox />
       <Slider />

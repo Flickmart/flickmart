@@ -1,14 +1,15 @@
 import { Check, CheckCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
-
+import { Id } from "@/convex/_generated/dataModel";
 interface MessageBubbleProps {
+  id: string;
   message: string
   isUser: boolean
   timestamp: string
   status?: "sent" | "delivered" | "read"
 }
 
-export default function MessageBubble({ message, isUser, timestamp, status = "sent" }: MessageBubbleProps) {
+export default function MessageBubble({ message, isUser, timestamp, status = "sent" , id}: MessageBubbleProps) {
   return (
     <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
       <div

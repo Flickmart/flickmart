@@ -3,6 +3,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
 import { Providers } from "@/providers/providers";
+import MobileHeader from "@/components/MobileHeader";
 // import Navbar from "@/components/Navbar";
 // import Footer from "@/components/Footer";
 // import Delivery from "@/components/Delivery";
@@ -29,9 +30,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} scroll-smooth`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.className} scroll-smooth`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text relative">
         <Providers>
+          <MobileHeader/>
           {/* <Navbar />
           <MobileNav />
           <SearchBox /> */}
