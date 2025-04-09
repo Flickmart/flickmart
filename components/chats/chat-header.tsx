@@ -37,19 +37,22 @@ export default function ChatHeader({
         <h4 className="text-black text-md truncate">{activeChatData?.name}</h4>
         <div className="flex items-center">
           {isTyping ? (
-            <p className="text-orange-500 text-sm truncate animate-pulse">typing...</p>
+            <p className="text-orange-500 text-sm truncate animate-pulse">
+              typing...
+            </p>
           ) : (
             <div className="flex items-center">
-              <span 
-                className={`h-2 w-2 rounded-full mr-2 ${isOnline ? 'bg-green-500' : 'bg-gray-400'}`} 
-              />
-              <p className="text-black/70 text-sm truncate">
-                {isOnline ? 'online' : 'offline'}
-              </p>
+              {isOnline ? (
+                <p className="text-flickmart-chat-orange text-sm truncate">
+                  online
+                </p>
+              ) : (
+                <p className="text-gray-500 text-sm truncate">offline</p>
+              )}
             </div>
           )}
         </div>
       </div>
     </div>
   );
-} 
+}
