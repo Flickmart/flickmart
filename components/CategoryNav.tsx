@@ -15,10 +15,9 @@ export default function CategoryNav({ togglePanel }: CategoryNavProps) {
     const cPath = usePathname();
     // an array of paths where the styles should be applied
     const activePaths = [`/`,];
-    const pagesWithoutTitle = [`/saves`, `/categories`];
+    
     // Check if the current pathname is in the array
     const isActive = activePaths.includes(cPath);
-    const isPage = pagesWithoutTitle.includes(cPath);
     return (
         <header className="w-full shadow-lg py-3 border-t">
             <div className="w-[98%] mx-auto">

@@ -1,7 +1,4 @@
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
 import CategoryItem from "@/components/CategoryItem";
-import NavigationBar from "./NavigationBar";
 import CategoryNav from "./CategoryNav";
 
 type Category = {
