@@ -1,9 +1,7 @@
 import CategoryItem from "@/components/CategoryItem";
-import CategoryNav from "@/components/CategoryNav";
 import { Bookmark, ChevronDown, ChevronRight, LayoutGrid, LayoutPanelLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { Metadata, ResolvingMetadata } from 'next'
 
 type PageProps = {
     params: Promise<{ slug: string }>
@@ -17,29 +15,29 @@ type Category = {
     path: string;
 };
 
-export async function generateMetadata(
-    { params }: PageProps,
-    parent: ResolvingMetadata
-  ): Promise<Metadata> {
-    // read route params
-    const { slug } = await params;
+// export async function generateMetadata(
+//     { params }: PageProps,
+//     parent: ResolvingMetadata
+//   ): Promise<Metadata> {
+//     // read route params
+//     const { slug } = await params;
    
-    // fetch data
-    try {
-        // const product = await fetch(`https://.../${slug}`).then((res) => res.json())
+//     // fetch data
+//     try {
+//         // const product = await fetch(`https://.../${slug}`).then((res) => res.json())
         
-    } catch (error) {
-        console.log(error);
-    }
+//     } catch (error) {
+//         console.log(error);
+//     }
     
    
-    // optionally access and extend (rather than replace) parent metadata
-    const previousImages = (await parent).openGraph?.images || []
+//     // optionally access and extend (rather than replace) parent metadata
+//     const previousImages = (await parent).openGraph?.images || []
    
-    // return {
-    // //   title: product.title,
-    // }
-  }
+//     // return {
+//     // //   title: product.title,
+//     // }
+//   }
 
 const categoryData: Category[] = [
     { id: 1, title: "Apple Phones", noAds: 202, image: "/mobiles.png", path: "/categories/applephones" },
