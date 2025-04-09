@@ -1,29 +1,17 @@
 "use client";
-
-import { useState } from "react";
-import Image from "next/image";
 import {
   Bookmark,
   Heart,
-  MapPin,
   MessageCircle,
-  Share,
   Store,
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-
-import { CommentDrawer } from "@/components/products/comments";
-import MobileNav from "@/components/MobileNav";
-import Navbar from "@/components/Navbar";
 import {
   Accordion,
   AccordionContent,
@@ -31,7 +19,6 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import SimilarAdverts from "@/components/products/SimilarAdverts";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
@@ -42,6 +29,8 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Slider from "@/components/home/Slider";
+import Image from "next/image";
+import useSlider from "@/hooks/useSlider";
 
 const productIcons = [
   { label: "likes", icon: <ThumbsUp /> },
@@ -57,20 +46,34 @@ export default function ProductPage() {
   const productId = params.id as Id<"product">
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
-
+  const { setApi } = useSlider()
 
   return (
     <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
       <div className="lg:flex gap-5 space-y-3">
         <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-          {/* <Image
-            src="/airpods-demo.png"
-            alt="airpods"
-            width={500}
-            height={500}
-            className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
-          /> */}
-          <Slider/>
+          <Carousel setApi={setApi}>
+            <CarouselContent>
+              {productData?.images.map((image, index)=>{
+                return(
+                  <CarouselItem key={index}>
+                    {/* <div 
+                     style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(${image})` }}
+                     className="w-full lg:h-[550px]">hello
+                    </div> */}
+                    <Image
+                      src={image}
+                      alt={productData.title}
+                      width={500}
+                      height={500}
+                      className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
+                    />
+                  </CarouselItem>
+                )
+              })}
+            </CarouselContent>
+          </Carousel>
+          {/* <Slider/> */}
           {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />: null}
           <div className="bg-white rounded-md flex justify-around w-full p-5">
             {productIcons.map((item) => (
