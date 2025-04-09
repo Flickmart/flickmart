@@ -14,7 +14,7 @@ export default function CategoryNav({ togglePanel }: CategoryNavProps) {
     const router = useRouter();
     const cPath = usePathname();
     // an array of paths where the styles should be applied
-    const activePaths = [`/home`,];
+    const activePaths = [`/`,];
     const pagesWithoutTitle = [`/saves`, `/categories`];
     // Check if the current pathname is in the array
     const isActive = activePaths.includes(cPath);

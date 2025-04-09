@@ -1,14 +1,15 @@
 import { Check, CheckCheck } from "lucide-react"
 import { cn } from "@/lib/utils"
-
+import { Id } from "@/convex/_generated/dataModel";
 interface MessageBubbleProps {
+  id: string;
   message: string
   isUser: boolean
   timestamp: string
   status?: "sent" | "delivered" | "read"
 }
 
-export default function MessageBubble({ message, isUser, timestamp, status = "read" }: MessageBubbleProps) {
+export default function MessageBubble({ message, isUser, timestamp, status = "sent" , id}: MessageBubbleProps) {
   return (
     <div className={cn("flex", isUser ? "justify-end" : "justify-start")}>
       <div
@@ -22,9 +23,9 @@ export default function MessageBubble({ message, isUser, timestamp, status = "re
           <span className="text-[10px] md:text-xs opacity-70">{timestamp}</span>
           {isUser && (
             <span className="text-[10px] md:text-xs">
-              {status === "sent" && <Check className="h-4 w-5 inline" />}
-              {status === "delivered" && <CheckCheck className="h-4 w-5 inline te" />}
-              {status === "read" && <CheckCheck className="h-4 w-5 inline text-blue-500" />}
+              {status === "sent" && <Check className="h-4 w-4 inline" />}
+              {status === "delivered" && <CheckCheck className="h-4 w-4 inline" />}
+              {status === "read" && <CheckCheck className="h-4 w-4 inline text-blue-500" />}
             </span>
           )}
         </div>  

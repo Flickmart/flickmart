@@ -1,5 +1,3 @@
-import AuthHeader from "@/components/auth/AuthHeader";
-import Navbar from "@/components/Navbar";
 import { Toaster } from "react-hot-toast";
 
 export default function RootLayout({
@@ -19,9 +17,6 @@ export default function RootLayout({
           },
         }}
       />
-
-      {/* <Navbar /> */}
-      {/* <AuthHeader /> */}
       {children}
     </>
   );

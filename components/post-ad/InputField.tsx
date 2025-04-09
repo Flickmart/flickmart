@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
@@ -12,22 +12,30 @@ type FieldType = {
 };
 
 export default function InputField({
+  val,
+  disabled,
+  textAreaLength,
+  setTextAreaLength,
   name,
   form,
   type = "textField",
-}: FieldType) {
+}: FieldType & {
+  val?: string;
+  disabled?: boolean;
+  textAreaLength?: number;
+  setTextAreaLength?: React.Dispatch<React.SetStateAction<number>>;
+}) {
   const {
     formState: { errors },
   } = form;
-  const [textAreaLength, setTextAreaLength] = useState<number>(0);
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => {
-        let value = "";
+        let value ="";
         if (typeof field.value === "string") {
-          value = field.value;
+          value =val || field.value;
         }
         return (
           <div className={`${type === "textArea" && "mt-5"}`}>
@@ -41,9 +49,10 @@ export default function InputField({
                 {type === "textField" ? (
                   <div>
                     <Input
+                      disabled={disabled}
                       required
-                      className="w-full placeholder:capitalize  border  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
-                      placeholder={`${name === "phone"? "08123456789": `${name}*`}`}
+                      className="w-full placeholder:capitalize  border lg:!text-lg  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
+                      placeholder={`${name === "phone" ? "08123456789" : `${name}*`}`}
                       {...field}
                       value={value}
                     />
@@ -57,12 +66,12 @@ export default function InputField({
                       required
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
-                        setTextAreaLength(target.value.length);
+                        setTextAreaLength?.(target.value.length);
                       }}
                       placeholder={`${name}*`}
                       className="placeholder:capitalize placeholder:text-lg h-48 placeholder:text-gray-500 lg:!text-lg"
                       {...field}
-                      value={value}
+                      value={val || value}
                     />
                     <p className="capitalize py-3 font-medium  text-red-500">
                       {errors[name]?.message}

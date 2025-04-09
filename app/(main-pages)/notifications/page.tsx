@@ -137,6 +137,12 @@ const Page = () => {
     addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
+  
+  useEffect(() => {
+    return ()=>{
+      markAllAsRead();
+    }
+  }, []);
 
   // Group notifications by day (today, yesterday, older)
   const groupedNotifications = (() => {
@@ -197,7 +203,7 @@ const Page = () => {
 
   return (
     <main>
-      <MobileHeader title="Notifications">
+      <MobileHeader>
         <button
           type="button"
           onClick={handleMarkAllAsRead}

@@ -77,19 +77,20 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   function onSubmit(values: z.infer<typeof formSchema>) {
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
+    console.log(values)
 
     const promise = create({
       name: values.businessName,
       location: values.location,
-      description: values.address,
-    });
+      description: values.address, 
+      phone: values.phoneNumber,
+       });
     toast.promise(promise, {
       loading: "Saving store details...",
       success: "Details saved  succesfully",
       error: "Failed to create store",
     });
     setStage(3);
-    console.log(values);
   }
 
   // Handle Error

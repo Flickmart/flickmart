@@ -2,13 +2,10 @@
 import PostAdForm from "@/components/post-ad/PostAdForm";
 import { Id } from "@/convex/_generated/dataModel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
 import React, { useState } from "react";
 
 export default function Page() {
   const queryClient = new QueryClient();
-  const params = useParams()
-  const businessId = params.id as  Id<"store">
   const [clear, setClear]= useState<boolean>(false)
   return (
     <QueryClientProvider client={queryClient}>
@@ -25,7 +22,7 @@ export default function Page() {
             Clear
           </span>
         </div>
-        <PostAdForm clear={clear} setClear={setClear} businessId={businessId}/>
+        <PostAdForm clear={clear} setClear={setClear}/>
       </div>
     </QueryClientProvider>
   );

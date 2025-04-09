@@ -22,20 +22,23 @@ export async function generateMetadata(
     parent: ResolvingMetadata
   ): Promise<Metadata> {
     // read route params
-    const { slug } = await params
+    const { slug } = await params;
    
     // fetch data
-    const product = await fetch(`https://.../${slug}`).then((res) => res.json())
+    try {
+        // const product = await fetch(`https://.../${slug}`).then((res) => res.json())
+        
+    } catch (error) {
+        console.log(error);
+    }
+    
    
     // optionally access and extend (rather than replace) parent metadata
     const previousImages = (await parent).openGraph?.images || []
    
-    return {
-      title: product.title,
-      openGraph: {
-        images: ['/some-specific-page-image.jpg', ...previousImages],
-      },
-    }
+    // return {
+    // //   title: product.title,
+    // }
   }
 
 const categoryData: Category[] = [
@@ -51,7 +54,6 @@ export default async function DetailedCategoryPage ({ params }: PageProps) {
 
     return (
         <>
-            <CategoryNav />
             <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
                 <section className="lg:mt-12 hidden lg:block w-2/12 mb-12">
                     <div className="w-full flex flex-col gap-12">

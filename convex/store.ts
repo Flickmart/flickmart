@@ -9,6 +9,7 @@ export const createStore = mutation({
     location: v.string(),
     description: v.string(),
     image: v.optional(v.string()),
+    phone: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -28,6 +29,7 @@ export const createStore = mutation({
       description: args.description,
       image: args.image,
       userId: user._id,
+      phone: args.phone,
     });
 
     await ctx.runMutation(internal.notifications.createNotification, {

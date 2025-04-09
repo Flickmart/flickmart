@@ -3,6 +3,12 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 
 import { Providers } from "@/providers/providers";
+import MobileHeader from "@/components/MobileHeader";
+// import Navbar from "@/components/Navbar";
+// import Footer from "@/components/Footer";
+// import Delivery from "@/components/Delivery";
+// import SearchBox from "@/components/SearchBox";
+// import MobileNav from "@/components/MobileNav";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -24,15 +30,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // <ClerkProvider>
-    <html lang="en" className={`${inter.className} scroll-smooth`} suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${inter.className} scroll-smooth`}
+      suppressHydrationWarning
+    >
       <body className="bg-background text relative">
         <Providers>
+          <MobileHeader/>
+          {/* <Navbar />
+          <MobileNav />
+          <SearchBox /> */}
           {children}
           <Toaster richColors position="top-right" />
+          {/* <Delivery />
+          <Footer /> */}
         </Providers>
       </body>
     </html>
-    // </ClerkProvider>
   );
 }

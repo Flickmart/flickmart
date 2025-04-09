@@ -29,13 +29,14 @@ export default function ChatMessages({ messages }: ChatMessagesProps) {
       {messages.map((message) => (
         <MessageBubble
           key={message.id}
+          id={message.id}
           message={message.content}
           isUser={message.role === "user"}
           timestamp={message.timestamp.toLocaleTimeString([], {
             hour: "2-digit",
             minute: "2-digit",
           })}
-          status={message.role === "user" ? "read" : undefined}
+          status={message.role === "user" ? "sent" : undefined}
         />
       ))}
       <div ref={messagesEndRef} />
