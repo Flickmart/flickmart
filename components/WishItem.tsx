@@ -3,7 +3,7 @@ import { EllipsisVertical, MapPin, MessageSquareText, Phone, Share } from "lucid
 import Image from "next/image";
 import { useState } from "react";
 
-export default function SavedItem() {
+export default function WishItem() {
 
     const [isDelOpen, setIsDelOpen] = useState(false);  
 
@@ -21,32 +21,33 @@ export default function SavedItem() {
             </div>
             
             <div className="flex gap-3 ">
-                <div className="w-4/12 h-32 lg:w-5/12 lg:h-56 aspect-square overflow-hidden flex justify-center items-center">
+                <div className="w-5/12 h-32 lg:w-5/12 lg:h-56 aspect-square overflow-hidden flex justify-center items-center">
                     <Image src='/car.jpeg' className="h-full lg:h-auto w-full lg:w-auto rounded-md object-cover" alt="" height={1000} width={1000} />
                 </div>
                 <div className="w-7/12 lg:w-6/12 flex flex-col justify-between pe-3">
                     <div className="flex flex-col gap-2 lg:gap-5">
-                        <h1 className="text-sm lg:text-xl font-semibold tracking-tighter">Portable Solar Battery 3 Solar Panels Solar Power Bank 20000</h1>
-                        <span className="font-semibold text-sm lg:text-sm">₦750,000,000</span>
+                        <h1 className="text-sm lg:text-xl font-semibold tracking-tighter">Laptop Lenovo 8GB
+                        Intel core I5 SSD 256GB</h1>
+                        <span className="font-semibold text-[12px] lg:text-sm">₦750,000,000</span>
                         <span className="">
-                            <span className="bg-flickmart text-white py-1.5 px-2 rounded-sm text-[10px] lg:text-sm">Brand New</span>
+                            <span className="bg-flickmart text-white py-1.5 px-2 rounded-sm text-[8px] lg:text-sm">Brand New</span>
                         </span>
                     </div>
                     <div className="flex flex-col gap-4 mt-3">
-                        <span className="flex gap-1 items-center text-flickmart-gray text-[10px] lg:text-sm">
+                        <span className="flex gap-1 items-center text-flickmart-gray text-[8px] lg:text-sm">
                             <MapPin className="h-4 w-4" />
                             <span>Enugu, UNEC</span>
                         </span>
                         <div className="hidden lg:flex gap-3 items-center text-[8px] lg:text-sm">
                             <button className="bg-flickmart text-white rounded-sm flex items-center gap-2 px-2 py-2"><MessageSquareText className="h-4 w-4" /><span>Chat vendor</span></button>
-                            <button className="border border-flickmart flex items-center gap-2 py-2 px-2 rounded-sm text-flickmart"><Share className="h-4 w-4" /><span>Share</span></button>
+                            <button className="border border-flickmart flex items-center gap-2 py-2 px-2 rounded-sm text-flickmart"><Share className="h-4 w-4" /><span>Share wish</span></button>
                         </div>
                     </div>
                 </div> 
             </div>
             <div className="lg:hidden border-t flex gap-3 pt-3">
                 <button className="bg-flickmart text-white rounded-sm flex items-center gap-2 px-2 py-2"><MessageSquareText className="h-4 w-4" /><span>Chat vendor</span></button>
-                <button className="border border-flickmart flex items-center gap-2 py-2 px-2 rounded-sm text-flickmart"><Share className="h-4 w-4" /><span>Share</span></button>
+                <button className="border border-flickmart flex items-center gap-2 py-2 px-2 rounded-sm text-flickmart"><Share className="h-4 w-4" /><span>Share wish</span></button>
             </div>
         </div>
     );
