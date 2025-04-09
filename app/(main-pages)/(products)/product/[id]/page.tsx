@@ -16,15 +16,9 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-<<<<<<< HEAD:app/(products)/product/[id]/page.tsx
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import SimilarAdverts from "@/components/products/SimilarAdverts";
-=======
-    AccordionTrigger,
-  } from "@/components/ui/accordion";
-  import SimilarAdverts from "@/components/products/SimilarAdverts";
->>>>>>> 025f0014282ec4af7b91f6fb07bf94fa7fea16c3:app/(main-pages)/(products)/product/[id]/page.tsx
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
@@ -60,16 +54,11 @@ export default function ProductPage() {
     <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
       <div className="lg:flex gap-5 space-y-3">
         <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-<<<<<<< HEAD:app/(products)/product/[id]/page.tsx
           <Carousel setApi={setApi}>
             <CarouselContent>
               {productData?.images.map((image, index)=>{
                 return(
                   <CarouselItem key={index}>
-                    {/* <div 
-                     style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(${image})` }}
-                     className="w-full lg:h-[550px]">hello
-                    </div> */}
                     <Image
                       src={image}
                       alt={productData.title}
@@ -82,19 +71,7 @@ export default function ProductPage() {
               })}
             </CarouselContent>
           </Carousel>
-          {/* <Slider/> */}
-          {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} />: null}
-=======
-          {/* <Image
-            src="/airpods-demo.png"
-            alt="airpods"
-            width={500}
-            height={500}
-            className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
-          /> */}
-          <Slider/>
           {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />: null}
->>>>>>> 025f0014282ec4af7b91f6fb07bf94fa7fea16c3:app/(main-pages)/(products)/product/[id]/page.tsx
           <div className="bg-white rounded-md flex justify-around w-full p-5">
             {productIcons.map((item) => (
               <div
