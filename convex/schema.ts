@@ -40,10 +40,10 @@ export default defineSchema({
   comments: defineTable({
     productId: v.id("product"),
     userId: v.id("users"),
-    timeStamp: v.number(),
+    timeStamp: v.string(),
     content: v.string(),
-    likes: v.number(),
-    dislikes: v.number(),
+    likes: v.optional(v.number()),
+    dislikes: v.optional(v.number()),
   }),
 
   conversations: defineTable({

@@ -33,6 +33,9 @@ yarn-error.log*
 .env*.local
 .env
 
+#convex
+/.convex/auth.config.js
+
 # vercel
 .vercel
 

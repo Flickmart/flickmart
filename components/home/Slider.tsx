@@ -32,7 +32,7 @@ export default function Slider() {
       <Carousel setApi={setApi}>
         <CarouselContent>
           {banners.map((img, index) => (
-            <CarouselItem key={index} className="basis-2/3">
+            <CarouselItem key={index} className="basis-10/12">
               <div
                 style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/${img})` }}
                 className={`lg:py-3 bg-no-repeat bg-center bg-cover text-gray-200  lg:px-5 pb-2 p-7 capitalize h-32 lg:min-h-60 flex items-end justify-center lg:space-y-7 space-y-2.5`}>
