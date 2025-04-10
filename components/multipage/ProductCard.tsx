@@ -3,7 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
-export default function ProductCard({image, title, price}: {image: string; title: string; price: number}) {
+export default function ProductCard({image, title, price}: {image?: string; title?: string; price?: number}) {
   return <Link href={`/product/jacket`}>
               <div className=" flex flex-col justify-between  min-h-64  rounded-md border border-gray-200 relative">
                 <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
