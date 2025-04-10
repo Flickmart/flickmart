@@ -14,8 +14,8 @@ export default function ProductCard({image, title, price}: {image?: string; titl
                 </span>
                 {image?
                   <Image
-                    src={image}
-                    alt={title}
+                    src={image || ""}
+                    alt={title || ""}
                     width={500}
                     height={500}
                     className="h-72 lg:h-96 object-cover object-top  p-0.5 rounded-md "
