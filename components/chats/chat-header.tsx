@@ -37,7 +37,7 @@ export default function ChatHeader({
         <h4 className="text-black text-md truncate">{activeChatData?.name}</h4>
         <div className="flex items-center">
           {isTyping ? (
-            <p className="text-orange-500 text-sm truncate animate-pulse">
+            <p className="text-orange-500 text-sm truncate animate-pulse">  
               typing...
             </p>
           ) : (
