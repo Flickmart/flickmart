@@ -1,53 +1,44 @@
 "use client";
-
-import { useState } from "react";
-import Image from "next/image";
 import {
   Bookmark,
   Heart,
-  MapPin,
   MessageCircle,
-  Share,
   Store,
   ThumbsDown,
   ThumbsUp,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card } from "@/components/ui/card";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
 } from "@/components/ui/carousel";
-
-import { CommentDrawer } from "@/components/products/comments";
-import MobileNav from "@/components/MobileNav";
-import Navbar from "@/components/Navbar";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion";
-  import SimilarAdverts from "@/components/products/SimilarAdverts";
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import SimilarAdverts from "@/components/products/SimilarAdverts";
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
 import { useParams } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
-import Slider from "@/components/home/Slider";
+import Image from "next/image";
+import useSlider from "@/hooks/useSlider";
+import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 
 const productIcons = [
   { label: "likes", icon: <ThumbsUp /> },
   { label: "dislikes", icon: <ThumbsDown /> },
   { label: "wishlist", icon: <Heart /> },
-  { label: "comments", icon: <MessageCircle /> },
+  // { label: "comment", icon: <MessageCircle /> },
 ];
 
 export default function ProductPage() {
@@ -56,40 +47,79 @@ export default function ProductPage() {
   const params = useParams();
   const productId = params.id as Id<"product">
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
-
+  const likeProduct= useMutation(api.product.likeProduct)
+  const dislikeProduct= useMutation(api.product.dislikeProduct)
+  const [liked, setLiked]= useState<boolean>(false)
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
+  const { setApi } = useSlider()
+
+
+  async function handleLike (label: string){
+    if(label === "likes"){
+      if(liked) return
+      await likeProduct({productId})
+      setLiked(true)
+    }
+    if(label === "dislikes"){
+      await dislikeProduct({productId})
+    }
+    if (label === "comments"){
+    }
+  }
 
 
   return (
     <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
       <div className="lg:flex gap-5 space-y-3">
         <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-          {/* <Image
-            src="/airpods-demo.png"
-            alt="airpods"
-            width={500}
-            height={500}
-            className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
-          /> */}
-          <Slider/>
-          {isMobile ? <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />: null}
+          <Carousel setApi={setApi}>
+            <CarouselContent>
+              {productData?.images.map((image, index)=>{
+                return(
+                  <CarouselItem key={index}>
+                    <Image
+                      src={image}
+                      alt={productData.title}
+                      width={500}
+                      height={500}
+                      className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
+                    />
+                  </CarouselItem>
+                )
+              })}
+            </CarouselContent>
+          </Carousel>
+          {isMobile ? <ProductHeader 
+            description={productData?.description || ''} 
+            productId={productId} 
+            location={productData?.location ?? ''} 
+            price={productData?.price ?? 0} 
+            title={productData?.title ?? ''} 
+            timestamp={productData?.timeStamp ?? ''} 
+            userId={productData?.userId!} 
+          /> : null}
           <div className="bg-white rounded-md flex justify-around w-full p-5">
-            {productIcons.map((item) => (
+            {productIcons.map((item) => {
+              return (
               <div
-                key={item.label}
-                className="capitalize space-y-3 text-center"
+              onClick={() => handleLike(item.label)}
+              key={item.label}
+              className="capitalize space-y-3 text-center cursor-pointer"
               >
-                <div className="flex justify-center">{item.icon}</div>{" "}
+                <div className={`flex justify-center`}>{item.icon}</div>{" "}
                 <span className="inline-block text-sm lg:text-lg">
-                  {item.label}
+                {(productData?.likes && item.label === "likes") ? productData.likes : 
+                (productData?.dislikes && item.label === "dislikes") ? productData.dislikes : 
+                item.label}
                 </span>
               </div>
-            ))}
+             )}
+            )}
           </div>
         </div>
         <div className=" lg:w-2/4 flex flex-col justify-center space-y-3">
-          {isMobile ? <Comment /> : null}
-          {isMobile ? null : <ProductHeader productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />}
+          {isMobile ? <Comment productId={productId} /> : null}
+          {isMobile ? null : <ProductHeader description={productData?.description ?? ''} productId={productId} location={productData?.location ?? ''} price={productData?.price ?? 0} title={productData?.title ?? ''} timestamp={productData?.timeStamp ?? ''} userId={productData?.userId!} />}
           <div className="space-y-2 bg-white rounded-md p-5">
             <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">
               Description
@@ -152,8 +182,8 @@ export default function ProductPage() {
           </div>
         </div>
       </div>
-      {isMobile ? null : <Comment />}
-      <SimilarAdverts />
+      {isMobile ? null : <Comment productId={productId} />}
+      <SimilarAdverts productId={productId} />
     </div>
   );
 }

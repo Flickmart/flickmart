@@ -1,4 +1,4 @@
-import { Copy, MapPin, MessageCircle, Check, Share2 } from "lucide-react";
+import { Copy, MapPin, MessageCircle, Check, ExternalLink } from "lucide-react";
 import React, { useState } from "react";
 import {
   Dialog,
@@ -26,6 +26,7 @@ export default function ProductHeader({
   timestamp,
   userId,
   productId,
+  description
 }: {
   location: string;
   title: string;
@@ -33,6 +34,7 @@ export default function ProductHeader({
   timestamp: string;
   userId: Id<"users">;
   productId: Id<"product">;
+  description: string;
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
@@ -42,6 +44,8 @@ export default function ProductHeader({
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
+  const daysAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
+  const weeksAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7));
 
   const handleChat = async () => {
     if (!user) {
@@ -56,22 +60,41 @@ export default function ProductHeader({
   };
 
   // State to track if copy was successful
-  const [copied, setCopied] = useState(false);
+  // const [copied, setCopied] = useState(false);
 
   // Function to handle copying to clipboard
-  const handleCopy = () => {
-    const url = `https://flickmart-demo.vercel.app/product/${productId}`;
-    navigator.clipboard
-      .writeText(url)
-      .then(() => {
-        setCopied(true);
-        // Reset copied state after 2 seconds
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch((err) => {
-        console.error("Failed to copy: ", err);
-      });
-  };
+  // const handleCopy = () => {
+  //   const url = `https://flickmart-demo.vercel.app/product/${productId}`;
+  //   navigator.clipboard
+  //     .writeText(url)
+  //     .then(() => {
+  //       setCopied(true);
+  //       // Reset copied state after 2 seconds
+  //       setTimeout(() => setCopied(false), 2000);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to copy: ", err);
+  //     });
+  // };
+
+  async function handleShare(){
+    const shareData = {
+      title: title || 'Check out this product',
+      text: description?.substring(0, 100) + '...' || 'Check out this product on Flickmart',
+      url: `https://flickmart-demo.vercel.app/product/${productId}`,
+    };
+    try{
+      if(navigator.share){
+        await navigator.share(shareData)
+      }else{
+        navigator.clipboard
+      .writeText(shareData.url)
+      }
+    }catch(err){
+      toast.error("There was an error sharing this product")
+      console.log(err)
+    }
+  }
 
   return (
     <div className="lg:space-y-3 w-full space-y-4 bg-white rounded-md p-5">
@@ -80,11 +103,15 @@ export default function ProductHeader({
         <span className="capitalize">
           {location},{" "}
           <span className="normal-case">
-            {hoursAgo === 0 ? `${minsAgo} minutes` : `${hoursAgo} hours`} ago
+            {weeksAgo !== 0 && `${weeksAgo} weeks`}
+            {daysAgo !== 0 && !weeksAgo && `${daysAgo} days`}
+            {hoursAgo !== 0 && !daysAgo && `${hoursAgo} hours`}
+            {minsAgo !== 0 && !hoursAgo && `${minsAgo} minutes`}
+            {" "}ago
           </span>
         </span>
       </div>
-      <h2 className="text-xl font-bold capitalize">{title}</h2>
+      <h2 className="text-xl font-bold capitalize text-gray-800">{title}</h2>
       <div className="space-x-3 flex items-center">
         <span className="inline-block text-flickmart-chat-orange text-lg font-extrabold  tracking-wider">
           &#8358;{price.toLocaleString()}
@@ -93,20 +120,20 @@ export default function ProductHeader({
       </div>
       <div className=" flex  gap-3 text-white">
         <button
-          className="p-2 px-3 min-w-1/4 font-medium bg-flickmart-chat-orange rounded-md flex items-center gap-2"
+          className="p-2 px-3 w-2/4 lg:w-1/4 font-medium bg-flickmart-chat-orange rounded-md flex items-center justify-center gap-2"
           onClick={handleChat}
         >
           {" "}
           <MessageCircle /> Chat vendor
         </button>
-        <Dialog>
-          <DialogTrigger asChild>
-            <button className="p-2 px-3 min-w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center gap-2">
-              {" "}
-              <Share2 /> Share
-            </button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-md">
+        {/* <Dialog> */}
+          {/* <DialogTrigger asChild> */}
+        <button onClick={handleShare} className="p-2 px-3 w-2/4 lg:w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center justify-center gap-2">
+          {" "}
+          <ExternalLink /> Share
+        </button>
+          {/* </DialogTrigger> */}
+          {/* <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Share link</DialogTitle>
               <DialogDescription>
@@ -146,7 +173,7 @@ export default function ProductHeader({
               </DialogClose>
             </DialogFooter>
           </DialogContent>
-        </Dialog>
+        </Dialog> */}
       </div>
     </div>
   );
