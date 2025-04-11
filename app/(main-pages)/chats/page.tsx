@@ -4,13 +4,12 @@ import type React from "react";
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { demoChats } from "@/lib/demo-data";
 import WelcomeScreen from "@/components/chats/welcome-screen";
 import ChatSidebar from "@/components/chats/chat-sidebar";
 import ChatHeader from "@/components/chats/chat-header";
 import ChatMessages from "@/components/chats/chat-messages";
 import ChatInput from "@/components/chats/chat-input";
-import { Wallet, Archive, ArchiveRestore } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
