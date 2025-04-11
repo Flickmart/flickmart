@@ -12,7 +12,7 @@ const StageThree = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (redirectTimer <= 0) {
-        router.push("/home");
+        router.push("/");
       } else {
         setRedirectTimer((prev) => prev - 1);
       }
@@ -22,7 +22,7 @@ const StageThree = () => {
   }, [redirectTimer, router]);
   
   const handleGetStarted = () => {
-    router.push("/home");
+    router.push("/");
   };
 
   return (
