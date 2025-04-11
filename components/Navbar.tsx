@@ -5,6 +5,8 @@ import {
   SignInButton,
   useUser,
   SignOutButton,
+  SignedIn,
+  SignedOut,
 } from "@clerk/nextjs";
 import { Bell, Loader2, Menu, MessageSquareText } from "lucide-react";
 import Image from "next/image";
@@ -205,11 +207,20 @@ export default function Navbar() {
                           <span className="mt-[1px]">2</span>
                         </span>
                       </Link>
-                      <SignOutButton>
-                        <button className="bg-black text-white rounded-md py-3 w-full mt-2">
-                          Logout
-                        </button>
-                      </SignOutButton>
+                      <SignedIn>
+                        <SignOutButton>
+                          <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                            Logout
+                          </button>
+                        </SignOutButton>
+                      </SignedIn>
+                      <SignedOut>
+                        <Link href="/sign-in">
+                          <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                            Sign in
+                          </button>
+                        </Link>
+                      </SignedOut>
                     </div>
                   </div>
                 </div>

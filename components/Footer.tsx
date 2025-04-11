@@ -15,7 +15,6 @@ export default function Footer() {
     "/sign-up",
     "/forgot-password",
     "/notifications",
-    "/home",
     "/settings",
     "post-ad",
     "/create-store",
