@@ -45,7 +45,7 @@ export default function ResetPassword() {
     setLoadingStatus(true);
     // Short delay to show loading state
     const timer = setTimeout(() => {
-      router.push("/home");
+      router.push("/");
       setLoadingStatus(false);
     }, 1000);
     
@@ -54,7 +54,7 @@ export default function ResetPassword() {
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     console.log(values);
-    router.push("/home");
+    router.push("/");
   };
 
   return (
