@@ -57,8 +57,7 @@ export default function ChatPage() {
   const params = useParams();
   const searchParams = useSearchParams();
 
-
-  useEffect(( ) => {
+  useEffect(() => {
     if (window.innerWidth < 768) {
       setSidebarOpen(true);
     }
@@ -103,7 +102,6 @@ export default function ChatPage() {
     api.chat.getMessages,
     activeChat ? { conversationId: activeChat } : "skip"
   );
-
 
   // Fetch all users we need information about
   const allUserIds = useMemo(() => {
@@ -393,7 +391,10 @@ export default function ChatPage() {
 
       // Format timestamp from the last message
       const lastMessageTime = lastMessage
-        ? new Date(lastMessage._creationTime).toLocaleTimeString()
+        ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+          })
         : "";
 
       // Check if conversation is archived by this user
@@ -583,7 +584,10 @@ export default function ChatPage() {
                   <Archive className="w-5 h-5" />
                 )}
               </Button> */}
-              <Button size="icon" className="rounded-full shadow-md bg-green-600 hover:bg-green-700">
+              <Button
+                size="icon"
+                className="rounded-full shadow-md bg-green-600 hover:bg-green-700"
+              >
                 <Wallet className="w-4 h-4 " />
               </Button>
             </div>
