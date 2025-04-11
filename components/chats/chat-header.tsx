@@ -9,6 +9,8 @@ interface ChatHeaderProps {
   } | null;
   isTyping: boolean;
   isOnline?: boolean;
+  showProfile: boolean;
+  setShowProfile: (showProfile: boolean) => void;
 }
 
 export default function ChatHeader({
@@ -16,7 +18,14 @@ export default function ChatHeader({
   activeChatData,
   isTyping,
   isOnline = false,
+  showProfile,
+  setShowProfile,
 }: ChatHeaderProps) {
+  
+  const handleProfileToggle = () => {
+    setShowProfile(!showProfile);
+  };
+  
   return (
     <div className="p-2 flex items-center shadow-md z-10">
       <Button
@@ -27,30 +36,37 @@ export default function ChatHeader({
       >
         <ChevronLeft className="h-16 w-16 text-black" />
       </Button>
-      <Avatar>
-        <AvatarImage src={activeChatData?.name} alt={activeChatData?.name} />
-        <AvatarFallback className="bg-flickmart text-white">
-          {activeChatData?.name?.charAt(0) || "?"}
-        </AvatarFallback>
-      </Avatar>
-      <div className="ml-3 flex-1 truncate">
-        <h4 className="text-black text-md truncate">{activeChatData?.name}</h4>
-        <div className="flex items-center">
-          {isTyping ? (
-            <p className="text-orange-500 text-sm truncate animate-pulse">  
-              typing...
-            </p>
-          ) : (
-            <div className="flex items-center">
-              {isOnline ? (
-                <p className="text-flickmart-chat-orange text-sm truncate">
-                  online
-                </p>
-              ) : (
-                <p className="text-gray-500 text-sm truncate">offline</p>
-              )}
-            </div>
-          )}
+      
+      <div 
+        className="flex items-center flex-1 cursor-pointer hover:bg-gray-100 rounded-md p-2 transition-colors" 
+        onClick={handleProfileToggle}
+      >
+        <Avatar className="h-10 w-10">
+          <AvatarImage src={activeChatData?.name} alt={activeChatData?.name} /> 
+          <AvatarFallback className="bg-flickmart text-white">
+            {activeChatData?.name?.charAt(0) || "?"}
+          </AvatarFallback>
+        </Avatar>
+        
+        <div className="ml-3 flex-1 truncate">
+          <h4 className="text-black text-md truncate font-medium">{activeChatData?.name}</h4>
+          <div className="flex items-center">
+            {isTyping ? (
+              <p className="text-orange-500 text-sm truncate animate-pulse">  
+                typing...
+              </p>
+            ) : (
+              <div className="flex items-center">
+                {isOnline ? (
+                  <p className="text-flickmart-chat-orange text-sm truncate">
+                    online
+                  </p>
+                ) : (
+                  <p className="text-gray-500 text-sm truncate">offline</p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

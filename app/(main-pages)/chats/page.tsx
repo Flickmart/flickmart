@@ -15,6 +15,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import UserProfile from "@/components/chats/user-profile";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -55,6 +56,7 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  const [showProfile, setShowProfile] = useState(false)
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -560,6 +562,8 @@ export default function ChatPage() {
               activeChatData={activeChatData}
               isTyping={otherUserIsTyping!}
               isOnline={otherUserIsOnline}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile}
             />
             <div className="flex-1 overflow-y-auto">
               <ChatMessages messages={formattedMessages} />
@@ -597,6 +601,8 @@ export default function ChatPage() {
                 handleSubmit={handleSubmit}
               />
             </div>
+            <UserProfile open={showProfile} onClose={() => setShowProfile(false)} />
+
           </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />
