@@ -4,18 +4,18 @@ import type React from "react";
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { demoChats } from "@/lib/demo-data";
 import WelcomeScreen from "@/components/chats/welcome-screen";
 import ChatSidebar from "@/components/chats/chat-sidebar";
 import ChatHeader from "@/components/chats/chat-header";
 import ChatMessages from "@/components/chats/chat-messages";
 import ChatInput from "@/components/chats/chat-input";
-import { Wallet, Archive, ArchiveRestore } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import UserProfile from "@/components/chats/user-profile";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -56,6 +56,7 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  const [showProfile, setShowProfile] = useState(false)
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -561,6 +562,8 @@ export default function ChatPage() {
               activeChatData={activeChatData}
               isTyping={otherUserIsTyping!}
               isOnline={otherUserIsOnline}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile}
             />
             <div className="flex-1 overflow-y-auto">
               <ChatMessages messages={formattedMessages} />
@@ -598,6 +601,8 @@ export default function ChatPage() {
                 handleSubmit={handleSubmit}
               />
             </div>
+            <UserProfile open={showProfile} onClose={() => setShowProfile(false)} />
+
           </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />
