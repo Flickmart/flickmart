@@ -19,7 +19,7 @@ export default function ForgotPassword() {
     setLoadingStatus(true);
     // Short delay to show loading state
     const timer = setTimeout(() => {
-      router.push("/home");
+      router.push("/");
       setLoadingStatus(false);
     }, 1000);
     
