@@ -19,7 +19,8 @@ export default function MobileNav() {
 
   // Fetch unread notifications count
   const unreadNotifications = useQuery(api.notifications.getUnreadNotifications) || [];
-  const unreadCount = unreadNotifications.length;
+  const unreadCount = unreadNotifications.filter((notification) => notification.type === "new_message").length;
+
 
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats"];

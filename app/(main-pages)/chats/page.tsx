@@ -537,7 +537,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100 mt-14">
+    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar */}
       <ChatSidebar
         sidebarOpen={sidebarOpen}
@@ -565,8 +565,8 @@ export default function ChatPage() {
               <ChatMessages messages={formattedMessages} />
               <div ref={messagesEndRef} />
             </div>
-            <div className="fixed bottom-[88px] right-6 z-20 flex flex-col gap-2">
-              <Button
+            <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">
+              {/* <Button
                 size="icon"
                 className="rounded-full"
                 variant={isActiveConversationArchived ? "outline" : "default"}
@@ -582,9 +582,9 @@ export default function ChatPage() {
                 ) : (
                   <Archive className="w-5 h-5" />
                 )}
-              </Button>
-              <Button size="icon" className="rounded-full">
-                <Wallet className="w-5 h-5" />
+              </Button> */}
+              <Button size="icon" className="rounded-full shadow-md bg-green-600 hover:bg-green-700">
+                <Wallet className="w-4 h-4 " />
               </Button>
             </div>
             <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>

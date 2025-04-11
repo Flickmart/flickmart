@@ -11,7 +11,6 @@ export default function SearchBox() {
     "/sign-up",
     "/forgot-password",
     "/notifications",
-    "/home",
     "/settings",
     "post-ad",
     "/create-store",
