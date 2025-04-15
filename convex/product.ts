@@ -373,25 +373,27 @@ export const addBookmark= mutation({
       return
     }
 
-    const bookmarkedTrue= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), true), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
-    if(bookmarkedTrue){
-     await ctx.db.patch(bookmarkedTrue._id, {added: false});
-     return
+    const bookmarkTrue= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), true), q.eq(q.field("type"), args.type), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
+    if(bookmarkTrue){
+     await ctx.db.patch(bookmarkTrue._id, {added: false});
+     return await ctx.db.get(bookmarkTrue._id)
+    }
+    
+    const bookmarkFalse= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), false), q.eq(q.field("type"), args.type), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
+    if(bookmarkFalse){
+     await ctx.db.patch(bookmarkFalse._id, {added: true});
+     return await ctx.db.get(bookmarkFalse._id)
     }
 
-    const bookmarkedFalse= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), false), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
-    if(bookmarkedFalse){
-     await ctx.db.patch(bookmarkedFalse._id, {added: true});
-     return
-    }
-
-    await ctx.db.insert("bookmarks",{
+    const bookmarkId = await ctx.db.insert("bookmarks",{
         productId: args.productId,
         type: args.type,
         timeStamp: new Date().toISOString(),
         userId: user._id,
         added: true
     })
+
+    return await ctx.db.get(bookmarkId)
   }
 })
 

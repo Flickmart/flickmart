@@ -60,15 +60,6 @@ export default function ProductPage() {
     { label: "wishlist", icon: <Heart className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.added? "fill-flickmart stroke-none" : "fill-none stroke-current"}`} /> },
   ];
 
-  useEffect(function(){
-    if (wishlist?.added && wishlist?.type) {
-      toast.success(`Item added to ${wishlist.type}`);
-    } else if (wishlist?.type) {
-      toast.success(`Item removed from ${wishlist.type}`);
-    }
-  }, [wishlist, saved])
-
-
   async function handleLike (label: string){
     try{
       if(label === "likes"){
@@ -78,9 +69,9 @@ export default function ProductPage() {
         await dislikeProduct({productId})
       }
       if(label === "wishlist" || label === "saved"){
-        console.log(saved)
-       await bookmarkProduct({productId, type: label})
-      }
+       const bookmarked = await bookmarkProduct({productId, type: label})
+       bookmarked?.added? toast.success(`Item added to ${label}`) : toast.success(`Item removed from ${label}`)
+      } 
     }catch(err){
       console.log(err)
     }
