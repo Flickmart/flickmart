@@ -14,7 +14,7 @@ export default function SignUp() {
   // If the user is already signed in, redirect to home
   useEffect(() => {
     if (isSignedIn) {
-      router.push("/home");
+      router.push("/");
     }
   }, [isSignedIn, router]);
 

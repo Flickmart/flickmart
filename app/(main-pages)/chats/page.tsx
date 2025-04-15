@@ -4,18 +4,18 @@ import type React from "react";
 
 import { useState, useRef, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { demoChats } from "@/lib/demo-data";
 import WelcomeScreen from "@/components/chats/welcome-screen";
 import ChatSidebar from "@/components/chats/chat-sidebar";
 import ChatHeader from "@/components/chats/chat-header";
 import ChatMessages from "@/components/chats/chat-messages";
 import ChatInput from "@/components/chats/chat-input";
-import { Wallet, Archive, ArchiveRestore } from "lucide-react";
+import { Wallet } from "lucide-react";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import UserProfile from "@/components/chats/user-profile";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -56,9 +56,9 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
+  const [showProfile, setShowProfile] = useState(false)
 
-
-  useEffect(( ) => {
+  useEffect(() => {
     if (window.innerWidth < 768) {
       setSidebarOpen(true);
     }
@@ -103,7 +103,6 @@ export default function ChatPage() {
     api.chat.getMessages,
     activeChat ? { conversationId: activeChat } : "skip"
   );
-
 
   // Fetch all users we need information about
   const allUserIds = useMemo(() => {
@@ -393,7 +392,10 @@ export default function ChatPage() {
 
       // Format timestamp from the last message
       const lastMessageTime = lastMessage
-        ? new Date(lastMessage._creationTime).toLocaleTimeString()
+        ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
+            hour: "numeric",
+            minute: "2-digit",
+          })
         : "";
 
       // Check if conversation is archived by this user
@@ -537,7 +539,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100 mt-14">
+    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar */}
       <ChatSidebar
         sidebarOpen={sidebarOpen}
@@ -560,13 +562,15 @@ export default function ChatPage() {
               activeChatData={activeChatData}
               isTyping={otherUserIsTyping!}
               isOnline={otherUserIsOnline}
+              showProfile={showProfile}
+              setShowProfile={setShowProfile}
             />
             <div className="flex-1 overflow-y-auto">
               <ChatMessages messages={formattedMessages} />
               <div ref={messagesEndRef} />
             </div>
-            <div className="fixed bottom-[88px] right-6 z-20 flex flex-col gap-2">
-              <Button
+            <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">
+              {/* <Button
                 size="icon"
                 className="rounded-full"
                 variant={isActiveConversationArchived ? "outline" : "default"}
@@ -582,9 +586,12 @@ export default function ChatPage() {
                 ) : (
                   <Archive className="w-5 h-5" />
                 )}
-              </Button>
-              <Button size="icon" className="rounded-full">
-                <Wallet className="w-5 h-5" />
+              </Button> */}
+              <Button
+                size="icon"
+                className="rounded-full shadow-md bg-green-600 hover:bg-green-700"
+              >
+                <Wallet className="w-4 h-4 " />
               </Button>
             </div>
             <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
@@ -594,6 +601,8 @@ export default function ChatPage() {
                 handleSubmit={handleSubmit}
               />
             </div>
+            <UserProfile open={showProfile} onClose={() => setShowProfile(false)} />
+
           </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />

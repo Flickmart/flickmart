@@ -14,7 +14,6 @@ export default function Delivery() {
     "/sign-up",
     "/forgot-password",
     "/notifications",
-    "/home",
     "/settings",
     "post-ad",
     "/create-store",

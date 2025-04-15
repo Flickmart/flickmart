@@ -62,7 +62,7 @@ export default function StageOne({
     return signUp?.authenticateWithRedirect({
       strategy,
       redirectUrl: '/sign-up/sso-callback',
-      redirectUrlComplete: '/home',
+      redirectUrlComplete: '/',
     })
       .then((res) => {
         console.log(res)
