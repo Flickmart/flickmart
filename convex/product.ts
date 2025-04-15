@@ -222,6 +222,18 @@ export const likeProduct = mutation({
       });
       return
     }
+    const existingDislike= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id), q.eq(q.field("disliked"), true)
+    )).first()
+
+    if(existingDislike){
+      await ctx.db.patch(existingDislike._id, {liked: true, disliked: false})
+      await ctx.db.patch(args.productId, {
+        likes: (product.likes || 0) + 1,
+        dislikes: (product.dislikes || 0) - 1,
+      });
+      return
+    }
 
     // Check if like record is already created
     const exists= await ctx.db.query("likes").filter((q)=> q.and(
@@ -230,6 +242,9 @@ export const likeProduct = mutation({
 
     if(exists){
       await ctx.db.patch(exists._id, {liked: true, disliked: false})
+      await ctx.db.patch(args.productId, {
+        likes: (product.likes || 0) + 1,
+      });
     }else{
       await ctx.db.insert("likes",{
       timeStamp: new Date().toISOString(),
@@ -281,18 +296,66 @@ export const getLikeByProductId= query({
 export const dislikeProduct = mutation({
   args: { productId: v.id("product") },
   handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx)
     const product = await ctx.db.get(args.productId);
 
     if (!product) {
       throw new Error("Product not found");
     }
 
-    await ctx.db.patch(args.productId, {
-      dislikes: (product.dislikes || 0) + 1,
-    });
+    // Check if product is already liked
+    const existingLike= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id), q.eq(q.field("liked"), true)
+    )).first()
 
-    return args.productId;
-  },
+    if(existingLike){
+      await ctx.db.patch(existingLike._id, {liked: false, disliked: true})
+      await ctx.db.patch(args.productId, {
+        likes: (product.likes || 0) - 1,
+        dislikes: (product.dislikes || 0) + 1,
+      })
+      return
+    }
+
+    // Check if product is already disliked
+    const existingDislike= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id), q.eq(q.field("disliked"), true)
+    )).first()
+
+    if(existingDislike){
+      await ctx.db.patch(existingDislike._id, {disliked: false})
+      await ctx.db.patch(args.productId, {
+        dislikes: (product.dislikes || 0) - 1,
+      })
+      return
+    }
+
+    // Check if record is already created but neither liked or disliked
+    const exists= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id))).first()
+
+    if(exists){
+      await ctx.db.patch(exists._id, {disliked: true})
+      await ctx.db.patch(args.productId, {
+        dislikes: (product.dislikes || 0) + 1,
+      })
+      return
+    }
+
+    
+      await ctx.db.insert("likes",{
+        timeStamp: new Date().toISOString(),
+        productId: args.productId,
+        userId: user._id,
+        liked: false,
+        disliked: true
+      })
+      await ctx.db.patch(args.productId, {
+        dislikes: (product.dislikes || 0) + 1,
+      });
+    
+      return args.productId;
+  }
 });
 
 // Search products with advanced filtering and sorting

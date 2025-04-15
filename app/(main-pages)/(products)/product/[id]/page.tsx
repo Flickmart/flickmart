@@ -51,8 +51,8 @@ export default function ProductPage() {
   const comments= useQuery(api.comments.getCommentsByProductId, { productId })
 
   const productIcons = [
-    { label: "likes", icon: <ThumbsUp stroke={`${like?.liked? "none": "currentColor"}`} fill={`${like?.liked? "#FF6B00": "none"}`} /> },
-    { label: "dislikes", icon: <ThumbsDown stroke={`${like?.disliked? "none": "currentColor"}`} fill={`${like?.disliked? "#FF6B00": "none"}`} /> },
+    { label: "likes", icon: <ThumbsUp className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.liked? "fill-flickmart stroke-none" : "fill-none stroke-current"}`} /> },
+    { label: "dislikes", icon: <ThumbsDown className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.disliked? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}/> },
     { label: "wishlist", icon: <Heart /> },
   ];
 
