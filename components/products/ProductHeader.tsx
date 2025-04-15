@@ -91,7 +91,6 @@ export default function ProductHeader({
       .writeText(shareData.url)
       }
     }catch(err){
-      toast.error("There was an error sharing this product")
       console.log(err)
     }
   }

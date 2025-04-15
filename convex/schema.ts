@@ -46,6 +46,14 @@ export default defineSchema({
     dislikes: v.optional(v.number()),
   }),
 
+  likes: defineTable({
+    productId: v.id("product"),
+    userId: v.id("users"),
+    timeStamp: v.string(),
+    liked: v.boolean(),
+    disliked: v.boolean()
+  }),
+
   conversations: defineTable({
     user1: v.id("users"),
     user2: v.id("users"),

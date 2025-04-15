@@ -4,11 +4,7 @@ import { Toaster } from "@/components/ui/sonner";
 
 import { Providers } from "@/providers/providers";
 import MobileHeader from "@/components/MobileHeader";
-// import Navbar from "@/components/Navbar";
-// import Footer from "@/components/Footer";
-// import Delivery from "@/components/Delivery";
-// import SearchBox from "@/components/SearchBox";
-// import MobileNav from "@/components/MobileNav";
+
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`

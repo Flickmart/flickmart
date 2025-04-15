@@ -196,18 +196,56 @@ export const remove = mutation({
 export const likeProduct = mutation({
   args: { productId: v.id("product") },
   handler: async (ctx, args) => {
+    // Check if user exists
+    const user = await getCurrentUserOrThrow(ctx);
+    if(!user){
+      throw Error("You need to be logged in to like this product")
+    }
+
+    // Check if product exists
     const product = await ctx.db.get(args.productId);
 
     if (!product) {
       throw new Error("Product not found");
     }
 
+    
+    // Check if user has already liked this product
+    const existingLike= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id), q.eq(q.field("liked"), true)
+    )).first()
+
+    if(existingLike){
+      await ctx.db.patch(existingLike._id, {liked: false})
+      await ctx.db.patch(args.productId, {
+        likes: (product.likes || 0) - 1,
+      });
+      return
+    }
+
+    // Check if like record is already created
+    const exists= await ctx.db.query("likes").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId), q.eq(q.field("userId"), user._id)
+    )).first()
+
+    if(exists){
+      await ctx.db.patch(exists._id, {liked: true, disliked: false})
+    }else{
+      await ctx.db.insert("likes",{
+      timeStamp: new Date().toISOString(),
+      productId: args.productId,
+      userId: user._id,
+      liked: true,
+      disliked: false
+      })
+    }
+
+
     await ctx.db.patch(args.productId, {
       likes: (product.likes || 0) + 1,
     });
 
     // Notify product owner
-    const user = await getCurrentUserOrThrow(ctx);
 
     await ctx.db.insert("notifications", {
       userId: product.userId,
@@ -224,6 +262,20 @@ export const likeProduct = mutation({
     return args.productId;
   },
 });
+
+export const getLikeByProductId= query({
+  args: {productId: v.id("product")},
+  handler: async (ctx, args)=>{
+    const product = await ctx.db.get(args.productId)
+
+    const like = await ctx.db.query("likes").filter((q)=> q.eq(q.field("productId"), product?._id)).first()
+    if(!like){
+      return
+    }
+
+    return like
+  }
+})
 
 // Dislike a product
 export const dislikeProduct = mutation({
