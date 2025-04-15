@@ -247,17 +247,17 @@ export const likeProduct = mutation({
 
     // Notify product owner
 
-    await ctx.db.insert("notifications", {
-      userId: product.userId,
-      type: "new_like",
-      relatedId: args.productId,
-      title: `${user.name} liked your product`,
-      content: `${user.name} liked your product "${product.title}"`,
-      imageUrl: user.imageUrl,
-      isRead: false,
-      timestamp: Date.now(),
-      link: `/products/${args.productId}`,
-    });
+    // await ctx.db.insert("notifications", {
+    //   userId: product.userId,
+    //   type: "new_like",
+    //   relatedId: args.productId,
+    //   title: `${user.name} liked your product`,
+    //   content: `${user.name} liked your product "${product.title}"`,
+    //   imageUrl: user.imageUrl,
+    //   isRead: false,
+    //   timestamp: Date.now(),
+    //   link: `/products/${args.productId}`,
+    // });
 
     return args.productId;
   },
