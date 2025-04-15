@@ -54,6 +54,14 @@ export default defineSchema({
     disliked: v.boolean()
   }),
 
+  bookmarks: defineTable({
+    productId: v.id("product"),
+    userId: v.id("users"),
+    timeStamp: v.string(),
+    type: v.union(v.literal("saved"), v.literal("wishlist")),
+    added: v.boolean()
+  }),
+
   conversations: defineTable({
     user1: v.id("users"),
     user2: v.id("users"),

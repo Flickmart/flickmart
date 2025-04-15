@@ -1,6 +1,8 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUserOrThrow } from "./users";
+import { timeStamp } from "console";
+import { Id } from "./_generated/dataModel";
 
 // Get all products
 export const getAll = query({
@@ -357,6 +359,65 @@ export const dislikeProduct = mutation({
       return args.productId;
   }
 });
+
+// Add to wishlist and saved
+
+export const addBookmark= mutation({
+  args:{
+    productId: v.id("product"),
+    type: v.union(v.literal("saved"), v.literal("wishlist")),
+  },
+  handler: async(ctx, args)=>{
+    const user = await getCurrentUserOrThrow(ctx)
+    if(!user){
+      return
+    }
+
+    const bookmarkedTrue= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), true), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
+    if(bookmarkedTrue){
+     await ctx.db.patch(bookmarkedTrue._id, {added: false});
+     return
+    }
+
+    const bookmarkedFalse= await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("added"), false), q.eq(q.field("userId"), user._id), q.eq(q.field("productId"), args.productId))).first()
+    if(bookmarkedFalse){
+     await ctx.db.patch(bookmarkedFalse._id, {added: true});
+     return
+    }
+
+    await ctx.db.insert("bookmarks",{
+        productId: args.productId,
+        type: args.type,
+        timeStamp: new Date().toISOString(),
+        userId: user._id,
+        added: true
+    })
+  }
+})
+
+// Get bookmark by product id
+export const getWishlistByProductId= query({
+  args: {productId: v.id("product")},
+  handler: async(ctx, args)=>{
+    const product = await ctx.db.get(args.productId)
+    if(!product){
+      return
+    }
+    const wishlist = await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("productId"), product._id), q.eq(q.field("type"), "wishlist"))).first()
+    return wishlist
+  }
+})
+export const getSavedByProductId= query({
+  args: {productId: v.id("product")},
+  handler: async(ctx, args)=>{
+    const product = await ctx.db.get(args.productId)
+    if(!product){
+      return
+    }
+    const saved = await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("productId"), product._id), q.eq(q.field("type"), "saved"))).first()
+    return saved
+  }
+})
 
 // Search products with advanced filtering and sorting
 export const search = query({
