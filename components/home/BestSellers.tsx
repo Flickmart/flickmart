@@ -1,11 +1,18 @@
+"use client"
 import React from "react";
 import Container from "./Container";
-import Image from "next/image";
-import { Bookmark } from "lucide-react";
-import Link from "next/link";
+
 import ProductCard from "../multipage/ProductCard";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function BestSellers() {
+  try{
+    const recommendations = useQuery(api.product.getRecommendations, {});
+    console.log(recommendations)
+  }catch(err){
+    console.log(err)
+  }
   return (
     <div className="text-center capitalize lg:space-y-10 space-y-5">
       <h2 className=" lg:text-3xl text-2xl text-gray-800 font-semibold">

@@ -529,77 +529,96 @@ export const search = query({
 // Get personalized product recommendations
 export const getRecommendations = query({
   args: {
-    userId: v.id("users"),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
-    const user = await ctx.db.get(args.userId);
+    const user = await getCurrentUserOrThrow(ctx)
 
     if (!user) {
       throw new Error("User not found");
     }
 
+    // Query db based on user likes
+    const likedProducts= await ctx.db.query("likes").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
+   // Query db based on user bookmarks
+    const bookmarkedProducts = await ctx.db.query("bookmarks").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
+
+
     // Get user's liked products
-    const userProducts = await ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
-      .collect();
+    // const userProducts = await ctx.db
+    //   .query("product")
+    //   .filter((q) => q.eq(q.field("userId"), user._id))
+    //   .collect();
 
     // Get all products except user's own
     let allProducts = await ctx.db
       .query("product")
-      .filter((q) => q.neq(q.field("userId"), args.userId))
+      .filter((q) => q.neq(q.field("userId"), user._id))
       .collect();
 
-    // Calculate product scores based on multiple factors
-    const scoredProducts = allProducts.map((product) => {
-      let score = 0;
+      console.log(allProducts)
 
-      // 1. Ad Type Priority (30% weight)
-      const adTypeScore = {
-        premium: 3,
-        pro: 2,
-        basic: 1,
-      }[product.plan];
-      score += adTypeScore * 0.3;
+      const scoreProducts = allProducts.map((product)=> {
+        // score determines if product is recommended or not
+        let score = 0
 
-      // 2. Engagement Score (20% weight)
-      const engagementScore =
-        ((product.likes ?? 0) - (product.dislikes ?? 0)) /
-        ((product.likes ?? 0) + (product.dislikes ?? 0) + 1); // Add 1 to avoid division by zero
-      score += engagementScore * 0.2;
+        // User Interaction (35% weight)
+        // Check in all products, the ones the user has liked
+        const hasLiked = likedProducts.some((like)=> like.productId === product._id && like.liked)
 
-      // 3. Recency Score (20% weight)
-      const daysOld =
-        (Date.now() - new Date(product.timeStamp).getTime()) /
-        (1000 * 60 * 60 * 24);
-      const recencyScore = Math.exp(-daysOld / 15); // Exponential decay over 15 days
-      score += recencyScore * 0.2;
+        // Check in all products, the ones the user has liked
+        const hasBookmarked = bookmarkedProducts.some((bookmark)=> bookmark.productId === product._id && bookmark.added)
 
-      // 4. Category Match Score (15% weight)
-      if (userProducts.length > 0) {
-        const userCategories = userProducts
-          .map((p) => p.category)
-          .filter((c): c is string => c !== undefined);
+        // If liked or bookmarked, add to score
+        score +=  (hasLiked? 0.2 : 0) + (hasBookmarked? 0.15 : 0)
+        // Calculate product scores based on multiple factors
 
-        if (userCategories.length > 0) {
-          const categoryMatch = userCategories.includes(product.category || "");
-          score += (categoryMatch ? 1 : 0) * 0.15;
-        }
-      }
+        // Net positive likes / total  feedback volume (25% weight)
+        const popularity = (product.likes ?? 0) - (product.dislikes?? 0) / Math.max(1, (product.likes ?? 0) + (product.dislikes ?? 0))
+        score += popularity  * 0.25
 
-      // 5. Location Match Score (15% weight)
-      const locationMatch = userProducts.some(
-        (p) => p.location === product.location
-      );
-      score += (locationMatch ? 1 : 0) * 0.15;
+        // Time posted (20% weight)
+        const daysSincePosted = (Date.now() - new Date(product.timeStamp).getTime()/ 1000 * 60 * 60 * 24)
 
+        const recencyScore = Math.exp(-daysSincePosted / 30); // 30-day decay
+        score += recencyScore * 0.20;
+
+        
+        //Ad Type Priority (20 weight)
+        const adTypeScore = {
+          premium: 1.0,
+          pro: 0.7,
+          basic: 0.4,
+        }[product.plan];
+      score += adTypeScore * 0.2;
+
+
+      
+      // // 4. Category Match Score (15% weight)
+      // if (userProducts.length > 0) {
+      //   const userCategories = userProducts
+      //     .map((p) => p.category)
+      //     .filter((c): c is string => c !== undefined);
+
+      //   if (userCategories.length > 0) {
+      //     const categoryMatch = userCategories.includes(product.category || "");
+      //     score += (categoryMatch ? 1 : 0) * 0.15;
+      //   }
+      // }
+
+      // // 5. Location Match Score (15% weight)
+      // const locationMatch = userProducts.some(
+      //   (p) => p.location === product.location
+      // );
+      // score += (locationMatch ? 1 : 0) * 0.15;
+      
       return { product, score };
     });
 
     // Sort by score and get top recommendations
-    const recommendations = scoredProducts
+    console.log(scoreProducts)
+    const recommendations = scoreProducts
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
       .map((item) => item.product);
