@@ -24,7 +24,7 @@ interface UserProfileProps {
 // Profile content component to share between mobile and desktop views
 const ProfileContent = () => (
   <>
-    <div className="bg-emerald-600 p-4 text-white">
+    <div className="bg-flickmart p-4 text-white">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-bold">Profile</h2>
       </div>
@@ -34,7 +34,7 @@ const ProfileContent = () => (
       {/* Profile Header */}
       <div className="flex flex-col items-center mb-6">
         <div className="relative mb-4">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500 to-orange-300 blur-sm -z-10 scale-110"></div>
+          <div className="absolute inset-0 rounded-ful blur-sm -z-10 scale-110"></div>
           <Image
             src="/placeholder.svg?height=150&width=150"
             alt="Daniella's profile picture"
