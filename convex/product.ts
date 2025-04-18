@@ -6,9 +6,13 @@ import { Id } from "./_generated/dataModel";
 
 // Get all products
 export const getAll = query({
-  args: {},
-  handler: async (ctx) => {
-    return await ctx.db.query("product").collect();
+  args: {
+    limit: v.optional(v.number())
+  },
+  handler: async (ctx, args) => {
+    const allProducts = await ctx.db.query("product").collect();
+
+    return allProducts.slice(0, args.limit || allProducts.length);
   },
 });
 
@@ -532,12 +536,8 @@ export const getRecommendations = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const limit = args.limit || 10;
     const user = await getCurrentUserOrThrow(ctx)
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const limit = args.limit || 10;
 
     // Query db based on user likes
     const likedProducts= await ctx.db.query("likes").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
@@ -617,7 +617,6 @@ export const getRecommendations = query({
     });
 
     // Sort by score and get top recommendations
-    console.log(scoreProducts)
     const recommendations = scoreProducts
       .sort((a, b) => b.score - a.score)
       .slice(0, limit)
