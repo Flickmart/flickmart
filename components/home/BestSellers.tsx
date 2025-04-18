@@ -8,24 +8,24 @@ import { api } from "@/convex/_generated/api";
 import Link from "next/link";
 
 const useRecommendations = () => {
-  try {
-    return useQuery(api.product.getRecommendations, {});
-  } catch (error) {
-    console.log("Error fetching recommendations:", error);
-    return null;
-  }
+  // try {
+  //   return useQuery(api.product.getRecommendations, {});
+  // } catch (error) {
+  //   console.log("Error fetching recommendations:", error);
+  //   return null;
+  // }
 };
 
 export default function BestSellers() {
-  const all = useQuery(api.product.getAll, { limit: 10})
-  const recommendations = useRecommendations();
+  // const all = useQuery(api.product.getAll, { limit: 10})
+  // const recommendations = useRecommendations();
 
   return (
     <div className="text-center capitalize lg:space-y-10 space-y-5">
       <h2 className=" lg:text-3xl text-2xl text-gray-800 font-semibold">
         best sellers
       </h2>
-      <Container>
+      {/* <Container>
         <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full grid-rows-2 lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
           {!recommendations?.length? 
             all?.map((product, index) => (
@@ -40,7 +40,7 @@ export default function BestSellers() {
             ))
           }
         </div>
-      </Container>
+      </Container> */}
     </div>
   );
 }
