@@ -1,33 +1,38 @@
-import React from "react";
+'use client';
+import React, { useState } from "react";
 import CategoryItem from "./CategoryItem";
 import Container from "./Container";
-
-interface CategoryObj {
-  categoryName: string;
-}
-const categoryItems: Array<CategoryObj> = [
-  { categoryName: "vehicles" },
-  { categoryName: "homes" },
-  { categoryName: "food" },
-  { categoryName: "mobiles" },
-  { categoryName: "appliances" },
-  { categoryName: "fashion" },
-  { categoryName: "electronics" },
-  { categoryName: "pets" },
-  { categoryName: "beauty" },
-  { categoryName: "services" },
-];
+import { categories } from "@/lib/data/categories";
+import CategorySelector from "../CategorySelector";
 
 export default function Categories() {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const handleCategoryClick = (categoryName: string) => {
+    setSelectedCategory(categoryName);
+  };
+
+  const selectedData = categories.find(cat => cat.title === selectedCategory);
+
+  const hidePanel: () => void = () => {
+    console.log("Hiding panel");
+    setSelectedCategory(null);
+  };
+
   return (
     <Container>
       <div className="lg:w-4/6 grid lg:grid-cols-4 lg:grid-rows-3 grid-cols-3 lg:gap-x-3 lg:gap-y-6  gap-3 cursor-pointer">
-        {categoryItems.map((item) => (
+        {categories.map((item) => (
           <CategoryItem
-            key={item.categoryName}
-            categoryName={item.categoryName}
+            key={item.title}
+            categoryName={item.title}
+            onClick={() => handleCategoryClick(item.title)}
+            image={item.image}
           />
         ))}
+        {selectedData && (
+          <CategorySelector subcategories={selectedData.subcategories} onClick={hidePanel} />
+        )}
       </div>
     </Container>
   );
