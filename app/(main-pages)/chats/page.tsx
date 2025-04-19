@@ -596,9 +596,9 @@ export default function ChatPage() {
             </div>
             <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
               <ChatInput
-              input={input}
-              setInput={handleInputWrapper}
-              handleSubmit={handleSubmit}
+                input={input}
+                setInput={handleInputWrapper}
+                handleSubmit={handleSubmit}
               />
             </div>
             <UserProfile

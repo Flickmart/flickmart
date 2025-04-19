@@ -6,6 +6,7 @@ import {
   Bookmark,
   Search,
   X,
+  ArrowLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { format } from "date-fns";
 import ProductCard from "../multipage/ProductCard";
+import Link from "next/link";
 
 interface UserProfileProps {
   open?: boolean;
@@ -43,19 +45,13 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
   };
   return (
     <>
-      <div className="p-4 text-white">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl text-black font-bold">Profile</h2>
-        </div>
-      </div>
-
       <div className="p-4">
         {/* Profile Header */}
         <div className="flex flex-col items-center mb-6">
           <div className="relative mb-4">
             <div className="absolute inset-0 rounded-full -z-10 scale-110"></div>
             <Image
-              src={`/${user.imageUrl || "placeholder.svg"}`}
+              src={`${user.imageUrl || "placeholder.svg"}`}
               alt={`${user.name}'s profile picture`}
               width={150}
               height={150}
@@ -65,14 +61,18 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
           </div>
 
           <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-          {
-            !!presence &&(
-              <p className="text-sm text-gray-500 mt-1">
-                Last seen today at{" "}
-                {format(presence?.lastUpdated, "h:mm aaa")}{" "}
-              </p>
-            )
-          }
+          {!!presence && (
+            <p className="text-sm text-gray-500 mt-1">
+              {presence?.status === "online" ? (
+                "online"
+              ) : (
+                <span>
+                  Last seen today at{" "}
+                  {format(presence?.lastUpdated, "h:mm aaa")}{" "}
+                </span>
+              )}
+            </p>
+          )}
 
           {store ? (
             <div className="mt-4 text-center max-w-md">
@@ -141,11 +141,13 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {filteredProducts?.map((item) => (
                 <div key={item._id}>
-                  <ProductCard
-                    image={item.images[0]}
-                    title={item.title}
-                    price={item.price}
-                  />
+                  <Link href={`/product/${item._id}`}>
+                    <ProductCard
+                      image={item.images[0]}
+                      title={item.title}
+                      price={item.price}
+                    />
+                  </Link>
                 </div>
               ))}
             </div>
@@ -199,14 +201,10 @@ export default function UserProfile({
     <div className="fixed inset-0 z-50 flex justify-end ">
       <div className="absolute inset-0 bg-black/20" onClick={onClose}></div>
       <div className="relative bg-white h-full w-full overflow-y-auto max-w-5xl shadow-xl">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4 z-10 rounded-full bg-white/90 p-1.5 text-gray-700 shadow-sm"
-          onClick={onClose}
-        >
-          <X className="h-5 w-5" />
-        </Button>
+        <div className="flex gap-x-2 p-3">
+          <ArrowLeft className="h-8 w-8 cursor-pointer" onClick={onClose} />
+          <h2 className="text-2xl text-black font-bold ml-6">Profile</h2>
+        </div>
         <ProfileContent user={user!} store={store!} />
       </div>
     </div>
