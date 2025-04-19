@@ -14,7 +14,7 @@ export default defineSchema({
     description: v.optional(v.string()),
     image: v.optional(v.string()),
     userId: v.id("users"),
-    phone:v.optional( v.string())
+    phone: v.optional(v.string()),
   }).index("byUserId", ["userId"]),
   product: defineTable({
     userId: v.id("users"),
@@ -35,7 +35,7 @@ export default defineSchema({
     location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),
     phone: v.string(),
-    store: v.string()
+    store: v.string(),
   }),
   comments: defineTable({
     productId: v.id("product"),
@@ -51,7 +51,7 @@ export default defineSchema({
     userId: v.id("users"),
     timeStamp: v.string(),
     liked: v.boolean(),
-    disliked: v.boolean()
+    disliked: v.boolean(),
   }),
 
   bookmarks: defineTable({
@@ -59,7 +59,7 @@ export default defineSchema({
     userId: v.id("users"),
     timeStamp: v.string(),
     type: v.union(v.literal("saved"), v.literal("wishlist")),
-    added: v.boolean()
+    added: v.boolean(),
   }),
 
   conversations: defineTable({
@@ -77,7 +77,6 @@ export default defineSchema({
     content: v.string(),
     conversationId: v.id("conversations"),
     readByUsers: v.optional(v.array(v.id("users"))),
-    
   }),
   notifications: defineTable({
     title: v.string(),
@@ -89,7 +88,7 @@ export default defineSchema({
       v.literal("new_sale"),
       v.literal("new_store"),
       v.literal("advertisement"),
-      v.literal("reminder"),
+      v.literal("reminder")
     ),
     relatedId: v.optional(
       v.union(
@@ -98,7 +97,7 @@ export default defineSchema({
         v.id("comments"),
         v.id("store"),
         v.id("conversations"),
-        v.id("users"),
+        v.id("users")
       )
     ),
     content: v.string(),
@@ -114,7 +113,7 @@ export default defineSchema({
     userId: v.id("users"),
     status: v.union(v.literal("online"), v.literal("offline")),
     lastUpdated: v.number(),
-    isTyping:v.optional(  v.boolean() ),
+    isTyping: v.optional(v.boolean()),
     typingInConversation: v.optional(v.id("conversations")),
   })
     .index("byUserId", ["userId"])
