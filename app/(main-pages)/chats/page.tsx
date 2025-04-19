@@ -56,7 +56,7 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  const [showProfile, setShowProfile] = useState(false)
+  const [showProfile, setShowProfile] = useState(false);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -601,8 +601,11 @@ export default function ChatPage() {
                 handleSubmit={handleSubmit}
               />
             </div>
-            <UserProfile open={showProfile} onClose={() => setShowProfile(false)} />
-
+            <UserProfile
+              open={showProfile}
+              onClose={() => setShowProfile(false)}
+              userId={otherUserId!}
+            />
           </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />

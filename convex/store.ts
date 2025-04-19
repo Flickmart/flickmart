@@ -40,7 +40,6 @@ export const createStore = mutation({
       timestamp: Date.now(),
       link: `/store/${storeId}`,
       type: "advertisement",
-      
     });
 
     return storeId;
@@ -122,5 +121,17 @@ export const deleteStore = mutation({
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
     return args.id;
+  },
+});
+
+export const getStoreByUserId = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    const store = await ctx.db
+      .query("store")
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .first();
+
+    return store;
   },
 });
