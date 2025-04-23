@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { format } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import ProductCard from "../multipage/ProductCard";
 import Link from "next/link";
 
@@ -67,8 +67,10 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
                 "online"
               ) : (
                 <span>
-                  Last seen today at{" "}
-                  {format(presence?.lastUpdated, "h:mm aaa")}{" "}
+                  Last seen{" "}
+                  {formatDistanceToNow(presence?.lastUpdated, {
+                    addSuffix: true,
+                  })}{" "}
                 </span>
               )}
             </p>
