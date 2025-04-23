@@ -57,6 +57,8 @@ export default function ChatPage() {
   const params = useParams();
   const searchParams = useSearchParams();
   const [showProfile, setShowProfile] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -564,9 +566,19 @@ export default function ChatPage() {
               isOnline={otherUserIsOnline}
               showProfile={showProfile}
               setShowProfile={setShowProfile}
+              selectionMode={selectionMode}
+              setSelectionMode={setSelectionMode}
+              selectedMessages={selectedMessages}
+              setSelectedMessages={setSelectedMessages}
             />
             <div className="flex-1 overflow-y-auto">
-              <ChatMessages messages={formattedMessages} />
+              <ChatMessages
+                messages={formattedMessages}
+                selectionMode={selectionMode}
+                setSelectionMode={setSelectionMode}
+                selectedMessages={selectedMessages}
+                setSelectedMessages={setSelectedMessages}
+              />
               <div ref={messagesEndRef} />
             </div>
             <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">

@@ -63,8 +63,8 @@ export default function ChatSidebar({
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
-            placeholder="Search or start new chat"
-            className="pl-9"
+            placeholder="Search"
+            className="pl-9 bg-flickmart-chat-gray rounded-lg"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -72,12 +72,12 @@ export default function ChatSidebar({
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex border-b">
+      <div className="flex items-center space-x-3 px-2 mt-1">
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium",
+            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
             activeFilter === "all"
-              ? "text-orange-500 border-b-2 border-orange-500"
+              ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
           )}
           onClick={() => setActiveFilter("all")}
@@ -86,9 +86,9 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium relative",
+            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
             activeFilter === "unread"
-              ? "text-orange-500 border-b-2 border-orange-500"
+              ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
           )}
           onClick={() => setActiveFilter("unread")}
@@ -102,9 +102,9 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "flex-1 py-2 text-sm font-medium relative",
+            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
             activeFilter === "archived"
-              ? "text-orange-500 border-b-2 border-orange-500"
+              ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
           )}
           onClick={() => setActiveFilter("archived")}
@@ -119,7 +119,7 @@ export default function ChatSidebar({
       </div>
 
       {/* Chat List */}
-      <div className="overflow-y-auto h-[calc(100%-150px)]">
+      <div className="overflow-y-auto h-[calc(100%-150px)] mt-4">
         {conversations.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             No conversations found
@@ -130,7 +130,7 @@ export default function ChatSidebar({
               <div
                 key={chat.id}
                 className={cn(
-                  "flex items-center p-3 cursor-pointer hover:bg-gray-100",
+                  "flex items-center p-3 cursor-pointer hover:bg-gray-100 border-b-2 border-gray-200 ",
                   activeChat === chat.id && "bg-orange-50"
                 )}
                 onClick={() => {
