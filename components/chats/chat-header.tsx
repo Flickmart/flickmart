@@ -10,6 +10,7 @@ interface ChatHeaderProps {
   toggleSidebar: () => void;
   activeChatData: {
     name: string;
+    image:string;
   } | null;
   isTyping: boolean;
   isOnline?: boolean;
@@ -50,7 +51,7 @@ export default function ChatHeader({
     });
     toast.promise(promise, {
       loading: "Deleting messages...",
-      success: "Messages deleted succesully",
+      success: "Messages deleted successfully",
       error: "Failed to delete messages",
     });
     setSelectedMessages([]);
@@ -96,12 +97,12 @@ export default function ChatHeader({
         className="flex items-center flex-1 cursor-pointer hover:bg-gray-100 rounded-md p-2 transition-colors"
         onClick={handleProfileToggle}
       >
-        <Avatar className="h-10 w-10">
-          <AvatarImage src={activeChatData?.name} alt={activeChatData?.name} />
-          <AvatarFallback className="bg-flickmart text-white">
-            {activeChatData?.name?.charAt(0) || "?"}
-          </AvatarFallback>
-        </Avatar>
+          <Avatar className="h-10 w-10">
+            <AvatarImage src={activeChatData?.image} alt={activeChatData?.name} />
+            <AvatarFallback className="bg-flickmart text-white">
+              {activeChatData?.name?.charAt(0) || "?"}
+            </AvatarFallback>
+          </Avatar>
 
         <div className="ml-3 flex-1 truncate">
           <h4 className="text-black text-md truncate font-medium">

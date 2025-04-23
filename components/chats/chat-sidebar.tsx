@@ -8,7 +8,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Id } from "@/convex/_generated/dataModel";
-import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 interface ChatSidebarProps {
@@ -23,6 +23,7 @@ interface ChatSidebarProps {
   conversations: Array<{
     id: Id<"conversations">;
     name: string;
+    imageUrl: string;
     lastMessage: string;
     time: string;
     unread: number;
@@ -130,7 +131,7 @@ export default function ChatSidebar({
               <div
                 key={chat.id}
                 className={cn(
-                  "flex items-center p-3 cursor-pointer hover:bg-gray-100 border-b-2 border-gray-200 ",
+                  "flex items-center p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200 ",
                   activeChat === chat.id && "bg-orange-50"
                 )}
                 onClick={() => {
@@ -140,14 +141,12 @@ export default function ChatSidebar({
                   }
                 }}
               >
-                <div
-                  className={cn(
-                    "h-12 w-12 rounded-full flex items-center justify-center text-white font-bold",
-                    chat.unread > 0 ? "bg-orange-500" : "bg-orange-300"
-                  )}
-                >
-                  {chat.name.charAt(0)}
-                </div>
+                <Avatar className="h-10 w-10">
+                  <AvatarImage src={chat.imageUrl} alt={chat.name} />
+                  <AvatarFallback className="bg-flickmart text-white">
+                    {chat?.name?.charAt(0) || "?"}
+                  </AvatarFallback>
+                </Avatar>
                 <div className="ml-3 flex-1 overflow-hidden">
                   <div className="flex justify-between items-center">
                     <h3

@@ -383,6 +383,8 @@ export default function ChatPage() {
       // Find user in our pre-fetched users
       const otherUser = allUsers.find((u) => u._id === otherUserId);
 
+      console.log(otherUser)
+
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
         .filter((msg) => msg.conversationId === conversation._id)
@@ -413,6 +415,7 @@ export default function ChatPage() {
       return {
         id: conversation._id,
         name: otherUser?.name || "Unknown User",
+        imageUrl: otherUser?.imageUrl || "",
         lastMessage: lastMessage ? lastMessage.content : "No messages yet",
         time: lastMessageTime,
         unread: userUnreadCount,
@@ -497,6 +500,7 @@ export default function ChatPage() {
       activeChat && otherUser
         ? {
             name: otherUser.name || "Unknown User",
+            image: otherUser.imageUrl || "",
           }
         : null,
     [activeChat, otherUser]
