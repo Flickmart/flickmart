@@ -383,7 +383,6 @@ export default function ChatPage() {
       // Find user in our pre-fetched users
       const otherUser = allUsers.find((u) => u._id === otherUserId);
 
-      console.log(otherUser)
 
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
