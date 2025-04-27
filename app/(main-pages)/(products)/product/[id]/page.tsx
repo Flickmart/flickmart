@@ -34,12 +34,6 @@ import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import CommentContent from "@/components/products/CommentContent";
 import { toast } from "sonner";
 
-
-export const useGestures= async function(label: string, productId: Id<"product">){
-
-}
-
-
 export default function ProductPage() {
   const isVisible = useNav();
   const isMobile = useIsMobile();
