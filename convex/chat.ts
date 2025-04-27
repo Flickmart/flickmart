@@ -301,7 +301,6 @@ export const getAllConversationsMessages = query({
   },
 });
 
-
 export const editMessage = mutation({
   args: {
     messageId: v.id("message"),
@@ -313,7 +312,7 @@ export const editMessage = mutation({
       throw new Error("Unauthorized");
     }
 
-    const user = await getCurrentUser(ctx)
+    const user = await getCurrentUser(ctx);
 
     if (!user) {
       throw new Error("User not found");
@@ -324,11 +323,29 @@ export const editMessage = mutation({
       throw new Error("Message not found");
     }
 
-  
-
     await ctx.db.patch(args.messageId, {
       content: args.content,
     });
   },
 });
 
+export const deleteMessages = mutation({
+  args: {
+    messageIds: v.array(v.id("message")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    try {
+      await Promise.all(
+        args.messageIds.map((messageId) => ctx.db.delete(messageId))
+      );
+      return { success: true };
+    } catch (error) {
+      return { success: false };
+    }
+  },
+});

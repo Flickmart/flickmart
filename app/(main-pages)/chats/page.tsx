@@ -56,7 +56,9 @@ export default function ChatPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  const [showProfile, setShowProfile] = useState(false)
+  const [showProfile, setShowProfile] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
@@ -381,6 +383,7 @@ export default function ChatPage() {
       // Find user in our pre-fetched users
       const otherUser = allUsers.find((u) => u._id === otherUserId);
 
+
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
         .filter((msg) => msg.conversationId === conversation._id)
@@ -411,6 +414,7 @@ export default function ChatPage() {
       return {
         id: conversation._id,
         name: otherUser?.name || "Unknown User",
+        imageUrl: otherUser?.imageUrl || "",
         lastMessage: lastMessage ? lastMessage.content : "No messages yet",
         time: lastMessageTime,
         unread: userUnreadCount,
@@ -495,6 +499,7 @@ export default function ChatPage() {
       activeChat && otherUser
         ? {
             name: otherUser.name || "Unknown User",
+            image: otherUser.imageUrl || "",
           }
         : null,
     [activeChat, otherUser]
@@ -564,9 +569,19 @@ export default function ChatPage() {
               isOnline={otherUserIsOnline}
               showProfile={showProfile}
               setShowProfile={setShowProfile}
+              selectionMode={selectionMode}
+              setSelectionMode={setSelectionMode}
+              selectedMessages={selectedMessages}
+              setSelectedMessages={setSelectedMessages}
             />
             <div className="flex-1 overflow-y-auto">
-              <ChatMessages messages={formattedMessages} />
+              <ChatMessages
+                messages={formattedMessages}
+                selectionMode={selectionMode}
+                setSelectionMode={setSelectionMode}
+                selectedMessages={selectedMessages}
+                setSelectedMessages={setSelectedMessages}
+              />
               <div ref={messagesEndRef} />
             </div>
             <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">
@@ -601,8 +616,11 @@ export default function ChatPage() {
                 handleSubmit={handleSubmit}
               />
             </div>
-            <UserProfile open={showProfile} onClose={() => setShowProfile(false)} />
-
+            <UserProfile
+              open={showProfile}
+              onClose={() => setShowProfile(false)}
+              userId={otherUserId!}
+            />
           </div>
         ) : (
           <WelcomeScreen onOpenSidebar={toggleSidebar} />

@@ -1,7 +1,9 @@
+"use client"
+
 import React from "react";
 const ChatLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <div>
+    <div className="overflow-hidden">
       {children}
     </div>
   );
