@@ -898,10 +898,6 @@ export const getProductsByCategory= query({
 export const getProductsByFilters = query({
   args: {category: v.string() ,min: v.number(), max: v.number(), priceRange: v.string(), location: v.string()},
   handler: async(ctx, args)=>{
-    const user = getCurrentUserOrThrow(ctx)
-    if(!user){
-      throw Error ("User is not authenticated")
-    }
 
     let query = ctx.db.query("product").filter((q) => q.eq(q.field("category"), args.category));
 

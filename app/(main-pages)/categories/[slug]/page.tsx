@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
 import { useReducer } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "@/components/ui/button";
 
 
 interface FilterObjectType{
@@ -44,10 +43,10 @@ const initialState: FilterObjectType ={
 
 function reducer (state: FilterObjectType, action: {type: string; payload: string | number}){
     switch(action.type){
-        case "min": return {...state, min: action.payload};
-        case "max": return {...state, max: action.payload};
-        case "location": return {...state, location: action.payload};
-        case "priceRange": return {...state, priceRange: action.payload};
+        case "min": return {...state, min: Number(action.payload)};
+        case "max": return {...state, max: Number(action.payload)};
+        case "location": return {...state, location: action.payload.toString()};
+        case "priceRange": return {...state, priceRange: action.payload.toString()};
         default: return state;
     }
 }
