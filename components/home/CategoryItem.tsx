@@ -1,20 +1,11 @@
 'use client';
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
-import CategorySelector from "../CategorySelector";
 
 export default function CategoryItem({ categoryName } : { categoryName: string; }) {
 
-  const [panelOpen, setPanelOpen] = useState<boolean>(false);
-
-  const togglePanel: () => void = () => {
-    setPanelOpen(prev => !prev);
-  }
-
   return (
-    <div onClick={togglePanel} className="hover:cursor-pointer relative">
-      {panelOpen && <CategorySelector togglePanel={togglePanel} />}
+    <div className="hover:cursor-pointer relative">
       <div className="bg-[#f4f7fa] lg:p-0  h-36 lg:h-52 lg:rounded-xl capitalize flex flex-col items-center justify-center space-y-4 lg:space-y-7 text-gray-800">
         <Image
           src={`/${categoryName}.png`}

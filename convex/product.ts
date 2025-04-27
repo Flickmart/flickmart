@@ -425,6 +425,23 @@ export const getSavedByProductId= query({
   }
 })
 
+export const getSavedByUserId= query({
+  handler: async (ctx)=> {
+    const user = await getCurrentUserOrThrow(ctx)
+    if (!user){
+      throw Error("You need to logged in")
+    }
+    const saved = await ctx.db.query("bookmarks").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
+    
+    const savedList = await Promise.all(saved.map( async (item)=> {
+      const  product = await ctx.db.get(item.productId)
+      return product
+    }))
+
+    return savedList
+  }
+})
+
 // Search products with advanced filtering and sorting
 export const search = query({
   args: {
@@ -778,3 +795,58 @@ function calculateTextSimilarity(text1: string, text2: string): number {
   // Jaccard similarity: size of intersection / size of union
   return union.size === 0 ? 0 : intersection.size / union.size;
 }
+
+
+// Get Products by category
+
+export const getProductsByCategory= query({
+  args: {category: v.string()},
+  handler: async (ctx, args)=> {
+    const user = getCurrentUserOrThrow(ctx)
+
+    if(!user){
+      throw Error ("User is not logged in")
+    }
+    const products = await ctx.db.query("product").filter((q)=> q.eq(q.field("category"), args.category)).collect()
+    return products
+  }
+})
+
+// Get Products by Filters
+export const getProductsByFilters = query({
+  args: {category: v.string() ,min: v.number(), max: v.number(), priceRange: v.string(), location: v.string()},
+  handler: async(ctx, args)=>{
+    const user = getCurrentUserOrThrow(ctx)
+    if(!user){
+      throw Error ("User is not authenticated")
+    }
+
+    let query = ctx.db.query("product").filter((q) => q.eq(q.field("category"), args.category));
+
+    // Apply location filter if provided
+    if(args.location){
+      query= query.filter((q)=> q.eq(q.field("location"), args.location))
+    }
+
+    // Apply price range filter if min and max are provided
+    if(args.min && args.max){
+      query = query.filter((q)=> q.and(q.gte(q.field("price"), args.min), q.lte(q.field("price"), args.max)))
+    }
+
+    // Apply predefined price range filter if provided
+    if(args.priceRange){
+      const ranges = {
+        "cheap": {min: 0, max: 100000},
+        "affordable": {min: 100000, max: 500000},
+        "moderate": {min: 500000, max: 1500000},
+        "expensive": {min: 1500000, max: 3500000}
+      }
+      const range = ranges[args.priceRange as keyof typeof ranges]
+      if (range){
+        query = query.filter((q)=> q.and(q.gte(q.field("price"), range.min), q.lte(q.field("price"), range.max)))
+      }
+    }
+
+    return await query.collect();
+  }
+})

@@ -30,12 +30,14 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import Image from "next/image";
 import useSlider from "@/hooks/useSlider";
-import { useEffect, useState } from "react";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import CommentContent from "@/components/products/CommentContent";
 import { toast } from "sonner";
 
 
+export const useGestures= async function(label: string, productId: Id<"product">){
+
+}
 
 
 export default function ProductPage() {
@@ -43,13 +45,13 @@ export default function ProductPage() {
   const isMobile = useIsMobile();
   const params = useParams();
   const productId = params.id as Id<"product">
+  const likeProduct= useMutation(api.product.likeProduct)
+  const dislikeProduct= useMutation(api.product.dislikeProduct)
+  const bookmarkProduct = useMutation(api.product.addBookmark)
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
   const like = useQuery(api.product.getLikeByProductId, { productId })
   const wishlist = useQuery(api.product.getWishlistByProductId, { productId })
   const saved = useQuery(api.product.getSavedByProductId, { productId })
-  const likeProduct= useMutation(api.product.likeProduct)
-  const dislikeProduct= useMutation(api.product.dislikeProduct)
-  const bookmarkProduct = useMutation(api.product.addBookmark)
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
   const { setApi } = useSlider()
   const comments= useQuery(api.comments.getCommentsByProductId, { productId })
@@ -60,7 +62,7 @@ export default function ProductPage() {
     { label: "wishlist", icon: <Heart className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.added? "fill-flickmart stroke-none" : "fill-none stroke-current"}`} /> },
   ];
 
-  async function handleLike (label: string){
+  const handleGestures = async (label: string) => {
     try{
       if(label === "likes"){
           await likeProduct({productId})
@@ -113,7 +115,7 @@ export default function ProductPage() {
                 return (
                   <div
                   key={item.label}
-                  onClick={() => handleLike(item.label)}
+                  onClick={() => handleGestures(item.label)}
                   className="capitalize space-y-3 text-center cursor-pointer"
                   >
                     <div className={`flex justify-center`}>{item.icon}</div>{" "}
@@ -190,7 +192,7 @@ export default function ProductPage() {
             <div
               className={` ${isVisible ? "translate-y-0" : "-translate-y-[-100%]"} lg:translate-y-0 transition  duration-300  flex space-x-5 p-3 lg:p-0 lg:relative bg-white fixed bottom-0 w-full z-30 `}
             >
-              <div onClick={() => handleLike("saved")} className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center">
+              <div onClick={() => handleGestures("saved")} className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center">
                 <button className="rounded-full text-flickmart-chat-orange p-2 shadow-lg bg-white">
                   <Bookmark className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${saved?.added? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}/>
                 </button>
