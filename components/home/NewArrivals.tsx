@@ -1,9 +1,15 @@
+"use client"
 import React from "react";
 import Container from "./Container";
 import NewArrivalItem from "./NewArrivalItem";
 import { ArrowRight } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function NewArrivals() {
+  const newProducts = useQuery(api.product.getNewProducts)
+  console.log(newProducts)
+  const firstTenProducts = newProducts?.slice(0, 10)
   return (
     <Container className="!flex items-center flex-col justify-start py-5 capitalize text-gray-800 space-y-5 ">
       <div className="lg:w-5/6 w-full flex justify-between ">
@@ -16,14 +22,9 @@ export default function NewArrivals() {
         </p>
       </div>
       <div className=" flex justify-between   lg:w-5/6 gap-x-5 w-full overflow-x-auto ">
-        <NewArrivalItem image="sofa" name="loveseat sofa" price={199.0} />
-        <NewArrivalItem image="generic-lamp" name="table lamp" price={24.99} />
-        <NewArrivalItem
-          image="beige-lamp"
-          name="beige table lamp"
-          price={124.99}
-        />
-        <NewArrivalItem image="toaster" name="toaster" price={224.99} />
+      {firstTenProducts?.map((item)=> 
+        <NewArrivalItem image={item.images[0]} name={item.title} price={item.price} />
+      )}
       </div>
     </Container>
   );

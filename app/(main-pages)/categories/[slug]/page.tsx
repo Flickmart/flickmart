@@ -75,6 +75,7 @@ export default function DetailedCategoryPage () {
         ? filteredProds 
         : products;
 
+        console.log(products)
     return (
         <>
             <main className=" min-h-screen flex w-screen">
@@ -210,7 +211,9 @@ export default function DetailedCategoryPage () {
                             </div>
                         </div>
                         <div className={`mt-2 ${displayProducts?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}>
-                            {displayProducts?.map((product) => {
+                            {typeof products === undefined ? 
+                            <p>loading...</p>
+                            : displayProducts?.map((product) => {
                                 return (  
                                 <div className="relative" key={product._id}>
                                     <Link href={`/product/${product._id}`}>

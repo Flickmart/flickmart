@@ -928,3 +928,18 @@ export const getProductsByFilters = query({
     return await query.collect();
   }
 })
+
+// Get newly posted products
+
+export const getNewProducts = query({
+  handler: async(ctx)=> {
+    let numDaysAge= 7
+    // Get the timestamp of 10 days ago
+    const tenDaysAgo = Date.now() - (numDaysAge * 24 * 60 * 60 * 1000)
+
+    // Get products not older than 7 days
+    let products = await ctx.db.query("product").filter((q)=> q.gte(q.field('_creationTime'), tenDaysAgo)).order("desc").collect()
+
+    return products
+  }
+})

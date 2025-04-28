@@ -19,7 +19,7 @@ export default function NewArrivalItem({
       </span>
       <div className="flex-grow bg-gray-100 rounded-md flex flex-col items-center justify-center gap-3 py-4 lg:py-0">
         <Image
-          src={`/${image}.png`}
+          src={image}
           alt={name}
           width={500}
           height={500}
@@ -31,7 +31,7 @@ export default function NewArrivalItem({
       </div>
       <div className=" flex flex-col lg:py-4 lg:space-y-3 space-y-1 pt-2 font-semibold">
         <span className="">{name}</span>
-        <span>${price}</span>
+        <span>${price.toLocaleString()}</span>
       </div>
     </div>
   );
