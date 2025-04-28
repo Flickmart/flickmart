@@ -88,7 +88,7 @@ export default function ProductPage() {
                         alt={productData.title}
                         width={500}
                         height={500}
-                        className=" w-full lg:h-[550px] lg:object-cover  aspect-square"
+                        className=" w-full lg:h-[550px] object-cover  aspect-square"
                       />
                     </CarouselItem>
                   )

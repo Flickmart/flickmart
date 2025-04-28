@@ -5,6 +5,7 @@ import NewArrivalItem from "./NewArrivalItem";
 import { ArrowRight } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import Link from "next/link";
 
 export default function NewArrivals() {
   const newProducts = useQuery(api.product.getNewProducts)
@@ -23,7 +24,9 @@ export default function NewArrivals() {
       </div>
       <div className=" flex justify-between   lg:w-5/6 gap-x-5 w-full overflow-x-auto ">
       {firstTenProducts?.map((item)=> 
+      <Link key={item._id} href={`/product/${item._id}`}>
         <NewArrivalItem image={item.images[0]} name={item.title} price={item.price} />
+      </Link>
       )}
       </div>
     </Container>
