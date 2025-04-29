@@ -15,7 +15,7 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
   if (pathname.includes("/product")) {
     title = "Products";
   }
-  const hiddenPaths = ["/notifications", "/settings"];
+  const hiddenPaths = ["/notifications", "/settings" , "/chats"];
 
   const isHidden = () => {
     if (pathname === "/") {
