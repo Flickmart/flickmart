@@ -29,7 +29,8 @@ export default async function CategoryPage() {
         <main className="w-[95%] mx-auto flex gap-12 min-h-screen">
             <section className="w-full flex lg:hidden flex-col">
                 {categoryData.map((item) => (
-                    <CategoryItem key={item.id} item={item} />
+                    // <CategoryItem key={item.id} item={item} />
+                    null
                 ))}
             </section>
             <section className="lg:mt-12 hidden lg:block w-2/12 mb-12">
@@ -122,7 +123,7 @@ export default async function CategoryPage() {
                         </div>
                     </div>
                     <div className="mt-2 grid lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                        <div className="border relative">
+                        {/* <div className="border relative">
                             <div className="h-56 w-full overflow-hidden flex justify-center items-center">
                                 <Image src='/toaster.png' width={500} height={500} alt="category image" className="" />
                             </div>
@@ -201,7 +202,7 @@ export default async function CategoryPage() {
                                     <Bookmark className="h-4 w-4" />
                                 </button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                 </div>
             </section>

@@ -3,7 +3,15 @@ import { EllipsisVertical, MapPin, MessageSquareText, Phone, Share } from "lucid
 import Image from "next/image";
 import { useState } from "react";
 
-export default function SavedItem() {
+interface Saved{
+    title: string;
+    price: number;
+    condition: "brand new" | "used";
+    location: string;
+    image: string;
+}
+
+export default function SavedItem( { title, price, condition, location, image}: Saved )  {
 
     const [isDelOpen, setIsDelOpen] = useState(false);  
 

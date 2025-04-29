@@ -12,7 +12,7 @@ export default function ProductCard({
   price?: number;
 }) {
   return (
-    <div className=" flex flex-col justify-between  min-h-64  rounded-md border border-gray-200 relative">
+    <div className=" flex flex-col justify-between  min-h-56  rounded-md border border-gray-200 relative">
       <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
         hot
       </span>
@@ -25,7 +25,7 @@ export default function ProductCard({
           alt={title || ""}
           width={500}
           height={500}
-          className="h-72 lg:h-96 object-cover object-top  p-0.5 rounded-md "
+          className="h-48 lg:h-96 object-cover object-top  p-0.5 rounded-md "
         />
       ) : null}
       <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">

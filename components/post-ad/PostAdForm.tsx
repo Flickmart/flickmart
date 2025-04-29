@@ -48,7 +48,7 @@ type ErrorType = SubmitErrorHandler<{
   plan: "basic" | "pro" | "premium";
 }>;
 
-const categories = ["electronics", "fashion", "beauty"];
+const categories = ["vehicles", "homes", "food", "mobiles", "appliances", "fashion", "electronics", "pets", "beauty", "services"];
 const location = ["enugu", "nsukka"];
 const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
