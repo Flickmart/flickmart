@@ -131,48 +131,6 @@ export default function ProductHeader({
           {" "}
           <ExternalLink /> Share
         </button>
-          {/* </DialogTrigger> */}
-          {/* <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>Share link</DialogTitle>
-              <DialogDescription>
-                Anyone who has this link will be able to view this.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex items-center space-x-2">
-              <div className="grid flex-1 gap-2">
-                <Label htmlFor="link" className="sr-only">
-                  Link
-                </Label>
-                <Input
-                  id="link"
-                  defaultValue={`https://flickmart-demo.vercel.app/product/${productId}`}
-                  readOnly
-                />
-              </div>
-              <Button
-                onClick={handleCopy}
-                type="button"
-                size="sm"
-                className="px-3 transition-all duration-200"
-              >
-                <span className="sr-only">{copied ? "Copied" : "Copy"}</span>
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-            <DialogFooter className="sm:justify-start">
-              <DialogClose asChild>
-                <Button type="button" variant="secondary">
-                  Close
-                </Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog> */}
       </div>
     </div>
   );
