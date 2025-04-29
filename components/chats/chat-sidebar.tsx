@@ -52,20 +52,20 @@ export default function ChatSidebar({
   const SidebarContent = () => (
     <>
       {/* Sidebar Header */}
-      <div className="px-3 py-2 flex items-center justify-between">
+      <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1  ">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-xl">Chats</h2>
+          <h2 className="text-flickmart font-bold text-3xl">Chats</h2>
         </div>
         <Menu className="md:block hidden" />
       </div>
 
       {/* Search */}
-      <div className="p-2">
+      <div className="p-2 my-3 md:my-0 ">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
             placeholder="Search"
-            className="pl-9 bg-flickmart-chat-gray rounded-lg"
+            className="pl-9 py-2 bg-flickmart-chat-gray rounded-lg"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
@@ -193,7 +193,7 @@ export default function ChatSidebar({
       {/* Mobile sidebar as Sheet */}
       <div className="md:hidden">
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent side="left" className="w-full p-0">
+          <SheetContent side="left" className="w-full p-1" hideCloseButton>
             <SidebarContent />
           </SheetContent>
         </Sheet>

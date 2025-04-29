@@ -1,5 +1,6 @@
 import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 interface MessageBubbleProps {
   id: string;
@@ -26,6 +27,33 @@ export default function MessageBubble({
   toggleSelectionMode,
   handleLongPress,
 }: MessageBubbleProps) {
+  const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
+  const [touchStartTime, setTouchStartTime] = useState<number>(0);
+
+  const handleTouchStart = () => {
+    setTouchStartTime(Date.now());
+    const timer = setTimeout(() => {
+      handleLongPress(id);
+    }, 1500);
+    setTouchTimer(timer);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchTimer) {
+      clearTimeout(touchTimer);
+      setTouchTimer(null);
+    }
+    setTouchStartTime(0);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (touchTimer) {
+        clearTimeout(touchTimer);
+      }
+    };
+  }, [touchTimer]);
+
   return (
     <div
       className={cn(
@@ -38,21 +66,18 @@ export default function MessageBubble({
         e.preventDefault();
         handleLongPress(id);
       }}
-      onTouchStart={() => {
-        const timer = setTimeout(() => {
-          handleLongPress(id);
-        }, 500);
-        return () => clearTimeout(timer);
-      }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       <div
         className={cn(
-          "max-w-[75%] sm:max-w-[70%] md:max-w-[65%] rounded-lg p-2 md:p-3 shadow-sm",
+          "max-w-[75%] sm:max-w-[70%] md:max-w-[65%] rounded-lg py-1 px-2 md:p-3 shadow-sm",
           isUser
             ? "bg-flickmart text-white rounded-br-none"
             : "bg-background text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
-            "bg-green-100 border-2 border-green-500 max-w-full"
+            "bg-orange-200 border-2 border-orange-400"
         )}
       >
         <p className="break-words text-sm md:text-base">{message}</p>
