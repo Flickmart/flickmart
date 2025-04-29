@@ -383,7 +383,6 @@ export default function ChatPage() {
       // Find user in our pre-fetched users
       const otherUser = allUsers.find((u) => u._id === otherUserId);
 
-
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
         .filter((msg) => msg.conversationId === conversation._id)
@@ -544,7 +543,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-56px)] w-full overflow-hidden bg-gray-100">
+    <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar */}
       <ChatSidebar
         sidebarOpen={sidebarOpen}
