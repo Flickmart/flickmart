@@ -75,56 +75,7 @@ export default function MessageBubble({
         )}
         onClick={() => selectionMode && toggleMessageSelection(id)}
       >
-        {/* Image Messages */}
-        <PhotoProvider
-          toolbarRender={({ onScale, scale, rotate, onRotate }) => {
-            return (
-              <>
-                <ZoomIn
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onScale(scale - 1)}
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    color: "",
-                  }}
-                />
-                <ZoomOut
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onScale(scale + 1)}
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  className="PhotoView-Slider__toolbarIcon lucide lucide-rotate-cw-icon lucide-rotate-cw"
-                  onClick={() => onRotate(rotate + 90)}
-                >
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                  <path d="M21 3v5h-5" />
-                </svg>
-                <svg
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onRotate(rotate + 90)}
-                />
-              </>
-            );
-          }}
-        >
-          <div className="foo">
-            {images.map((item, index) => (
-              <PhotoView key={index} src={item}>
-                <img src={item} alt="" className="rounded-lg" />
-              </PhotoView>
-            ))}
-          </div>
-        </PhotoProvider>
+      
         {/* Text Message */}
         {message && <p className="break-words">{message}</p>}
 
