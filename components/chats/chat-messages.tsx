@@ -42,17 +42,15 @@ export default function ChatMessages({
       setSelectedMessages([]);
     }
   };
+
   // Toggle message selection
   const toggleMessageSelection = (messageId: string) => {
-    // Find the message to check if user is the sender
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== "user") return; // Only allow selection of user's messages
+    if (!message || message.role !== "user") return;
 
     if (selectedMessages.includes(messageId)) {
       const newSelectedMessages = selectedMessages.filter((id) => id !== messageId);
       setSelectedMessages(newSelectedMessages);
-      
-      // Turn off selection mode if no messages are selected
       if (newSelectedMessages.length === 0) {
         setSelectionMode(false);
       }
@@ -63,15 +61,60 @@ export default function ChatMessages({
 
   // Handle long press to enter selection mode
   const handleLongPress = (messageId: string) => {
-    // Find the message to check if user is the sender
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== "user") return; // Only allow selection of user's messages
+    if (!message || message.role !== "user") return;
 
     if (!selectionMode) {
       setSelectionMode(true);
       setSelectedMessages([messageId]);
     }
   };
+
+  // Group messages by date
+  const groupMessagesByDate = (messages: Message[]) => {
+    // Sort messages by timestamp (oldest first)
+    const sortedMessages = [...messages].sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    );
+
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+
+    const groupedMessages: { date: string; messages: Message[] }[] = [];
+    let currentGroup: { date: string; messages: Message[] } | null = null;
+
+    sortedMessages.forEach((msg) => {
+      const msgDate = new Date(msg.timestamp);
+      let dateLabel;
+
+      // Determine date label
+      if (msgDate.toDateString() === today.toDateString()) {
+        dateLabel = "Today";
+      } else if (msgDate.toDateString() === yesterday.toDateString()) {
+        dateLabel = "Yesterday";
+      } else {
+        dateLabel = msgDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      }
+
+      // Create new group if date changes
+      if (!currentGroup || currentGroup.date !== dateLabel) {
+        currentGroup = { date: dateLabel, messages: [] };
+        groupedMessages.push(currentGroup);
+      }
+
+      currentGroup.messages.push(msg);
+    });
+
+    return groupedMessages;
+  };
+
+  const groupedMessages = groupMessagesByDate(messages);
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-16">
@@ -81,23 +124,30 @@ export default function ChatMessages({
           outside the platform.
         </div>
       </div>
-      {messages.map((message) => (
-        <MessageBubble
-          key={message.id}
-          id={message.id}
-          message={message.content}
-          isUser={message.role === "user"}
-          timestamp={message.timestamp.toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-          status={message.role === "user" ? "sent" : undefined}
-          selectionMode={selectionMode}
-          toggleMessageSelection={toggleMessageSelection}
-          toggleSelectionMode={toggleSelectionMode}
-          handleLongPress={handleLongPress}
-          selectedMessages={selectedMessages}
-        />
+      {groupedMessages.map((group, index) => (
+        <div key={index} className="space-y-2">
+          <div className="date-header text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit">
+            {group.date}
+          </div>
+          {group.messages.map((message) => (
+            <MessageBubble
+              key={message.id}
+              id={message.id}
+              message={message.content}
+              isUser={message.role === "user"}
+              timestamp={message.timestamp.toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+              status={message.role === "user" ? "sent" : undefined}
+              selectionMode={selectionMode}
+              toggleMessageSelection={toggleMessageSelection}
+              toggleSelectionMode={toggleSelectionMode}
+              handleLongPress={handleLongPress}
+              selectedMessages={selectedMessages}
+            />
+          ))}
+        </div>
       ))}
       <div ref={messagesEndRef} />
     </div>

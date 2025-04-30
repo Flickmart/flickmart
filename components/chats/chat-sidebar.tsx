@@ -54,7 +54,7 @@ export default function ChatSidebar({
       {/* Sidebar Header */}
       <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1  ">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-3xl">Chats</h2>
+          <h2 className="text-flickmart font-bold text-3xl md:text-xl">Chats</h2>
         </div>
         <Menu className="md:block hidden" />
       </div>
