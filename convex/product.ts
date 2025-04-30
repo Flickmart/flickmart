@@ -418,36 +418,15 @@ export const addBookmark = mutation({
       return;
     }
 
-    const bookmarkTrue = await ctx.db
-      .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("added"), true),
-          q.eq(q.field("type"), args.type),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("productId"), args.productId)
-        )
-      )
-      .first();
-    if (bookmarkTrue) {
-      await ctx.db.patch(bookmarkTrue._id, { added: false });
-      return await ctx.db.get(bookmarkTrue._id);
-    }
+    const wishListed = await ctx.db.query("bookmarks").filter((q)=> q.and(
+      q.eq(q.field("productId"), args.productId),
+      q.eq(q.field("userId"), user._id),
+      q.eq(q.field("type"), args.type)
+    )).first()
 
-    const bookmarkFalse = await ctx.db
-      .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("added"), false),
-          q.eq(q.field("type"), args.type),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("productId"), args.productId)
-        )
-      )
-      .first();
-    if (bookmarkFalse) {
-      await ctx.db.patch(bookmarkFalse._id, { added: true });
-      return await ctx.db.get(bookmarkFalse._id);
+    if(wishListed){
+      await ctx.db.delete(wishListed._id)
+      return;
     }
 
     const bookmarkId = await ctx.db.insert("bookmarks", {
@@ -462,29 +441,10 @@ export const addBookmark = mutation({
   },
 });
 
-// Get bookmark by product id
-export const getWishlistByProductId = query({
-  args: { productId: v.id("product") },
+export const getSavedOrWishlistProduct = query({
+  args: { productId: v.id("product"), type: v.string() },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
-    if (!product) {
-      return;
-    }
-    const wishlist = await ctx.db
-      .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), product._id),
-          q.eq(q.field("type"), "wishlist")
-        )
-      )
-      .first();
-    return wishlist;
-  },
-});
-export const getSavedByProductId = query({
-  args: { productId: v.id("product") },
-  handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx)
     const product = await ctx.db.get(args.productId);
     if (!product) {
       return;
@@ -494,7 +454,8 @@ export const getSavedByProductId = query({
       .filter((q) =>
         q.and(
           q.eq(q.field("productId"), product._id),
-          q.eq(q.field("type"), "saved")
+          q.eq(q.field("userId"), user._id),
+          q.eq(q.field("type"), args.type)
         )
       )
       .first();
@@ -502,13 +463,16 @@ export const getSavedByProductId = query({
   },
 });
 
-export const getSavedByUserId= query({
-  handler: async (ctx)=> {
+export const getAllSavedOrWishlist= query({
+  args: {
+    type: v.union(v.literal("saved"), v.literal("wishlist"))
+  },
+  handler: async (ctx, args)=> {
     const user = await getCurrentUserOrThrow(ctx)
     if (!user){
       throw Error("You need to logged in")
     }
-    const saved = await ctx.db.query("bookmarks").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
+    const saved = await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("userId"), user._id), q.eq(q.field("type"), args.type))).collect()
     
     const savedList = await Promise.all(saved.map( async (item)=> {
       const  product = await ctx.db.get(item.productId)

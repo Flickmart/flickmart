@@ -144,7 +144,7 @@ export default function Footer() {
         </article>
 
         <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center border-[#6C7275] border-t pt-9 mb-2 lg:mb-0">
-          <span>Copyright &copy; 202 FlickMart. All rights reserved</span>
+          <span>Copyright &copy; {new Date().getFullYear()} FlickMart. All rights reserved</span>
           <span className="hidden lg:block">|</span>
           <span className="flex items-center gap-3 ">
             <Link href="#" className="">

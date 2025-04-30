@@ -44,8 +44,8 @@ export default function ProductPage() {
   const bookmarkProduct = useMutation(api.product.addBookmark)
   const productData = productId? useQuery(api.product.getById, { productId }) : null;
   const like = useQuery(api.product.getLikeByProductId, { productId })
-  const wishlist = useQuery(api.product.getWishlistByProductId, { productId })
-  const saved = useQuery(api.product.getSavedByProductId, { productId })
+  const saved = useQuery(api.product.getSavedOrWishlistProduct, { productId, type: "saved" })
+  const wishlist = useQuery(api.product.getSavedOrWishlistProduct, { productId, type: "wishlist" })
   const exchangePossible= productData?.exchange=== true? "yes" : "no"
   const { setApi } = useSlider()
   const comments= useQuery(api.comments.getCommentsByProductId, { productId })
