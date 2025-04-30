@@ -31,7 +31,7 @@ export default function NewArrivalItem({
       </div>
       <div className=" flex flex-col lg:py-4 lg:space-y-3 space-y-1 pt-2 font-semibold">
         <span className="">{name}</span>
-        <span>${price.toLocaleString()}</span>
+        <span>&#8358;{price.toLocaleString()}</span>
       </div>
     </div>
   );
