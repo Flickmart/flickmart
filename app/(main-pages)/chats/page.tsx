@@ -16,6 +16,7 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import UserProfile from "@/components/chats/user-profile";
+import { uploadFiles, useUploadThing } from "@/utils/uploadthing";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -52,7 +53,8 @@ export default function ChatPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const { startUpload } = useUploadThing("imageUploader");
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -461,6 +463,7 @@ export default function ChatPage() {
         id: message._id,
         chatId: message.conversationId,
         content: message.content,
+        images: message.images || [],
         role,
         timestamp: new Date(message._creationTime),
         status: message.senderId === user?._id ? status : undefined,
@@ -510,7 +513,12 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!input.trim() || !user?._id || !activeChat) return;
+    if (
+      (!input.trim() && selectedImages.length === 0) ||
+      !user?._id ||
+      !activeChat
+    )
+      return;
 
     try {
       // Reset typing status
@@ -521,14 +529,28 @@ export default function ChatPage() {
         conversationId: undefined,
       });
 
-      // Send message
+      let imageUrls: string[] | undefined = [];
+      if (selectedImages.length > 0) {
+        try {
+          const res = await startUpload(selectedImages);
+          imageUrls = res?.map((file) => file.ufsUrl);
+        } catch (error) {
+          console.error("Failed to upload images:", error);
+          toast.error("Failed to upload images");
+          return;
+        }
+      }
+
+      // Send message with text and/or images
       await sendMessage({
         senderId: user._id,
         content: input,
         conversationId: activeChat,
+        images: imageUrls,
       });
 
       setInput("");
+      setSelectedImages([]);
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
@@ -613,6 +635,8 @@ export default function ChatPage() {
                 input={input}
                 setInput={handleInputWrapper}
                 handleSubmit={handleSubmit}
+                selectedImages={selectedImages}
+                setSelectedImages={setSelectedImages}
               />
             </div>
             <UserProfile

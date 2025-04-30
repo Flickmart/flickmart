@@ -34,7 +34,7 @@ yarn-error.log*
 .env
 
 #convex
-/.convex/auth.config.js
+/convex/auth.config.js
 
 # vercel
 .vercel
