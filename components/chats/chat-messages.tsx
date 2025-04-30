@@ -126,7 +126,7 @@ export default function ChatMessages({
       </div>
       {groupedMessages.map((group, index) => (
         <div key={index} className="space-y-2">
-          <div className="date-header text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit">
+          <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit ">
             {group.date}
           </div>
           {group.messages.map((message) => (
