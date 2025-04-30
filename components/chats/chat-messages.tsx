@@ -49,7 +49,13 @@ export default function ChatMessages({
     if (!message || message.role !== "user") return; // Only allow selection of user's messages
 
     if (selectedMessages.includes(messageId)) {
-      setSelectedMessages(selectedMessages.filter((id) => id !== messageId));
+      const newSelectedMessages = selectedMessages.filter((id) => id !== messageId);
+      setSelectedMessages(newSelectedMessages);
+      
+      // Turn off selection mode if no messages are selected
+      if (newSelectedMessages.length === 0) {
+        setSelectionMode(false);
+      }
     } else {
       setSelectedMessages([...selectedMessages, messageId]);
     }
