@@ -279,7 +279,6 @@ export const getLikeByProductId = query({
         q.and(
           q.eq(q.field("productId"), product?._id),
           q.eq(q.field("userId"), user?._id),
-          // q.eq(q.field("userId"), user?._id),
         )
       )
       .first();
@@ -325,7 +324,7 @@ export const dislikeProduct = mutation({
     if(existingDislike){
       await ctx.db.delete(existingDislike?._id)
       await ctx.db.patch(args.productId, {
-        dislikes: (product.likes || 0) - 1,
+        dislikes: (product.dislikes || 0) - 1,
       });
       return;
     }
