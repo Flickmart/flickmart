@@ -8,8 +8,8 @@ interface ChatInputProps {
   input: string;
   setInput: (input: string) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  selectedImages: File[];
-  setSelectedImages: React.Dispatch<React.SetStateAction<File[]>>;
+  selectedImages?: File[];
+  setSelectedImages?: React.Dispatch<React.SetStateAction<File[]>>;
 }
 
 export default function ChatInput({
@@ -21,21 +21,22 @@ export default function ChatInput({
 }: ChatInputProps) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    if (files) {
+    if (files && setSelectedImages) {
       const newImages = Array.from(files);
-      setSelectedImages(prev => [...prev, ...newImages]);
+      setSelectedImages((prev) => [...prev, ...newImages]);
     }
   };
 
   const removeImage = (index: number) => {
-    setSelectedImages(prev => prev.filter((_, i) => i !== index));
+    if (!setSelectedImages) return;
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
     <div className="fixed bottom-0 md:left-[320px] left-0 right-0 bg-background border-t z-10 md:mb-0">
-      {selectedImages.length > 0 && (
+      {selectedImages && selectedImages.length > 0 && (
         <div className="flex gap-2 p-2 overflow-x-auto">
-          {selectedImages.map((image, index) => (
+          {selectedImages?.map((image, index) => (
             <div key={index} className="relative">
               <div className="w-20 h-20 relative">
                 <Image
@@ -76,7 +77,7 @@ export default function ChatInput({
         <Button
           type="submit"
           size="icon"
-          disabled={!input.trim() && selectedImages.length === 0}
+          disabled={!input.trim() && selectedImages?.length === 0}
           className="bg-orange-500 hover:bg-orange-600"
         >
           <Send className="h-5 w-5" />
