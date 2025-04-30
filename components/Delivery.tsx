@@ -4,6 +4,7 @@ import Image from "next/image";
 import React from "react";
 import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
+import { toast } from "sonner";
 
 export default function Delivery() {
   const pathname = usePathname();
@@ -46,7 +47,7 @@ export default function Delivery() {
             bringing your orders right to your doorstep
           </p>
           <span>quick services - no delays</span>
-          <Button className="w-2/4 py-5 capitalize bg-black">apply now</Button>
+          <Button onClick={()=> toast.success("Coming Soon...")} className="w-2/4 py-5 capitalize bg-black">apply now</Button>
         </div>
       </div>
     </div>

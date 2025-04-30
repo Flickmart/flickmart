@@ -1,15 +1,5 @@
 import { Copy, MapPin, MessageCircle, Check, ExternalLink } from "lucide-react";
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
@@ -18,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { toast } from "sonner";
 import { api } from "@/convex/_generated/api";
+import { initialChat, shareProduct } from "@/utils/helpers";
 
 export default function ProductHeader({
   location,
@@ -47,16 +38,10 @@ export default function ProductHeader({
   const daysAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
   const weeksAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7));
 
-  const handleChat = async () => {
-    if (!user) {
-      toast.error("Please login to chat with vendor");
-      return;
-    }
-    console.log("chat vendor clicked")
-
-    // Navigate to chat page with vendor ID as query parameter
-    router.push(`/chats?vendorId=${userId}`);
-    toast.success("Starting chat with vendor");
+  const handleChat = () => {
+    initialChat({
+      user: user ?? null, userId, onNavigate: router.push
+    })
   };
 
   // State to track if copy was successful
@@ -78,21 +63,7 @@ export default function ProductHeader({
   // };
 
   async function handleShare(){
-    const shareData = {
-      title: title || 'Check out this product',
-      text: description?.substring(0, 100) + '...' || 'Check out this product on Flickmart',
-      url: `https://flickmart-demo.vercel.app/product/${productId}`,
-    };
-    try{
-      if(navigator.share){
-        await navigator.share(shareData)
-      }else{
-        navigator.clipboard
-      .writeText(shareData.url)
-      }
-    }catch(err){
-      console.log(err)
-    }
+    shareProduct({ title, description, productId })
   }
 
   return (

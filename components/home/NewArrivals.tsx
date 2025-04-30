@@ -9,7 +9,6 @@ import Link from "next/link";
 
 export default function NewArrivals() {
   const newProducts = useQuery(api.product.getNewProducts)
-  console.log(newProducts)
   const firstTenProducts = newProducts?.slice(0, 10)
   return (
     <Container className="!flex items-center flex-col justify-start py-5 capitalize text-gray-800 space-y-5 ">
@@ -25,7 +24,7 @@ export default function NewArrivals() {
       <div className=" flex justify-between   lg:w-5/6 gap-x-5 w-full overflow-x-auto ">
       {firstTenProducts?.map((item)=> 
       <Link key={item._id} href={`/product/${item._id}`}>
-        <NewArrivalItem image={item.images[0]} name={item.title} price={item.price} />
+        <NewArrivalItem productId={item._id} image={item.images[0]} name={item.title} price={item.price} />
       </Link>
       )}
       </div>

@@ -31,7 +31,7 @@ export default function ProductCard({
       <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">
         <span className="lg:text-base text-sm">{title}</span>
         <span className="text-flickmart lg:text-sm text-xs">
-          &#8358;{price?.toFixed(2)}
+          &#8358;{price?.toLocaleString()}
         </span>
       </div>
     </div>
