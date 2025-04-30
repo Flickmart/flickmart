@@ -6,6 +6,7 @@ interface Message {
   id: string;
   chatId: string;
   content: string;
+  images?: string[];
   role: "user" | "assistant";
   timestamp: Date;
 }
@@ -134,6 +135,7 @@ export default function ChatMessages({
               key={message.id}
               id={message.id}
               message={message.content}
+              images={message.images}
               isUser={message.role === "user"}
               timestamp={message.timestamp.toLocaleTimeString([], {
                 hour: "2-digit",
