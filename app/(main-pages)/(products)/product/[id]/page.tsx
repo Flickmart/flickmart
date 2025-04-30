@@ -53,7 +53,7 @@ export default function ProductPage() {
   const productIcons = [
     { label: "likes", icon: <ThumbsUp className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.liked? "fill-flickmart stroke-none" : "fill-none stroke-current"}`} /> },
     { label: "dislikes", icon: <ThumbsDown className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.disliked? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}/> },
-    { label: "wishlist", icon: <Heart className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.added? "fill-flickmart stroke-none" : "fill-none stroke-current"}`} /> },
+    { label: "wishlist", icon: <Heart className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.added? "fill-red-600 stroke-none" : "fill-none stroke-current"}`} /> },
   ];
 
   const handleGestures = async (label: string) => {

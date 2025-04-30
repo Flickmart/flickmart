@@ -217,36 +217,19 @@ export const likeProduct = mutation({
 
     // Check if user has already liked this product
     const existingLike = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("liked"), true)
-        )
+    .query("likes")
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("productId"), args.productId),
+        q.eq(q.field("userId"), user._id),
+        q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
       )
-      .first();
+    )
+    .first();
 
-    if (existingLike) {
-      await ctx.db.patch(existingLike._id, { liked: false });
-      await ctx.db.patch(args.productId, {
-        likes: (product.likes || 0) - 1,
-      });
-      return;
-    }
-    const existingDislike = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("disliked"), true)
-        )
-      )
-      .first();
-
-    if (existingDislike) {
-      await ctx.db.patch(existingDislike._id, { liked: true, disliked: false });
+    // If product is already disliked
+    if(existingLike?.disliked){
+      await ctx.db.patch(existingLike._id, {liked: true, disliked: false})
       await ctx.db.patch(args.productId, {
         likes: (product.likes || 0) + 1,
         dislikes: (product.dislikes || 0) - 1,
@@ -254,49 +237,28 @@ export const likeProduct = mutation({
       return;
     }
 
-    // Check if like record is already created
-    const exists = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id)
-        )
-      )
-      .first();
-
-    if (exists) {
-      await ctx.db.patch(exists._id, { liked: true, disliked: false });
+    // If product is already liked
+    if(existingLike){
+      await ctx.db.delete(existingLike._id)
       await ctx.db.patch(args.productId, {
-        likes: (product.likes || 0) + 1,
+        likes: (product.likes || 0) - 1,
       });
-    } else {
-      await ctx.db.insert("likes", {
-        timeStamp: new Date().toISOString(),
-        productId: args.productId,
-        userId: user._id,
-        liked: true,
-        disliked: false,
-      });
+      return;
     }
+
+    
+    // If product hasn't been liked before
+    await ctx.db.insert("likes", {
+      timeStamp: new Date().toISOString(),
+      productId: args.productId,
+      userId: user._id,
+      liked: true,
+      disliked: false,
+    });
 
     await ctx.db.patch(args.productId, {
       likes: (product.likes || 0) + 1,
     });
-
-    // Notify product owner
-
-    // await ctx.db.insert("notifications", {
-    //   userId: product.userId,
-    //   type: "new_like",
-    //   relatedId: args.productId,
-    //   title: `${user.name} liked your product`,
-    //   content: `${user.name} liked your product "${product.title}"`,
-    //   imageUrl: user.imageUrl,
-    //   isRead: false,
-    //   timestamp: Date.now(),
-    //   link: `/products/${args.productId}`,
-    // });
 
     return args.productId;
   },
@@ -305,16 +267,25 @@ export const likeProduct = mutation({
 export const getLikeByProductId = query({
   args: { productId: v.id("product") },
   handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      return;
+    }
     const product = await ctx.db.get(args.productId);
 
     const like = await ctx.db
       .query("likes")
-      .filter((q) => q.eq(q.field("productId"), product?._id))
+      .filter((q) => 
+        q.and(
+          q.eq(q.field("productId"), product?._id),
+          q.eq(q.field("userId"), user?._id),
+          // q.eq(q.field("userId"), user?._id),
+        )
+      )
       .first();
     if (!like) {
-      return;
+      return null;
     }
-
     return like;
   },
 });
@@ -330,20 +301,20 @@ export const dislikeProduct = mutation({
       throw new Error("Product not found");
     }
 
-    // Check if product is already liked
-    const existingLike = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("liked"), true)
-        )
-      )
-      .first();
 
-    if (existingLike) {
-      await ctx.db.patch(existingLike._id, { liked: false, disliked: true });
+    const existingDislike = await ctx.db
+    .query("likes")
+    .filter((q) =>
+      q.and(
+        q.eq(q.field("productId"), args.productId),
+        q.eq(q.field("userId"), user._id),
+        q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+      )
+    )
+    .first();
+
+    if(existingDislike?.liked){
+      await ctx.db.patch(existingDislike._id, {liked: false, disliked: true})
       await ctx.db.patch(args.productId, {
         likes: (product.likes || 0) - 1,
         dislikes: (product.dislikes || 0) + 1,
@@ -351,41 +322,10 @@ export const dislikeProduct = mutation({
       return;
     }
 
-    // Check if product is already disliked
-    const existingDislike = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("disliked"), true)
-        )
-      )
-      .first();
-
-    if (existingDislike) {
-      await ctx.db.patch(existingDislike._id, { disliked: false });
+    if(existingDislike){
+      await ctx.db.delete(existingDislike?._id)
       await ctx.db.patch(args.productId, {
-        dislikes: (product.dislikes || 0) - 1,
-      });
-      return;
-    }
-
-    // Check if record is already created but neither liked or disliked
-    const exists = await ctx.db
-      .query("likes")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id)
-        )
-      )
-      .first();
-
-    if (exists) {
-      await ctx.db.patch(exists._id, { disliked: true });
-      await ctx.db.patch(args.productId, {
-        dislikes: (product.dislikes || 0) + 1,
+        dislikes: (product.likes || 0) - 1,
       });
       return;
     }

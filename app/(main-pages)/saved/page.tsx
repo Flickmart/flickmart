@@ -49,9 +49,9 @@ export default function SavedPage() {
             ):(
                 <div className="w-[95%] mx-auto flex flex-col gap-3 mt-3">
                     {wishlist?.map(item=>{
-                        return <Link key={item?._id} href={`/product/${item?._id}`}>
-                            <BookedMarkedItem type="wishlist" product={item!}/>
-                        </Link>
+                        return <BookedMarkedItem type="wishlist" product={item!}/>
+                        // <Link key={item?._id} href={`/product/${item?._id}`}>
+                        // </Link>
                         }
                     )}
                 </div>

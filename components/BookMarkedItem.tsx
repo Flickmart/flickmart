@@ -25,14 +25,14 @@ export default function BookedMarkedItem({product, type}: {product: Doc<"product
     return (
         <div className="w-full p-3 relative bg-white flex flex-col gap-3 text-sm">
             <div onClick={(e)=>{
-                e.preventDefault()
-                e.stopPropagation()
+                //  e.preventDefault()
+                //  e.stopPropagation()
+                router.push(`/product/${product?._id}`)
             }} className="z-20 absolute top-1.5 right-1">
                 <button onClick={toggleDelete} className="text-flickmart hover:bg-orange-100 rounded-full p-1.5 relative" tabIndex={0} onBlur={() => setIsDelOpen(false)}><EllipsisVertical /></button>
                 {isDelOpen && (
                     <button onClick={async ()=> {
                         const deleted = await bookmarkProduct({productId: product._id, type})
-                        console.log(deleted)
                         typeof deleted === null && toast.success(`Item deleted from ${type}`)
                     } } 
                     className="z-30 absolute top-0 right-7 py-2 px-6 bg-white text-black border rounded-sm text-sm">Delete</button>
@@ -56,11 +56,11 @@ export default function BookedMarkedItem({product, type}: {product: Doc<"product
                             <MapPin className="h-4 w-4" />
                             <span>{product.location}</span>
                         </span>
-                        <div className="hidden lg:flex gap-3 items-center text-[8px] lg:text-sm">
-                            <button onClick={(e)=> {
-                                e.preventDefault()
-                                e.stopPropagation()
-
+                        <div onClick={(e)=>{
+                            e.preventDefault()
+                            e.stopPropagation()
+                        }} className="hidden lg:flex gap-3 items-center text-[8px] lg:text-sm">
+                            <button onClick={()=> {
                                 initialChat({user: user ?? null, userId: product.userId,onNavigate: router.push })}
                                 } 
                                 className="bg-flickmart text-white rounded-sm w-1/4 flex justify-center items-center gap-2 px-2 py-2"><MessageSquareText className="h-4 w-4" /><span>Chat vendor</span></button>
