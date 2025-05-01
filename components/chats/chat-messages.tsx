@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
 import MessageBubble from "./message-bubble";
 import { TriangleAlert } from "lucide-react";
+import { PhotoProvider } from "react-photo-view";
 
 interface Message {
   id: string;
@@ -50,7 +51,9 @@ export default function ChatMessages({
     if (!message || message.role !== "user") return;
 
     if (selectedMessages.includes(messageId)) {
-      const newSelectedMessages = selectedMessages.filter((id) => id !== messageId);
+      const newSelectedMessages = selectedMessages.filter(
+        (id) => id !== messageId
+      );
       setSelectedMessages(newSelectedMessages);
       if (newSelectedMessages.length === 0) {
         setSelectionMode(false);
@@ -125,32 +128,34 @@ export default function ChatMessages({
           outside the platform.
         </div>
       </div>
-      {groupedMessages.map((group, index) => (
-        <div key={index} className="space-y-2">
-          <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit ">
-            {group.date}
+      <PhotoProvider>
+        {groupedMessages.map((group, index) => (
+          <div key={index} className="space-y-2">
+            <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit ">
+              {group.date}
+            </div>
+            {group.messages.map((message) => (
+              <MessageBubble
+                key={message.id}
+                id={message.id}
+                message={message.content}
+                images={message.images}
+                isUser={message.role === "user"}
+                timestamp={message.timestamp.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+                status={message.role === "user" ? "sent" : undefined}
+                selectionMode={selectionMode}
+                toggleMessageSelection={toggleMessageSelection}
+                toggleSelectionMode={toggleSelectionMode}
+                handleLongPress={handleLongPress}
+                selectedMessages={selectedMessages}
+              />
+            ))}
           </div>
-          {group.messages.map((message) => (
-            <MessageBubble
-              key={message.id}
-              id={message.id}
-              message={message.content}
-              images={message.images}
-              isUser={message.role === "user"}
-              timestamp={message.timestamp.toLocaleTimeString([], {
-                hour: "2-digit",
-                minute: "2-digit",
-              })}
-              status={message.role === "user" ? "sent" : undefined}
-              selectionMode={selectionMode}
-              toggleMessageSelection={toggleMessageSelection}
-              toggleSelectionMode={toggleSelectionMode}
-              handleLongPress={handleLongPress}
-              selectedMessages={selectedMessages}
-            />
-          ))}
-        </div>
-      ))}
+        ))}
+      </PhotoProvider>
       <div ref={messagesEndRef} />
     </div>
   );

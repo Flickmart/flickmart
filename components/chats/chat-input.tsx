@@ -1,4 +1,5 @@
-import { Send, File, X } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { Send, Paperclip, Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -18,6 +19,12 @@ export default function ChatInput({
   selectedImages,
   setSelectedImages,
 }: ChatInputProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
+  }, []);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && setSelectedImages) {
@@ -56,6 +63,18 @@ export default function ChatInput({
         </div>
       )}
       <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-3">
+        <label htmlFor="open-camera" className="cursor-pointer">
+          <Camera className="h-6 w-6 text-flickmart" />
+        </label>
+
+        <input
+          type="file"
+          id="open-camera"
+          className="hidden"
+          accept="image/*"
+          capture={isMobile ? "environment" : undefined}
+          onChange={handleFileChange}
+        />
         <Input
           type="file"
           className="hidden"
@@ -65,7 +84,7 @@ export default function ChatInput({
           onChange={handleFileChange}
         />
         <label htmlFor="file-upload" className="cursor-pointer">
-          <File className="text-flickmart w-6 h-6" />
+          <Paperclip className="text-flickmart w-6 h-6" />
         </label>
         <Input
           value={input}
