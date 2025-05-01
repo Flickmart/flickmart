@@ -1,21 +1,21 @@
-import { Check, CheckCheck, ZoomOut, ZoomIn } from "lucide-react";
+import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { PhotoProvider, PhotoView } from "react-photo-view";
+import { Id } from "@/convex/_generated/dataModel";
+import { PhotoView } from "react-photo-view";
 
 interface MessageBubbleProps {
+  id: string;
   message: string;
   images?: string[];
-  isUser: boolean;
+  isUser: boolean;  
   timestamp: string;
   status?: "sent" | "delivered" | "read";
-  id: string;
   selectionMode: boolean;
   selectedMessages: string[];
+  handleLongPress: (messageId: string) => void;
   toggleMessageSelection: (messageId: string) => void;
   toggleSelectionMode: () => void;
-  handleLongPress: (messageId: string) => void;
 }
 
 export default function MessageBubble({
@@ -61,83 +61,104 @@ export default function MessageBubble({
   return (
     <div
       className={cn(
-        "group flex items-start gap-2 px-4",
-        isUser ? "flex-row-reverse" : "flex-row"
+        "flex",
+        isUser ? "justify-end" : "justify-start",
+        selectionMode && "cursor-pointer"
       )}
+      onClick={() => selectionMode && toggleMessageSelection(id)}
+      onContextMenu={(e) => {
+        e.preventDefault();
+        handleLongPress(id);
+      }}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
     >
       <div
         className={cn(
-          "relative max-w-[80%] space-y-2 rounded-lg p-3",
-          isUser ? "bg-orange-500 text-white" : "bg-gray-200 text-black",
-          selectionMode && selectedMessages.includes(id) && "bg-opacity-50"
+          "max-w-[75%] sm:max-w-[70%] md:max-w-[65%] rounded-lg py-1 px-2 md:p-3 shadow-sm",
+          isUser
+            ? "bg-flickmart text-white rounded-br-none"
+            : "bg-background text-foreground rounded-bl-none",
+          selectedMessages.includes(id) &&
+            "bg-orange-200 border-2 border-orange-400"
         )}
-        onClick={() => selectionMode && toggleMessageSelection(id)}
       >
-        {/* Image Messages */}
-        <PhotoProvider
-          toolbarRender={({ onScale, scale, rotate, onRotate }) => {
-            return (
-              <>
-                <ZoomIn
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onScale(scale - 1)}
-                  style={{
-                    width: "16px",
-                    height: "16px",
-                    color: "",
-                  }}
-                />
-                <ZoomOut
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onScale(scale + 1)}
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  className="PhotoView-Slider__toolbarIcon lucide lucide-rotate-cw-icon lucide-rotate-cw"
-                  onClick={() => onRotate(rotate + 90)}
-                >
-                  <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                  <path d="M21 3v5h-5" />
-                </svg>
-                <svg
-                  className="PhotoView-Slider__toolbarIcon"
-                  onClick={() => onRotate(rotate + 90)}
-                />
-              </>
-            );
-          }}
-        >
-          <div className="foo">
-            {images.map((item, index) => (
-              <PhotoView key={index} src={item}>
-                <img src={item} alt="" className="rounded-lg" />
-              </PhotoView>
-            ))}
-          </div>
-        </PhotoProvider>
-        {/* Text Message */}
-        {message && <p className="break-words">{message}</p>}
+        <p className="break-words text-sm md:text-base">{message}</p>
 
-        {/* Timestamp and Status */}
-        <div
-          className={cn(
-            "flex items-center gap-1",
-            isUser ? "justify-end" : "justify-start"
-          )}
-        >
+        {images && images.length > 0 && (
+          <div
+            className={`grid gap-1 mt-2 ${
+              images.length === 1
+                ? "grid-cols-1"
+                : images.length >= 2
+                  ? "grid-cols-2"
+                  : ""
+            }`}
+          >
+            {/* First image (always shown) */}
+            {images.length >= 1 && (
+              <div className={`${images.length > 1 ? "row-span-2" : ""}`}>
+                <PhotoView src={images[0]}>
+                  <img
+                    src={images[0] || "/placeholder.svg"}
+                    alt="Shared image 1"
+                    className="cursor-pointer rounded-md object-cover h-full w-full"
+                  />
+                </PhotoView>
+              </div>
+            )}
+
+            {/* Second image */}
+            {images.length >= 2 && (
+              <PhotoView src={images[1]}>
+                <img
+                  src={images[1] || "/placeholder.svg"}
+                  alt="Shared image 2"
+                  className="cursor-pointer rounded-md object-cover h-full w-full"
+                />
+              </PhotoView>
+            )}
+
+            {/* Third image or overlay for more images */}
+            {images.length >= 3 && (
+              <div className="relative">
+                <PhotoView src={images[2]}>
+                  <img
+                    src={images[2] || "/placeholder.svg"}
+                    alt="Shared image 3"
+                    className="cursor-pointer rounded-md object-cover h-full w-full"
+                  />
+                </PhotoView>
+
+                {/* Overlay with count if more than 3 images */}
+                {images.length > 3 && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-md">
+                    <span className="text-white font-bold text-xl">
+                      +{images.length - 3}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Hidden images (for PhotoView gallery) */}
+            <div className="hidden">
+              {images.slice(3).map((img, index) => (
+                <PhotoView key={`hidden-${index}`} src={img}>
+                  <img
+                    src={img || "/placeholder.svg"}
+                    alt={`Hidden image ${index + 4}`}
+                  />
+                </PhotoView>
+              ))}
+            </div>
+          </div>
+        )}
+        <div className="flex items-center justify-end mt-1 space-x-1">
           <span className="text-[10px] md:text-xs opacity-70">{timestamp}</span>
-          {isUser && (
-            <div className="flex">
+          {/* {isUser && (
+            <span className="text-[10px] md:text-xs">
               {status === "sent" && <Check className="h-4 w-4 inline" />}
               {status === "delivered" && (
                 <CheckCheck className="h-4 w-4 inline" />
@@ -145,8 +166,8 @@ export default function MessageBubble({
               {status === "read" && (
                 <CheckCheck className="h-4 w-4 inline text-blue-500" />
               )}
-            </div>
-          )}
+            </span>
+          )} */}
         </div>
       </div>
     </div>
