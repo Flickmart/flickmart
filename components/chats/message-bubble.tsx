@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Id } from "@/convex/_generated/dataModel";
 import { PhotoView } from "react-photo-view";
+
 interface MessageBubbleProps {
   id: string;
   message: string;
