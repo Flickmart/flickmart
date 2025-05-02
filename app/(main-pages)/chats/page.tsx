@@ -54,7 +54,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const { startUpload } = useUploadThing("imageUploader");
+  const { startUpload , isUploading} = useUploadThing("imageUploader");
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -636,6 +636,7 @@ export default function ChatPage() {
                 setInput={handleInputWrapper}
                 handleSubmit={handleSubmit}
                 selectedImages={selectedImages}
+                isUploading={isUploading}
                 setSelectedImages={setSelectedImages}
               />
             </div>

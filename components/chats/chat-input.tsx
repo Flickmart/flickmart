@@ -1,8 +1,10 @@
-import { useRef, useState, useEffect } from "react";
+import {  useState, useEffect } from "react";
 import { Send, Paperclip, Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { Spinner } from "@/components/Spinner";
+
 
 interface ChatInputProps {
   input: string;
@@ -10,6 +12,7 @@ interface ChatInputProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   selectedImages?: File[];
   setSelectedImages?: React.Dispatch<React.SetStateAction<File[]>>;
+  isUploading?: boolean;
 }
 
 export default function ChatInput({
@@ -18,6 +21,7 @@ export default function ChatInput({
   handleSubmit,
   selectedImages,
   setSelectedImages,
+  isUploading,
 }: ChatInputProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -40,6 +44,12 @@ export default function ChatInput({
 
   return (
     <div className="fixed bottom-0 md:left-[320px] left-0 right-0 bg-background border-t z-10 md:mb-0">
+      {isUploading && (
+        <div className="flex justify-center items-center p-2 bg-orange-50">
+          <Spinner size="sm" className="mr-2" />
+          <span className="text-sm text-orange-500">Uploading images...</span>
+        </div>
+      )}
       {selectedImages && selectedImages.length > 0 && (
         <div className="flex gap-2 p-2 overflow-x-auto">
           {selectedImages?.map((image, index) => (
@@ -91,11 +101,12 @@ export default function ChatInput({
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message"
           className="flex-1"
+          disabled={isUploading}
         />
         <Button
           type="submit"
           size="icon"
-          disabled={!input.trim() && selectedImages?.length === 0}
+          disabled={(!input.trim() && selectedImages?.length === 0) || isUploading}
           className="bg-orange-500 hover:bg-orange-600"
         >
           <Send className="h-5 w-5" />
