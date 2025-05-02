@@ -12,7 +12,7 @@ interface ChatInputProps {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   selectedImages?: File[];
   setSelectedImages?: React.Dispatch<React.SetStateAction<File[]>>;
-  isUploading: boolean;
+  isUploading?: boolean;
 }
 
 export default function ChatInput({

@@ -2,7 +2,6 @@
 
 import {Error500Illustration} from "@/components/error-illustration";
 import ErrorMessage from "@/components/error-message";
-import { Button } from "@/components/ui/button"
 
 export default function GlobalError({
   error,
