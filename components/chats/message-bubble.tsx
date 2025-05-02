@@ -8,7 +8,7 @@ interface MessageBubbleProps {
   id: string;
   message: string;
   images?: string[];
-  isUser: boolean;  
+  isUser: boolean;
   timestamp: string;
   status?: "sent" | "delivered" | "read";
   selectionMode: boolean;
@@ -81,11 +81,10 @@ export default function MessageBubble({
             ? "bg-flickmart text-white rounded-br-none"
             : "bg-background text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
-            "bg-orange-200 border-2 border-orange-400"
+            "bg-orange-200 border-2 border-orange-400 min-w-full ",
+          images.length > 0 && "rounded-br-lg rounded-bl-lg py-0"
         )}
       >
-        <p className="break-words text-sm md:text-base">{message}</p>
-
         {images && images.length > 0 && (
           <div
             className={`grid gap-1 mt-2 ${
@@ -155,8 +154,10 @@ export default function MessageBubble({
             </div>
           </div>
         )}
+        <p className={cn("break-words text-sm md:text-base",  selectedMessages.includes(id) && " text-right ")}>{message}</p>
+
         <div className="flex items-center justify-end mt-1 space-x-1">
-          <span className="text-[10px] md:text-xs opacity-70">{timestamp}</span>
+          <span className="text-[10px] md:text-[10px] opacity-70">{timestamp}</span>
           {/* {isUser && (
             <span className="text-[10px] md:text-xs">
               {status === "sent" && <Check className="h-4 w-4 inline" />}
