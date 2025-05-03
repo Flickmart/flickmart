@@ -54,7 +54,7 @@ export default function ChatPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const { startUpload , isUploading} = useUploadThing("imageUploader");
+  const { startUpload, isUploading } = useUploadThing("imageUploader");
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -394,6 +394,12 @@ export default function ChatPage() {
       const lastMessage =
         conversationMessages.length > 0 ? conversationMessages[0] : null;
 
+      const containsImage: boolean =
+        conversationMessages[0].images?.length &&
+        conversationMessages[0].images?.length > 0
+          ? true
+          : false;
+
       // Format timestamp from the last message
       const lastMessageTime = lastMessage
         ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
@@ -412,11 +418,17 @@ export default function ChatPage() {
           ? conversation.unreadCount[user._id as string]
           : 0;
 
+      const name =
+        otherUser?._id === user?._id
+          ? "Me"
+          : otherUser?.name || "Unknown user";
+
       return {
         id: conversation._id,
-        name: otherUser?.name || "Unknown User",
+        name: name,
         imageUrl: otherUser?.imageUrl || "",
         lastMessage: lastMessage ? lastMessage.content : "No messages yet",
+        containsImage: containsImage,
         time: lastMessageTime,
         unread: userUnreadCount,
         archived: isArchived,
