@@ -395,7 +395,7 @@ export default function ChatPage() {
         conversationMessages.length > 0 ? conversationMessages[0] : null;
 
       const containsImage: boolean =
-        conversationMessages[0].images?.length &&
+        conversationMessages[0]?.images?.length &&
         conversationMessages[0].images?.length > 0
           ? true
           : false;
