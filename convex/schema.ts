@@ -78,7 +78,7 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     readByUsers: v.optional(v.array(v.id("users"))),
     file: v.optional(v.array(v.string())),
-    images: v.optional(v.array(v.string()))
+    images: v.optional(v.array(v.string())),
   }),
   notifications: defineTable({
     title: v.string(),
