@@ -425,8 +425,9 @@ export const getAllSavedOrWishlist= query({
 // Search products with advanced filtering and sorting
 export const search = query({
   args: {
+    type: v.union(v.literal("suggestions"), v.literal("search")),
     query: v.string(),
-    location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
+    location: v.optional(v.string()),
     category: v.optional(v.string()),
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
@@ -527,7 +528,12 @@ export const search = query({
       return 0;
     });
 
-    return products;
+    if(args.type === "suggestions"){
+      return products.map(item => item.title)
+    }
+    if(args.type === "search"){
+      return products
+    }    
   },
 });
 

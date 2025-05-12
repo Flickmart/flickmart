@@ -24,7 +24,7 @@ import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export default function Navbar() {
+export default function Navbar({children}: {children?: React.ReactNode}) {
   const { isSignedIn, isLoaded } = useUser();
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
@@ -58,7 +58,7 @@ export default function Navbar() {
               Flick<span className="text-flickmart">Mart</span>
             </h1>
           </Link>
-
+          {children}
           <div className="hidden lg:flex items-center gap-8">
             <div
               className="relative flex items-center gap-3"

@@ -1,6 +1,5 @@
 "use client";
 import PostAdForm from "@/components/post-ad/PostAdForm";
-import { Id } from "@/convex/_generated/dataModel";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useState } from "react";
 

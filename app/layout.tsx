@@ -34,13 +34,8 @@ export default function RootLayout({
       <body className="bg-background text relative">
         <Providers>
           <MobileHeader/>
-          {/* <Navbar />
-          <MobileNav />
-          <SearchBox /> */}
           {children}
           <Toaster richColors position="top-right" />
-          {/* <Delivery />
-          <Footer /> */}
         </Providers>
       </body>
     </html>
