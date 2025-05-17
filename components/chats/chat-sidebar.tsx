@@ -2,19 +2,19 @@ import {
   Menu,
   Search,
   Archive,
-  PanelLeftOpen,
-  ChevronLeft,
+  Image,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Id } from "@/convex/_generated/dataModel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { useRef, useEffect } from "react";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
   searchQuery: string;
-  setSearchQuery: (query: string) => void;
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>
   activeFilter: "all" | "unread" | "archived";
   setActiveFilter: (filter: "all" | "unread" | "archived") => void;
   activeChat: Id<"conversations"> | null;
@@ -25,6 +25,7 @@ interface ChatSidebarProps {
     name: string;
     imageUrl: string;
     lastMessage: string;
+    containsImage: boolean;
     time: string;
     unread: number;
     archived: boolean;
@@ -48,13 +49,24 @@ export default function ChatSidebar({
   // Count archived conversations
   const archivedCount = conversations.filter((chat) => chat.archived).length;
 
+  // Create a ref for the search input
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Effect to maintain focus on the search input after re-renders
+  useEffect(() => {
+    // Only focus if there's a search query and the input exists
+    if (searchQuery && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchQuery]);
+
   // Content of the sidebar
   const SidebarContent = () => (
     <>
       {/* Sidebar Header */}
       <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1  ">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-3xl">Chats</h2>
+          <h2 className="text-flickmart font-bold text-3xl md:text-xl">Chats</h2>
         </div>
         <Menu className="md:block hidden" />
       </div>
@@ -68,6 +80,7 @@ export default function ChatSidebar({
             className="pl-9 py-2 bg-flickmart-chat-gray rounded-lg"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
+            ref={searchInputRef}
           />
         </div>
       </div>
@@ -165,13 +178,14 @@ export default function ChatSidebar({
                   <div className="flex justify-between items-center">
                     <p
                       className={cn(
-                        "text-sm truncate",
+                        "text-sm truncate flex items-center gap-x-1",
                         chat.unread > 0
                           ? "text-gray-800 font-medium"
                           : "text-gray-600"
                       )}
                     >
-                      {chat.lastMessage}
+                      {chat.containsImage && <Image className="h-4 w-4" />}
+                      {chat.lastMessage} 
                     </p>
                     {chat.unread > 0 && (
                       <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">

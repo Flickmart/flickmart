@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
-
+import 'react-photo-view/dist/react-photo-view.css';
 import { Providers } from "@/providers/providers";
 import MobileHeader from "@/components/MobileHeader";
 

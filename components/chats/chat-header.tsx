@@ -59,7 +59,7 @@ export default function ChatHeader({
   };
   if (selectionMode) {
     return (
-      <div className="bg-flickmart/70 z-50 text-white p-2 flex items-center justify-between">
+      <div className="bg-flickmart/70 z-50 text-white p-3 flex items-center justify-between">
         <>
           <Button
             variant="ghost"

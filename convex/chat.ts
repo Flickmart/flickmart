@@ -64,6 +64,7 @@ export const sendMessage = mutation({
     senderId: v.id("users"),
     content: v.string(),
     conversationId: v.id("conversations"),
+    images: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -84,6 +85,7 @@ export const sendMessage = mutation({
     const messageId = await ctx.db.insert("message", {
       senderId: args.senderId,
       content: args.content,
+      images: args.images || [],
       conversationId: args.conversationId,
       readByUsers: [args.senderId], // The sender has read their own message
     });
