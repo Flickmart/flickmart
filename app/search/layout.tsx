@@ -1,7 +1,7 @@
-import MobileNav from "@/components/MobileNav";
 import Navbar from "@/components/Navbar";
 import SearchInput from "@/components/SearchInput";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { Suspense } from "react";
 
 export default async function Layout({
   children,
@@ -16,7 +16,9 @@ export default async function Layout({
         </div>
       </Navbar>
       <SidebarProvider>
-        {children}
+        <Suspense fallback={<div>Loading...</div>}>
+          {children}
+        </Suspense>
       </SidebarProvider>
     </>
   );

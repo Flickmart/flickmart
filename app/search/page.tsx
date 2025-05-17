@@ -11,7 +11,7 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
-import { Suspense, useReducer } from "react";
+import { useReducer } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SyncLoader } from "react-spinners";
 import SearchInput from "@/components/SearchInput";
@@ -147,7 +147,6 @@ export default function DetailedCategoryPage () {
         // : products;
 
     return (
-        <Suspense fallback={<div>Loading...</div>}>
             <main className=" min-h-screen flex-col flex w-screen ">
                    {isMobile && 
                     <div className=" m-7 mb-3 bg-gray-100 rounded-lg">
@@ -321,6 +320,5 @@ export default function DetailedCategoryPage () {
                     </div>
                 </section>
             </main>
-        </Suspense>
     );
 };
