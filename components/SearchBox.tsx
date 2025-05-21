@@ -1,13 +1,12 @@
 "use client";
 import { MapPin } from "lucide-react";
 import { usePathname } from "next/navigation";
-import { Popover } from "./ui/popover";
 import { useState } from "react";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectValue } from "./ui/select";
 import { SelectTrigger } from "@radix-ui/react-select";
 import SearchInput from "./SearchInput";
 
-export default function SearchBox({openSearch}: {openSearch: (val: boolean)=> void}) {
+export default function SearchBox({openSearch, open}: {openSearch: (val: boolean)=> void; open: boolean}) {
   const pathname = usePathname();
   const [location, setLocation]= useState<string>("")
 
@@ -30,7 +29,6 @@ export default function SearchBox({openSearch}: {openSearch: (val: boolean)=> vo
   }
 
   return (
-    <Popover>
       <div className="w-full bg-flickmartLight pt-36 pb-24 flex justify-center text-base">
         <div className="w-11/12 lg:w-6/12 flex flex-col justify-center items-center gap-5">
           <div className="w-full flex items-center justify-center gap-2">
@@ -51,11 +49,10 @@ export default function SearchBox({openSearch}: {openSearch: (val: boolean)=> vo
               </Select>
             </div>
           </div>
-          <div className="bg-white w-full">
-            <SearchInput openSearch={openSearch}/>
+          <div className="bg-gray-100 w-full rounded-lg">
+            <SearchInput location={location} isOverlayOpen={open} openSearch={openSearch}/>
           </div>
         </div>
       </div>
-    </Popover>
   );
 }

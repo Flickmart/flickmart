@@ -237,7 +237,7 @@ export default function DetailedCategoryPage () {
                                     >
                                         <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">Hot</span>
                                         <button className="bg-white rounded-full flex justify-center items-center p-1.5">
-                                            <Bookmark className="h-4 w-4" />
+                                            <Bookmark className="h-4 w-4"/>
                                         </button>
                                     </div>
                                 </div>

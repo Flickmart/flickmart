@@ -11,10 +11,13 @@ import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { DropdownMenu, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem } from "@/components/ui/dropdown-menu";
-import { useReducer } from "react";
+import { useReducer, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { SyncLoader } from "react-spinners";
 import SearchInput from "@/components/SearchInput";
+import { Doc } from "@/convex/_generated/dataModel";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import SearchOverlay from "@/components/SearchOverlay";
 
 
 interface FilterObjectType{
@@ -60,8 +63,7 @@ const brandsOrSubCat= {
     ],
     beauty: [
         {
-            label: "make up"
-        },
+            label: "make up"        },
         {
             label: "skin care"
         },
@@ -113,6 +115,21 @@ function reducer (state: FilterObjectType, action: {type: string; payload: strin
         default: return state;
     }
 }
+
+const filterObject = [
+    {
+        label: "category",
+        options: ['vehicles', 'homes', 'food', 'mobiles', 'appliances', 'fashion', 'electronics', 'pets', 'beauty', 'services']
+    },
+    {
+        label: "location",
+        options: ['nsukka', "enugu"]
+    },
+    {
+        label: "price",
+        options: ['below 100k', '100k - 500k', '500k - 1.5m', '1.5m - 3.5m']
+    },
+]
   
 export default function DetailedCategoryPage () {
     const params = useParams();
@@ -121,16 +138,19 @@ export default function DetailedCategoryPage () {
     const saveProduct = useMutation(api.product.addBookmark)
     const [state, dispatch] = useReducer(reducer, initialState)
     const {min, max, location, priceRange} = state
+    const [searchOpen, setSearchOpen] = useState(false)
+    const [filterState, setFilterState] = useState({
+        category: "",
+        location: "",
+        // minPrice: 0,
+        // maxPrice: 0
+    })
 
     // Get the search parameter
     const searchParams= useSearchParams()
     const query = searchParams.get("query")
-    const search = useQuery(api.product.search, {query: query || ""})
-    console.log(search)
+    const search = useQuery(api.product.search, {...filterState, query: query || "", type: "search"}) as Array<Doc<"product">>
 
-
-
-    // const filteredProds = useQuery(api.product.getProductsByFilters, {...state, category: slug})
     const {
         // state,
         open,
@@ -141,17 +161,31 @@ export default function DetailedCategoryPage () {
         toggleSidebar,
       } = useSidebar()
 
-        // Get the products to display based on filter state
-        // const displayProducts = Object.values(state).some(value => value !== 0 && value !== "") 
-        // ? filteredProds 
-        // : products;
-
+      function handleFilterState(val: string, label: string){
+        switch(label){
+            case "category":
+                return setFilterState({...filterState, category: val})
+            case "location":
+                return setFilterState({...filterState, location: val})
+            default:
+                const price = val
+                // return setFilterState({...filterState, price: val})
+                return console.log("hello")
+        }
+      }
+      function openSearch(val: boolean){
+        setSearchOpen(val)
+      }
     return (
-            <main className=" min-h-screen flex-col flex w-screen ">
+            <main className=" min-h-screen flex-col lg:flex-row flex w-screen ">
                    {isMobile && 
-                    <div className=" m-7 mb-3 bg-gray-100 rounded-lg">
-                        <SearchInput/>
-                    </div>}
+                   <div className="fixed left-0 right-0 z-30 bg-white w-screen shadow-sm pb-2">
+                        <div className=" m-7 mb-3 bg-gray-100 rounded-lg">
+                            <SearchOverlay openSearch={openSearch} open={searchOpen} query={query ?? ""}/>
+                            <SearchInput openSearch={openSearch} isOverlayOpen={searchOpen} query={query ?? ""}/>
+                        </div>
+                   </div>
+                    }
                     <Sidebar className={` min-w-1/5 relative h-[calc(100vh-5rem)]  overflow-y-auto`}>
                         <SidebarHeader>
                             <div className="flex items-center pt-5 px-2 justify-between">
@@ -245,28 +279,30 @@ export default function DetailedCategoryPage () {
                                             </div>
                                         </RadioGroup>
                                     </div>  
-                                    {/* <div className="flex justify-end pt-5">
-                                        <Button>Apply Filters</Button>
-                                    </div> */}
                                 </div>                     
                             </SidebarGroup>
                         </SidebarContent>
                     </Sidebar>
-                <section className="lg:block w-[95%] mx-auto lg:w-4/6 text-sm pt-3">
-                    <div className="lg:hidden flex flex-wrap text-[12px] gap-2 items-center mb-2">
+                <section className="lg:block w-[95%] mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
+                    <div className="lg:hidden flex text-[12px] gap-2 items-center mb-2">
                         <div className="flex items-center gap-2 lg:pt-2">
                             {isMobile && <SidebarTrigger/>}
                             <h1 className="hidden lg:block font-semibold text-lg capitalize">{query} in Nigeria</h1>
                         </div>
-                        <button className="border rounded-md p-2 text-gray-500 flex items-center justify-between gap-2">
-                            <span>Category</span> <ChevronDown className="h-3 w-3" />
-                        </button>
-                        <button className="border rounded-md p-2 text-gray-500 flex items-center justify-between gap-2">
-                            <span>Location</span> <ChevronDown className="h-3 w-3" />
-                        </button>
-                        <button className="border rounded-md p-2 text-gray-500 flex items-center justify-between gap-2">
-                            <span>Price</span> <ChevronDown className="h-3 w-3" />
-                        </button>
+                        {filterObject.map(item=>{
+                            return (
+                            <Select key={item.label} onValueChange={(value)=> handleFilterState(value, item.label)}>
+                                <SelectTrigger className="min-w-20 capitalize">
+                                    <SelectValue placeholder={item.label} />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup className="capitalize">
+                                        <SelectLabel>{item.label}</SelectLabel>
+                                        {item.options.map(option=> <SelectItem key={option} value={option}>{option}</SelectItem> )}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                        )})}
                     </div>
                     <div className="mt-3 flex flex-col h-[90vh]">
                         <div className="flex px-3 lg:px-0 justify-between items-center">
@@ -281,9 +317,9 @@ export default function DetailedCategoryPage () {
                             </div>
                         </div>
                         <div className={`mt-2 ${search?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}>
-                            {search === undefined || search.length === 0 ?
+                            {search === undefined || search?.length === 0 ?
                             <div className="flex justify-center">
-                                 <SyncLoader loading={true} color="#f97316" />
+                                 <SyncLoader  loading={true} color= "#FF8100" />
                             </div>
                             : search?.map((product) => {
                                 return (  

@@ -20,7 +20,7 @@ export default function Home() {
     <>
       <MobileNav />
       <SearchOverlay openSearch={openSearch} open={searchOpen}/>
-      <SearchBox openSearch={openSearch} />
+      <SearchBox openSearch={openSearch} open={searchOpen} />
       <Slider />
       <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">
         <Categories />
