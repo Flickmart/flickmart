@@ -5,8 +5,10 @@ export default defineSchema({
   users: defineTable({
     externalId: v.string(),
     name: v.string(),
+    walletId: v.optional(v.id("wallets")),
     imageUrl: v.optional(v.string()),
     email: v.optional(v.string()),
+    paystackCustomerId: v.optional(v.string()), // Store Paystack Customer ID
   }).index("byExternalId", ["externalId"]),
   store: defineTable({
     name: v.optional(v.string()),
@@ -120,4 +122,118 @@ export default defineSchema({
   })
     .index("byUserId", ["userId"])
     .index("byTypingInConversation", ["typingInConversation"]),
+
+  wallets: defineTable({
+    userId: v.id("users"),
+    balance: v.number(), // Available balance
+    currency: v.string(),
+    status: v.union(
+      v.literal("active"),
+      v.literal("inactive"),
+      v.literal("blocked")
+    ),
+  }).index("by_user", ["userId"]),
+
+  // All transactions for audit trail
+  transactions: defineTable({
+    userId: v.id("users"),
+    walletId: v.id("wallets"),
+    type: v.union(
+      v.literal("funding"), // Money in from Paystack
+      v.literal("withdrawal"), // Money out to bank
+      v.literal("transfer_in"), // P2P received
+      v.literal("transfer_out"), // P2P sent
+      v.literal("escrow_freeze"), // Funds frozen for order
+      v.literal("escrow_release"), // Funds released to seller
+      v.literal("escrow_refund") // Funds refunded to buyer
+    ),
+    amount: v.number(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("success"),
+      v.literal("failed"),
+      v.literal("cancelled")
+    ),
+    reference: v.string(),
+    paystackReference: v.optional(v.string()),
+    description: v.string(),
+    metadata: v.optional(
+      v.object({
+        orderId: v.optional(v.id("orders")),
+        recipientUserId: v.optional(v.id("users")),
+        transferId: v.optional(v.id("transfers")),
+        escrowId: v.optional(v.id("escrows")),
+      })
+    ),
+  })
+    .index("by_user", ["userId"])
+    .index("by_wallet", ["walletId"])
+    .index("by_reference", ["reference"]),
+
+  transfers: defineTable({
+    fromUserId: v.id("users"),
+    toUserId: v.id("users"),
+    amount: v.number(),
+    currency: v.string(),
+    description: v.optional(v.string()),
+    status: v.literal("completed"), // Always completed instantly
+    reference: v.string(),
+    createdAt: v.number(),
+  })
+    .index("by_sender", ["fromUserId"])
+    .index("by_recipient", ["toUserId"]),
+
+  // Escrow - just balance freezing
+  escrows: defineTable({
+    orderId: v.id("orders"),
+    buyerId: v.id("users"),
+    sellerId: v.id("users"),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.union(
+      v.literal("frozen"), // Balance frozen
+      v.literal("released"), // Released to seller
+      v.literal("refunded") // Refunded to buyer
+    ),
+    reference: v.string(),
+    autoReleaseAt: v.optional(v.number()),
+    createdAt: v.number(),
+    releasedAt: v.optional(v.number()),
+  })
+    .index("by_order", ["orderId"])
+    .index("by_buyer", ["buyerId"])
+    .index("by_seller", ["sellerId"]),
+
+  // Bank accounts for withdrawals
+  bankAccounts: defineTable({
+    userId: v.id("users"),
+    accountNumber: v.string(),
+    accountName: v.string(),
+    bankCode: v.string(),
+    bankName: v.string(),
+    recipientCode: v.optional(v.string()),
+    isVerified: v.boolean(),
+    isDefault: v.boolean(),
+    createdAt: v.number(),
+  }).index("by_user", ["userId"]),
+
+  // Withdrawal requests
+  withdrawals: defineTable({
+    userId: v.id("users"),
+    walletId: v.id("wallets"),
+    bankAccountId: v.id("bankAccounts"),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("processing"),
+      v.literal("completed"),
+      v.literal("failed")
+    ),
+    paystackTransferCode: v.optional(v.string()),
+    reference: v.string(),
+    failureReason: v.optional(v.string()),
+    createdAt: v.number(),
+    processedAt: v.optional(v.number()),
+  }).index("by_user", ["userId"]),
 });
