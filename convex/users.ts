@@ -1,6 +1,12 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 export const current = query({
   args: {},
@@ -22,18 +28,18 @@ export const getMultipleUsers = query({
     if (args.userIds.length === 0) {
       return [];
     }
-    
+
     const users = await Promise.all(
-      args.userIds.map(userId => ctx.db.get(userId))
+      args.userIds.map((userId) => ctx.db.get(userId))
     );
-    
+
     // Filter out any nulls (in case a user id doesn't exist)
-    return users.filter(user => user !== null);
+    return users.filter((user) => user !== null);
   },
 });
 
 export const upsertFromClerk = internalMutation({
-  args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
+  args: { data: v.any() as Validator<UserJSON> },
   async handler(ctx, { data }) {
     const userAttributes = {
       name: `${data.first_name} ${data.last_name}`,
@@ -41,10 +47,11 @@ export const upsertFromClerk = internalMutation({
       email: data.email_addresses?.[0]?.email_address,
       externalId: data.id,
     };
-
     const user = await userByExternalId(ctx, data.id);
+
     if (user === null) {
-      await ctx.db.insert("users", userAttributes);
+      // First create the user
+      const userId = await ctx.db.insert("users", userAttributes);
     } else {
       await ctx.db.patch(user._id, userAttributes);
     }
@@ -60,7 +67,7 @@ export const deleteFromClerk = internalMutation({
       await ctx.db.delete(user._id);
     } else {
       console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
+        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
       );
     }
   },
@@ -74,7 +81,7 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
-  
+
   if (identity === null) {
     return null;
   }
@@ -87,3 +94,12 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
     .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
     .unique();
 }
+
+export const storePaystackCustomerId = mutation({
+  args: { userId: v.id("users"), paystackCustomerId: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      paystackCustomerId: args.paystackCustomerId,
+    });
+  },
+});
