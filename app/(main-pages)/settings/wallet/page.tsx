@@ -17,6 +17,17 @@ import {
   TransactionHistorySkeleton,
   WalletPageSkeleton,
 } from "@/components/wallet/skeleton";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { PaystackButton } from "react-paystack";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface Transaction {
   id: string;
@@ -85,15 +96,12 @@ export default function WalletPage() {
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
 
+  const user = useQuery(api.users.current)
+
   const balance = 50000.0;
 
   useEffect(() => {
-    // Simulate initial loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    setIsLoading(false);
   }, []);
 
   const handleRefreshBalance = async () => {
