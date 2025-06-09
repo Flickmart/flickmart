@@ -22,13 +22,13 @@ export const getMultipleUsers = query({
     if (args.userIds.length === 0) {
       return [];
     }
-    
+
     const users = await Promise.all(
-      args.userIds.map(userId => ctx.db.get(userId))
+      args.userIds.map((userId) => ctx.db.get(userId))
     );
-    
+
     // Filter out any nulls (in case a user id doesn't exist)
-    return users.filter(user => user !== null);
+    return users.filter((user) => user !== null);
   },
 });
 
@@ -60,7 +60,7 @@ export const deleteFromClerk = internalMutation({
       await ctx.db.delete(user._id);
     } else {
       console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`,
+        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
       );
     }
   },
@@ -74,7 +74,7 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
-  
+
   if (identity === null) {
     return null;
   }

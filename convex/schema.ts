@@ -37,6 +37,11 @@ export default defineSchema({
     phone: v.string(),
     store: v.string(),
   }),
+  history: defineTable({
+    userId: v.id("users"),
+    timeStamp: v.string(),
+    search: v.string(),
+  }),
   comments: defineTable({
     productId: v.id("product"),
     userId: v.id("users"),
@@ -78,7 +83,7 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     readByUsers: v.optional(v.array(v.id("users"))),
     file: v.optional(v.array(v.string())),
-    images: v.optional(v.array(v.string()))
+    images: v.optional(v.array(v.string())),
   }),
   notifications: defineTable({
     title: v.string(),

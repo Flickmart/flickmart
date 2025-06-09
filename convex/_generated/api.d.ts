@@ -19,6 +19,7 @@ import type * as http from "../http.js";
 import type * as notifications from "../notifications.js";
 import type * as presence from "../presence.js";
 import type * as product from "../product.js";
+import type * as search from "../search.js";
 import type * as store from "../store.js";
 import type * as users from "../users.js";
 
@@ -37,6 +38,7 @@ declare const fullApi: ApiFromModules<{
   notifications: typeof notifications;
   presence: typeof presence;
   product: typeof product;
+  search: typeof search;
   store: typeof store;
   users: typeof users;
 }>;

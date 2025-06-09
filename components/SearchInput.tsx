@@ -1,90 +1,164 @@
-"use client"
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useRouter } from 'next/navigation';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from './ui/command';
-import Link from 'next/link';
+"use client";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useRouter } from "next/navigation";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "./ui/command";
+import Link from "next/link";
+import { X } from "lucide-react";
 
-export default function SearchInput({query, openSearch, updateAutoSuggest, location, isOverlayOpen}: 
-  {
-    query?: string;
-    openSearch?: (val: boolean)=> void; 
-    updateAutoSuggest?: (values: Array<string>)=> void; 
-    location?: string; 
-    isOverlayOpen?: boolean
-  }) {
-    const isMobile = useIsMobile()
-    const [searchInput, setSearchInput]= useState("")
-    const [isTyping, setIsTyping]= useState<boolean>(false)
-    const autoSuggest = useQuery(api.product.search, {query: searchInput || "", type: "suggestions"})
-    const router = useRouter()
-    const searchRef = useRef< HTMLInputElement | null>(null)
-    function handleKeyPress<T extends HTMLElement>(event: React.KeyboardEvent<T>) {
-        if (event.key === "Enter") {
-          // Perform search action
-          !isMobile && isOverlayOpen && setSearchInput("")
-          setIsTyping(false)
-          const locationQuery= location? `?location=${location}` : ""
-          router.push(`/search?query=${searchInput}${locationQuery}`)
-        }
+export default function SearchInput({
+  query,
+  openSearch,
+  updateAutoSuggest,
+  location,
+  isOverlayOpen,
+}: {
+  query?: string;
+  openSearch?: (val: boolean) => void;
+  updateAutoSuggest?: (values: Array<string>) => void;
+  location?: string;
+  isOverlayOpen?: boolean;
+}) {
+  const isMobile = useIsMobile();
+  const [searchInput, setSearchInput] = useState("");
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [focus, setFocus] = useState<boolean>(false);
+  const saveSearchInput = useMutation(api.search.insertSearchHistory);
+  const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
+  const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
+  const autoSuggest = useQuery(api.product.search, {
+    query: searchInput || "",
+    type: "suggestions",
+  });
+  const router = useRouter();
+  const searchRef = useRef<HTMLInputElement | null>(null);
+  function handleKeyPress<T extends HTMLElement>(
+    event: React.KeyboardEvent<T>
+  ) {
+    if (event.key === "Enter") {
+      saveSearchInput({
+        search: searchInput,
+      });
+      // Perform search action
+      !isMobile && isOverlayOpen && setSearchInput("");
+      setIsTyping(false);
+      const locationQuery =
+        !location || location === "all" ? "" : `?location=${location}`;
+      router.push(`/search?query=${searchInput}${locationQuery}`);
+    }
+  }
+  function handlePrefetch() {
+    setFocus(true);
+    router.prefetch("/search");
+  }
+  useEffect(
+    function () {
+      if (autoSuggest) {
+        updateAutoSuggest && updateAutoSuggest(autoSuggest as Array<string>);
       }
-      function handlePrefetch(){
-        router.prefetch("/search")
+      if (isMobile && isOverlayOpen) {
+        searchRef.current?.focus();
       }
-      useEffect(function (){
-        if(autoSuggest){
-            updateAutoSuggest && updateAutoSuggest(autoSuggest as Array<string>)
-        }
-        if (isMobile && isOverlayOpen) {
-          searchRef.current?.focus();
-        }
-      }, [autoSuggest, isMobile, isOverlayOpen])
+    },
+    [autoSuggest, isMobile, isOverlayOpen]
+  );
 
-      useEffect(function (){
-        if(query){
-          setSearchInput(query)
-        }
-      }, [])
+  useEffect(function () {
+    if (query) {
+      setSearchInput(query);
+    }
+  }, []);
 
   return (
-    <Command className='bg-inherit'>
+    <Command className="bg-inherit">
       <div className="w-full">
-          <CommandInput
-            ref={searchRef}
-            onClick={()=> isMobile && openSearch && openSearch(true)}
-            onFocus={handlePrefetch}
-            value={searchInput}
-            onKeyDown={(e)=>handleKeyPress(e)}
-            onValueChange={(value)=> {
-              setIsTyping(true)
-              setSearchInput(value)
-            }}
-            onBlur={()=> setIsTyping(false)}
-            className="w-full outline-none ps-4 py-3 rounded-lg text-sm text-flickmart-gray"
-            placeholder="What are you looking for?"
-            />
-        {isTyping && !isOverlayOpen &&
-          <CommandList className='z-10 rounded-lg mt-1 bg-white p-2 lg:w-2/4 absolute shadow-md'>
+        <CommandInput
+          ref={searchRef}
+          onClick={() => isMobile && openSearch && openSearch(true)}
+          onFocus={handlePrefetch}
+          value={searchInput}
+          onKeyDown={(e) => handleKeyPress(e)}
+          onValueChange={(value) => {
+            setIsTyping(true);
+            setFocus(false);
+            setSearchInput(value);
+          }}
+          onBlur={() => {
+            setFocus(false);
+            setIsTyping(false);
+          }}
+          className="w-full outline-none ps-4 py-3 rounded-lg text-sm text-flickmart-gray"
+          placeholder="What are you looking for?"
+        />
+        {isTyping && !isOverlayOpen ? (
+          <CommandList className="z-10 rounded-lg mt-1 bg-white p-2 lg:w-2/4 absolute shadow-md">
             <CommandGroup heading="Suggestions">
-              {autoSuggest?.map((item, index) => 
-              <Link key={index} href={`/search?query=${item}`} onMouseDown={(e)=> e.preventDefault()}>
-                <CommandItem className='cursor-pointer' onKeyDown={(e)=>{
-                  if(e.key === "Enter"){
-                    router.push(`/search?query=${item}`)
-                    setIsTyping(false)
-                  }
-                }}>
-                  {typeof item === 'string' ? item : null}
-                </CommandItem>
-              </Link>
-                )}
+              {autoSuggest?.map((item, index) => (
+                <Link
+                  key={index}
+                  href={`/search?query=${item}`}
+                  onMouseDown={(e) => e.preventDefault()}
+                >
+                  <CommandItem
+                    className="cursor-pointer"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        router.push(`/search?query=${item}`);
+                        setIsTyping(false);
+                      }
+                    }}
+                  >
+                    {typeof item === "string" ? item : null}
+                  </CommandItem>
+                </Link>
+              ))}
             </CommandGroup>
             <CommandEmpty>No results found.</CommandEmpty>
           </CommandList>
-        }
+        ) : focus &&
+          !isOverlayOpen &&
+          retrievePreviousInputs &&
+          retrievePreviousInputs.length > 0 ? (
+          <CommandList className="z-10 rounded-lg mt-1 bg-white p-2 lg:w-2/4 absolute shadow-md">
+            <CommandGroup heading="Recent Searches">
+              {retrievePreviousInputs?.map((item, index) => (
+                <div
+                  key={index}
+                  onMouseDown={(e) => e.preventDefault()}
+                  className="flex justify-between items-center hover:bg-gray-50 px-1 rounded-lg"
+                  onClick={() => {
+                    router.push(`/search?query=${item}`);
+                  }}
+                >
+                  <CommandItem className="cursor-pointer flex-grow !bg-inherit">
+                    {typeof item.search === "string" ? item.search : null}
+                  </CommandItem>
+                  <X
+                    className="text-gray-600 cursor-pointer"
+                    size={20}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("deleted");
+                      deleteSearchInput({
+                        searchId: item._id,
+                      });
+                    }}
+                  />
+                </div>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        ) : null}
       </div>
     </Command>
-  )
+  );
 }
