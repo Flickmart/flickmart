@@ -24,7 +24,7 @@ export default function SearchInput({
 }: {
   query?: string;
   openSearch?: (val: boolean) => void;
-  updateAutoSuggest?: (values: Array<string>) => void;
+  updateAutoSuggest?: (values: Array<string>, searchValue: string) => void;
   location?: string;
   isOverlayOpen?: boolean;
 }) {
@@ -57,19 +57,24 @@ export default function SearchInput({
     }
   }
   function handlePrefetch() {
-    setFocus(true);
     router.prefetch("/search");
+    if (searchInput) {
+      setFocus(false);
+      return;
+    }
+    if (!isMobile) setFocus(true);
   }
   useEffect(
     function () {
-      if (autoSuggest) {
-        updateAutoSuggest && updateAutoSuggest(autoSuggest as Array<string>);
+      if (autoSuggest || searchInput) {
+        updateAutoSuggest &&
+          updateAutoSuggest(autoSuggest as Array<string>, searchInput);
       }
       if (isMobile && isOverlayOpen) {
         searchRef.current?.focus();
       }
     },
-    [autoSuggest, isMobile, isOverlayOpen]
+    [autoSuggest, isMobile, isOverlayOpen, searchInput]
   );
 
   useEffect(function () {
@@ -88,9 +93,14 @@ export default function SearchInput({
           value={searchInput}
           onKeyDown={(e) => handleKeyPress(e)}
           onValueChange={(value) => {
+            setSearchInput(value);
+            if (!value) {
+              setIsTyping(false);
+              setFocus(true);
+              return;
+            }
             setIsTyping(true);
             setFocus(false);
-            setSearchInput(value);
           }}
           onBlur={() => {
             setFocus(false);
@@ -100,7 +110,7 @@ export default function SearchInput({
           placeholder="What are you looking for?"
         />
         {isTyping && !isOverlayOpen ? (
-          <CommandList className="z-10 rounded-lg mt-1 bg-white p-2 lg:w-2/4 absolute shadow-md">
+          <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
             <CommandGroup heading="Suggestions">
               {autoSuggest?.map((item, index) => (
                 <Link
@@ -122,13 +132,17 @@ export default function SearchInput({
                 </Link>
               ))}
             </CommandGroup>
-            <CommandEmpty>No results found.</CommandEmpty>
+            {autoSuggest?.length === 0 ? (
+              <CommandEmpty>No results found.</CommandEmpty>
+            ) : (
+              <CommandEmpty>Loading...</CommandEmpty>
+            )}
           </CommandList>
         ) : focus &&
           !isOverlayOpen &&
           retrievePreviousInputs &&
           retrievePreviousInputs.length > 0 ? (
-          <CommandList className="z-10 rounded-lg mt-1 bg-white p-2 lg:w-2/4 absolute shadow-md">
+          <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
             <CommandGroup heading="Recent Searches">
               {retrievePreviousInputs?.map((item, index) => (
                 <div
@@ -136,11 +150,14 @@ export default function SearchInput({
                   onMouseDown={(e) => e.preventDefault()}
                   className="flex justify-between items-center hover:bg-gray-50 px-1 rounded-lg"
                   onClick={() => {
-                    router.push(`/search?query=${item}`);
+                    setFocus(false);
+                    searchRef.current?.blur();
+                    router.push(`/search?query=${item.search}`);
                   }}
                 >
                   <CommandItem className="cursor-pointer flex-grow !bg-inherit">
-                    {typeof item.search === "string" ? item.search : null}
+                    {/* {typeof item.search === "string" ? item.search : null} */}
+                    {item.search}
                   </CommandItem>
                   <X
                     className="text-gray-600 cursor-pointer"

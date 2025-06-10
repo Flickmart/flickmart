@@ -15,11 +15,13 @@ export default function SearchOverlay({
   openSearch: (val: boolean) => void;
 }) {
   const [autoSuggest, setAutoSuggest] = useState<Array<string>>([]);
+  const [searchValue, setSearchValue] = useState<string>("");
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const router = useRouter();
-  function updateAutoSuggest(values: Array<string>) {
+  function updateAutoSuggest(values: Array<string>, search: string) {
     setAutoSuggest(values);
+    setSearchValue(search);
   }
 
   return (
@@ -37,7 +39,7 @@ export default function SearchOverlay({
           />
         </div>
       </div>
-      {autoSuggest.length === 0 ? (
+      {autoSuggest?.length === 0 || !searchValue ? (
         <div className="flex-grow pt-3">
           <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
             recent searches
@@ -45,11 +47,11 @@ export default function SearchOverlay({
           {retrievePreviousInputs?.map((item, index) => (
             <div
               key={index}
-              className="px-4 py-4 flex justify-between hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
+              className="px-4 py-4 cursor-pointer flex justify-between hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
             >
               <p
-                className="cursor-pointer flex-grow"
-                onClick={() => router.push(`/search?query=${item}`)}
+                className="flex-grow"
+                onClick={() => (location.href = `/search?query=${item.search}`)}
                 key={index}
               >
                 {item.search}
@@ -73,9 +75,9 @@ export default function SearchOverlay({
           <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
             suggestions
           </p>
-          {autoSuggest.map((item, index) => (
+          {autoSuggest?.map((item, index) => (
             <p
-              onClick={() => router.push(`/search?query=${item}`)}
+              onClick={() => (location.href = `/search?query=${item}`)}
               className="px-4 py-4 hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
               key={index}
             >

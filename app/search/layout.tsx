@@ -11,14 +11,12 @@ export default async function Layout({
   return (
     <>
       <Navbar>
-        <div className="w-1/3 bg-gray-100 rounded-lg">
-          <SearchInput/>
+        <div className="w-[40vw] bg-gray-100 rounded-lg">
+          <SearchInput />
         </div>
       </Navbar>
       <SidebarProvider>
-        <Suspense fallback={<div>Loading...</div>}>
-          {children}
-        </Suspense>
+        <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       </SidebarProvider>
     </>
   );

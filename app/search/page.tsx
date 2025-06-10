@@ -1,6 +1,7 @@
 "use client";
 import CategoryItem, { useProductsByCategory } from "@/components/CategoryItem";
 import {
+  ArrowLeft,
   Bookmark,
   ChevronDown,
   ChevronRight,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -55,6 +56,13 @@ interface FilterObjectType {
   max: number;
   location: string;
   priceRange: string;
+}
+
+interface MobileFilterType {
+  category: string;
+  location: string;
+  minPrice: number;
+  maxPrice?: number;
 }
 
 const subCategories = {
@@ -176,6 +184,7 @@ const filterObject = [
   {
     label: "category",
     options: [
+      "all",
       "vehicles",
       "homes",
       "food",
@@ -190,11 +199,11 @@ const filterObject = [
   },
   {
     label: "location",
-    options: ["nsukka", "enugu"],
+    options: ["all", "nsukka", "enugu"],
   },
   {
     label: "price",
-    options: ["below 100k", "100k - 500k", "500k - 1.5m", "1.5m - 3.5m"],
+    options: ["all", "below 100k", "100k - 500k", "500k - 1.5m", "1.5m - 3.5m"],
   },
 ];
 
@@ -208,11 +217,10 @@ export default function DetailedCategoryPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { min, max, location, priceRange } = state;
   const [searchOpen, setSearchOpen] = useState(false);
-  const [filterState, setFilterState] = useState({
+  const [filterState, setFilterState] = useState<MobileFilterType>({
     category: "",
     location: "",
-    // minPrice: 0,
-    // maxPrice: 0
+    minPrice: 0,
   });
 
   // Get the search parameter
@@ -223,6 +231,7 @@ export default function DetailedCategoryPage() {
     query: query || "",
     type: "search",
   }) as Array<Doc<"product">>;
+  const router = useRouter();
 
   const {
     // state,
@@ -235,36 +244,63 @@ export default function DetailedCategoryPage() {
   } = useSidebar();
 
   function handleFilterState(val: string, label: string) {
+    const value = val === "all" ? "" : val;
     switch (label) {
       case "category":
-        return setFilterState({ ...filterState, category: val });
+        return setFilterState({
+          ...filterState,
+          category: value,
+        });
       case "location":
-        return setFilterState({ ...filterState, location: val });
+        return setFilterState({ ...filterState, location: value });
       default:
-        const price = val;
-        // return setFilterState({...filterState, price: val})
-        return console.log("hello");
+        let minPrice = 0;
+        let maxPrice = 0;
+        if (value === "below 100k") {
+          minPrice = 0;
+          maxPrice = 10 ** 5 - 1;
+        } else if (value === "100k - 500k") {
+          minPrice = 10 ** 5;
+          maxPrice = 5 * 10 ** 5 - 1;
+        } else if (value === "500k - 1.5m") {
+          minPrice = 5 * 10 ** 5;
+          maxPrice = 1.5 * 10 ** 6 - 1;
+        } else if (value === "1.5m - 3.5m") {
+          minPrice = 1.5 * 10 ** 6;
+          maxPrice = 3.5 * 10 ** 6;
+        }
+        const filter: MobileFilterType = { ...filterState, minPrice, maxPrice };
+        !maxPrice && delete filter.maxPrice;
+
+        return setFilterState(filter);
     }
   }
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
-  console.log(search);
   return (
     <main className=" min-h-screen flex-col lg:flex-row flex w-screen ">
       {isMobile && (
         <div className="fixed left-0 right-0 z-30 bg-white w-screen shadow-sm pb-2">
-          <div className=" m-7 mb-3 bg-gray-100 rounded-lg">
+          <div className=" m-7 mb-3  rounded-lg">
             <SearchOverlay
               openSearch={openSearch}
               open={searchOpen}
               query={query ?? ""}
             />
-            <SearchInput
-              openSearch={openSearch}
-              isOverlayOpen={searchOpen}
-              query={query ?? ""}
-            />
+            <div className="flex items-center justify-between gap-2">
+              <ArrowLeft
+                className="cursor-pointer"
+                onClick={() => router.push("/")}
+              />
+              <div className="bg-gray-100 w-full">
+                <SearchInput
+                  openSearch={openSearch}
+                  isOverlayOpen={searchOpen}
+                  query={query ?? ""}
+                />
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -395,6 +431,18 @@ export default function DetailedCategoryPage() {
         </SidebarContent>
       </Sidebar>
       <section className="lg:block w-[95%] mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
+        <div className="capitalize  h-1/6 flex flex-col justify-around mt-5">
+          <h2 className="text-2xl font-semibold">{query} in Nigeria</h2>
+          <div className="flex gap-5">
+            {Array.from({ length: 15 }).map((item) => (
+              <div className="size-20 grid place-items-center">hello</div>
+            ))}
+            <div className="size-20 flex flex-col capitalize justify-center items-center gap-2">
+              <ChevronRight />
+              <span>others</span>
+            </div>
+          </div>
+        </div>
         <div className="lg:hidden flex text-[12px] gap-2 items-center mb-2">
           <div className="flex items-center gap-2 lg:pt-2">
             {isMobile && <SidebarTrigger />}
@@ -426,7 +474,7 @@ export default function DetailedCategoryPage() {
           })}
         </div>
         <div className="mt-3 flex flex-col h-[90vh]">
-          <div className="flex px-3 lg:px-0 justify-between items-center">
+          <div className="flex px-3 mt-2 lg:px-0 justify-between items-center">
             <span>Sort By:</span>
             <div className="flex gap-2">
               <button>
@@ -440,9 +488,17 @@ export default function DetailedCategoryPage() {
           <div
             className={`mt-2 ${search?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
           >
-            {search === undefined || search?.length === 0 ? (
+            {search === undefined ? (
               <div className="flex justify-center">
                 <SyncLoader loading={true} color="#FF8100" />
+              </div>
+            ) : search?.length === 0 ? (
+              <div className=" px-5 capitalize flex flex-col">
+                <span>no result for {query}</span>
+                <span>
+                  Try checking your spelling or use more general terms
+                </span>
+                <span>Check each product page for other buying options.</span>
               </div>
             ) : (
               search?.map((product) => {

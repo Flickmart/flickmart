@@ -63,7 +63,7 @@ export default function SearchBox({
             </Select>
           </div>
         </div>
-        <div className="bg-gray-100 w-full rounded-lg">
+        <div className="bg-gray-100 lg:w-[40vw] rounded-lg">
           <SearchInput
             location={location}
             isOverlayOpen={open}
