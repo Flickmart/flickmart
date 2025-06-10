@@ -57,14 +57,63 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
 
 http.route({
   path: "/paystack/initialize",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
+  }),
+});
+
+http.route({
+  path: "/paystack/initialize",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
+    const headers = new Headers({
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "POST, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Content-Type": "application/json",
+      "Access-Control-Max-Age": "86400",
+      Vary: "Origin",
+    });
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers,
+      });
+    }
+
     const { email, amount } = await request.json();
+
+    // Get user directly from their clerk ID
     const user = await ctx.runQuery(api.users.current);
 
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Content-Type": "application/json",
+          Vary: "Origin",
+        }),
       });
     }
 
@@ -89,7 +138,14 @@ http.route({
         console.error("Failed to create wallet:", error);
         return new Response(
           JSON.stringify({ error: "Failed to create wallet" }),
-          { status: 500 }
+          {
+            status: 500,
+            headers: new Headers({
+              "Access-Control-Allow-Origin": "http://localhost:3000",
+              "Content-Type": "application/json",
+              Vary: "Origin",
+            }),
+          }
         );
       }
     }
@@ -98,7 +154,14 @@ http.route({
     if (!walletId) {
       return new Response(
         JSON.stringify({ error: "Wallet ID not available" }),
-        { status: 500 }
+        {
+          status: 500,
+          headers: new Headers({
+            "Access-Control-Allow-Origin": "http://localhost:3000",
+            "Content-Type": "application/json",
+            Vary: "Origin",
+          }),
+        }
       );
     }
 
@@ -125,16 +188,62 @@ http.route({
           type: "funding",
           description: "Money is being deposited into the users wallet",
         });
-        return new Response(JSON.stringify(data), { status: 200 });
+        return new Response(JSON.stringify(data), {
+          status: 200,
+          headers: new Headers({
+            "Access-Control-Allow-Origin": "http://localhost:3000",
+            "Content-Type": "application/json",
+            Vary: "Origin",
+          }),
+        });
       } catch (error) {
         console.error("Failed to create transaction:", error);
         return new Response(
           JSON.stringify({ error: "Failed to create transaction record" }),
-          { status: 500 }
+          {
+            status: 500,
+            headers: new Headers({
+              "Access-Control-Allow-Origin": "http://localhost:3000",
+              "Content-Type": "application/json",
+              Vary: "Origin",
+            }),
+          }
         );
       }
     }
-    return new Response(JSON.stringify(data), { status: 400 });
+    return new Response(JSON.stringify(data), {
+      status: 400,
+      headers: new Headers({
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Content-Type": "application/json",
+        Vary: "Origin",
+      }),
+    });
+  }),
+});
+
+http.route({
+  path: "/paystack/verify",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
   }),
 });
 
@@ -170,9 +279,23 @@ http.route({
           });
         }
       }
-      return new Response(JSON.stringify(data), { status: 200 });
+      return new Response(JSON.stringify(data), {
+        status: 200,
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Content-Type": "application/json",
+          Vary: "Origin",
+        }),
+      });
     }
-    return new Response(JSON.stringify(data), { status: 400 });
+    return new Response(JSON.stringify(data), {
+      status: 400,
+      headers: new Headers({
+        "Access-Control-Allow-Origin": "http://localhost:3000",
+        "Content-Type": "application/json",
+        Vary: "Origin",
+      }),
+    });
   }),
 });
 
