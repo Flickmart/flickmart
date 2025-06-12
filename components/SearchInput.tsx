@@ -49,6 +49,7 @@ export default function SearchInput({
     if (event.key === "Enter") {
       const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
       router.push(`/search?query=${searchInput}${locationQuery}`);
+      openSearch && openSearch(false);
       saveSearchInput({
         search: searchInput,
       });

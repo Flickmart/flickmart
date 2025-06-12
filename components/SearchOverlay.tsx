@@ -49,32 +49,34 @@ export default function SearchOverlay({
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
                 {(retrievePreviousInputs?.length ?? 0) > 0 && "recent searches"}
               </p>
-              {retrievePreviousInputs?.map((item, index) => (
-                <div
-                  key={index}
-                  className="px-4 py-4 cursor-pointer flex justify-between hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
-                >
-                  <p
-                    className="flex-grow"
-                    onClick={() =>
-                      (location.href = `/search?query=${item.search}`)
-                    }
+              {retrievePreviousInputs?.map((item, index) => {
+                return (
+                  <div
                     key={index}
+                    className="px-4 py-4 cursor-pointer flex justify-between hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
                   >
-                    {item.search}
-                  </p>
-                  <X
-                    className="text-gray-600 cursor-pointer"
-                    size={20}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteSearchInput({
-                        searchId: item._id,
-                      });
-                    }}
-                  />
-                </div>
-              ))}
+                    <p
+                      className="flex-grow"
+                      onClick={() =>
+                        (location.href = `/search?query=${item.search}`)
+                      }
+                      key={index}
+                    >
+                      {item.search}
+                    </p>
+                    <X
+                      className="text-gray-600 cursor-pointer"
+                      size={20}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteSearchInput({
+                          searchId: item._id,
+                        });
+                      }}
+                    />
+                  </div>
+                );
+              })}
             </div>
           ) : (
             <div className="flex-grow pt-3">
