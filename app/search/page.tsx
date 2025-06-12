@@ -7,6 +7,7 @@ import {
   ChevronRight,
   LayoutGrid,
   LayoutPanelLeft,
+  SearchSlash,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -431,17 +432,12 @@ export default function DetailedCategoryPage() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <section className="lg:block w-[95%] mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
-        <h2 className="text-2xl capitalize py-5 font-semibold">
+      <section className="lg:block w-[95%] flex flex-col mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
+        <h2 className="text-lg lg:text-2xl capitalize p-3  lg:py-5 font-semibold">
           {query} in Nigeria
         </h2>
-        <div className="lg:hidden flex text-[12px] gap-2 items-center mb-2">
-          <div className="flex items-center gap-2 lg:pt-2">
-            {isMobile && <SidebarTrigger />}
-            <h1 className="hidden lg:block font-semibold text-lg capitalize">
-              {query} in Nigeria
-            </h1>
-          </div>
+        <div className="lg:hidden flex text-[12px] gap-2 items-center my-2">
+          {isMobile && <SidebarTrigger />}
           {filterObject.map((item) => {
             return (
               <Select
@@ -465,7 +461,7 @@ export default function DetailedCategoryPage() {
             );
           })}
         </div>
-        <div className="mt-3 flex flex-col h-[90vh]">
+        <div className="mt-3 flex flex-col lg:h-[90vh]">
           <div className="flex px-3 mt-2 lg:px-0 justify-between items-center">
             <span>Sort By:</span>
             <div className="flex gap-2">
@@ -478,19 +474,25 @@ export default function DetailedCategoryPage() {
             </div>
           </div>
           <div
-            className={`mt-2 ${search?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
+            className={`mt-2 ${search?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
           >
             {search === undefined ? (
-              <div className="flex justify-center">
+              <div className="flex justify-center h-[45vh] items-center">
                 <SyncLoader loading={true} color="#FF8100" />
               </div>
             ) : search?.length === 0 ? (
-              <div className=" px-5 capitalize flex flex-col">
-                <span>no result for {query}</span>
-                <span>
+              <div className=" px-5 h-[45vh] items-center justify-start flex flex-col">
+                <span className="font-medium text-lg text-gray-500 py-5 ">
+                  No result for "{query}"
+                </span>
+
+                <div className="text-gray-500">
+                  <SearchSlash size={150} />
+                </div>
+                {/* <span>
                   Try checking your spelling or use more general terms
                 </span>
-                <span>Check each product page for other buying options.</span>
+                <span>Check each product page for other buying options.</span> */}
               </div>
             ) : (
               search?.map((product) => {

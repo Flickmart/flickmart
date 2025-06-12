@@ -4,6 +4,7 @@ import SearchInput from "./SearchInput";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+// import { motion } from "motion/dist/react";
 
 export default function SearchOverlay({
   open,
@@ -46,7 +47,7 @@ export default function SearchOverlay({
           {autoSuggest?.length === 0 || !searchValue ? (
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
-                recent searches
+                {(retrievePreviousInputs?.length ?? 0) > 0 && "recent searches"}
               </p>
               {retrievePreviousInputs?.map((item, index) => (
                 <div
@@ -67,7 +68,6 @@ export default function SearchOverlay({
                     size={20}
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log("deleted");
                       deleteSearchInput({
                         searchId: item._id,
                       });
@@ -79,7 +79,7 @@ export default function SearchOverlay({
           ) : (
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
-                suggestions
+                {autoSuggest?.length > 0 && "suggestions"}
               </p>
               {autoSuggest?.map((item, index) => (
                 <p
