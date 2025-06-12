@@ -1,7 +1,6 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUserOrThrow } from "./users";
-import { Id } from "./_generated/dataModel";
+import { getCurrentUserOrThrow, getCurrentUser } from "./users";
 
 export const createWallet = mutation({
   args: {
@@ -16,6 +15,17 @@ export const createWallet = mutation({
   },
   handler: async (ctx, args) => {
     const wallet = await ctx.db.insert("wallets", args);
+    return wallet;
+  },
+});
+
+export const getCurrentWallet = query({
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    const wallet = await ctx.db
+      .query("wallets")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .unique();
     return wallet;
   },
 });
@@ -39,13 +49,12 @@ export const getWalletByWalletId = query({
   },
 });
 
-export const updateBalance = mutation({
+export const updateBalance = internalMutation({
   args: {
     walletId: v.id("wallets"),
     balance: v.number(), // Available balance
   },
   handler: async (ctx, args) => {
-    getCurrentUserOrThrow(ctx);
     const wallet = await ctx.db.patch(args.walletId, {
       balance: args.balance,
     });
