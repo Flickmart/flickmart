@@ -11,6 +11,20 @@ export const insertSearchHistory = mutation({
     if (!user) {
       throw new Error("Not authenticated");
     }
+    // Check if the search already exists for the user
+    const existingHistory = await ctx.db
+      .query("history")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("userId"), user._id),
+          q.eq(q.field("search"), args.search)
+        )
+      )
+      .first();
+
+    if (existingHistory) {
+      return;
+    }
     await ctx.db.insert("history", {
       userId: user._id,
       search: args.search,

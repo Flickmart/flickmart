@@ -284,17 +284,16 @@ export default function DetailedCategoryPage() {
     <main className=" min-h-screen flex-col lg:flex-row flex w-screen ">
       {isMobile && (
         <div className="fixed left-0 right-0 z-30 bg-white w-screen shadow-sm pb-2">
-          <div className=" m-7 mb-3  rounded-lg">
+          <div className=" mt-7 mb-3 mr-5 ml-1  rounded-lg">
             <SearchOverlay
               openSearch={openSearch}
               open={searchOpen}
               query={query ?? ""}
             />
-            <div className="flex items-center justify-between gap-2">
-              <ArrowLeft
-                className="cursor-pointer"
-                onClick={() => router.push("/")}
-              />
+            <div className="flex items-center justify-between gap-1">
+              <div className="hover:bg-gray-200 transition-all duration-300 ease-in-out rounded-full cursor-pointer p-2 mb-1.5 text-gray-600">
+                <ArrowLeft size={29} onClick={() => router.push("/")} />
+              </div>
               <div className=" w-full">
                 <SearchInput
                   openSearch={openSearch}

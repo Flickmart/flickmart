@@ -35,7 +35,7 @@ export default function SearchOverlay({
     <>
       {open && (
         <div className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 ">
-          <div className="flex shadow-md py-3 px-3 justify-between items-center gap-3">
+          <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">
             <ArrowLeft onClick={() => openSearch(false)} />
             <div className="bg-gray-100 rounded-lg flex-grow">
               <SearchInput
@@ -56,7 +56,7 @@ export default function SearchOverlay({
                 return (
                   <div
                     key={index}
-                    className="px-4 py-4 cursor-pointer flex justify-between hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
+                    className="px-4 py-4 cursor-pointer flex justify-between items-center hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
                   >
                     <p
                       className="flex-grow"
@@ -68,16 +68,17 @@ export default function SearchOverlay({
                     >
                       {item.search}
                     </p>
-                    <X
-                      className="text-gray-600 cursor-pointer"
-                      size={20}
+                    <div
+                      className="text-gray-600 p-2 transition-all duration-300 ease-out flex justify-center rounded-full hover:bg-gray-200 cursor-pointer"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteSearchInput({
                           searchId: item._id,
                         });
                       }}
-                    />
+                    >
+                      <X size={20} />
+                    </div>
                   </div>
                 );
               })}
