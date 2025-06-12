@@ -47,14 +47,14 @@ export default function SearchInput({
     event: React.KeyboardEvent<T>
   ) {
     if (event.key === "Enter") {
+      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
+      router.push(`/search?query=${searchInput}${locationQuery}`);
       saveSearchInput({
         search: searchInput,
       });
       // Perform search action
       !isMobile && isOverlayOpen && setSearchInput("");
       setIsTyping(false);
-      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
-      location.href = `/search?query=${searchInput}${locationQuery}`;
     }
   }
   function handlePrefetch() {
