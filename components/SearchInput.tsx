@@ -13,7 +13,7 @@ import {
   CommandList,
 } from "./ui/command";
 import Link from "next/link";
-import { X } from "lucide-react";
+import { Search, X } from "lucide-react";
 
 export default function SearchInput({
   query,
@@ -85,32 +85,42 @@ export default function SearchInput({
   return (
     <Command className="bg-inherit">
       <div className="w-full">
-        <CommandInput
-          ref={ref}
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-          onClick={() => isMobile && openSearch && openSearch(true)}
-          onFocus={handlePrefetch}
-          value={searchInput}
-          onKeyDown={(e) => handleKeyPress(e)}
-          onValueChange={(value) => {
-            setSearchInput(value);
-            if (!value) {
+        {isMobile && !isOverlayOpen ? (
+          <div
+            onClick={() => openSearch && openSearch(true)}
+            className="flex cursor-pointer h-full text-gray-500 p-3 gap-5 items-center mb-2"
+          >
+            <Search />
+            <span className="text-lg">What are you looking for?</span>
+          </div>
+        ) : (
+          <CommandInput
+            inputMode="search"
+            ref={ref}
+            onSubmit={(e) => {
+              e.preventDefault();
+            }}
+            onFocus={handlePrefetch}
+            value={searchInput}
+            onKeyDown={(e) => handleKeyPress(e)}
+            onValueChange={(value) => {
+              setSearchInput(value);
+              if (!value) {
+                setIsTyping(false);
+                setFocus(true);
+                return;
+              }
+              setIsTyping(true);
+              setFocus(false);
+            }}
+            onBlur={() => {
+              setFocus(false);
               setIsTyping(false);
-              setFocus(true);
-              return;
-            }
-            setIsTyping(true);
-            setFocus(false);
-          }}
-          onBlur={() => {
-            setFocus(false);
-            setIsTyping(false);
-          }}
-          className="w-full outline-none ps-4 py-3 rounded-lg text-sm text-flickmart-gray"
-          placeholder="What are you looking for?"
-        />
+            }}
+            className="w-full outline-none ps-4 py-3 rounded-lg text-sm text-flickmart-gray"
+            placeholder="What are you looking for?"
+          />
+        )}
         {isTyping && !isOverlayOpen ? (
           <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
             <CommandGroup heading="Suggestions">

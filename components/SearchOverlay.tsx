@@ -25,9 +25,12 @@ export default function SearchOverlay({
     setAutoSuggest(values);
     setSearchValue(search);
   }
-  useEffect(function () {
-    focusRef.current?.focus();
-  }, []);
+  useEffect(
+    function () {
+      focusRef.current?.focus();
+    },
+    [open]
+  );
   return (
     <>
       {open && (
