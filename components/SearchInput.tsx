@@ -84,14 +84,14 @@ export default function SearchInput({
 
   return (
     <Command className="bg-inherit">
-      <div className="w-full">
+      <div className="w-full ">
         {isMobile && !isOverlayOpen ? (
           <div
             onClick={() => openSearch && openSearch(true)}
-            className="flex cursor-pointer h-full text-gray-500 p-3 gap-5 items-center mb-2"
+            className="flex cursor-pointer h-full bg-gray-100  text-gray-500 p-2.5 px-4 gap-5 items-center mb-2"
           >
             <Search />
-            <span className="text-lg">What are you looking for?</span>
+            <span className="lg:text-lg">What are you looking for?</span>
           </div>
         ) : (
           <CommandInput

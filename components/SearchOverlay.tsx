@@ -60,9 +60,10 @@ export default function SearchOverlay({
                   >
                     <p
                       className="flex-grow"
-                      onClick={() =>
-                        (location.href = `/search?query=${item.search}`)
-                      }
+                      onClick={() => {
+                        router.push(`/search?query=${item.search}`);
+                        openSearch(false);
+                      }}
                       key={index}
                     >
                       {item.search}
@@ -88,7 +89,10 @@ export default function SearchOverlay({
               </p>
               {autoSuggest?.map((item, index) => (
                 <p
-                  onClick={() => (location.href = `/search?query=${item}`)}
+                  onClick={() => {
+                    router.push(`/search?query=${item}`);
+                    openSearch(false);
+                  }}
                   className="px-4 py-4 hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
                   key={index}
                 >

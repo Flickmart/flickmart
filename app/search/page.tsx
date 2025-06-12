@@ -295,7 +295,7 @@ export default function DetailedCategoryPage() {
                 className="cursor-pointer"
                 onClick={() => router.push("/")}
               />
-              <div className="bg-gray-100 w-full">
+              <div className=" w-full">
                 <SearchInput
                   openSearch={openSearch}
                   isOverlayOpen={searchOpen}
