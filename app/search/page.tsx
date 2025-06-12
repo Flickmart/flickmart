@@ -136,6 +136,7 @@ const brandsOrSubCat = {
   computers: [
     {
       label: "hp",
+      image: "",
     },
     {
       label: "asus",
@@ -431,18 +432,9 @@ export default function DetailedCategoryPage() {
         </SidebarContent>
       </Sidebar>
       <section className="lg:block w-[95%] mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
-        <div className="capitalize  h-1/6 flex flex-col justify-around mt-5">
-          <h2 className="text-2xl font-semibold">{query} in Nigeria</h2>
-          <div className="flex gap-5">
-            {Array.from({ length: 15 }).map((item) => (
-              <div className="size-20 grid place-items-center">hello</div>
-            ))}
-            <div className="size-20 flex flex-col capitalize justify-center items-center gap-2">
-              <ChevronRight />
-              <span>others</span>
-            </div>
-          </div>
-        </div>
+        <h2 className="text-2xl capitalize py-5 font-semibold">
+          {query} in Nigeria
+        </h2>
         <div className="lg:hidden flex text-[12px] gap-2 items-center mb-2">
           <div className="flex items-center gap-2 lg:pt-2">
             {isMobile && <SidebarTrigger />}

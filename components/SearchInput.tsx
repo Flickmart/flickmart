@@ -19,14 +19,16 @@ export default function SearchInput({
   query,
   openSearch,
   updateAutoSuggest,
-  location,
+  loc,
   isOverlayOpen,
+  ref,
 }: {
   query?: string;
   openSearch?: (val: boolean) => void;
   updateAutoSuggest?: (values: Array<string>, searchValue: string) => void;
-  location?: string;
+  loc?: string;
   isOverlayOpen?: boolean;
+  ref?: React.ForwardedRef<HTMLInputElement>;
 }) {
   const isMobile = useIsMobile();
   const [searchInput, setSearchInput] = useState("");
@@ -51,9 +53,8 @@ export default function SearchInput({
       // Perform search action
       !isMobile && isOverlayOpen && setSearchInput("");
       setIsTyping(false);
-      const locationQuery =
-        !location || location === "all" ? "" : `?location=${location}`;
-      router.push(`/search?query=${searchInput}${locationQuery}`);
+      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
+      location.href = `/search?query=${searchInput}${locationQuery}`;
     }
   }
   function handlePrefetch() {
@@ -70,9 +71,6 @@ export default function SearchInput({
         updateAutoSuggest &&
           updateAutoSuggest(autoSuggest as Array<string>, searchInput);
       }
-      if (isMobile && isOverlayOpen) {
-        searchRef.current?.focus();
-      }
     },
     [autoSuggest, isMobile, isOverlayOpen, searchInput]
   );
@@ -87,7 +85,10 @@ export default function SearchInput({
     <Command className="bg-inherit">
       <div className="w-full">
         <CommandInput
-          ref={searchRef}
+          ref={ref}
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
           onClick={() => isMobile && openSearch && openSearch(true)}
           onFocus={handlePrefetch}
           value={searchInput}

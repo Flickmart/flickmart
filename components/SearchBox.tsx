@@ -40,7 +40,6 @@ export default function SearchBox({
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component
   }
-
   return (
     <div className="w-full bg-flickmartLight pt-36 pb-24 flex justify-center text-base">
       <div className="w-11/12 lg:w-6/12 flex flex-col justify-center items-center gap-5">
@@ -65,7 +64,7 @@ export default function SearchBox({
         </div>
         <div className="bg-gray-100 lg:w-[40vw] rounded-lg">
           <SearchInput
-            location={location}
+            loc={location}
             isOverlayOpen={open}
             openSearch={openSearch}
           />
