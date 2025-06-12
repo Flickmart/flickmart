@@ -103,7 +103,7 @@
     @apply text-base text-flickmart-gray;
   }
   .container-px {
-    @apply px-2 sm:px-4;
+    @apply px-5;
   }
   .form-grid {
     @apply lg:grid lg:grid-cols-2 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:px-8 lg:max-w-[1140px] lg:items-center;

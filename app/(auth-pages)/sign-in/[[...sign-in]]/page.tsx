@@ -1,5 +1,4 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -97,7 +96,6 @@ export default function SignIn() {
 
   return (
     <main className="relative h-screen">
-      <AuthHeader />
       <section className="form-grid">
         <Image
           priority
