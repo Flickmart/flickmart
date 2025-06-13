@@ -91,10 +91,13 @@ export const getStoresByUserId = query({
 
     if (!user) return [];
 
-    return await ctx.db
+    const store = await ctx.db
       .query("store")
       .filter((q) => q.eq(q.field("userId"), user._id))
       .collect();
+    if (!store) return [];
+
+    return store;
   },
 });
 

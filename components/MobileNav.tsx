@@ -6,16 +6,20 @@ import {
   MessageSquareText,
   Store,
   UserRound,
-  Bell,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { FadeLoader } from "react-spinners";
 
 export default function MobileNav() {
   const pathname = usePathname();
   const isVisible = useNav();
+  const router = useRouter();
+  const [isLoadingAd, setIsLoadingAd] = useState(false);
 
   // Fetch unread notifications count
   const unreadNotifications =
@@ -27,10 +31,18 @@ export default function MobileNav() {
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats"];
   const userStore = useQuery(api.store.getStoresByUserId);
+  const firstUserStore = userStore?.[0];
 
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component
   }
+  useEffect(() => {
+    router.prefetch("/post-ad");
+    if (firstUserStore && isLoadingAd) {
+      setIsLoadingAd(false);
+      router.push("/post-ad");
+    }
+  }, [pathname, firstUserStore]);
 
   return (
     <header
@@ -64,7 +76,24 @@ export default function MobileNav() {
           </span>
         </Link>
         <Link
-          href={userStore?.[0] ? "/post-ad" : "/create-store"}
+          onClick={(e) => {
+            if (userStore === undefined) {
+              toast("Retrieving your store, please wait...", {
+                description: "This may take a few seconds.",
+                duration: 3000,
+                position: "top-center",
+                style: { background: "#fff", color: "#000" },
+              });
+              setIsLoadingAd(true);
+            }
+          }}
+          href={
+            userStore === undefined
+              ? "#"
+              : userStore?.[0]
+                ? "/post-ad"
+                : "/create-store"
+          }
           className="mx-6 flex flex-col items-center justify-center gap-1.5 group"
         >
           <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">

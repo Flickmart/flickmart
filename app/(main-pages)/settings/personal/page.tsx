@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
 import MarketplaceProfile from "@/components/settings/profile";
 import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function PersonalDetailsPage() {
   const [formData, setFormData] = useState({
@@ -22,6 +23,7 @@ export default function PersonalDetailsPage() {
     bio: "",
   });
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
+  const router = useRouter();
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -42,13 +44,14 @@ export default function PersonalDetailsPage() {
   return (
     <div className="flex flex-col gap-4 p-4">
       <header className="flex items-center">
-      {!isMobile ? (
+        {!isMobile ? (
           <SidebarTrigger className="-ml-1" />
         ) : (
           <>
             <ArrowLeft
               className="cursor-pointer -ml-1"
-              onClick={() => setOpenMobile(!openMobile)}
+              // onClick={() => setOpenMobile(!openMobile)}
+              onClick={() => router.push("/settings")}
             />
           </>
         )}

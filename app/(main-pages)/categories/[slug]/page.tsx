@@ -336,7 +336,7 @@ export default function DetailedCategoryPage() {
                               productId: product._id,
                               type: "saved",
                             });
-                            saved?.added
+                            typeof saved === "object" && saved?.added
                               ? toast.success("Item added to saved")
                               : toast.success("Item removed from saved");
                           }}

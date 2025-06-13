@@ -33,7 +33,9 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
     >
       <button
         onClick={() =>
-          pathname.includes("/categories") ? router.push("/") : router.back()
+          pathname.includes("/categories") || pathname.includes("/post-ad")
+            ? router.push("/")
+            : router.back()
         }
         className="flex items-center transition-colors text-flickmart-gray hover:text-flickmart duration-300 text-sm capitalize"
       >

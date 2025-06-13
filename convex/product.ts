@@ -368,7 +368,7 @@ export const addBookmark = mutation({
 
     if (wishListed) {
       await ctx.db.delete(wishListed._id);
-      return;
+      return "removed";
     }
 
     const bookmarkId = await ctx.db.insert("bookmarks", {

@@ -37,8 +37,8 @@ export default function SearchOverlay({
     <>
       {open && (
         <motion.div
-          initial={{ y: "100%" }}
-          animate={{ y: 0 }}
+          initial={{ y: "100%", x: "-100%" }}
+          animate={{ y: 0, x: 0 }}
           transition={transitionProps}
           className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
         >
