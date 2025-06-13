@@ -17,7 +17,7 @@ export default function DashboardLayout({
   const router = useRouter();
 
   return (
-    <SidebarProvider>
+    <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">
       <AppSidebar />
       <SidebarInset>
         <div className="flex-1 overflow-auto">{children}</div>
