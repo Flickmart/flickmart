@@ -34,12 +34,12 @@ export default function BookedMarkedItem({
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-      className="w-full py-3 relative bg-white flex lg:gap-5 gap-3 text-sm"
+      className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm"
     >
-      <div className="w-2/5 flex lg:h-80 justify-center items-center">
+      <div className="w-2/5 h-48 aspect-square flex lg:h-80 justify-center items-center">
         <Image
           src={product.images[0]}
-          className="h-full  w-full  object-cover"
+          className="h-full  w-full   object-cover"
           alt={product.title}
           height={1000}
           width={1000}
@@ -105,7 +105,8 @@ export default function BookedMarkedItem({
           }}
           className=" flex gap-3 items-center  "
         >
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
             onClick={() => {
               initialChat({
                 user: user ?? null,
@@ -113,17 +114,18 @@ export default function BookedMarkedItem({
                 onNavigate: router.push,
               });
             }}
-            className="bg-flickmart text-white rounded-sm w-2/4 lg:w-1/4 flex justify-center items-center lg:text-lg lg:py-2.5 gap-2 px-2 py-2 "
+            className="bg-flickmart text-white rounded-sm min-w-2/4 lg:w-1/4 text-xs flex justify-center min-w-1/4 items-center  lg:text-lg lg:py-2.5 gap-2 px-2 py-2 "
           >
-            <MessageSquareText className="h-4 w-4" />
+            <MessageSquareText className="size-4" />
             <span>Chat vendor</span>
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
             onClick={() => shareProduct({ title, description, productId: _id })}
-            className="border border-flickmart flex items-center gap-2 py-2 px-2 rounded-sm w-2/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
+            className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm min-w-1/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
           >
-            <Share className="h-4 w-4" /> <span>Share</span>
-          </button>
+            <Share className="size-4" /> <span>Share</span>
+          </motion.button>
         </div>
       </div>
     </motion.div>
