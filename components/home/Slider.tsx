@@ -63,7 +63,6 @@
 //   );
 // }
 
-
 // "use client";
 // import React, { useEffect, useRef, useState } from "react";
 // import {
@@ -129,10 +128,9 @@
 //   );
 // }
 
-
-'use client'
+"use client";
 import { Splide, SplideSlide, SplideTrack } from "@splidejs/react-splide";
-import '@splidejs/react-splide/css';
+import "@splidejs/react-splide/css";
 import Image from "next/image";
 
 // Define the feedData array with type annotations
@@ -146,44 +144,52 @@ type SliderProps = {
 };
 
 const feedData = [
-    {
-        id: 1,
-        postImage: '/slide-img.png',
-    },
-    {
-        id: 2,
-        postImage: '/flick-ban-3.jpg',
-    },
-    {
-        id: 3,
-        postImage: '/flick-ban-4.jpg',
-    }
+  {
+    id: 1,
+    postImage: "/slide-img.png",
+  },
+  {
+    id: 2,
+    postImage: "/flick-ban-3.jpg",
+  },
+  {
+    id: 3,
+    postImage: "/flick-ban-4.jpg",
+  },
 ];
 
 export default function Slider() {
-    return (
-        <div className="w-full mx-auto mb-12 rounded-md">
-            <Splide 
-            options={ {
-                rewind: true,
-                autoplay: true,
-                gap   : '1rem',
-                arrows: false,
-                speed: 700,
-                delay: 0,
-            } }
-            hasTrack={ false } aria-label="...">
-            <div className="custom-wrapper">
-                {!feedData && (null)}
-                <SplideTrack className="h-56 md:h-[16rem] lg:h-[16rem] xl:h-[16rem] 2xl:h-[24rem]">
-                    {feedData?.map((f) => (
-                        <SplideSlide key={f.id} className="h-full relative">
-                            <Image src={f.postImage} width={1000} height={1000} alt="Image 1" className="object-cover object-center w-full h-full" />
-                        </SplideSlide>
-                    ))}
-                </SplideTrack>
-            </div>
-            </Splide>
+  return (
+    <div className="w-full mx-auto mb-12 rounded-md">
+      <Splide
+        options={{
+          rewind: true,
+          autoplay: true,
+          gap: "1rem",
+          arrows: false,
+          speed: 700,
+          delay: 0,
+        }}
+        hasTrack={false}
+        aria-label="..."
+      >
+        <div className="custom-wrapper">
+          {!feedData && null}
+          <SplideTrack className="h-56 md:h-[16rem] lg:h-[16rem] xl:h-[16rem] 2xl:h-[24rem]">
+            {feedData?.map((f) => (
+              <SplideSlide key={f.id} className="h-full relative">
+                <Image
+                  src={f.postImage}
+                  width={1000}
+                  height={1000}
+                  alt="Image 1"
+                  className="object-cover object-center w-full h-full"
+                />
+              </SplideSlide>
+            ))}
+          </SplideTrack>
         </div>
-    );
+      </Splide>
+    </div>
+  );
 }
