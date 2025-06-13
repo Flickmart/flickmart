@@ -7,7 +7,7 @@ export default function CategoryItem({ categoryName } : { categoryName: string; 
   return (
     <Link href={`/categories/${categoryName}`}>
       <div className="hover:cursor-pointer">
-        <div className="bg-[#f4f7fa] lg:p-0  h-36 lg:h-52 lg:rounded-xl capitalize flex flex-col items-center justify-center space-y-4 lg:space-y-7 text-gray-800">
+        <div className="bg-[#f4f7fa] lg:p-0  h-36 lg:h-52 rounded-lg lg:rounded-xl capitalize flex flex-col items-center justify-center space-y-4 lg:space-y-7 text-gray-800">
           <Image
             src={`/${categoryName}.png`}
             alt={categoryName}

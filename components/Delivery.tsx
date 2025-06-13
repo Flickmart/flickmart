@@ -40,8 +40,8 @@ export default function Delivery() {
           <h2 className="uppercase font-bold text-2xl lg:text-3xl text-red-950">
             delivery services
           </h2>
-          <div className="flex flex-col space-y-2">
-            <h3 className=" lg:text-2xl text-xl normal-case">
+          <div className="flex flex-col space-y-2 text-sm lg:text-base">
+            <h3 className=" lg:text-xl text-lg normal-case">
               Become a delivery partner with us.
             </h3>
             <p className="">
