@@ -42,21 +42,23 @@ export const create = internalMutation({
   },
 });
 
-export const getByReference = query({
+export const getByPaystackReference = query({
   args: {
     reference: v.string(),
   },
   handler: async (ctx, args) => {
     const transaction = await ctx.db
       .query("transactions")
-      .withIndex("by_reference", (q) => q.eq("reference", args.reference))
+      .withIndex("by_paystack_reference", (q) =>
+        q.eq("paystackReference", args.reference)
+      )
       .first();
 
     return transaction;
   },
 });
 
-export const update = mutation({
+export const updateTransactionStatus = internalMutation({
   args: {
     transactionId: v.id("transactions"),
     status: v.union(
@@ -67,11 +69,71 @@ export const update = mutation({
     ),
   },
   handler: async (ctx, args) => {
-    getCurrentUserOrThrow(ctx);
-
     const transaction = await ctx.db.patch(args.transactionId, {
       status: args.status,
     });
+    return transaction;
+  },
+});
+
+export const getByUserId = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const transactions = await ctx.db
+      .query("transactions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .order("desc")
+      .collect();
+
+    return transactions;
+  },
+});
+
+export const updateTransaction = internalMutation({
+  args: {
+    transactionId: v.id("transactions"),
+    type: v.optional(
+      v.union(
+        v.literal("funding"),
+        v.literal("withdrawal"),
+        v.literal("transfer_in"),
+        v.literal("transfer_out"),
+        v.literal("escrow_freeze"),
+        v.literal("escrow_release"),
+        v.literal("escrow_refund")
+      )
+    ),
+    amount: v.optional(v.number()),
+    status:v.optional( v.union(
+      v.literal("pending"),
+      v.literal("success"),
+      v.literal("failed"),
+      v.literal("cancelled")
+    )),
+    bank: v.optional(v.string()),
+    last4: v.optional(v.string()),
+    cardType: v.optional(v.string()),
+    channel: v.optional(v.string()),
+    currency: v.optional(v.string()),
+    fees: v.optional(v.number()), // Transaction fees
+    paystackFees: v.optional(v.number()), // Paystack fees
+    reference: v.optional(v.string()),
+    paystackReference: v.optional(v.string()),
+    description: v.optional(v.string()),
+    metadata: v.optional(
+      v.object({
+        orderId: v.optional(v.id("orders")),
+        recipientUserId: v.optional(v.id("users")),
+        transferId: v.optional(v.id("transfers")),
+        escrowId: v.optional(v.id("escrows")),
+      })
+    ),
+  },
+  handler: async (ctx, args) => {
+    const { transactionId, ...updates } = args;
+    const transaction = await ctx.db.patch(transactionId, updates);
     return transaction;
   },
 });

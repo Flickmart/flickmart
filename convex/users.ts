@@ -103,3 +103,19 @@ export const storePaystackCustomerId = mutation({
     });
   },
 });
+
+export const getUserByToken = query({
+  args: { tokenIdentifier: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("User is not authenticated");
+    }
+    if (identity.tokenIdentifier !== args.tokenIdentifier) {
+      throw new Error("Token does not match the authenticated user");
+    }
+
+    const user = await userByExternalId(ctx, identity.subject);
+    return user;
+  },
+});
