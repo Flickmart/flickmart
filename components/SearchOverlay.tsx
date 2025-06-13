@@ -4,7 +4,7 @@ import SearchInput from "./SearchInput";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-// import { motion } from "motion/dist/react";
+import { motion } from "motion/react";
 
 export default function SearchOverlay({
   open,
@@ -34,7 +34,12 @@ export default function SearchOverlay({
   return (
     <>
       {open && (
-        <div className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 ">
+        <motion.div
+          initial={{ y: "100%" }}
+          animate={{ y: 0 }}
+          transition={{ duration: 0.2, type: "tween" }}
+          className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
+        >
           <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">
             <ArrowLeft onClick={() => openSearch(false)} />
             <div className="bg-gray-100 rounded-lg flex-grow">
@@ -102,7 +107,7 @@ export default function SearchOverlay({
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </>
   );
