@@ -90,7 +90,7 @@ export default function SavedPage() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-              className="bg-orange-600 w-[95%] pb-5 mx-auto flex flex-col gap-3 mt-3"
+              className=" w-[95%] pb-5 mx-auto flex flex-col gap-3 mt-3"
             >
               {wishlist?.length === 0 ? (
                 <Empty message="Your wishlist is empty" />
