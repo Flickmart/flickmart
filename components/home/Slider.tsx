@@ -162,15 +162,15 @@ const feedData = [
 
 export default function Slider() {
     return (
-        <div className="w-full mx-auto mb-12 rounded-md">
+        <div className="w-[95%] mx-auto mb-3 lg:mb-12 rounded-md mt-3 lg:mt-7">
             <Splide 
             options={ {
-                rewind: true,
                 autoplay: true,
                 gap   : '1rem',
                 arrows: false,
-                speed: 700,
-                delay: 0,
+                speed: 400,
+                type    : 'loop',
+                perPage : 1,
             } }
             hasTrack={ false } aria-label="...">
             <div className="custom-wrapper">
@@ -178,7 +178,7 @@ export default function Slider() {
                 <SplideTrack className="h-56 md:h-[16rem] lg:h-[16rem] xl:h-[16rem] 2xl:h-[24rem]">
                     {feedData?.map((f) => (
                         <SplideSlide key={f.id} className="h-full relative">
-                            <Image src={f.postImage} width={1000} height={1000} alt="Image 1" className="object-cover object-center w-full h-full" />
+                            <Image src={f.postImage} width={1000} height={1000} alt="Image 1" className="object-cover object-center w-full h-full rounded-lg lg:rounded-xl" />
                         </SplideSlide>
                     ))}
                 </SplideTrack>

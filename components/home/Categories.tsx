@@ -7,7 +7,6 @@ interface CategoryObj {
 }
 const categoryItems: Array<CategoryObj> = [
   { categoryName: "vehicles" },
-  { categoryName: "homes" },
   { categoryName: "food" },
   { categoryName: "mobiles" },
   { categoryName: "appliances" },
@@ -21,7 +20,7 @@ const categoryItems: Array<CategoryObj> = [
 export default function Categories() {
   return (
     <Container>
-      <div className="lg:w-4/6 grid lg:grid-cols-4 lg:grid-rows-3 grid-cols-3 lg:gap-x-3 lg:gap-y-6  gap-3 cursor-pointer">
+      <div className="w-full lg:w-full grid lg:grid-cols-5 lg:grid-rows-3 grid-cols-3 lg:gap-x-3 lg:gap-y-6  gap-3 cursor-pointer">
         {categoryItems.map((item) => (
           <CategoryItem
             key={item.categoryName}
