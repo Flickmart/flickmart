@@ -103,7 +103,6 @@ http.route({
 
     const { email, amount } = await request.json();
 
-    // Get user directly from their clerk ID
     const user = await ctx.runQuery(api.users.current);
 
     if (!user) {
@@ -326,6 +325,161 @@ http.route({
         Vary: "Origin",
       }),
     });
+  }),
+});
+
+http.route({
+  path: "/paystack/withdraw",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
+  }),
+});
+
+http.route({
+  path: "/paystack/withdraw",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const headers = new Headers({
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+      Vary: "Origin",
+    });
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers,
+      });
+    }
+
+    const { account_number, bank_code, amount, name } = await request.json();
+
+    if (!account_number || !bank_code || !amount || !name) {
+      return new Response(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers,
+      });
+    }
+
+    const user = await ctx.runQuery(api.users.current);
+    if (!user) {
+      return new Response(JSON.stringify({ error: "User not found" }), {
+        status: 404,
+        headers,
+      });
+    }
+
+    const wallet = await ctx.runQuery(api.wallet.getWalletByUserId, {
+      userId: user._id,
+    });
+    if (!wallet || wallet.balance < amount * 100) {
+      return new Response(JSON.stringify({ error: "Insufficient funds" }), {
+        status: 400,
+        headers,
+      });
+    }
+
+    let recipientCode = wallet.recipientCode;
+    if (!recipientCode) {
+      // If recipient code does not exist, create a new recipient
+      const recipientRes = await fetch(
+        "https://api.paystack.co/transferrecipient",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            type: "nuban",
+            name,
+            account_number,
+            bank_code,
+            currency: "NGN",
+          }),
+        }
+      );
+
+      const recipientData = await recipientRes.json();
+      console.log("Recipient error:", recipientData); // 👈 check this
+
+      if (!recipientData.status) {
+        return new Response(
+          JSON.stringify({
+            error: recipientData.message || "Failed to create recipient",
+          }),
+          { status: 400, headers }
+        );
+      }
+      recipientCode = recipientData.data.recipient_code;
+    }
+
+    // Initiate transfer
+    const transferRes = await fetch("https://api.paystack.co/transfer", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        source: "balance",
+        amount: amount * 100,
+        recipient: recipientCode,
+        reason: "User withdrawal",
+      }),
+    });
+
+    const transferData = await transferRes.json();
+
+    if (!transferData.status) {
+      return new Response(JSON.stringify({ error: transferData.message || "Transfer failed" }), {
+        status: 400,
+        headers,
+      });
+    }
+
+    // Update wallet balance
+    await ctx.runMutation(internal.wallet.updateBalance, {
+      walletId: wallet._id,
+      balance: wallet.balance - amount * 100,
+    });
+
+    // Save withdrawal transaction
+    const reference = await ctx.runAction(
+      api.actions.generateTransactionReference,
+      { type: "withdrawal" }
+    );
+    await ctx.runMutation(internal.transactions.create, {
+      userId: user._id,
+      walletId: wallet._id,
+      paystackReference: transferData.data.reference,
+      reference,
+      amount: amount * 100,
+      status: "pending",
+      type: "withdrawal",
+      description: "User withdrawal to bank account",
+    });
+
+    return new Response(JSON.stringify(transferData), { status: 200, headers });
   }),
 });
 

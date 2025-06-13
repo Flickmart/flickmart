@@ -132,6 +132,8 @@ export default defineSchema({
       v.literal("inactive"),
       v.literal("blocked")
     ),
+    recipientCode: v.optional(v.string()), // Paystack recipient code
+    paystackCustomerId: v.optional(v.string()), // Paystack customer ID
   }).index("by_user", ["userId"]),
 
   // All transactions for audit trail
@@ -157,11 +159,11 @@ export default defineSchema({
     reference: v.string(),
     paystackReference: v.optional(v.string()),
     description: v.string(),
-    bank: v.optional(v.string()), 
-    last4:v.optional(v.string()),
-    cardType: v.optional(v.string()), 
+    bank: v.optional(v.string()),
+    last4: v.optional(v.string()),
+    cardType: v.optional(v.string()),
     channel: v.optional(v.string()),
-    currency:v.optional(v.string()),
+    currency: v.optional(v.string()),
     fees: v.optional(v.number()), // Transaction fees
     paystackFees: v.optional(v.number()), // Paystack fees
     metadata: v.optional(
