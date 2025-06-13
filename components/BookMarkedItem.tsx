@@ -45,11 +45,9 @@ export default function BookedMarkedItem({
           width={1000}
         />
       </div>
-      <div className="flex gap-3 w-3/5 lg:justify-between flex-col capitalize">
+      <div className="flex gap-3 w-3/5 lg:justify-between flex-col py-3 capitalize">
         <div className="flex items-center justify-between">
-          <h1 className="text-sm lg:text-2xl font-semibold tracking-tighter">
-            {product.title}
-          </h1>
+          <h1 className="text-sm lg:text-2xl font-semibold">{product.title}</h1>
           <div
             onMouseEnter={() => setIsDelOpen(true)}
             onMouseLeave={() => setIsDelOpen(false)}
@@ -114,15 +112,15 @@ export default function BookedMarkedItem({
                 onNavigate: router.push,
               });
             }}
-            className="bg-flickmart text-white rounded-sm min-w-2/4 lg:w-1/4 text-xs flex justify-center min-w-1/4 items-center  lg:text-lg lg:py-2.5 gap-2 px-2 py-2 "
+            className="bg-flickmart text-white rounded-sm w-2/4 lg:w-1/4 text-xs flex justify-center min-w-1/4 items-center  lg:text-lg lg:py-2.5 gap-2 px-2 py-2 "
           >
             <MessageSquareText className="size-4" />
-            <span>Chat vendor</span>
+            <span>Chat</span>
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
             onClick={() => shareProduct({ title, description, productId: _id })}
-            className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm min-w-1/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
+            className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm w-2/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
           >
             <Share className="size-4" /> <span>Share</span>
           </motion.button>
