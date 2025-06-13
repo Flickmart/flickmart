@@ -6,6 +6,8 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "motion/react";
 
+const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
+
 export default function SearchOverlay({
   open,
   openSearch,
@@ -37,7 +39,7 @@ export default function SearchOverlay({
         <motion.div
           initial={{ y: "100%" }}
           animate={{ y: 0 }}
-          transition={{ duration: 0.2, type: "tween" }}
+          transition={transitionProps}
           className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
         >
           <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">
@@ -57,10 +59,10 @@ export default function SearchOverlay({
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
                 {(retrievePreviousInputs?.length ?? 0) > 0 && "recent searches"}
               </p>
-              {retrievePreviousInputs?.map((item, index) => {
+              {retrievePreviousInputs?.map((item) => {
                 return (
                   <div
-                    key={index}
+                    key={item._id}
                     className="px-4 py-4 cursor-pointer flex justify-between items-center hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
                   >
                     <p
@@ -69,7 +71,6 @@ export default function SearchOverlay({
                         router.push(`/search?query=${item.search}`);
                         openSearch(false);
                       }}
-                      key={index}
                     >
                       {item.search}
                     </p>
