@@ -30,12 +30,7 @@ export default function BookedMarkedItem({
   const [isDelOpen, setIsDelOpen] = useState(false);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-      className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm"
-    >
+    <div className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm">
       <div className="w-2/5 h-48 aspect-square flex lg:h-80 justify-center items-center">
         <Image
           src={product.images[0]}
@@ -126,6 +121,6 @@ export default function BookedMarkedItem({
           </motion.button>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }

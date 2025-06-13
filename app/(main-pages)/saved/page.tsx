@@ -6,6 +6,7 @@ import { useState } from "react";
 import BookedMarkedItem from "@/components/BookMarkedItem";
 import { SyncLoader } from "react-spinners";
 import Empty from "@/components/saved/Empty";
+import { motion } from "motion/react";
 
 function useBookmarks() {
   try {
@@ -35,7 +36,6 @@ export default function SavedPage() {
   const toggleWl = () => {
     setSelectedTab(true);
   };
-  console.log(wishlist);
   return (
     <main className="w-full flex flex-col h-[90vh] bg-gray-100 pb-12">
       <div className="w-full flex shadow-lg ">
@@ -67,7 +67,12 @@ export default function SavedPage() {
       ) : (
         <>
           {!selectedTab ? (
-            <div className="w-[95%] mx-auto flex flex-col gap-3 mt-3">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
+              className="w-[95%] mx-auto flex flex-col gap-3 mt-3"
+            >
               {saved?.length === 0 ? (
                 <Empty message="You have no saved items" />
               ) : (
@@ -79,9 +84,14 @@ export default function SavedPage() {
                   );
                 })
               )}
-            </div>
+            </motion.div>
           ) : (
-            <div className="w-[95%] mx-auto flex flex-col gap-3 mt-3">
+            <motion.div
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
+              className="bg-orange-600 w-[95%] mx-auto flex flex-col gap-3 mt-3"
+            >
               {wishlist?.length === 0 ? (
                 <Empty message="Your wishlist is empty" />
               ) : (
@@ -93,7 +103,7 @@ export default function SavedPage() {
                   );
                 })
               )}
-            </div>
+            </motion.div>
           )}
         </>
       )}
