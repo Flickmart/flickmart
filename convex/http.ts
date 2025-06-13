@@ -179,10 +179,17 @@ http.route({
     const data = await response.json();
     if (data.status) {
       try {
+        const reference = await ctx.runAction(
+          api.actions.generateTransactionReference,
+          {
+            type: "funding",
+          }
+        );
         await ctx.runMutation(internal.transactions.create, {
           userId: user._id,
           walletId: walletId,
-          reference: data.data.reference,
+          paystackReference: data.data.reference,
+          reference: reference,
           amount: amount * 100,
           status: "pending",
           type: "funding",
@@ -261,19 +268,42 @@ http.route({
     );
     const data = await response.json();
     if (data.status && data.data.status === "success") {
-      const transaction = await ctx.runQuery(api.transactions.getByReference, {
-        reference: reference,
-      });
+      const transaction = await ctx.runQuery(
+        api.transactions.getByPaystackReference,
+        {
+          reference: reference,
+        }
+      );
+      if (!transaction) {
+        return new Response(
+          JSON.stringify({ error: "Transaction not found" }),
+          {
+            status: 404,
+            headers: new Headers({
+              "Access-Control-Allow-Origin": "http://localhost:3000",
+              "Content-Type": "application/json",
+              Vary: "Origin",
+            }),
+          }
+        );
+      }
+
       if (transaction && transaction.status !== "success") {
-        await ctx.runMutation(api.transactions.update, {
+        await ctx.runMutation(internal.transactions.updateTransaction, {
           transactionId: transaction._id,
           status: "success",
+          bank: data.data.authorization.bank,
+          last4: data.data.authorization.last4,
+          cardType: data.data.authorization.card_type,
+          channel: data.data.channel,
+          currency: data.data.currency,
+          paystackFees: data.data.fees,
         });
         const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
           walletId: transaction.walletId,
         });
         if (wallet) {
-          await ctx.runMutation(api.wallet.updateBalance, {
+          await ctx.runMutation(internal.wallet.updateBalance, {
             walletId: wallet._id,
             balance: wallet.balance + transaction.amount,
           });
@@ -304,37 +334,90 @@ http.route({
   path: "/paystack/webhook",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const event = await request.json();
-    // Verify Paystack webhook signature
-    const paystackSignature = request.headers.get("x-paystack-signature");
-    const isValid = ctx.runAction(api.actions.verifyPaystackWebhook, {
-      payload: JSON.stringify(event),
-      signature: paystackSignature!,
-    });
-    if (!isValid) {
-      return new Response("Invalid signature", { status: 401 });
+    // Paystack Verified IP IPs
+    const PAYSTACK_IPS = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
+
+    // Helper function to check IP
+    function isPaystackIP(ip: string): boolean {
+      return PAYSTACK_IPS.includes(ip);
     }
 
-    if (event.event === "charge.success") {
-      const { reference, amount } = event.data;
-      const transaction = await ctx.runQuery(api.transactions.getByReference, {
-        reference: reference,
-      });
-      if (transaction && transaction.status !== "success") {
-        await ctx.runMutation(api.transactions.update, {
-          transactionId: transaction._id,
-          status: "success",
-        });
-        const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
-          walletId: transaction.walletId,
-        });
-        await ctx.runMutation(api.wallet.updateBalance, {
-          walletId: wallet!._id,
-          balance: wallet!.balance + amount,
-        });
+    try {
+      // Extract IP from request
+      const ipHeader = request.headers.get("x-forwarded-for") || "";
+      const ip = ipHeader.split(",")[0].trim();
+
+      // Verify IP (commented out for development, uncomment in production)
+      // if (!isPaystackIP(ip)) {
+      //   console.error("Invalid IP address:", ip);
+      //   return new Response("Invalid IP", { status: 401 });
+      // }
+
+      // Get the event payload
+      const event = await request.json();
+      console.log(event);
+      // Verify signature
+      const paystackSignature = request.headers.get("x-paystack-signature");
+      if (!paystackSignature) {
+        console.error("No Paystack signature found");
+        return new Response("No signature", { status: 401 });
       }
+
+      const isValid = await ctx.runAction(api.actions.verifyPaystackWebhook, {
+        payload: JSON.stringify(event),
+        signature: paystackSignature,
+      });
+
+      if (!isValid) {
+        console.error("Invalid Paystack signature");
+        return new Response("Invalid signature", { status: 401 });
+      }
+
+      // Process event
+      if (event.event === "charge.success") {
+        console.log(event);
+        console.log("Processing charge.success event");
+        const { reference, amount } = event.data;
+
+        // Find the transaction
+        const transaction = await ctx.runQuery(
+          api.transactions.getByPaystackReference,
+          {
+            reference: reference,
+          }
+        );
+
+        if (transaction && transaction.status !== "success") {
+          await ctx.runMutation(internal.transactions.updateTransaction, {
+            transactionId: transaction._id,
+            status: "success",
+            bank: event.data.authorization.bank,
+            last4: event.data.authorization.last4,
+            cardType: event.data.authorization.card_type,
+            channel: event.data.channel,
+            currency: event.data.currency,
+            paystackFees: event.data.fees,
+          });
+
+          // Get and update wallet
+          const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
+            walletId: transaction.walletId,
+          });
+
+          if (wallet) {
+            await ctx.runMutation(internal.wallet.updateBalance, {
+              walletId: wallet._id,
+              balance: wallet.balance + transaction.amount,
+            });
+          }
+        }
+      }
+
+      return new Response(null, { status: 200 });
+    } catch (error) {
+      console.error("Error processing Paystack webhook:", error);
+      return new Response("Internal server error", { status: 500 });
     }
-    return new Response(null, { status: 200 });
   }),
 });
 

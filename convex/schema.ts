@@ -157,6 +157,13 @@ export default defineSchema({
     reference: v.string(),
     paystackReference: v.optional(v.string()),
     description: v.string(),
+    bank: v.optional(v.string()), 
+    last4:v.optional(v.string()),
+    cardType: v.optional(v.string()), 
+    channel: v.optional(v.string()),
+    currency:v.optional(v.string()),
+    fees: v.optional(v.number()), // Transaction fees
+    paystackFees: v.optional(v.number()), // Paystack fees
     metadata: v.optional(
       v.object({
         orderId: v.optional(v.id("orders")),
@@ -168,7 +175,8 @@ export default defineSchema({
   })
     .index("by_user", ["userId"])
     .index("by_wallet", ["walletId"])
-    .index("by_reference", ["reference"]),
+    .index("by_reference", ["reference"])
+    .index("by_paystack_reference", ["paystackReference"]),
 
   transfers: defineTable({
     fromUserId: v.id("users"),
@@ -178,7 +186,6 @@ export default defineSchema({
     description: v.optional(v.string()),
     status: v.literal("completed"), // Always completed instantly
     reference: v.string(),
-    createdAt: v.number(),
   })
     .index("by_sender", ["fromUserId"])
     .index("by_recipient", ["toUserId"]),

@@ -17,77 +17,44 @@ import {
   TransactionHistorySkeleton,
   WalletPageSkeleton,
 } from "@/components/wallet/skeleton";
+import TransactionDetails from "@/components/wallet/transaction-details";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+
 import { PaystackButton } from "react-paystack";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
+import { useAuth } from "@clerk/nextjs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Id } from "@/convex/_generated/dataModel";
 
-interface Transaction {
-  id: string;
-  type: "deposit" | "withdrawal" | "transfer";
-  description: string;
+interface PaystackConfig {
+  email: string;
   amount: number;
-  date: string;
-  time: string;
+  publicKey: string;
+  reference: string;
 }
-
-const transactions: Transaction[] = [
-  {
-    id: "1",
-    type: "withdrawal",
-    description: "Amount withdrawn",
-    amount: -5922,
-    date: "oct 27th",
-    time: "15:64",
-  },
-  {
-    id: "2",
-    type: "transfer",
-    description: "Transfer from Ayorinde Peter",
-    amount: 1299,
-    date: "oct 27th",
-    time: "15:64",
-  },
-  {
-    id: "3",
-    type: "withdrawal",
-    description: "Amount withdrawn",
-    amount: -4500,
-    date: "oct 27th",
-    time: "15:64",
-  },
-  {
-    id: "4",
-    type: "withdrawal",
-    description: "Amount withdrawn",
-    amount: -6890,
-    date: "oct 27th",
-    time: "15:64",
-  },
-  {
-    id: "5",
-    type: "deposit",
-    description: "Amount withdrawn",
-    amount: -20000,
-    date: "oct 27th",
-    time: "15:64",
-  },
-  {
-    id: "6",
-    type: "deposit",
-    description: "Amount deposited",
-    amount: 70000,
-    date: "oct 27th",
-    time: "15:64",
-  },
-];
 
 export default function WalletPage() {
   const [showBalance, setShowBalance] = useState(true);
@@ -95,14 +62,30 @@ export default function WalletPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
-
-  const user = useQuery(api.users.current)
-
-  const balance = 50000.0;
+  const [amount, setAmount] = useState(0);
+  const [error, setError] = useState<string | null>("");
+  const [open, setOpen] = useState(false);
+  const [paystackReference, setPaystackReference] = useState<string>("");
+  const [isPaystackModalOpen, setIsPaystackModalOpen] = useState(false);
+  const [isInitializing, setIsInitializing] = useState(false);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
+
+  const user = useQuery(api.users.current);
+  const wallet = useQuery(
+    api.wallet.getWalletByUserId,
+    user ? { userId: user._id } : "skip"
+  );
+  const transactions = useQuery(
+    api.transactions.getByUserId,
+    user ? { userId: user._id } : "skip"
+  );
+
+  const { getToken } = useAuth();
+
+  const balance = wallet?.balance ? wallet?.balance / 100 : 0;
 
   const handleRefreshBalance = async () => {
     setIsRefreshingBalance(true);
@@ -118,46 +101,133 @@ export default function WalletPage() {
     setIsLoadingTransactions(false);
   };
 
-  const getTransactionIcon = (type: string) => {
-    switch (type) {
-      case "deposit":
-      case "transfer":
-        return (
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-            <ArrowDownToLine className="w-5 h-5 text-green-600" />
-          </div>
-        );
-      case "withdrawal":
-        return (
-          <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-            <ArrowUpFromLine className="w-5 h-5 text-orange-600" />
-          </div>
-        );
-      default:
-        return null;
+  const handleInitializePayment = async () => {
+    if (amount <= 0) {
+      setError("Please enter a valid amount.");
+      toast.error("Amount invalid");
+      return;
+    }
+    if (!user) {
+      setError("Log in to fund your wallet.");
+      return;
+    }
+    try {
+      setError(null);
+      setIsInitializing(true);
+      setIsPaystackModalOpen(true);
+      // Get the auth token from Clerk
+      const token = await getToken({ template: "convex" });
+      if (!token) {
+        setError("Unauthorised user");
+        setIsInitializing(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/initialize`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email: user.email, amount }),
+        }
+      );
+      const data = await response.json();
+      if (data.status) {
+        setPaystackReference(data.data.reference);
+      } else {
+        setError("Failed to initialize payment.");
+        toast.error("Failed to initialize payment.");
+        setIsPaystackModalOpen(false);
+      }
+    } catch (err) {
+      setError("Error initializing payment.");
+      setIsPaystackModalOpen(false);
+    } finally {
+      setIsInitializing(false);
     }
   };
 
-  const formatAmount = (amount: number) => {
-    const isPositive = amount > 0;
-    const formattedAmount = Math.abs(amount).toLocaleString();
-    return (
-      <span className={isPositive ? "text-green-600" : "text-red-500"}>
-        {isPositive ? "+ " : "- "}₦{formattedAmount}
-      </span>
-    );
+  const handlePaystackSuccess = async (response: { reference: string }) => {
+    console.log(response);
+    try {
+      // Get the auth token from Clerk
+      const token = await getToken({ template: "convex" });
+      if (!token) {
+        setError("User not authenticated.");
+        setIsPaystackModalOpen(false);
+        return;
+      }
+      const result = await fetch(
+        `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            reference: response.reference,
+            userId: user?._id,
+          }),
+        }
+      );
+      const data = await result.json();
+      if (data.status) {
+        toast.success("Payment successful! Wallet updated.");
+        setAmount(0);
+        setPaystackReference("");
+        setIsPaystackModalOpen(false);
+        setError(null);
+      } else {
+        toast.error("We coudn't verify your transaction");
+        setError("Payment verification failed.");
+        setIsPaystackModalOpen(false);
+      }
+    } catch (err) {
+      setError("Error verifying payment.");
+      setIsPaystackModalOpen(false);
+    }
   };
 
-  const filteredTransactions = transactions.filter((transaction) => {
+  const handlePaystackClose = () => {
+    setError("Payment cancelled.");
+    toast.info("Paystack transaction closed");
+    setPaystackReference("");
+    setIsPaystackModalOpen(false);
+  };
+
+  const paystackConfig: PaystackConfig = {
+    email: user?.email ?? "",
+    amount: amount * 100, // Convert to kobo
+    publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
+    reference: paystackReference,
+  };
+
+  const filteredTransactions = transactions?.filter((transaction) => {
     if (activeTab === "all") return true;
     if (activeTab === "deposits")
-      return transaction.type === "deposit" || transaction.type === "transfer";
+      return (
+        transaction.type === "funding" ||
+        transaction.type === "transfer_in" ||
+        transaction.type === "escrow_refund"
+      );
     if (activeTab === "withdrawals") return transaction.type === "withdrawal";
     return true;
   });
 
-  if (isLoading) {
+  const isLoadingUser = user === undefined;
+  const isLoadingData =
+    isLoadingUser || wallet === undefined || transactions === undefined;
+  if (isLoadingData || isLoading) {
     return <WalletPageSkeleton />;
+  }
+
+  // Ensure user exists before proceeding
+  if (!user) {
+    return <div>User not found</div>;
   }
 
   return (
@@ -168,18 +238,20 @@ export default function WalletPage() {
           {/* Header */}
           <CardHeader className="bg-white p-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <Avatar className="w-12 h-12">
-                  <AvatarImage
-                    src="/placeholder.svg?height=48&width=48"
-                    alt="Mbah Smith"
-                  />
-                  <AvatarFallback>MS</AvatarFallback>
+                  <AvatarImage src={user.imageUrl} alt={user.name} />
+                  <AvatarFallback>
+                    {user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h2 className="font-semibold text-lg">Mbah Smith</h2>
+                  <h2 className="font-semibold text-lg">{user.name}</h2>
                   <p className="text-sm text-gray-500">
-                    welcome, lets make payment
+                    Welcome, let's make payment
                   </p>
                 </div>
               </div>
@@ -231,10 +303,116 @@ export default function WalletPage() {
                   {/* Action Buttons */}
                   <div className="bg-white rounded-2xl p-4 mx-4">
                     <div className="grid grid-cols-2 gap-4">
-                      <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
-                        <ArrowDownToLine className="w-5 h-5" />
-                        Deposit
-                      </Button>
+                      <Dialog open={open} onOpenChange={setOpen}>
+                        <form>
+                          <DialogTrigger asChild>
+                            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
+                              <ArrowDownToLine className="w-5 h-5" />
+                              Deposit
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Deposit money</DialogTitle>
+                              <DialogDescription>
+                                Deposit money into your wallet using a bank
+                                transfer or card payment.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4">
+                              <div className="grid gap-3">
+                                <Label htmlFor="name-1">Amount</Label>
+                                <Input
+                                  id="name-1"
+                                  name="deposit-amount"
+                                  onChange={(e) => {
+                                    setAmount(Number(e.target.value));
+                                  }}
+                                  type="number"
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              {paystackReference ? (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Cancel Payment?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to cancel this
+                                        payment? Your payment initialization
+                                        will be lost.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        No, continue payment
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          setPaystackReference("");
+                                          setIsPaystackModalOpen(false);
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        Yes, cancel payment
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              ) : (
+                                <DialogClose asChild>
+                                  <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                              )}
+                              {error && (
+                                <p className="text-red-500 text-sm mb-2">
+                                  {error}
+                                </p>
+                              )}
+                              {paystackReference && isPaystackModalOpen ? (
+                                <PaystackButton
+                                  {...paystackConfig}
+                                  onSuccess={handlePaystackSuccess}
+                                  onClose={handlePaystackClose}
+                                  className="w-full"
+                                >
+                                  <Button
+                                    onClick={() => setOpen(false)}
+                                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
+                                  >
+                                    Deposit
+                                  </Button>
+                                </PaystackButton>
+                              ) : (
+                                <Button
+                                  onClick={handleInitializePayment}
+                                  disabled={isInitializing}
+                                  className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
+                                >
+                                  {isInitializing ? (
+                                    <>
+                                      <RefreshCw className="w-5 h-5 animate-spin" />
+                                      Initializing...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ArrowDownToLine className="w-5 h-5" />
+                                      Deposit
+                                    </>
+                                  )}
+                                </Button>
+                              )}
+                            </DialogFooter>
+                          </DialogContent>
+                        </form>
+                      </Dialog>
+
                       <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
                         <ArrowUpFromLine className="w-5 h-5" />
                         Withdraw
@@ -319,24 +497,14 @@ export default function WalletPage() {
 
             {/* Transaction Content */}
             <div className="space-y-3">
-              {filteredTransactions.map((transaction) => (
-                <div
-                  key={transaction.id}
-                  className="flex items-center gap-3 p-3 bg-white rounded-lg"
-                >
-                  {getTransactionIcon(transaction.type)}
-                  <div className="flex-1">
-                    <p className="font-medium text-sm">
-                      {transaction.description}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {transaction.date}, {transaction.time}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    {formatAmount(transaction.amount)}
-                  </div>
-                </div>
+              {filteredTransactions?.map((transaction) => (
+                <TransactionDetails
+                  key={transaction._id}
+                  transaction={transaction}
+                  user={user}
+                  handlePaystackSuccess={handlePaystackSuccess}
+                  handlePaystackClose={handlePaystackClose}
+                />
               ))}
             </div>
           </div>
@@ -350,17 +518,21 @@ export default function WalletPage() {
             {/* Header */}
             <CardHeader className="bg-white  p-6 border-b">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="w-16 h-16">
-                    <AvatarImage
-                      src="/placeholder.svg?height=64&width=64"
-                      alt="Mbah Smith"
-                    />
-                    <AvatarFallback>MS</AvatarFallback>
+                <div className="flex items-center gap-3">
+                  <Avatar className="w-12 h-12">
+                    <AvatarImage src={user.imageUrl} alt={user.name} />
+                    <AvatarFallback>
+                      {user.name
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")}
+                    </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h2 className="font-semibold text-2xl">Mbah Smith</h2>
-                    <p className="text-gray-500">welcome, lets make payment</p>
+                    <h2 className="font-semibold text-lg">{user.name}</h2>
+                    <p className="text-sm text-gray-500">
+                      Welcome, let's make payment
+                    </p>
                   </div>
                 </div>
                 <div className="relative">
@@ -411,10 +583,114 @@ export default function WalletPage() {
                     {/* Action Buttons */}
                     <div className="bg-white rounded-3xl p-6 mx-8">
                       <div className="grid grid-cols-2 gap-6">
-                        <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
-                          <ArrowDownToLine className="w-6 h-6" />
-                          Deposit
-                        </Button>
+                        <Dialog open={open} onOpenChange={setOpen}>
+                          <DialogTrigger asChild>
+                            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
+                              <ArrowDownToLine className="w-6 h-6" />
+                              Deposit
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Deposit money</DialogTitle>
+                              <DialogDescription>
+                                Deposit money into your wallet using a bank
+                                transfer or card payment.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4">
+                              <div className="grid gap-3">
+                                <Label htmlFor="name-1">Amount</Label>
+                                <Input
+                                  id="name-1"
+                                  name="deposit-amount"
+                                  type="number"
+                                  onChange={(e) => {
+                                    setAmount(Number(e.target.value));
+                                  }}
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              {paystackReference ? (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="outline">Cancel</Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Cancel Payment?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to cancel this
+                                        payment? Your payment initialization
+                                        will be lost.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        No, continue payment
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => {
+                                          setPaystackReference("");
+                                          setIsPaystackModalOpen(false);
+                                          setOpen(false);
+                                        }}
+                                      >
+                                        Yes, cancel payment
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              ) : (
+                                <DialogClose asChild>
+                                  <Button variant="outline">Cancel</Button>
+                                </DialogClose>
+                              )}
+                              {error && (
+                                <p className="text-red-500 text-sm mb-2">
+                                  {error}
+                                </p>
+                              )}
+                              {paystackReference && isPaystackModalOpen ? (
+                                <PaystackButton
+                                  {...paystackConfig}
+                                  onSuccess={handlePaystackSuccess}
+                                  onClose={handlePaystackClose}
+                                  className="w-full"
+                                >
+                                  <Button
+                                    onClick={() => setOpen(false)}
+                                    className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center gap-2 w-full"
+                                  >
+                                    Continue payment
+                                  </Button>
+                                </PaystackButton>
+                              ) : (
+                                <Button
+                                  onClick={handleInitializePayment}
+                                  disabled={isInitializing}
+                                  className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2 "
+                                >
+                                  {isInitializing ? (
+                                    <>
+                                      <RefreshCw className="w-5 h-5 animate-spin" />
+                                      Initializing...
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ArrowDownToLine className="w-5 h-5" />
+                                      Deposit
+                                    </>
+                                  )}
+                                </Button>
+                              )}{" "}
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+
                         <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
                           <ArrowUpFromLine className="w-6 h-6" />
                           Withdraw
@@ -505,24 +781,14 @@ export default function WalletPage() {
 
                   {/* Transaction Content */}
                   <div className="space-y-4">
-                    {filteredTransactions.map((transaction) => (
-                      <div
-                        key={transaction.id}
-                        className="flex items-center gap-4 p-4 border-b border-gray-100 last:border-b-0"
-                      >
-                        {getTransactionIcon(transaction.type)}
-                        <div className="flex-1">
-                          <p className="font-medium">
-                            {transaction.description}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {transaction.date}, {transaction.time}
-                          </p>
-                        </div>
-                        <div className="text-right text-lg font-medium">
-                          {formatAmount(transaction.amount)}
-                        </div>
-                      </div>
+                    {filteredTransactions?.map((transaction) => (
+                      <TransactionDetails
+                        key={transaction._id}
+                        transaction={transaction}
+                        user={user}
+                        handlePaystackSuccess={handlePaystackSuccess}
+                        handlePaystackClose={handlePaystackClose}
+                      />
                     ))}
                   </div>
                 </div>
