@@ -51,19 +51,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import SearchOverlay from "@/components/SearchOverlay";
+import Filters from "@/components/Filters";
+import { useFilters } from "@/hooks/useFilters";
 
 interface FilterObjectType {
   min: number;
   max: number;
   location: string;
   priceRange: string;
-}
-
-interface MobileFilterType {
-  category: string;
-  location: string;
-  minPrice: number;
-  maxPrice?: number;
 }
 
 const subCategories = {
@@ -182,33 +177,6 @@ function reducer(
   }
 }
 
-const filterObject = [
-  {
-    label: "category",
-    options: [
-      "all",
-      "vehicles",
-      "homes",
-      "food",
-      "mobiles",
-      "appliances",
-      "fashion",
-      "electronics",
-      "pets",
-      "beauty",
-      "services",
-    ],
-  },
-  {
-    label: "location",
-    options: ["all", "nsukka", "enugu"],
-  },
-  {
-    label: "price",
-    options: ["all", "below 100k", "100k - 500k", "500k - 1.5m", "1.5m - 3.5m"],
-  },
-];
-
 export default function DetailedCategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
@@ -219,11 +187,7 @@ export default function DetailedCategoryPage() {
   const [state, dispatch] = useReducer(reducer, initialState);
   const { min, max, location, priceRange } = state;
   const [searchOpen, setSearchOpen] = useState(false);
-  const [filterState, setFilterState] = useState<MobileFilterType>({
-    category: "",
-    location: "",
-    minPrice: 0,
-  });
+  const { filterState, handleFilterState } = useFilters();
 
   // Get the search parameter
   const searchParams = useSearchParams();
@@ -233,6 +197,7 @@ export default function DetailedCategoryPage() {
     query: query || "",
     type: "search",
   }) as Array<Doc<"product">>;
+
   const router = useRouter();
 
   const {
@@ -245,41 +210,10 @@ export default function DetailedCategoryPage() {
     toggleSidebar,
   } = useSidebar();
 
-  function handleFilterState(val: string, label: string) {
-    const value = val === "all" ? "" : val;
-    switch (label) {
-      case "category":
-        return setFilterState({
-          ...filterState,
-          category: value,
-        });
-      case "location":
-        return setFilterState({ ...filterState, location: value });
-      default:
-        let minPrice = 0;
-        let maxPrice = 0;
-        if (value === "below 100k") {
-          minPrice = 0;
-          maxPrice = 10 ** 5 - 1;
-        } else if (value === "100k - 500k") {
-          minPrice = 10 ** 5;
-          maxPrice = 5 * 10 ** 5 - 1;
-        } else if (value === "500k - 1.5m") {
-          minPrice = 5 * 10 ** 5;
-          maxPrice = 1.5 * 10 ** 6 - 1;
-        } else if (value === "1.5m - 3.5m") {
-          minPrice = 1.5 * 10 ** 6;
-          maxPrice = 3.5 * 10 ** 6;
-        }
-        const filter: MobileFilterType = { ...filterState, minPrice, maxPrice };
-        !maxPrice && delete filter.maxPrice;
-
-        return setFilterState(filter);
-    }
-  }
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
+
   return (
     <main className=" min-h-screen flex-col lg:flex-row flex w-screen ">
       {isMobile && (
@@ -435,31 +369,7 @@ export default function DetailedCategoryPage() {
         <h2 className="text-lg lg:text-2xl capitalize p-3  lg:py-5 font-semibold">
           {query} in Nigeria
         </h2>
-        <div className="lg:hidden flex text-[12px] gap-2 items-center my-2">
-          {isMobile && <SidebarTrigger />}
-          {filterObject.map((item) => {
-            return (
-              <Select
-                key={item.label}
-                onValueChange={(value) => handleFilterState(value, item.label)}
-              >
-                <SelectTrigger className="min-w-20 capitalize">
-                  <SelectValue placeholder={item.label} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup className="capitalize">
-                    <SelectLabel>{item.label}</SelectLabel>
-                    {item.options.map((option) => (
-                      <SelectItem key={option} value={option}>
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            );
-          })}
-        </div>
+        <Filters isMobile={isMobile} handleFilterState={handleFilterState} />
         <div className="mt-3 flex flex-col lg:h-[90vh]">
           <div className="flex px-3 mt-2 lg:px-0 justify-between items-center">
             <span>Sort By:</span>

@@ -32,7 +32,9 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
       )}
     >
       <button
-        onClick={() => router.back()}
+        onClick={() =>
+          pathname.includes("/categories") ? router.push("/") : router.back()
+        }
         className="flex items-center transition-colors text-flickmart-gray hover:text-flickmart duration-300 text-sm capitalize"
       >
         <ChevronLeft size={30} strokeWidth={1.5} />

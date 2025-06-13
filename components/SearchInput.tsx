@@ -88,10 +88,10 @@ export default function SearchInput({
         {isMobile && !isOverlayOpen ? (
           <div
             onClick={() => openSearch && openSearch(true)}
-            className="flex cursor-pointer h-full bg-gray-100  text-gray-500 p-2.5 px-4 gap-5 items-center mb-2"
+            className="flex cursor-pointer h-full bg-gray-100  text-gray-500 p-2 lg:p-2.5 px-4 gap-5 items-center mb-2"
           >
-            <Search />
-            <span className="lg:text-lg">
+            <Search className="size-4" />
+            <span className="text-sm lg:text-lg">
               {searchInput || "What are you looking for?"}
             </span>
           </div>
