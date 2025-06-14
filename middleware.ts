@@ -16,6 +16,10 @@ export function middleware(request: NextRequest) {
   if (auth === validAuth) {
     return NextResponse.next();
   }
+  
+  response.headers.set('Cache-Control', 'no-store')
+    return response
+}
 
   return new Response("Authentication required", {
     status: 401,
