@@ -1,5 +1,13 @@
 "use client";
-import { Mail, MapPin, Star, Facebook, Instagram, Twitter } from "lucide-react";
+import {
+  Mail,
+  MapPin,
+  Star,
+  Facebook,
+  Instagram,
+  Twitter,
+  ArrowLeft,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,7 +24,7 @@ import {
 import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 
 // This would typically come from an API or database
@@ -69,22 +77,30 @@ export default function PublicProfile() {
   const userProducts = useQuery(api.product.getByUserId, {
     userId: user?._id as Id<"users">,
   });
+  const router = useRouter();
 
   return (
     <div className="min-h-screen bg-gray-50/50 px-4 pb-10 pt-0 lg:p-8">
       <div className="mx-auto max-w-5xl space-y-5">
-        <Breadcrumb className="bg-white py-7 pl-2">
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Personal</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
+        <div className="flex items-center gap-2 text-gray-600">
+          <ArrowLeft
+            className="cursor-pointer size-7 "
+            onClick={() => router.push("/")}
+          />
+          <Breadcrumb className="bg-white py-7 pl-2">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Personal</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
         {/* Header */}
+
         <Card className="p-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-4">
@@ -120,7 +136,9 @@ export default function PublicProfile() {
             </div>
             <div className="flex flex-col gap-2 ">
               <Button>
-                <Link href={`/settings/personal/update`}>Update</Link>
+                <Link href={`/settings/personal/update`} className="size-full">
+                  Edit Profile
+                </Link>
               </Button>
               <p className="text-sm text-muted-foreground">
                 Member since{" "}
@@ -168,22 +186,21 @@ export default function PublicProfile() {
                   .reverse()
                   .slice(0, 3)
                   .map((listing) => (
-                    <div
-                      key={listing._id}
-                      className="border rounded-lg overflow-hidden"
-                    >
-                      <img
-                        src={listing.images[0] || "/placeholder.svg"}
-                        alt={listing.title}
-                        className="w-full h-32 object-cover"
-                      />
-                      <div className="p-2">
-                        <h3 className="font-medium">{listing.title}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {listing.price}
-                        </p>
+                    <Link key={listing._id} href={`/product/${listing._id}`}>
+                      <div className="border rounded-lg overflow-hidden">
+                        <img
+                          src={listing.images[0] || "/placeholder.svg"}
+                          alt={listing.title}
+                          className="w-full h-32 object-cover"
+                        />
+                        <div className="p-2">
+                          <h3 className="font-medium">{listing.title}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            {listing.price}
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                    </Link>
                   ))}
               </div>
             </Card>

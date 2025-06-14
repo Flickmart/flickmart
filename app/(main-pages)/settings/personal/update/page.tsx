@@ -37,7 +37,7 @@ export default function PersonalDetailsPage() {
       <header className="text-gray-500">
         {isMobile && (
           <ArrowLeft
-            className="cursor-pointer size-8 "
+            className="cursor-pointer size-7 "
             onClick={() => router.push("/settings/personal")}
           />
         )}
