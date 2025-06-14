@@ -71,18 +71,21 @@ export default function SavedPage() {
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-              className="w-[95%] mx-auto pb-5 flex flex-col gap-3 mt-3"
+              className="w-[95%] mx-auto pb-10 flex flex-col gap-3 mt-3"
             >
               {saved?.length === 0 ? (
                 <Empty message="You have no saved items" />
               ) : (
-                saved?.map((item) => {
-                  return (
-                    <Link key={item?._id} href={`/product/${item?._id}`}>
-                      <BookedMarkedItem type="saved" product={item!} />
-                    </Link>
-                  );
-                })
+                saved
+                  ?.slice()
+                  .reverse()
+                  .map((item) => {
+                    return (
+                      <Link key={item?._id} href={`/product/${item?._id}`}>
+                        <BookedMarkedItem type="saved" product={item!} />
+                      </Link>
+                    );
+                  })
               )}
             </motion.div>
           ) : (
@@ -95,13 +98,16 @@ export default function SavedPage() {
               {wishlist?.length === 0 ? (
                 <Empty message="Your wishlist is empty" />
               ) : (
-                wishlist?.map((item) => {
-                  return (
-                    <Link key={item?._id} href={`/product/${item?._id}`}>
-                      <BookedMarkedItem type="wishlist" product={item!} />
-                    </Link>
-                  );
-                })
+                wishlist
+                  ?.slice()
+                  .reverse()
+                  .map((item) => {
+                    return (
+                      <Link key={item?._id} href={`/product/${item?._id}`}>
+                        <BookedMarkedItem type="wishlist" product={item!} />
+                      </Link>
+                    );
+                  })
               )}
             </motion.div>
           )}
