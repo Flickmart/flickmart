@@ -140,7 +140,7 @@ export default function PublicProfile() {
                   Edit Profile
                 </Link>
               </Button>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm pt-1.5 text-muted-foreground">
                 Member since{" "}
                 {user?._creationTime
                   ? new Date(user._creationTime).toLocaleDateString("en-US", {
@@ -187,16 +187,16 @@ export default function PublicProfile() {
                   .slice(0, 3)
                   .map((listing) => (
                     <Link key={listing._id} href={`/product/${listing._id}`}>
-                      <div className="border rounded-lg overflow-hidden">
+                      <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
                         <img
                           src={listing.images[0] || "/placeholder.svg"}
                           alt={listing.title}
                           className="w-full h-32 object-cover"
                         />
-                        <div className="p-2">
+                        <div className="p-2 space-y-1">
                           <h3 className="font-medium">{listing.title}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {listing.price}
+                            &#8358;{listing.price.toLocaleString("en-US")}
                           </p>
                         </div>
                       </div>
