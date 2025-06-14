@@ -14,12 +14,12 @@ export function middleware(request: NextRequest) {
     "Basic " + Buffer.from(`${USER}:${PASS}`).toString("base64");
 
   if (auth === validAuth) {
-    return NextResponse.next();
+    const response = NextResponse.next()
+    
+    response.headers.set('Cache-Control', 'no-store')
+    return response
   }
   
-  response.headers.set('Cache-Control', 'no-store')
-    return response
-}
 
   return new Response("Authentication required", {
     status: 401,
