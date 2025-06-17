@@ -147,7 +147,11 @@ export default defineSchema({
       v.literal("transfer_out"), // P2P sent
       v.literal("escrow_freeze"), // Funds frozen for order
       v.literal("escrow_release"), // Funds released to seller
-      v.literal("escrow_refund") // Funds refunded to buyer
+      v.literal("escrow_refund"), // Funds refunded to buyer
+      v.literal("ad_posting"), // Payment for posting an ad
+      v.literal("ad_promotion"), // Payment for promoting an ad
+      v.literal("subscription"), // Payment for subscription
+      v.literal("refund") // General refund
     ),
     amount: v.number(),
     status: v.union(
@@ -172,6 +176,8 @@ export default defineSchema({
         recipientUserId: v.optional(v.id("users")),
         transferId: v.optional(v.id("transfers")),
         escrowId: v.optional(v.id("escrows")),
+        adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
+        plan: v.optional(v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))), // Ad plan type
       })
     ),
   })

@@ -486,7 +486,6 @@ http.route({
   }),
 });
 
-
 http.route({
   path: "/paystack/list-banks",
   method: "OPTIONS",
@@ -704,10 +703,13 @@ http.route({
     const { account_number, bank_code } = await request.json();
 
     if (!account_number || !bank_code) {
-      return new Response(JSON.stringify({ error: "Missing required fields" }), {
-        status: 400,
-        headers,
-      });
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers,
+        }
+      );
     }
 
     try {
@@ -734,6 +736,129 @@ http.route({
       return new Response(JSON.stringify(data), { status: 200, headers });
     } catch (error) {
       console.error("Error verifying account:", error);
+      return new Response(JSON.stringify({ error: "Internal server error" }), {
+        status: 500,
+        headers,
+      });
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/charge-ad",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/charge-ad",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const headers = new Headers({
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+      Vary: "Origin",
+    });
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers,
+      });
+    }
+
+    const { amount, plan, userId, walletId } = await request.json();
+
+    if (!amount || !plan || !userId || !walletId) {
+      return new Response(
+        JSON.stringify({ error: "Missing required fields" }),
+        {
+          status: 400,
+          headers,
+        }
+      );
+    }
+
+    try {
+      // Get wallet
+      const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
+        walletId,
+      });
+
+      if (!wallet) {
+        return new Response(JSON.stringify({ error: "Wallet not found" }), {
+          status: 404,
+          headers,
+        });
+      }
+
+      // Check if user has sufficient balance
+      if (wallet.balance < amount * 100) {
+        return new Response(JSON.stringify({ error: "Insufficient balance" }), {
+          status: 400,
+          headers,
+        });
+      }
+
+      // Generate transaction reference
+      const reference = await ctx.runAction(
+        api.actions.generateTransactionReference,
+        {
+          type: "ad_posting",
+        }
+      );
+
+      // Create transaction record
+      await ctx.runMutation(internal.transactions.create, {
+        userId,
+        walletId,
+        reference,
+        amount: amount * 100,
+        status: "success",
+        type: "ad_posting",
+        description: `Payment for ${plan} ad posting plan`,
+      });
+
+      // Update wallet balance
+      await ctx.runMutation(internal.wallet.updateBalance, {
+        walletId,
+        balance: wallet.balance - amount * 100,
+      });
+
+      return new Response(
+        JSON.stringify({
+          status: true,
+          message: "Payment successful",
+          data: {
+            reference,
+            amount: amount * 100,
+            plan,
+          },
+        }),
+        { status: 200, headers }
+      );
+    } catch (error) {
+      console.error("Error processing ad posting charge:", error);
       return new Response(JSON.stringify({ error: "Internal server error" }), {
         status: 500,
         headers,
