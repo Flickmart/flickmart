@@ -47,7 +47,6 @@ import {
   AlertDialogDescription,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Id } from "@/convex/_generated/dataModel";
 
 interface PaystackConfig {
   email: string;
@@ -65,13 +64,30 @@ export default function WalletPage() {
   const [amount, setAmount] = useState(0);
   const [error, setError] = useState<string | null>("");
   const [open, setOpen] = useState(false);
+  const [withdrawOpen, setWithdrawOpen] = useState(false);
   const [paystackReference, setPaystackReference] = useState<string>("");
   const [isPaystackModalOpen, setIsPaystackModalOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
+  const [isLoadingBanks, setIsLoadingBanks] = useState(false);
+  const [banks, setBanks] = useState<any[]>([]);
+  const [selectedBank, setSelectedBank] = useState<string>("");
+  const [accountNumber, setAccountNumber] = useState<string>("");
+  const [accountName, setAccountName] = useState<string>("");
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
+  const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
+  const [recipientDetails, setRecipientDetails] = useState<any>(null);
+  const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
 
   useEffect(() => {
     setIsLoading(false);
   }, []);
+
+  // Fetch banks when withdrawal dialog opens
+  useEffect(() => {
+    if (withdrawOpen) {
+      fetchBanks();
+    }
+  }, [withdrawOpen]);
 
   const user = useQuery(api.users.current);
   const wallet = useQuery(
@@ -99,42 +115,6 @@ export default function WalletPage() {
     // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000));
     setIsLoadingTransactions(false);
-  };
-
-  const handleWithdraw = async () => {
-    if (!user) {
-      setError("Log in to fund your wallet.");
-      return;
-    }
-    try {
-      setError(null);
-         // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
-      if (!token) {
-        setError("Unauthorised user");
-        setIsInitializing(false);
-        return;
-      }
-      const response = await fetch(
-         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/withdraw`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            account_number: "9042350500",
-            bank_code: "999992", // Opay as example
-            amount: 5000, // NGN 5000
-            name: "Ebuka Dev",
-          }),
-        }
-      );
-    } catch (err) {
-      setError("Error withdrawing funds.");
-      toast.error("Error withdrawing funds.");
-    }
   };
 
   const handleInitializePayment = async () => {
@@ -235,11 +215,173 @@ export default function WalletPage() {
     setIsPaystackModalOpen(false);
   };
 
+  const fetchBanks = async () => {
+    try {
+      setIsLoadingBanks(true);
+      setError(null);
+      
+      // Get the auth token from Clerk
+      const token = await getToken({ template: "convex" });
+      if (!token) {
+        setError("Unauthorised user");
+        setIsLoadingBanks(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/list-banks`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      const data = await response.json();
+      if (data.status) {
+        setBanks(data.data);
+      } else {
+        setError("Failed to fetch banks.");
+        toast.error("Failed to fetch banks.");
+      }
+    } catch (err) {
+      setError("Error fetching banks.");
+      toast.error("Error fetching banks.");
+    } finally {
+      setIsLoadingBanks(false);
+    }
+  };
+
+  const verifyAccount = async () => {
+    if (!accountNumber || !selectedBank) {
+      setError("Please enter account number and select bank");
+      return;
+    }
+
+    try {
+      setIsVerifyingAccount(true);
+      setError(null);
+      
+      // Get the auth token from Clerk
+      const token = await getToken({ template: "convex" });
+      if (!token) {
+        setError("Unauthorised user");
+        setIsVerifyingAccount(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify-account`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 
+            account_number: accountNumber,
+            bank_code: selectedBank
+          }),
+        }
+      );
+      
+      const data = await response.json();
+      if (data.status) {
+        setRecipientDetails(data.data);
+        setAccountName(data.data.account_name);
+        setVerifyDialogOpen(true);
+      } else {
+        setError(data.message || "Failed to verify account");
+        toast.error(data.message || "Failed to verify account");
+      }
+    } catch (err) {
+      setError("Error verifying account");
+      toast.error("Error verifying account");
+    } finally {
+      setIsVerifyingAccount(false);
+    }
+  };
+
+  const handleWithdraw = async () => {
+    if (amount <= 0) {
+      setError("Please enter a valid amount.");
+      toast.error("Amount invalid");
+      return;
+    }
+    
+    if (!selectedBank) {
+      setError("Please select a bank.");
+      toast.error("Bank selection required");
+      return;
+    }
+    
+    if (!accountNumber || accountNumber.length !== 10) {
+      setError("Please enter a valid 10-digit account number.");
+      toast.error("Invalid account number");
+      return;
+    }
+    
+    if (!user) {
+      setError("Log in to withdraw from your wallet.");
+      return;
+    }
+    
+    try {
+      setError(null);
+      setIsWithdrawing(true);
+      
+      // Get the auth token from Clerk
+      const token = await getToken({ template: "convex" });
+      if (!token) {
+        setError("Unauthorised user");
+        setIsWithdrawing(false);
+        return;
+      }
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/withdraw`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ 
+            amount, 
+            bankCode: selectedBank,
+            accountNumber,
+            accountName: accountName || "Not Verified"
+          }),
+        }
+      );
+      
+      const data = await response.json();
+      if (data.status) {
+        toast.success("Withdrawal initiated successfully!");
+        setAmount(0);
+        setSelectedBank("");
+        setAccountNumber("");
+        setAccountName("");
+        setWithdrawOpen(false);
+      } else {
+        setError(data.message || "Failed to process withdrawal.");
+        toast.error(data.message || "Failed to process withdrawal.");
+      }
+    } catch (err) {
+      setError("Error processing withdrawal.");
+      toast.error("Error processing withdrawal.");
+    } finally {
+      setIsWithdrawing(false);
+    }
+  };
+
   const paystackConfig: PaystackConfig = {
     email: user?.email ?? "",
     amount: amount * 100, // Convert to kobo
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
-    reference: paystackReference, 
+    reference: paystackReference,
   };
 
   const filteredTransactions = transactions?.filter((transaction) => {
@@ -449,10 +591,99 @@ export default function WalletPage() {
                         </form>
                       </Dialog>
 
-                      <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2" onClick={handleWithdraw}>
-                        <ArrowUpFromLine className="w-5 h-5" />
-                        Withdraw
-                      </Button>
+                      <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+                        <DialogTrigger asChild>
+                          <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
+                            <ArrowUpFromLine className="w-5 h-5" />
+                            Withdraw
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle>Withdraw money</DialogTitle>
+                            <DialogDescription>
+                              Withdraw money from your wallet to your bank account.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4">
+                            <div className="grid gap-3">
+                              <Label htmlFor="withdraw-amount">Amount</Label>
+                              <Input
+                                id="withdraw-amount"
+                                name="withdraw-amount"
+                                type="number"
+                                onChange={(e) => {
+                                  setAmount(Number(e.target.value));
+                                }}
+                              />
+                            </div>
+                            <div className="grid gap-3">
+                              <Label htmlFor="bank-select">Select Bank</Label>
+                              {isLoadingBanks ? (
+                                <div className="flex items-center justify-center p-2">
+                                  <RefreshCw className="w-5 h-5 animate-spin" />
+                                  <span className="ml-2">Loading banks...</span>
+                                </div>
+                              ) : (
+                                <select
+                                  id="bank-select"
+                                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                  value={selectedBank}
+                                  onChange={(e) => setSelectedBank(e.target.value)}
+                                >
+                                  <option value="">Select a bank</option>
+                                  {banks.map((bank) => (
+                                    <option key={bank.code} value={bank.code}>
+                                      {bank.name}
+                                    </option>
+                                  ))}
+                                </select>
+                              )}
+                            </div>
+                            <div className="grid gap-3">
+                              <Label htmlFor="account-number">Account Number</Label>
+                              <Input
+                                id="account-number"
+                                name="account-number"
+                                type="text"
+                                maxLength={10}
+                                value={accountNumber}
+                                onChange={(e) => {
+                                  setAccountNumber(e.target.value.replace(/\D/g, ''));
+                                }}
+                                placeholder="Enter 10-digit account number"
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button variant="outline">Cancel</Button>
+                            </DialogClose>
+                            {error && (
+                              <p className="text-red-500 text-sm mb-2">
+                                {error}
+                              </p>
+                            )}
+                            <Button
+                              onClick={verifyAccount}
+                              disabled={isVerifyingAccount}
+                              className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+                            >
+                              {isVerifyingAccount ? (
+                                <>
+                                  <RefreshCw className="w-5 h-5 animate-spin" />
+                                  Verifying...
+                                </>
+                              ) : (
+                                <>
+                                  <ArrowUpFromLine className="w-5 h-5" />
+                                  Verify Account
+                                </>
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     </div>
                   </div>
                 </div>
@@ -727,10 +958,99 @@ export default function WalletPage() {
                           </DialogContent>
                         </Dialog>
 
-                        <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3" onClick={handleWithdraw}>
-                          <ArrowUpFromLine className="w-6 h-6" />
-                          Withdraw
-                        </Button>
+                        <Dialog open={withdrawOpen} onOpenChange={setWithdrawOpen}>
+                          <DialogTrigger asChild>
+                            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
+                              <ArrowUpFromLine className="w-6 h-6" />
+                              Withdraw
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Withdraw money</DialogTitle>
+                              <DialogDescription>
+                                Withdraw money from your wallet to your bank account.
+                              </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4">
+                              <div className="grid gap-3">
+                                <Label htmlFor="withdraw-amount-desktop">Amount</Label>
+                                <Input
+                                  id="withdraw-amount-desktop"
+                                  name="withdraw-amount-desktop"
+                                  type="number"
+                                  onChange={(e) => {
+                                    setAmount(Number(e.target.value));
+                                  }}
+                                />
+                              </div>
+                              <div className="grid gap-3">
+                                <Label htmlFor="bank-select-desktop">Select Bank</Label>
+                                {isLoadingBanks ? (
+                                  <div className="flex items-center justify-center p-2">
+                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    <span className="ml-2">Loading banks...</span>
+                                  </div>
+                                ) : (
+                                  <select
+                                    id="bank-select-desktop"
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    value={selectedBank}
+                                    onChange={(e) => setSelectedBank(e.target.value)}
+                                  >
+                                    <option value="">Select a bank</option>
+                                    {banks.map((bank) => (
+                                      <option key={bank.code} value={bank.code}>
+                                        {bank.name}
+                                      </option>
+                                    ))}
+                                  </select>
+                                )}
+                              </div>
+                              <div className="grid gap-3">
+                                <Label htmlFor="account-number-desktop">Account Number</Label>
+                                <Input
+                                  id="account-number-desktop"
+                                  name="account-number-desktop"
+                                  type="text"
+                                  maxLength={10}
+                                  value={accountNumber}
+                                  onChange={(e) => {
+                                    setAccountNumber(e.target.value.replace(/\D/g, ''));
+                                  }}
+                                  placeholder="Enter 10-digit account number"
+                                />
+                              </div>
+                            </div>
+                            <DialogFooter>
+                              <DialogClose asChild>
+                                <Button variant="outline">Cancel</Button>
+                              </DialogClose>
+                              {error && (
+                                <p className="text-red-500 text-sm mb-2">
+                                  {error}
+                                </p>
+                              )}
+                              <Button
+                                onClick={verifyAccount}
+                                disabled={isVerifyingAccount}
+                                className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+                              >
+                                {isVerifyingAccount ? (
+                                  <>
+                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    Verifying...
+                                  </>
+                                ) : (
+                                  <>
+                                    <ArrowUpFromLine className="w-5 h-5" />
+                                    Verify Account
+                                  </>
+                                )}
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
                       </div>
                     </div>
                   </div>
@@ -833,6 +1153,65 @@ export default function WalletPage() {
           </Card>
         </div>
       </div>
+
+      {/* Add the verification dialog */}
+      <Dialog open={verifyDialogOpen} onOpenChange={setVerifyDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Confirm Recipient Details</DialogTitle>
+            <DialogDescription>
+              Please verify the recipient details before proceeding with the withdrawal.
+            </DialogDescription>
+          </DialogHeader>
+          {recipientDetails && (
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label>Bank Name</Label>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  {banks.find(bank => bank.code === selectedBank)?.name}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Account Name</Label>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  {recipientDetails.account_name}
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Account Number</Label>
+                <div className="p-2 bg-gray-50 rounded-md">
+                  {accountNumber}
+                </div>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setVerifyDialogOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleWithdraw}
+              disabled={isWithdrawing}
+              className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+            >
+              {isWithdrawing ? (
+                <>
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  <ArrowUpFromLine className="w-5 h-5" />
+                  Confirm Withdrawal
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

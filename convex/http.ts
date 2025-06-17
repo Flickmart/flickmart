@@ -420,7 +420,7 @@ http.route({
       );
 
       const recipientData = await recipientRes.json();
-      console.log("Recipient error:", recipientData); // 👈 check this
+      console.log(recipientData);
 
       if (!recipientData.status) {
         return new Response(
@@ -449,20 +449,7 @@ http.route({
     });
 
     const transferData = await transferRes.json();
-
-    if (!transferData.status) {
-      return new Response(JSON.stringify({ error: transferData.message || "Transfer failed" }), {
-        status: 400,
-        headers,
-      });
-    }
-
-    // Update wallet balance
-    await ctx.runMutation(internal.wallet.updateBalance, {
-      walletId: wallet._id,
-      balance: wallet.balance - amount * 100,
-    });
-
+    console.log(transferData);
     // Save withdrawal transaction
     const reference = await ctx.runAction(
       api.actions.generateTransactionReference,
@@ -479,7 +466,103 @@ http.route({
       description: "User withdrawal to bank account",
     });
 
+    if (!transferData.status) {
+      return new Response(
+        JSON.stringify({ error: transferData.message || "Transfer failed" }),
+        {
+          status: 400,
+          headers,
+        }
+      );
+    }
+
+    // Update wallet balance
+    await ctx.runMutation(internal.wallet.updateBalance, {
+      walletId: wallet._id,
+      balance: wallet.balance - amount * 100,
+    });
+
     return new Response(JSON.stringify(transferData), { status: 200, headers });
+  }),
+});
+
+
+http.route({
+  path: "/paystack/list-banks",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "GET",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
+  }),
+});
+// List Banks Route
+http.route({
+  path: "/paystack/list-banks",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    // Set CORS headers
+    const headers = {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Content-Type": "application/json",
+    };
+
+    try {
+      // Get the user from the request
+      const identity = await ctx.auth.getUserIdentity();
+      if (!identity) {
+        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+          status: 401,
+          headers,
+        });
+      }
+
+      // Fetch the list of banks from Paystack
+      const response = await fetch(
+        "https://api.paystack.co/bank?country=nigeria",
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.status) {
+        return new Response(
+          JSON.stringify({ error: "Failed to fetch banks" }),
+          { status: 400, headers }
+        );
+      }
+
+      return new Response(JSON.stringify(data), { status: 200, headers });
+    } catch (error) {
+      console.error("Error fetching banks:", error);
+      return new Response(JSON.stringify({ error: "Internal server error" }), {
+        status: 500,
+        headers,
+      });
+    }
   }),
 });
 
@@ -571,6 +654,90 @@ http.route({
     } catch (error) {
       console.error("Error processing Paystack webhook:", error);
       return new Response("Internal server error", { status: 500 });
+    }
+  }),
+});
+
+http.route({
+  path: "/paystack/verify-account",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const headers = request.headers;
+    if (
+      headers.get("Origin") !== null &&
+      headers.get("Access-Control-Request-Method") !== null &&
+      headers.get("Access-Control-Request-Headers") !== null
+    ) {
+      return new Response(null, {
+        headers: new Headers({
+          "Access-Control-Allow-Origin": "http://localhost:3000",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type, Authorization",
+          "Access-Control-Max-Age": "86400",
+          Vary: "Origin",
+        }),
+      });
+    } else {
+      return new Response();
+    }
+  }),
+});
+
+http.route({
+  path: "/paystack/verify-account",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const headers = new Headers({
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+      Vary: "Origin",
+    });
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401,
+        headers,
+      });
+    }
+
+    const { account_number, bank_code } = await request.json();
+
+    if (!account_number || !bank_code) {
+      return new Response(JSON.stringify({ error: "Missing required fields" }), {
+        status: 400,
+        headers,
+      });
+    }
+
+    try {
+      const response = await fetch(
+        `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.status) {
+        return new Response(
+          JSON.stringify({ error: data.message || "Failed to verify account" }),
+          { status: 400, headers }
+        );
+      }
+
+      return new Response(JSON.stringify(data), { status: 200, headers });
+    } catch (error) {
+      console.error("Error verifying account:", error);
+      return new Response(JSON.stringify({ error: "Internal server error" }), {
+        status: 500,
+        headers,
+      });
     }
   }),
 });
