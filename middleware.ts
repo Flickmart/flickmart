@@ -2,31 +2,6 @@ import { clerkMiddleware } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const auth = request.headers.get("authorization");
-
-  const USER = process.env.USER;
-  const PASS = process.env.PASS;
-
-  const validAuth =
-    "Basic " + Buffer.from(`${USER}:${PASS}`).toString("base64");
-
-  if (auth === validAuth) {
-    const response = NextResponse.next()
-    
-    response.headers.set('Cache-Control', 'no-store')
-    return response
-  }
-  
-
-  return new Response("Authentication required", {
-    status: 401,
-    headers: {
-      "WWW-Authenticate": 'Basic realm="Secure Area"',
-    },
-  });
-}
-
 export default clerkMiddleware();
 
 export const config = {
