@@ -4,7 +4,7 @@ import React, { useState } from "react";
 
 const adPlans = [
   { type: "basic", duration: 3, amount: 20, percentage: 20 },
-  { type: "premium", duration: 14, amount: 35, percentage: 50 },
+  { type: "premium", duration: 14, amount: 50, percentage: 50 },
   { type: "pro", duration: 30, amount: 100, percentage: 75 },
 ];
 
