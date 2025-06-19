@@ -7,7 +7,7 @@ import { Id } from "./_generated/dataModel";
 // Get all products
 export const getAll = query({
   args: {
-    limit: v.optional(v.number())
+    limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const allProducts = await ctx.db.query("product").collect();
@@ -217,19 +217,19 @@ export const likeProduct = mutation({
 
     // Check if user has already liked this product
     const existingLike = await ctx.db
-    .query("likes")
-    .filter((q) =>
-      q.and(
-        q.eq(q.field("productId"), args.productId),
-        q.eq(q.field("userId"), user._id),
-        q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+      .query("likes")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("productId"), args.productId),
+          q.eq(q.field("userId"), user._id),
+          q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+        )
       )
-    )
-    .first();
+      .first();
 
     // If product is already disliked
-    if(existingLike?.disliked){
-      await ctx.db.patch(existingLike._id, {liked: true, disliked: false})
+    if (existingLike?.disliked) {
+      await ctx.db.patch(existingLike._id, { liked: true, disliked: false });
       await ctx.db.patch(args.productId, {
         likes: (product.likes || 0) + 1,
         dislikes: (product.dislikes || 0) - 1,
@@ -238,15 +238,14 @@ export const likeProduct = mutation({
     }
 
     // If product is already liked
-    if(existingLike){
-      await ctx.db.delete(existingLike._id)
+    if (existingLike) {
+      await ctx.db.delete(existingLike._id);
       await ctx.db.patch(args.productId, {
         likes: (product.likes || 0) - 1,
       });
       return;
     }
 
-    
     // If product hasn't been liked before
     await ctx.db.insert("likes", {
       timeStamp: new Date().toISOString(),
@@ -275,10 +274,10 @@ export const getLikeByProductId = query({
 
     const like = await ctx.db
       .query("likes")
-      .filter((q) => 
+      .filter((q) =>
         q.and(
           q.eq(q.field("productId"), product?._id),
-          q.eq(q.field("userId"), user?._id),
+          q.eq(q.field("userId"), user?._id)
         )
       )
       .first();
@@ -300,20 +299,19 @@ export const dislikeProduct = mutation({
       throw new Error("Product not found");
     }
 
-
     const existingDislike = await ctx.db
-    .query("likes")
-    .filter((q) =>
-      q.and(
-        q.eq(q.field("productId"), args.productId),
-        q.eq(q.field("userId"), user._id),
-        q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+      .query("likes")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("productId"), args.productId),
+          q.eq(q.field("userId"), user._id),
+          q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+        )
       )
-    )
-    .first();
+      .first();
 
-    if(existingDislike?.liked){
-      await ctx.db.patch(existingDislike._id, {liked: false, disliked: true})
+    if (existingDislike?.liked) {
+      await ctx.db.patch(existingDislike._id, { liked: false, disliked: true });
       await ctx.db.patch(args.productId, {
         likes: (product.likes || 0) - 1,
         dislikes: (product.dislikes || 0) + 1,
@@ -321,8 +319,8 @@ export const dislikeProduct = mutation({
       return;
     }
 
-    if(existingDislike){
-      await ctx.db.delete(existingDislike?._id)
+    if (existingDislike) {
+      await ctx.db.delete(existingDislike?._id);
       await ctx.db.patch(args.productId, {
         dislikes: (product.dislikes || 0) - 1,
       });
@@ -357,15 +355,20 @@ export const addBookmark = mutation({
       return;
     }
 
-    const wishListed = await ctx.db.query("bookmarks").filter((q)=> q.and(
-      q.eq(q.field("productId"), args.productId),
-      q.eq(q.field("userId"), user._id),
-      q.eq(q.field("type"), args.type)
-    )).first()
+    const wishListed = await ctx.db
+      .query("bookmarks")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("productId"), args.productId),
+          q.eq(q.field("userId"), user._id),
+          q.eq(q.field("type"), args.type)
+        )
+      )
+      .first();
 
-    if(wishListed){
-      await ctx.db.delete(wishListed._id)
-      return;
+    if (wishListed) {
+      await ctx.db.delete(wishListed._id);
+      return "removed";
     }
 
     const bookmarkId = await ctx.db.insert("bookmarks", {
@@ -383,7 +386,7 @@ export const addBookmark = mutation({
 export const getSavedOrWishlistProduct = query({
   args: { productId: v.id("product"), type: v.string() },
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx)
+    const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
     if (!product) {
       return;
@@ -402,25 +405,35 @@ export const getSavedOrWishlistProduct = query({
   },
 });
 
-export const getAllSavedOrWishlist= query({
+export const getAllSavedOrWishlist = query({
   args: {
-    type: v.union(v.literal("saved"), v.literal("wishlist"))
+    type: v.union(v.literal("saved"), v.literal("wishlist")),
   },
-  handler: async (ctx, args)=> {
-    const user = await getCurrentUserOrThrow(ctx)
-    if (!user){
-      throw Error("You need to logged in")
+  handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      throw Error("You need to logged in");
     }
-    const saved = await ctx.db.query("bookmarks").filter((q)=> q.and(q.eq(q.field("userId"), user._id), q.eq(q.field("type"), args.type))).collect()
-    
-    const savedList = await Promise.all(saved.map( async (item)=> {
-      const  product = await ctx.db.get(item.productId)
-      return product
-    }))
+    const saved = await ctx.db
+      .query("bookmarks")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("userId"), user._id),
+          q.eq(q.field("type"), args.type)
+        )
+      )
+      .collect();
 
-    return savedList
-  }
-})
+    const savedList = await Promise.all(
+      saved.map(async (item) => {
+        const product = await ctx.db.get(item.productId);
+        return product;
+      })
+    );
+
+    return savedList;
+  },
+});
 
 // Search products with advanced filtering and sorting
 export const search = query({
@@ -528,12 +541,12 @@ export const search = query({
       return 0;
     });
 
-    if(args.type === "suggestions"){
-      return products.map(item => item.title)
+    if (args.type === "suggestions") {
+      return products.map((item) => item.title);
     }
-    if(args.type === "search"){
-      return products
-    }    
+    if (args.type === "search") {
+      return products;
+    }
   },
 });
 
@@ -543,14 +556,19 @@ export const getRecommendations = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const user = await getCurrentUserOrThrow(ctx)
+    const user = await getCurrentUserOrThrow(ctx);
     const limit = args.limit || 10;
 
     // Query db based on user likes
-    const likedProducts= await ctx.db.query("likes").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
-   // Query db based on user bookmarks
-    const bookmarkedProducts = await ctx.db.query("bookmarks").filter((q)=> q.eq(q.field("userId"), user._id)).collect()
-
+    const likedProducts = await ctx.db
+      .query("likes")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .collect();
+    // Query db based on user bookmarks
+    const bookmarkedProducts = await ctx.db
+      .query("bookmarks")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .collect();
 
     // Get user's liked products
     // const userProducts = await ctx.db
@@ -564,44 +582,50 @@ export const getRecommendations = query({
       .filter((q) => q.neq(q.field("userId"), user._id))
       .collect();
 
-      console.log(allProducts)
+    console.log(allProducts);
 
-      const scoreProducts = allProducts.map((product)=> {
-        // score determines if product is recommended or not
-        let score = 0
+    const scoreProducts = allProducts.map((product) => {
+      // score determines if product is recommended or not
+      let score = 0;
 
-        // User Interaction (35% weight)
-        // Check in all products, the ones the user has liked
-        const hasLiked = likedProducts.some((like)=> like.productId === product._id && like.liked)
+      // User Interaction (35% weight)
+      // Check in all products, the ones the user has liked
+      const hasLiked = likedProducts.some(
+        (like) => like.productId === product._id && like.liked
+      );
 
-        // Check in all products, the ones the user has liked
-        const hasBookmarked = bookmarkedProducts.some((bookmark)=> bookmark.productId === product._id && bookmark.added)
+      // Check in all products, the ones the user has liked
+      const hasBookmarked = bookmarkedProducts.some(
+        (bookmark) => bookmark.productId === product._id && bookmark.added
+      );
 
-        // If liked or bookmarked, add to score
-        score +=  (hasLiked? 0.2 : 0) + (hasBookmarked? 0.15 : 0)
-        // Calculate product scores based on multiple factors
+      // If liked or bookmarked, add to score
+      score += (hasLiked ? 0.2 : 0) + (hasBookmarked ? 0.15 : 0);
+      // Calculate product scores based on multiple factors
 
-        // Net positive likes / total  feedback volume (25% weight)
-        const popularity = (product.likes ?? 0) - (product.dislikes?? 0) / Math.max(1, (product.likes ?? 0) + (product.dislikes ?? 0))
-        score += popularity  * 0.25
+      // Net positive likes / total  feedback volume (25% weight)
+      const popularity =
+        (product.likes ?? 0) -
+        (product.dislikes ?? 0) /
+          Math.max(1, (product.likes ?? 0) + (product.dislikes ?? 0));
+      score += popularity * 0.25;
 
-        // Time posted (20% weight)
-        const daysSincePosted = (Date.now() - new Date(product.timeStamp).getTime()/ 1000 * 60 * 60 * 24)
+      // Time posted (20% weight)
+      const daysSincePosted =
+        Date.now() -
+        (new Date(product.timeStamp).getTime() / 1000) * 60 * 60 * 24;
 
-        const recencyScore = Math.exp(-daysSincePosted / 30); // 30-day decay
-        score += recencyScore * 0.20;
+      const recencyScore = Math.exp(-daysSincePosted / 30); // 30-day decay
+      score += recencyScore * 0.2;
 
-        
-        //Ad Type Priority (20 weight)
-        const adTypeScore = {
-          premium: 1.0,
-          pro: 0.7,
-          basic: 0.4,
-        }[product.plan];
+      //Ad Type Priority (20 weight)
+      const adTypeScore = {
+        premium: 1.0,
+        pro: 0.7,
+        basic: 0.4,
+      }[product.plan];
       score += adTypeScore * 0.2;
 
-
-      
       // // 4. Category Match Score (15% weight)
       // if (userProducts.length > 0) {
       //   const userCategories = userProducts
@@ -619,7 +643,7 @@ export const getRecommendations = query({
       //   (p) => p.location === product.location
       // );
       // score += (locationMatch ? 1 : 0) * 0.15;
-      
+
       return { product, score };
     });
 
@@ -787,68 +811,93 @@ function calculateTextSimilarity(text1: string, text2: string): number {
   return union.size === 0 ? 0 : intersection.size / union.size;
 }
 
-
 // Get Products by category
 
-export const getProductsByCategory= query({
-  args: {category: v.string()},
-  handler: async (ctx, args)=> {
-    const user = getCurrentUserOrThrow(ctx)
+export const getProductsByCategory = query({
+  args: { category: v.string() },
+  handler: async (ctx, args) => {
+    const user = getCurrentUserOrThrow(ctx);
 
-    if(!user){
-      throw Error ("User is not logged in")
+    if (!user) {
+      throw Error("User is not logged in");
     }
-    const products = await ctx.db.query("product").filter((q)=> q.eq(q.field("category"), args.category)).collect()
-    return products
-  }
-})
+    const products = await ctx.db
+      .query("product")
+      .filter((q) => q.eq(q.field("category"), args.category))
+      .collect();
+    return products;
+  },
+});
 
 // Get Products by Filters
 export const getProductsByFilters = query({
-  args: {category: v.string() ,min: v.number(), max: v.number(), priceRange: v.string(), location: v.string()},
-  handler: async(ctx, args)=>{
+  args: {
+    category: v.string(),
+    min: v.number(),
+    max: v.number(),
+    priceRange: v.string(),
+    location: v.string(),
+  },
+  handler: async (ctx, args) => {
+    console.log(args);
 
-    let query = ctx.db.query("product").filter((q) => q.eq(q.field("category"), args.category));
+    let query = ctx.db
+      .query("product")
+      .filter((q) => q.eq(q.field("category"), args.category));
 
     // Apply location filter if provided
-    if(args.location){
-      query= query.filter((q)=> q.eq(q.field("location"), args.location))
+    if (args.location) {
+      query = query.filter((q) => q.eq(q.field("location"), args.location));
     }
 
     // Apply price range filter if min and max are provided
-    if(args.min && args.max){
-      query = query.filter((q)=> q.and(q.gte(q.field("price"), args.min), q.lte(q.field("price"), args.max)))
+    if (args.min && args.max) {
+      query = query.filter((q) =>
+        q.and(
+          q.gte(q.field("price"), args.min),
+          q.lte(q.field("price"), args.max)
+        )
+      );
     }
 
     // Apply predefined price range filter if provided
-    if(args.priceRange){
+    if (args.priceRange) {
       const ranges = {
-        "cheap": {min: 0, max: 100000},
-        "affordable": {min: 100000, max: 500000},
-        "moderate": {min: 500000, max: 1500000},
-        "expensive": {min: 1500000, max: 3500000}
-      }
-      const range = ranges[args.priceRange as keyof typeof ranges]
-      if (range){
-        query = query.filter((q)=> q.and(q.gte(q.field("price"), range.min), q.lte(q.field("price"), range.max)))
+        cheap: { min: 0, max: 100000 },
+        affordable: { min: 100000, max: 500000 },
+        moderate: { min: 500000, max: 1500000 },
+        expensive: { min: 1500000, max: 3500000 },
+      };
+      const range = ranges[args.priceRange as keyof typeof ranges];
+      if (range) {
+        query = query.filter((q) =>
+          q.and(
+            q.gte(q.field("price"), range.min),
+            q.lte(q.field("price"), range.max)
+          )
+        );
       }
     }
 
     return await query.collect();
-  }
-})
+  },
+});
 
 // Get newly posted products
 
 export const getNewProducts = query({
-  handler: async(ctx)=> {
-    let numDaysAge= 7
+  handler: async (ctx) => {
+    let numDaysAge = 7;
     // Get the timestamp of 10 days ago
-    const tenDaysAgo = Date.now() - (numDaysAge * 24 * 60 * 60 * 1000)
+    const tenDaysAgo = Date.now() - numDaysAge * 24 * 60 * 60 * 1000;
 
     // Get products not older than 7 days
-    let products = await ctx.db.query("product").filter((q)=> q.gte(q.field('_creationTime'), tenDaysAgo)).order("desc").collect()
+    let products = await ctx.db
+      .query("product")
+      .filter((q) => q.gte(q.field("_creationTime"), tenDaysAgo))
+      .order("desc")
+      .collect();
 
-    return products
-  }
-})
+    return products;
+  },
+});

@@ -295,7 +295,7 @@ export default function MarketplaceProfile() {
               </div>
             ))}
             <Link
-              href="#"
+              href="/wallet"
               className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
             >
               <Wallet />

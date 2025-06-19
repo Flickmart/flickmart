@@ -28,6 +28,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 const demoProducts = [
   {
@@ -55,6 +57,7 @@ const demoProducts = [
 
 export default function ProductsPage() {
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
+  const userStore = useQuery(api.store.getStoresByUserId);
 
   const formatDesc = (desc: string) => {
     if (desc.length > 50) {
@@ -64,6 +67,7 @@ export default function ProductsPage() {
   };
   const [isExpanded, setIsExpanded] = useState(false);
 
+  console.log(userStore);
   return (
     <div className="flex flex-col gap-8 p-4 lg:px-10">
       <header className="flex items-center">
