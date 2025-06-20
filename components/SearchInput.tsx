@@ -14,6 +14,8 @@ import {
 } from "./ui/command";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
+import { motion } from "motion/react";
+const MotionCommandList = motion(CommandList);
 
 export default function SearchInput({
   query,
@@ -124,7 +126,18 @@ export default function SearchInput({
           />
         )}
         {isTyping && !isOverlayOpen ? (
-          <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
+          <MotionCommandList
+            initial={{
+              opacity: 0,
+              y: -10,
+            }}
+            animate={{
+              opacity: 1,
+              y: 0,
+            }}
+            transition={{ duration: 0.2 }}
+            className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md"
+          >
             <CommandGroup heading="Suggestions">
               {autoSuggest?.map((item, index) => (
                 <Link
@@ -151,7 +164,7 @@ export default function SearchInput({
             ) : (
               <CommandEmpty>Loading...</CommandEmpty>
             )}
-          </CommandList>
+          </MotionCommandList>
         ) : focus &&
           !isOverlayOpen &&
           retrievePreviousInputs &&

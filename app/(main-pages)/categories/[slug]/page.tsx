@@ -324,7 +324,7 @@ export default function DetailedCategoryPage() {
                             <div className="p-2 mt-1 tracking-tight">
                               <h2 className="font-semibold">{product.title}</h2>
                               <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">
-                                ${product.price.toLocaleString()}
+                                &#8358;{product.price.toLocaleString()}
                               </span>
                             </div>
                           </div>

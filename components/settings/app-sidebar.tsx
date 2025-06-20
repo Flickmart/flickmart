@@ -106,8 +106,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar {...props} className="bg-white max-sm:w-full">
-      <SidebarHeader>
+    <Sidebar className="">
+      <SidebarHeader className=" w-screen bg-white">
         <Link href="/settings/personal">
           <SidebarMenuButton
             size="lg"
@@ -126,7 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </Link>
         <SearchForm onSearch={handleSearch} />
       </SidebarHeader>
-      <SidebarContent className="scrollbar-none">
+      <SidebarContent className="scrollbar-none w-screen bg-white">
         {filteredNavMain.map((group) => (
           <SidebarGroup key={group.title}>
             <SidebarGroupLabel>{group.title}</SidebarGroupLabel>
