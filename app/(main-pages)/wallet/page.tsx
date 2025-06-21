@@ -48,6 +48,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import dynamic from 'next/dynamic';
+import ClientOnly from "@/components/client-only";
 // ... other imports remain the same ...
 
 const PaystackButton = dynamic(
@@ -418,6 +419,7 @@ export default function WalletPage() {
   }
 
   return (
+    <ClientOnly>
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Layout */}
       <div className="lg:hidden">
@@ -1222,5 +1224,6 @@ export default function WalletPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </ClientOnly>
   );
 }
