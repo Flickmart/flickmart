@@ -31,7 +31,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { PaystackButton } from "react-paystack";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -48,6 +47,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+import dynamic from 'next/dynamic';
+// ... other imports remain the same ...
+
+const PaystackButton = dynamic(
+  () => import('react-paystack').then((mod) => mod.PaystackButton),
+  { 
+    ssr: false,
+    loading: () => <Button disabled className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full">Loading payment...</Button>
+  }
+);
 interface PaystackConfig {
   email: string;
   amount: number;
