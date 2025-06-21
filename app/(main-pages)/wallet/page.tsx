@@ -633,7 +633,7 @@ export default function WalletPage() {
                                 >
                                   <option value="">Select a bank</option>
                                   {banks.map((bank) => (
-                                    <option key={bank.code} value={bank.code}>
+                                    <option key={bank.code + bank.name} value={bank.code}>
                                       {bank.name}
                                     </option>
                                   ))}
@@ -1000,7 +1000,7 @@ export default function WalletPage() {
                                   >
                                     <option value="">Select a bank</option>
                                     {banks.map((bank) => (
-                                      <option key={bank.code} value={bank.code}>
+                                      <option key={bank.code + bank.name} value={bank.code}>
                                         {bank.name}
                                       </option>
                                     ))}

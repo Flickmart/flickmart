@@ -11,24 +11,13 @@ import AddPhoto from "./AddPhoto";
 import { Separator } from "@radix-ui/react-select";
 import AdPromotion from "./AdPromotion";
 import { useOthersStore } from "@/store/useOthersStore";
-import { FormDataType } from "@/types/form";
 import { useMutation as useMutationConvex, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
-import { ClipLoader } from "react-spinners";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../ui/dialog";
+
 import AdCharges from "./AdCharges";
 
 type SubmitType = SubmitHandler<{
@@ -73,6 +62,27 @@ const location = ["enugu", "nsukka"];
 const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
 
+const formSchema = z.object({
+  category: z.string(),
+  location: z.union([z.literal("enugu"), z.literal("nsukka")]),
+  exchange: z.boolean(),
+  condition: z.union([z.literal("brand new"), z.literal("used")]),
+  title: z
+    .string()
+    .min(5, { message: "Title length is too short" })
+    .max(100, { message: "Maximum character length reached" }),
+  description: z.string().min(30, { message: "description is too short" }),
+  price: z.union([
+    z.string(),
+    z.number({
+      required_error: "Price is required",
+    }),
+  ]),
+  store: z.string(),
+  phone: z.string(),
+  plan: z.union([z.literal("basic"), z.literal("pro"), z.literal("premium")]),
+});
+
 export default function PostAdForm({
   clear,
   setClear,
@@ -80,26 +90,6 @@ export default function PostAdForm({
   clear: boolean;
   setClear: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-  const formSchema = z.object({
-    category: z.string(),
-    location: z.union([z.literal("enugu"), z.literal("nsukka")]),
-    exchange: z.boolean(),
-    condition: z.union([z.literal("brand new"), z.literal("used")]),
-    title: z
-      .string()
-      .min(5, { message: "Title length is too short" })
-      .max(100, { message: "Maximum character length reached" }),
-    description: z.string().min(30, { message: "description is too short" }),
-    price: z.union([
-      z.string(),
-      z.number({
-        required_error: "Price is required",
-      }),
-    ]),
-    store: z.string(),
-    phone: z.string(),
-    plan: z.union([z.literal("basic"), z.literal("pro"), z.literal("premium")]),
-  });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -124,6 +114,7 @@ export default function PostAdForm({
   const businessId = userStore?._id as Id<"store">;
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
+  const [adId, setAdId] = useState<Id<"product"> | undefined>();
 
   // Clear Form
   useEffect(() => {
@@ -139,26 +130,19 @@ export default function PostAdForm({
   // Form Submission
   const { mutate: adPostMutate, isPending } = useMutation({
     mutationFn: createNewAd,
-    onSuccess: (data) => {
-      toast.dismiss(postToastId);
+    onSuccess: async (data) => {
       // Show success toast
+      setAdId(data);
       toast.success("Ad posted successfully...", {
         duration: 2000,
       });
 
       // Show a loading toast for redirection
-      let id: ReturnType<typeof toast.loading>;
-      setTimeout(() => {
-        id = toast.loading("Redirecting to product page...", {
-          duration: 3000,
-        });
-      }, 2000);
-
-      // Short delay before redirect
-      setTimeout(() => {
-        toast.dismiss(id);
-        router.push(`/product/${data}`);
-      }, 6000);
+      toast.loading("Redirecting to product page...", {
+        duration: 2000,
+      });
+      console.log("Ad ID:", data);
+      router.push(`/product/${data}`);
     },
     onError: (err) => {
       toast.dismiss(postToastId);
@@ -173,14 +157,16 @@ export default function PostAdForm({
         return;
       }
 
-      postToastId = toast.loading("Posting Ad...");
+      postToastId = toast.loading("Posting Ad...", {
+        duration: 2000,
+      });
       const modifiedObj = {
         ...formData,
         businessId,
         images,
         price: +formData.price,
       };
-      await adPostMutate(modifiedObj);
+      adPostMutate(modifiedObj);
 
       // Only reset if everything was successful
       setIsSubmitted(true);
@@ -192,7 +178,6 @@ export default function PostAdForm({
     }
   };
 
- 
   const onError: ErrorType = (error) => {
     console.log(error);
   };
@@ -277,6 +262,7 @@ export default function PostAdForm({
             formTrigger={form.trigger}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
             allowAdPost={allowAdPost}
+            adId={adId}
           />
           <p className="lg:w-2/4 text-center font-light capitalize leading-relaxed lg:text-sm text-xs">
             By clicking on Post Ad you accepted the{" "}

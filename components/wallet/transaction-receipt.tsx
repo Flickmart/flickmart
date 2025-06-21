@@ -10,7 +10,10 @@ interface TransactionReceiptProps {
   user: Doc<"users">;
 }
 
-export function TransactionReceipt({ transaction, user }: TransactionReceiptProps) {
+export function TransactionReceipt({
+  transaction,
+  user,
+}: TransactionReceiptProps) {
   return (
     <div className="px-6 space-y-4 bg-white">
       <div className="text-center py-2 border-b border-gray-100">
@@ -24,18 +27,37 @@ export function TransactionReceipt({ transaction, user }: TransactionReceiptProp
             <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-sm">
               <ArrowUpRight className="h-4 w-4 text-red-500" />
             </div>
-            <div>
-              <p className="text-sm text-gray-600">
-                Card payment to{" "}
-                <span className="font-medium text-gray-900">
-                  {transaction.type === "funding" && "Flickmart wallet"}
-                </span>
-              </p>
-              <p className="text-xs text-gray-500">
-                {transaction.bank} {transaction.last4}
-              </p>
-              <p className="text-xs text-gray-500">Sent</p>
-            </div>
+
+            {transaction.cardType && (
+              <div>
+                <p className="text-sm text-gray-600">
+                  <>
+                    {transaction.cardType} Card payment to{" "}
+                    <span className="font-medium text-gray-900">
+                      Flickmart wallet
+                    </span>
+                  </>
+                </p>
+                <p className="text-xs text-gray-500">
+                  {transaction.bank} {transaction.last4}
+                </p>
+                <p className="text-xs text-gray-500">Sent</p>
+              </div>
+            )}
+            {transaction.type === "ads_posting" && (
+              <div>
+                <p className="text-sm text-gray-600">
+                   Wallet payment to{" "}
+                  <span className="font-medium text-gray-900">
+                    Flickmart LLC
+                  </span>
+                </p>
+               
+                <p className="text-xs text-gray-500">
+                  {transaction.status}
+                </p>
+              </div>
+            )}
           </div>
           <div className="text-right">
             <p className="text-xl font-bold text-gray-900">
@@ -66,12 +88,17 @@ export function TransactionReceipt({ transaction, user }: TransactionReceiptProp
           <div className="flex justify-between items-center py-1">
             <span className="text-gray-600 text-sm">Recipient</span>
             <div className="flex items-center gap-2">
-              <Avatar className="h-6 w-6">
-                <AvatarImage src={user.imageUrl} />
-                <AvatarFallback className="text-xs bg-purple-100 text-purple-600">
-                  {user.name.split(" ").map((n) => n[0]).join("")}
-                </AvatarFallback>
-              </Avatar>
+              {transaction.type !== "ads_posting" && (
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={user.imageUrl} />
+                  <AvatarFallback className="text-xs bg-purple-100 text-purple-600">
+                    {user.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              )}
               <span className="font-medium text-sm">
                 {transaction.type === "funding"
                   ? user.name
@@ -79,7 +106,9 @@ export function TransactionReceipt({ transaction, user }: TransactionReceiptProp
                     ? "N/A"
                     : transaction.type === "transfer_in"
                       ? "Flickmart Wallet"
-                      : "Unknown"}
+                      : transaction.type === "ads_posting"
+                        ? "Flickmart LLC"
+                        : "Unknown"}
               </span>
             </div>
           </div>
@@ -98,7 +127,9 @@ export function TransactionReceipt({ transaction, user }: TransactionReceiptProp
                     {transaction.cardType[0].toUpperCase()}
                   </span>
                 </div>
-                <span className="font-medium text-sm">•••• {transaction.last4}</span>
+                <span className="font-medium text-sm">
+                  •••• {transaction.last4}
+                </span>
               </div>
             </div>
           )}

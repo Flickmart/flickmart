@@ -1,9 +1,20 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Share, RotateCcw } from "lucide-react";
+import {
+  Share,
+  RotateCcw,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { toast } from "sonner";
 import { Doc } from "@/convex/_generated/dataModel";
 import { format } from "date-fns";
@@ -11,7 +22,11 @@ import { PaystackButton } from "react-paystack";
 import { cn } from "@/lib/utils";
 import { TransactionStatusBadge } from "./transaction-status-badge";
 import { TransactionReceipt } from "./transaction-receipt";
-import { getTransactionIcon, formatAmount, getAmountColor } from "./transaction-utils";
+import {
+  getTransactionIcon,
+  formatAmount,
+  getAmountColor,
+} from "./transaction-utils";
 
 interface TransactionDetailsProps {
   transaction: Doc<"transactions">;
@@ -20,11 +35,11 @@ interface TransactionDetailsProps {
   handlePaystackClose: () => void;
 }
 
-export default function TransactionDetails({ 
-  transaction, 
-  user, 
-  handlePaystackSuccess, 
-  handlePaystackClose 
+export default function TransactionDetails({
+  transaction,
+  user,
+  handlePaystackSuccess,
+  handlePaystackClose,
 }: TransactionDetailsProps) {
   const [open, setOpen] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
@@ -63,9 +78,15 @@ export default function TransactionDetails({
         return;
       }
 
-      const file = new File([imageBlob], "transaction-receipt.png", { type: "image/png" });
+      const file = new File([imageBlob], "transaction-receipt.png", {
+        type: "image/png",
+      });
 
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      if (
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
         await navigator.share({
           title: "Transaction Receipt",
           text: `Transaction receipt for Flickmart`,
@@ -101,8 +122,20 @@ export default function TransactionDetails({
     <div className="w-full overflow-auto">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger className="cursor-pointer" asChild>
-          <div key={transaction._id} className="flex items-center gap-3 p-3 bg-white rounded-lg">
-            {getTransactionIcon(transaction.type)}
+          <div
+            key={transaction._id}
+            className="flex items-center gap-3 p-3 bg-white rounded-lg"
+          >
+            {transaction.type === "funding" ||
+            transaction.type === "transfer_in" ? (
+              <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                <ArrowDownToLine className="w-5 h-5 text-green-600" />
+              </div>
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
+                <ArrowUpFromLine className="w-5 h-5 text-red-600" />
+              </div>
+            )}
             <div className="flex-1">
               <p className="font-medium text-sm">{transaction.description}</p>
               <p className="text-xs text-gray-500">
@@ -110,12 +143,22 @@ export default function TransactionDetails({
                 {format(transaction._creationTime, "hh:mm a")}
               </p>
             </div>
-            <div className={cn(
-              "text-right flex flex-col gap-1 text-white items-center",
-              getAmountColor(transaction.amount, transaction.status)
-            )}>
+            <div
+              className={cn(
+                "text-right flex flex-col gap-1 items-center",
+                transaction.type === "withdrawal" ||
+                  transaction.type === "ads_posting" ||
+                  transaction.type === "ad_promotion"
+                  ? "text-red-500"
+                  : "text-green-500"
+              )}
+            >
               <span className="flex items-center gap-1 text-sm font-semibold">
-                {transaction.amount > 0 ? "+" : "-"}
+                {transaction.type === "withdrawal" ||
+                transaction.type === "ads_posting" ||
+                transaction.type === "ad_promotion"
+                  ? "-"
+                  : "+"}
                 {formatAmount(transaction.amount / 100)}
               </span>
               <TransactionStatusBadge status={transaction.status} />
@@ -136,10 +179,7 @@ export default function TransactionDetails({
               </div>
             </SheetHeader>
 
-            <TransactionReceipt
-              transaction={transaction}
-              user={user}
-            />
+            <TransactionReceipt transaction={transaction} user={user} />
 
             {/* Fixed Action Buttons */}
             <div className="p-4 border-t bg-white">
@@ -162,19 +202,20 @@ export default function TransactionDetails({
                     </>
                   )}
                 </Button>
-                {transaction.type === "funding" && transaction.status === "pending" && (
-                  <PaystackButton
-                    {...config}
-                    onSuccess={handlePaystackSuccess}
-                    onClose={handlePaystackClose}
-                    email={user.email || ""}
-                  >
-                    <Button className="flex-1 h-12 bg-blue-600 hover:bg-blue-700">
-                      <RotateCcw className="h-4 w-4 mr-2" />
-                      Retry
-                    </Button>
-                  </PaystackButton>
-                )}
+                {transaction.type === "funding" &&
+                  transaction.status === "pending" && (
+                    <PaystackButton
+                      {...config}
+                      onSuccess={handlePaystackSuccess}
+                      onClose={handlePaystackClose}
+                      email={user.email || ""}
+                    >
+                      <Button className="flex-1 h-12 bg-blue-600 hover:bg-blue-700">
+                        <RotateCcw className="h-4 w-4 mr-2" />
+                        Retry
+                      </Button>
+                    </PaystackButton>
+                  )}
               </div>
             </div>
           </div>
