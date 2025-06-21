@@ -824,19 +824,22 @@ http.route({
       const reference = await ctx.runAction(
         api.actions.generateTransactionReference,
         {
-          type: "ad_posting",
+          type: "ads_posting",
         }
       );
 
       // Create transaction record
-      await ctx.runMutation(internal.transactions.create, {
+   const transactionId = await ctx.runMutation(internal.transactions.create, {
         userId,
         walletId,
         reference,
         amount: amount * 100,
         status: "success",
-        type: "ad_posting",
+        type: "ads_posting",
         description: `Payment for ${plan} ad posting plan`,
+        metadata: {
+          plan,
+        },
       });
 
       // Update wallet balance
@@ -849,7 +852,9 @@ http.route({
         JSON.stringify({
           status: true,
           message: "Payment successful",
+
           data: {
+            transactionId,
             reference,
             amount: amount * 100,
             plan,

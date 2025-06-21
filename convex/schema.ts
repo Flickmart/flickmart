@@ -148,6 +148,7 @@ export default defineSchema({
       v.literal("escrow_freeze"), // Funds frozen for order
       v.literal("escrow_release"), // Funds released to seller
       v.literal("escrow_refund"), // Funds refunded to buyer
+      v.literal("ads_posting"), // Payment for posting an ad
       v.literal("ad_posting"), // Payment for posting an ad
       v.literal("ad_promotion"), // Payment for promoting an ad
       v.literal("subscription"), // Payment for subscription

@@ -14,7 +14,7 @@ export const create = internalMutation({
       v.literal("escrow_freeze"), // Funds frozen for order
       v.literal("escrow_release"), // Funds released to seller
       v.literal("escrow_refund"), // Funds refunded to buyer
-      v.literal("ad_posting"), // Payment for posting an ad
+      v.literal("ads_posting"), // Payment for posting an ad
       v.literal("ad_promotion"), // Payment for promoting an ad
       v.literal("subscription"), // Payment for subscription
       v.literal("refund") // General refund
@@ -109,7 +109,7 @@ export const updateTransaction = internalMutation({
         v.literal("escrow_freeze"),
         v.literal("escrow_release"),
         v.literal("escrow_refund"),
-        v.literal("ad_posting"),
+        v.literal("ads_posting"),
         v.literal("ad_promotion"),
         v.literal("subscription"),
         v.literal("refund")
@@ -146,6 +146,26 @@ export const updateTransaction = internalMutation({
   handler: async (ctx, args) => {
     const { transactionId, ...updates } = args;
     const transaction = await ctx.db.patch(transactionId, updates);
+    return transaction;
+  },
+});
+
+
+export const updateMetadata = mutation({
+  args: {
+    transactionId: v.id("transactions"),
+    metadata: v.object({
+      orderId: v.optional(v.id("orders")),
+      recipientUserId: v.optional(v.id("users")),
+      transferId: v.optional(v.id("transfers")),
+      escrowId: v.optional(v.id("escrows")),
+      adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
+      plan: v.optional(v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))), // Ad plan type
+    }),
+  },
+  handler: async (ctx, args) => {
+    const { transactionId, metadata } = args;
+    const transaction = await ctx.db.patch(transactionId, { metadata });
     return transaction;
   },
 });
