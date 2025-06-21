@@ -8,6 +8,30 @@ import { Id } from "./_generated/dataModel";
 
 const http = httpRouter();
 
+// CORS configuration
+const ALLOWED_ORIGINS = [
+  "http://localhost:3000",
+  "https://flickmart-demo.vercel.app"
+];
+
+function getCorsHeaders(origin?: string | null) {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  
+  return new Headers({
+    "Access-Control-Allow-Origin": allowedOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+    "Vary": "Origin",
+  });
+}
+
+function getJsonHeaders(origin?: string | null) {
+  const corsHeaders = getCorsHeaders(origin);
+  corsHeaders.set("Content-Type", "application/json");
+  return corsHeaders;
+}
+
 http.route({
   path: "/clerk-users-webhook",
   method: "POST",
@@ -53,27 +77,22 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
   }
 }
 
-
 // Wallet and wallet related http
 
 http.route({
   path: "/paystack/initialize",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "POST",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
@@ -85,14 +104,8 @@ http.route({
   path: "/paystack/initialize",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const headers = new Headers({
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Content-Type": "application/json",
-      "Access-Control-Max-Age": "86400",
-      Vary: "Origin",
-    });
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -109,11 +122,7 @@ http.route({
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Content-Type": "application/json",
-          Vary: "Origin",
-        }),
+        headers: getJsonHeaders(origin),
       });
     }
 
@@ -140,11 +149,7 @@ http.route({
           JSON.stringify({ error: "Failed to create wallet" }),
           {
             status: 500,
-            headers: new Headers({
-              "Access-Control-Allow-Origin": "http://localhost:3000",
-              "Content-Type": "application/json",
-              Vary: "Origin",
-            }),
+            headers: getJsonHeaders(origin),
           }
         );
       }
@@ -156,11 +161,7 @@ http.route({
         JSON.stringify({ error: "Wallet ID not available" }),
         {
           status: 500,
-          headers: new Headers({
-            "Access-Control-Allow-Origin": "http://localhost:3000",
-            "Content-Type": "application/json",
-            Vary: "Origin",
-          }),
+          headers: getJsonHeaders(origin),
         }
       );
     }
@@ -197,11 +198,7 @@ http.route({
         });
         return new Response(JSON.stringify(data), {
           status: 200,
-          headers: new Headers({
-            "Access-Control-Allow-Origin": "http://localhost:3000",
-            "Content-Type": "application/json",
-            Vary: "Origin",
-          }),
+          headers: getJsonHeaders(origin),
         });
       } catch (error) {
         console.error("Failed to create transaction:", error);
@@ -209,22 +206,14 @@ http.route({
           JSON.stringify({ error: "Failed to create transaction record" }),
           {
             status: 500,
-            headers: new Headers({
-              "Access-Control-Allow-Origin": "http://localhost:3000",
-              "Content-Type": "application/json",
-              Vary: "Origin",
-            }),
+            headers: getJsonHeaders(origin),
           }
         );
       }
     }
     return new Response(JSON.stringify(data), {
       status: 400,
-      headers: new Headers({
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Content-Type": "application/json",
-        Vary: "Origin",
-      }),
+      headers: getJsonHeaders(origin),
     });
   }),
 });
@@ -233,20 +222,16 @@ http.route({
   path: "/paystack/verify",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "POST",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
@@ -258,6 +243,7 @@ http.route({
   path: "/paystack/verify",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
     const { reference } = await request.json();
     const response = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
@@ -279,11 +265,7 @@ http.route({
           JSON.stringify({ error: "Transaction not found" }),
           {
             status: 404,
-            headers: new Headers({
-              "Access-Control-Allow-Origin": "http://localhost:3000",
-              "Content-Type": "application/json",
-              Vary: "Origin",
-            }),
+            headers: getJsonHeaders(origin),
           }
         );
       }
@@ -311,20 +293,12 @@ http.route({
       }
       return new Response(JSON.stringify(data), {
         status: 200,
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Content-Type": "application/json",
-          Vary: "Origin",
-        }),
+        headers: getJsonHeaders(origin),
       });
     }
     return new Response(JSON.stringify(data), {
       status: 400,
-      headers: new Headers({
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Content-Type": "application/json",
-        Vary: "Origin",
-      }),
+      headers: getJsonHeaders(origin),
     });
   }),
 });
@@ -333,20 +307,16 @@ http.route({
   path: "/paystack/withdraw",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "POST",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
@@ -358,11 +328,8 @@ http.route({
   path: "/paystack/withdraw",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const headers = new Headers({
-      "Access-Control-Allow-Origin": "*",
-      "Content-Type": "application/json",
-      Vary: "Origin",
-    });
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -491,38 +458,30 @@ http.route({
   path: "/paystack/list-banks",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "GET",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
     }
   }),
 });
+
 // List Banks Route
 http.route({
   path: "/paystack/list-banks",
   method: "GET",
   handler: httpAction(async (ctx, request) => {
-    // Set CORS headers
-    const headers = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-      "Content-Type": "application/json",
-    };
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
 
     try {
       // Get the user from the request
@@ -662,20 +621,16 @@ http.route({
   path: "/paystack/verify-account",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "POST",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
@@ -687,11 +642,8 @@ http.route({
   path: "/paystack/verify-account",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const headers = new Headers({
-      "Access-Control-Allow-Origin": "*",
-      "Content-Type": "application/json",
-      Vary: "Origin",
-    });
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -749,20 +701,16 @@ http.route({
   path: "/wallet/charge-ad",
   method: "OPTIONS",
   handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
     const headers = request.headers;
+    
     if (
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
     ) {
       return new Response(null, {
-        headers: new Headers({
-          "Access-Control-Allow-Origin": "http://localhost:3000",
-          "Access-Control-Allow-Methods": "POST",
-          "Access-Control-Allow-Headers": "Content-Type, Authorization",
-          "Access-Control-Max-Age": "86400",
-          Vary: "Origin",
-        }),
+        headers: getCorsHeaders(origin),
       });
     } else {
       return new Response();
@@ -774,11 +722,8 @@ http.route({
   path: "/wallet/charge-ad",
   method: "POST",
   handler: httpAction(async (ctx, request) => {
-    const headers = new Headers({
-      "Access-Control-Allow-Origin": "*",
-      "Content-Type": "application/json",
-      Vary: "Origin",
-    });
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
@@ -830,7 +775,7 @@ http.route({
       );
 
       // Create transaction record
-   const transactionId = await ctx.runMutation(internal.transactions.create, {
+      const transactionId = await ctx.runMutation(internal.transactions.create, {
         userId,
         walletId,
         reference,
@@ -853,7 +798,6 @@ http.route({
         JSON.stringify({
           status: true,
           message: "Payment successful",
-
           data: {
             transactionId,
             reference,
