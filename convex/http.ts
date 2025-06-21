@@ -11,6 +11,7 @@ const http = httpRouter();
 // CORS configuration
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
+  "http://localhost:3001",
   "https://flickmart-demo.vercel.app"
 ];
 
