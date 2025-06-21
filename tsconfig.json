@@ -33,6 +33,6 @@
     "node_modules/.bin/schema.ts",
     "server/server.mts",
     "db/index.ts"
-  ],
+, "components/wallet/transaction-details.tsx"  ],
   "exclude": ["node_modules"]
 }

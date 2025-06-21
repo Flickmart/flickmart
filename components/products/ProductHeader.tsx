@@ -17,7 +17,7 @@ export default function ProductHeader({
   timestamp,
   userId,
   productId,
-  description
+  description,
 }: {
   location: string;
   title: string;
@@ -40,8 +40,10 @@ export default function ProductHeader({
 
   const handleChat = () => {
     initialChat({
-      user: user ?? null, userId, onNavigate: router.push
-    })
+      user: user ?? null,
+      userId,
+      onNavigate: router.push,
+    });
   };
 
   // State to track if copy was successful
@@ -62,8 +64,8 @@ export default function ProductHeader({
   //     });
   // };
 
-  async function handleShare(){
-    shareProduct({ title, description, productId })
+  async function handleShare() {
+    shareProduct({ title, description, productId });
   }
 
   return (
@@ -76,8 +78,7 @@ export default function ProductHeader({
             {weeksAgo !== 0 && `${weeksAgo} weeks`}
             {daysAgo !== 0 && !weeksAgo && `${daysAgo} days`}
             {hoursAgo !== 0 && !daysAgo && `${hoursAgo} hours`}
-            {minsAgo !== 0 && !hoursAgo && `${minsAgo} minutes`}
-            {" "}ago
+            {minsAgo !== 0 && !hoursAgo && `${minsAgo} minutes`} ago
           </span>
         </span>
       </div>
@@ -97,8 +98,11 @@ export default function ProductHeader({
           <MessageCircle /> Chat vendor
         </button>
         {/* <Dialog> */}
-          {/* <DialogTrigger asChild> */}
-        <button onClick={handleShare} className="p-2 px-3 w-2/4 lg:w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center justify-center gap-2">
+        {/* <DialogTrigger asChild> */}
+        <button
+          onClick={handleShare}
+          className="p-2 px-3 w-2/4 lg:w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center justify-center gap-2"
+        >
           {" "}
           <ExternalLink /> Share
         </button>
@@ -106,4 +110,3 @@ export default function ProductHeader({
     </div>
   );
 }
-

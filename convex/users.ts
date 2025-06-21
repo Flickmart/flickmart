@@ -1,6 +1,12 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
+import { Id } from "./_generated/dataModel";
 
 export const current = query({
   args: {},
@@ -33,7 +39,7 @@ export const getMultipleUsers = query({
 });
 
 export const upsertFromClerk = internalMutation({
-  args: { data: v.any() as Validator<UserJSON> }, // no runtime validation, trust Clerk
+  args: { data: v.any() as Validator<UserJSON> },
   async handler(ctx, { data }) {
     const userAttributes = {
       name: `${data.first_name} ${data.last_name}`,
@@ -41,10 +47,11 @@ export const upsertFromClerk = internalMutation({
       email: data.email_addresses?.[0]?.email_address,
       externalId: data.id,
     };
-
     const user = await userByExternalId(ctx, data.id);
+
     if (user === null) {
-      await ctx.db.insert("users", userAttributes);
+      // First create the user
+      const userId = await ctx.db.insert("users", userAttributes);
     } else {
       await ctx.db.patch(user._id, userAttributes);
     }
@@ -89,3 +96,29 @@ async function userByExternalId(ctx: QueryCtx, externalId: string) {
     .withIndex("byExternalId", (q) => q.eq("externalId", externalId))
     .unique();
 }
+
+export const storePaystackCustomerId = mutation({
+  args: { userId: v.id("users"), paystackCustomerId: v.string() },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.userId, {
+      paystackCustomerId: args.paystackCustomerId,
+    });
+  },
+});
+
+export const getUserByToken = query({
+  args: { tokenIdentifier: v.string() },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("User is not authenticated");
+    }
+    if (identity.tokenIdentifier !== args.tokenIdentifier) {
+      throw new Error("Token does not match the authenticated user");
+    }
+
+    const user = await userByExternalId(ctx, identity.subject);
+    return user;
+  },
+});
+
