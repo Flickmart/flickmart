@@ -1,11 +1,20 @@
 "use client";
 
 import { ReactNode } from "react";
+import { useEffect, useState } from "react";
 
 const layout = ({ children }: { children: ReactNode }) => {
-  if (typeof window === "undefined") {
-    return null; // Return null on the server side
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
   }
-  return <>{children}</>;
+  if (typeof window !== "undefined") {
+      return <>{children}</>;
+  }
 };
 export default layout;
