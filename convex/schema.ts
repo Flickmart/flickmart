@@ -2,14 +2,33 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // User
   users: defineTable({
     externalId: v.string(),
     name: v.string(),
     walletId: v.optional(v.id("wallets")),
     imageUrl: v.optional(v.string()),
     email: v.optional(v.string()),
+
     paystackCustomerId: v.optional(v.string()), // Store Paystack Customer ID
+
+    username: v.optional(v.string()),
+    verified: v.optional(v.boolean()),
+    description: v.optional(v.string()),
+    rating: v.optional(v.number()),
+    reviews: v.optional(v.number()),
+    contact: v.optional(
+      v.object({
+        facebook: v.optional(v.string()),
+        instagram: v.optional(v.string()),
+        x: v.optional(v.string()),
+        phone: v.optional(v.string()),
+        address: v.optional(v.string()),
+      })
+    ),
   }).index("byExternalId", ["externalId"]),
+
+  // Store
   store: defineTable({
     name: v.optional(v.string()),
     location: v.optional(v.string()),
@@ -18,6 +37,8 @@ export default defineSchema({
     userId: v.id("users"),
     phone: v.optional(v.string()),
   }).index("byUserId", ["userId"]),
+
+  // Product
   product: defineTable({
     userId: v.id("users"),
     title: v.string(),
@@ -39,6 +60,15 @@ export default defineSchema({
     phone: v.string(),
     store: v.string(),
   }),
+
+  // History Search
+  history: defineTable({
+    userId: v.id("users"),
+    timeStamp: v.string(),
+    search: v.string(),
+  }),
+
+  // Comments
   comments: defineTable({
     productId: v.id("product"),
     userId: v.id("users"),
@@ -48,6 +78,7 @@ export default defineSchema({
     dislikes: v.optional(v.number()),
   }),
 
+  // Likes
   likes: defineTable({
     productId: v.id("product"),
     userId: v.id("users"),
@@ -56,6 +87,7 @@ export default defineSchema({
     disliked: v.boolean(),
   }),
 
+  // Saved and Wishlist
   bookmarks: defineTable({
     productId: v.id("product"),
     userId: v.id("users"),

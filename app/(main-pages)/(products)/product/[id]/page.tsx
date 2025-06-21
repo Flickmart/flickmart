@@ -95,7 +95,11 @@ export default function ProductPage() {
       }
       if (label === "wishlist" || label === "saved") {
         const bookmarked = await bookmarkProduct({ productId, type: label });
+
         bookmarked?.added
+
+        typeof bookmarked === "object" && bookmarked?.added
+
           ? toast.success(`Item added to ${label}`)
           : toast.success(`Item removed from ${label}`);
       }

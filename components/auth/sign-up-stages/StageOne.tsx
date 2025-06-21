@@ -1,5 +1,4 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -110,7 +109,6 @@ export default function StageOne({
 
   return (
     <main className="relative min-h-screen">
-      <AuthHeader />
       <section className="form-grid">
         <Image
           src="/sign-up-illustration.svg"

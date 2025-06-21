@@ -1,4 +1,3 @@
-import AuthHeader from "../AuthHeader";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -101,7 +100,6 @@ const StageTwo = ({
 
   return (
     <main className="relative h-screen">
-      <AuthHeader />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
