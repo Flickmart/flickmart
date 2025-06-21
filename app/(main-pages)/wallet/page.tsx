@@ -51,13 +51,13 @@ import dynamic from 'next/dynamic';
 import ClientOnly from "@/components/client-only";
 // ... other imports remain the same ...
 
-const PaystackButton = dynamic(
-  () => import('react-paystack').then((mod) => mod.PaystackButton),
-  { 
-    ssr: false,
-    loading: () => <Button disabled className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full">Loading payment...</Button>
-  }
-);
+// const PaystackButton = dynamic(
+//   () => import('react-paystack').then((mod) => mod.PaystackButton),
+//   { 
+//     ssr: false,
+//     loading: () => <Button disabled className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full">Loading payment...</Button>
+//   }
+// );
 interface PaystackConfig {
   email: string;
   amount: number;
@@ -575,19 +575,21 @@ export default function WalletPage() {
                                 </p>
                               )}
                               {paystackReference && isPaystackModalOpen ? (
-                                <PaystackButton
-                                  {...paystackConfig}
-                                  onSuccess={handlePaystackSuccess}
-                                  onClose={handlePaystackClose}
-                                  className="w-full"
-                                >
-                                  <Button
-                                    onClick={() => setOpen(false)}
-                                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
-                                  >
-                                    Deposit
-                                  </Button>
-                                </PaystackButton>
+                                <div></div>
+                                // <PaystackButton
+                                
+                                //   {...paystackConfig}
+                                //   onSuccess={handlePaystackSuccess}
+                                //   onClose={handlePaystackClose}
+                                //   className="w-full"
+                                // >
+                                //   <Button
+                                //     onClick={() => setOpen(false)}
+                                //     className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
+                                //   >
+                                //     Deposit
+                                //   </Button>
+                                // </PaystackButton>
                               ) : (
                                 <Button
                                   onClick={handleInitializePayment}
@@ -943,19 +945,20 @@ export default function WalletPage() {
                                 </p>
                               )}
                               {paystackReference && isPaystackModalOpen ? (
-                                <PaystackButton
-                                  {...paystackConfig}
-                                  onSuccess={handlePaystackSuccess}
-                                  onClose={handlePaystackClose}
-                                  className="w-full"
-                                >
-                                  <Button
-                                    onClick={() => setOpen(false)}
-                                    className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center gap-2 w-full"
-                                  >
-                                    Continue payment
-                                  </Button>
-                                </PaystackButton>
+                                <></>
+                                // <PaystackButton
+                                //   {...paystackConfig}
+                                //   onSuccess={handlePaystackSuccess}
+                                //   onClose={handlePaystackClose}
+                                //   className="w-full"
+                                // >
+                                //   <Button
+                                //     onClick={() => setOpen(false)}
+                                //     className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center gap-2 w-full"
+                                //   >
+                                //     Continue payment
+                                //   </Button>
+                                // </PaystackButton>
                               ) : (
                                 <Button
                                   onClick={handleInitializePayment}
