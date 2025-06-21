@@ -156,7 +156,7 @@ export default function MarketplaceProfile() {
                 </p>
               </div>
             </div>
-            {isEditMode ? (
+            {/* {isEditMode ? (
               <div className="hidden sm:flex gap-4">
                 <Button
                   onClick={() => {
@@ -189,7 +189,7 @@ export default function MarketplaceProfile() {
                 <Edit2 className="mr-2 h-4 w-4" />
                 Edit
               </Button>
-            )}
+            )} */}
           </div>
           <Separator className="my-6 hidden sm:block" />
           <div className="space-y-3">

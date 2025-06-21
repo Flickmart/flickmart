@@ -18,7 +18,7 @@ import Image from "next/image";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import useUserStore from "@/store/useUserStore";
 import { useSignUp } from "@clerk/nextjs";
-import { OAuthStrategy } from '@clerk/types'
+import { OAuthStrategy } from "@clerk/types";
 import { toast } from "sonner";
 
 export const formSchema = z.object({
@@ -58,21 +58,22 @@ export default function StageOne({
   });
 
   const signUpWith = (strategy: OAuthStrategy) => {
-    return signUp?.authenticateWithRedirect({
-      strategy,
-      redirectUrl: '/sign-up/sso-callback',
-      redirectUrlComplete: '/',
-    })
+    return signUp
+      ?.authenticateWithRedirect({
+        strategy,
+        redirectUrl: "/sign-up/sso-callback",
+        redirectUrlComplete: "/",
+      })
       .then((res) => {
-        console.log(res)
+        console.log(res);
       })
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
-        console.error(err, null, 2)
-      })
-  }
+        console.log(err.errors);
+        console.error(err, null, 2);
+      });
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!isLoaded) return;
@@ -99,13 +100,14 @@ export default function StageOne({
       // Move to the next stage
       setStage(2);
     } catch (err: any) {
-      toast.error(err.errors?.[0]?.message || "An error occurred during sign up");
+      toast.error(
+        err.errors?.[0]?.message || "An error occurred during sign up"
+      );
       console.error(err);
     } finally {
       setIsLoading(false);
     }
   };
-
 
   return (
     <main className="relative min-h-screen">
@@ -181,7 +183,7 @@ export default function StageOne({
               />
               <div className="flex items-center space-y-4 flex-col pb-3">
                 {/* captcha to protect from bots */}
-              <div id="clerk-captcha"></div>
+                <div id="clerk-captcha"></div>
                 <Button
                   className="submit-btn"
                   type="submit"
@@ -193,7 +195,7 @@ export default function StageOne({
                   className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"
                   variant="secondary"
                   type="button"
-                  onClick={() => signUpWith('oauth_google')}
+                  onClick={() => signUpWith("oauth_google")}
                 >
                   <Image
                     src="/icons/google.png"

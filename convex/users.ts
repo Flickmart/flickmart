@@ -73,6 +73,8 @@ export const deleteFromClerk = internalMutation({
   },
 });
 
+// Get User or throw an error if not found
+// This is useful for server actions where you need to ensure a user exists
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
   const userRecord = await getCurrentUser(ctx);
   if (!userRecord) throw new Error("Can't get current user");
