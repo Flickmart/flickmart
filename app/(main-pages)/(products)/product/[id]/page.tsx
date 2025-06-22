@@ -192,7 +192,7 @@ export default function ProductPage() {
               <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">
                 Description
               </h3>
-              <p className="text-justify text-sm leading-snug">
+              <p className="text-justify text-sm leading-snug break-words">
                 {productData?.description}
               </p>
             </div>
