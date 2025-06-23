@@ -137,7 +137,11 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">About Me</h2>
               <Separator className="my-4" />
-              <p>{user?.description || <i>about not provided</i>}</p>
+              <p>
+                {user?.description || (
+                  <i className="text-gray-400 text-sm">about not provided</i>
+                )}
+              </p>
             </Card>
 
             {/* Recent Listings */}
@@ -181,37 +185,24 @@ export default function PublicProfile() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{user?.email || <i>email not provided</i>}</span>
+                  <span>
+                    {user?.email || (
+                      <i className="text-gray-400 text-sm">
+                        email not provided
+                      </i>
+                    )}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
                   <span>
-                    {user?.contact?.phone || <i>phone not provided</i>}
+                    {user?.contact?.phone || (
+                      <i className="text-gray-400 text-sm">
+                        phone not provided
+                      </i>
+                    )}
                   </span>
                 </div>
-                {/* 
-                <div className="flex items-center gap-2">
-                  <Instagram className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={user?.contact?.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {user?.contact?.instagram}
-                  </a>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Twitter className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={user?.contact?.x}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {user?.contact?.x}
-                  </a>
-                </div> */}
               </div>
             </Card>
 
@@ -221,7 +212,13 @@ export default function PublicProfile() {
               <Separator className="my-4" />
               <div className="flex items-start gap-2 capitalize">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                <p>{user?.contact?.address || <i>location not provided</i>}</p>
+                <p>
+                  {user?.contact?.address || (
+                    <i className="normal-case text-gray-400 text-sm">
+                      location not provided
+                    </i>
+                  )}
+                </p>
               </div>
             </Card>
             <Card className="p-6">

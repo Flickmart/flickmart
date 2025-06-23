@@ -36,9 +36,13 @@ export const updateUser = mutation({
 
     args.about && (await ctx.db.patch(user._id, { description: args.about }));
     args.location &&
-      (await ctx.db.patch(user._id, { contact: { address: args.location } }));
+      (await ctx.db.patch(user._id, {
+        contact: { address: args.location, phone: user.contact?.phone },
+      }));
     args.phone &&
-      (await ctx.db.patch(user._id, { contact: { phone: args.phone } }));
+      (await ctx.db.patch(user._id, {
+        contact: { phone: args.phone, address: user.contact?.address },
+      }));
   },
 });
 
@@ -141,4 +145,3 @@ export const getUserByToken = query({
     return user;
   },
 });
-

@@ -11,7 +11,6 @@ import {
   Info,
   User,
   X,
-  Wallet,
   CircleUser,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -23,7 +22,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import clsx from "clsx";
 import cloneDeep from "lodash/cloneDeep";
-import Link from "next/link";
 import { useReverification, useUser } from "@clerk/clerk-react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -35,7 +33,6 @@ import {
   isReverificationCancelledError,
 } from "@clerk/clerk-react/errors";
 import { Dialog } from "../ui/dialog";
-import { useUploadThing } from "@/utils/uploadthing";
 import { MoonLoader } from "react-spinners";
 
 interface ProfileField {
@@ -73,10 +70,7 @@ export default function MarketplaceProfile() {
       },
     }
   );
-  const [personalInfo, setPersonalInfo] = useState({
-    username: "ebuka223",
-    profilePicture: `/placeholder.svg`,
-  });
+
   const handleProfilePictureChange = async (
     event: ChangeEvent<HTMLInputElement>
   ) => {
@@ -142,16 +136,16 @@ export default function MarketplaceProfile() {
         },
       ]);
     }
-    const handleResize = () => {
-      if (window.innerWidth > 640 && typeof isEditMode === "string") {
-        setIsEditMode(false);
-      }
-      if (window.innerWidth < 640 && typeof isEditMode === "boolean") {
-        setIsEditMode(false);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    // const handleResize = () => {
+    //   if (window.innerWidth > 640 && typeof isEditMode === "string") {
+    //     setIsEditMode(false);
+    //   }
+    //   if (window.innerWidth < 640 && typeof isEditMode === "boolean") {
+    //     setIsEditMode(false);
+    //   }
+    // };
+    // window.addEventListener("resize", handleResize);
+    // return () => window.removeEventListener("resize", handleResize);
   }, [profile]);
 
   const [prevValue, setPrevValue] = useState<string | ProfileField[]>("");
@@ -161,7 +155,6 @@ export default function MarketplaceProfile() {
     index: number
   ) {
     e.preventDefault();
-    const { title } = field;
     if (field.title === "Name") {
       const value = fields[index].value.split(" ");
       const firstName = value[0];
@@ -212,7 +205,7 @@ export default function MarketplaceProfile() {
                     ) : (
                       <>
                         <AvatarImage
-                          src={profile?.imageUrl ?? personalInfo.profilePicture}
+                          src={profile?.imageUrl ?? undefined}
                           alt="Profile picture"
                         />
                         <AvatarFallback className="capitalize text-2xl">
