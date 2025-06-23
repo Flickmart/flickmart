@@ -8,6 +8,7 @@ import {
   Twitter,
   ArrowLeft,
   Phone,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -136,36 +137,39 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">About Me</h2>
               <Separator className="my-4" />
-              <p>{user?.description}</p>
+              <p>{user?.description || <i>about not provided</i>}</p>
             </Card>
 
             {/* Recent Listings */}
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {userProducts
-                  ?.slice()
-                  .reverse()
-                  .slice(0, 3)
-                  .map((listing) => (
-                    <Link key={listing._id} href={`/product/${listing._id}`}>
-                      <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <img
-                          src={listing.images[0] || "/placeholder.svg"}
-                          alt={listing.title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="p-2 space-y-1">
-                          <h3 className="font-medium">{listing.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            &#8358;{listing.price.toLocaleString("en-US")}
-                          </p>
+
+            {userProducts?.length && (
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {userProducts
+                    ?.slice()
+                    .reverse()
+                    .slice(0, 3)
+                    .map((listing) => (
+                      <Link key={listing._id} href={`/product/${listing._id}`}>
+                        <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                          <img
+                            src={listing.images[0] || "/placeholder.svg"}
+                            alt={listing.title}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className="p-2 space-y-1">
+                            <h3 className="font-medium">{listing.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              &#8358;{listing.price.toLocaleString("en-US")}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
-              </div>
-            </Card>
+                      </Link>
+                    ))}
+                </div>
+              </Card>
+            )}
           </div>
 
           {/* Right Column */}
@@ -177,11 +181,13 @@ export default function PublicProfile() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{user?.email}</span>
+                  <span>{user?.email || <i>email not provided</i>}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>{user?.contact?.phone}</span>
+                  <span>
+                    {user?.contact?.phone || <i>phone not provided</i>}
+                  </span>
                 </div>
                 {/* 
                 <div className="flex items-center gap-2">
@@ -213,10 +219,19 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">Location</h2>
               <Separator className="my-4" />
-              <div className="flex items-start gap-2">
+              <div className="flex items-start gap-2 capitalize">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                <p>{user?.contact?.address}</p>
+                <p>{user?.contact?.address || <i>location not provided</i>}</p>
               </div>
+            </Card>
+            <Card className="p-6">
+              <Link
+                href="/wallet"
+                className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
+              >
+                <Wallet />
+                <span className="text-lg font-semibold">Wallet</span>
+              </Link>
             </Card>
           </div>
         </div>
