@@ -1,4 +1,9 @@
-import { internalMutation, query, QueryCtx } from "./_generated/server";
+import {
+  internalMutation,
+  mutation,
+  query,
+  QueryCtx,
+} from "./_generated/server";
 import { UserJSON } from "@clerk/backend";
 import { v, Validator } from "convex/values";
 
@@ -13,6 +18,26 @@ export const getUser = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.userId);
+  },
+});
+
+export const updateUser = mutation({
+  args: {
+    about: v.optional(v.string()),
+    location: v.optional(v.string()),
+    phone: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      throw Error("Please Login First...");
+    }
+
+    args.about && (await ctx.db.patch(user._id, { description: args.about }));
+    args.location &&
+      (await ctx.db.patch(user._id, { contact: { address: args.location } }));
+    args.phone &&
+      (await ctx.db.patch(user._id, { contact: { phone: args.phone } }));
   },
 });
 
@@ -40,8 +65,8 @@ export const upsertFromClerk = internalMutation({
       imageUrl: data.image_url,
       email: data.email_addresses?.[0]?.email_address,
       externalId: data.id,
+      username: data.username || undefined,
     };
-
     const user = await userByExternalId(ctx, data.id);
     if (user === null) {
       await ctx.db.insert("users", userAttributes);
@@ -76,7 +101,6 @@ export async function getCurrentUserOrThrow(ctx: QueryCtx) {
 
 export async function getCurrentUser(ctx: QueryCtx) {
   const identity = await ctx.auth.getUserIdentity();
-
   if (identity === null) {
     return null;
   }

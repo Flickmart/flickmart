@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as chat from "../chat.js";
 import type * as comments from "../comments.js";
+import type * as error from "../error.js";
 import type * as http from "../http.js";
 import type * as notifications from "../notifications.js";
 import type * as presence from "../presence.js";
@@ -34,6 +35,7 @@ import type * as users from "../users.js";
 declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   comments: typeof comments;
+  error: typeof error;
   http: typeof http;
   notifications: typeof notifications;
   presence: typeof presence;
