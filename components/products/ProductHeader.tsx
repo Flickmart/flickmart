@@ -37,6 +37,34 @@ export default function ProductHeader({
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
   const daysAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
   const weeksAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7));
+  const monthsAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7 * 4));
+
+  const timeSince = () => {
+    let value = 0;
+    let timeSpan = "";
+    if (monthsAgo) {
+      value = monthsAgo;
+      timeSpan = "month";
+    } else if (weeksAgo) {
+      value = weeksAgo;
+      timeSpan = "week";
+    } else if (daysAgo) {
+      value = daysAgo;
+      timeSpan = "day";
+    } else if (hoursAgo) {
+      value = hoursAgo;
+      timeSpan = "hour";
+    } else if (minsAgo) {
+      value = minsAgo;
+      timeSpan = "min";
+    }
+    if (value > 1) {
+      timeSpan += "s";
+    }
+    return value && timeSpan
+      ? `${value} ${timeSpan} ago`
+      : "less than a minute ago";
+  };
 
   const handleChat = () => {
     initialChat({
@@ -73,13 +101,7 @@ export default function ProductHeader({
       <div className="flex text-xs font-light items-center gap-2 text-gray-500">
         <MapPin size={17} />
         <span className="capitalize">
-          {location},{" "}
-          <span className="normal-case">
-            {weeksAgo !== 0 && `${weeksAgo} weeks`}
-            {daysAgo !== 0 && !weeksAgo && `${daysAgo} days`}
-            {hoursAgo !== 0 && !daysAgo && `${hoursAgo} hours`}
-            {minsAgo !== 0 && !hoursAgo && `${minsAgo} minutes`} ago
-          </span>
+          {location}, <span className="normal-case">{timeSince()}</span>
         </span>
       </div>
       <h2 className="text-xl font-bold capitalize text-gray-800">{title}</h2>

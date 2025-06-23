@@ -1,10 +1,9 @@
-import {  useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Send, Paperclip, Camera, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Spinner } from "@/components/Spinner";
-
 
 interface ChatInputProps {
   input: string;
@@ -13,6 +12,7 @@ interface ChatInputProps {
   selectedImages?: File[];
   setSelectedImages?: React.Dispatch<React.SetStateAction<File[]>>;
   isUploading?: boolean;
+  extraIcons?: boolean;
 }
 
 export default function ChatInput({
@@ -22,6 +22,7 @@ export default function ChatInput({
   selectedImages,
   setSelectedImages,
   isUploading,
+  extraIcons = true,
 }: ChatInputProps) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -73,29 +74,32 @@ export default function ChatInput({
         </div>
       )}
       <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-3">
-        <label htmlFor="open-camera" className="cursor-pointer">
-          <Camera className="h-6 w-6 text-flickmart" />
-        </label>
-
-        <input
-          type="file"
-          id="open-camera"
-          className="hidden"
-          accept="image/*"
-          capture={isMobile ? "environment" : undefined}
-          onChange={handleFileChange}
-        />
-        <Input
-          type="file"
-          className="hidden"
-          id="file-upload"
-          accept="image/*"
-          multiple
-          onChange={handleFileChange}
-        />
-        <label htmlFor="file-upload" className="cursor-pointer">
-          <Paperclip className="text-flickmart w-6 h-6" />
-        </label>
+        {extraIcons && (
+          <>
+            <label htmlFor="open-camera" className="cursor-pointer">
+              <Camera className="h-6 w-6 text-flickmart" />
+            </label>
+            <input
+              type="file"
+              id="open-camera"
+              className="hidden"
+              accept="image/*"
+              capture={isMobile ? "environment" : undefined}
+              onChange={handleFileChange}
+            />
+            <Input
+              type="file"
+              className="hidden"
+              id="file-upload"
+              accept="image/*"
+              multiple
+              onChange={handleFileChange}
+            />
+            <label htmlFor="file-upload" className="cursor-pointer">
+              <Paperclip className="text-flickmart w-6 h-6" />
+            </label>
+          </>
+        )}
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -106,7 +110,9 @@ export default function ChatInput({
         <Button
           type="submit"
           size="icon"
-          disabled={(!input.trim() && selectedImages?.length === 0) || isUploading}
+          disabled={
+            (!input.trim() && selectedImages?.length === 0) || isUploading
+          }
           className="bg-orange-500 hover:bg-orange-600"
         >
           <Send className="h-5 w-5" />

@@ -144,6 +144,23 @@
       opacity: 0;
     }
   }
+
+  .enlarge {
+    @apply lg:fixed lg:transition-all z-50 lg:animate-[enlarge_0.2s_linear_1_forwards];
+  }
+
+  @keyframes enlarge {
+    0% {
+      left: 0%;
+      top: 0%;
+      transform: translate(0%, 0%) scale(0%);
+    }
+    100% {
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%) scale(110%);
+    }
+  }
 }
 
 @layer components {
