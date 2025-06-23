@@ -36,6 +36,7 @@ import CommentContent from "@/components/products/CommentContent";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useIsLarge } from "@/hooks/useLarge";
+import { SyncLoader } from "react-spinners";
 
 export default function ProductPage() {
   const isVisible = useNav();
@@ -115,6 +116,24 @@ export default function ProductPage() {
 
   if (!isLarge && enlarge) setEnlarge(false);
 
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!productData) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [productData]);
+
+  if (loading) {
+    return (
+      <div className="bg-black/50 flex justify-center items-center z-50 fixed  inset-0">
+        <SyncLoader color="#f81" />
+      </div>
+    );
+  }
+
   return (
     <Drawer>
       <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
@@ -133,7 +152,7 @@ export default function ProductPage() {
             ></div>
             <div
               onClick={() => {
-                  console.log("yam");
+                console.log("yam");
 
                 if (isLarge) {
                   setEnlarge(true);

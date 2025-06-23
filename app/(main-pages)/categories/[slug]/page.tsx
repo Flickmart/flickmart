@@ -38,6 +38,7 @@ import { useEffect, useReducer, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import Filters from "@/components/Filters";
 import { useFilters } from "@/hooks/useFilters";
+import { SyncLoader } from "react-spinners";
 
 interface FilterObjectType {
   min: number;
@@ -143,6 +144,24 @@ export default function DetailedCategoryPage() {
   useEffect(() => {
     router.push(`/categories/${category || slug}`);
   }, [category]);
+
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!filteredProds) {
+      setLoading(true);
+    } else {
+      setLoading(false);
+    }
+  }, [filteredProds]);
+
+  if (loading) {
+    return (
+      <div className="bg-black/50 flex justify-center items-center z-50 fixed  inset-0">
+        <SyncLoader color="#f81" />
+      </div>
+    );
+  }
   return (
     <>
       <main className=" min-h-screen flex w-screen">
