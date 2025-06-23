@@ -57,12 +57,10 @@ export default function SignIn() {
         redirectUrlComplete: "/",
       })
       .then((res) => {
-        console.log(res);
       })
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors);
         console.error(err, null, 2);
       });
   };

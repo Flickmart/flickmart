@@ -133,14 +133,9 @@ export default function PostAdForm({
     onSuccess: async (data) => {
       // Show success toast
       setAdId(data);
-      toast.success("Ad posted successfully...", {
-        duration: 2000,
-      });
 
       // Show a loading toast for redirection
-      toast.loading("Redirecting to product page...", {
-        duration: 2000,
-      });
+      toast.info("Redirecting to product page...");
       console.log("Ad ID:", data);
       router.push(`/product/${data}`);
     },
@@ -157,9 +152,7 @@ export default function PostAdForm({
         return;
       }
 
-      postToastId = toast.loading("Posting Ad...", {
-        duration: 2000,
-      });
+      postToastId = toast.info("Posting Ad...");
       const modifiedObj = {
         ...formData,
         businessId,
