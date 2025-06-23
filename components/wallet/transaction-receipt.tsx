@@ -213,7 +213,7 @@ export function TransactionReceipt({
               </div>
               ): (
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center border border-green-200">
-                <ArrowDownLeft  className="h-5 w-5 text-flickmart" />
+                <ArrowDownLeft  className="h-5 w-5 text-green-500" />
               </div>
               )}
               <div>
