@@ -8,6 +8,7 @@ import {
   Download,
   CheckCircle,
   Clock,
+ArrowDownLeft,
   XCircle,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,6 +19,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { PaystackButton } from "react-paystack";
 import { TransactionStatusBadge } from "./transaction-status-badge";
+import Image from "next/image";
 
 interface TransactionReceiptProps {
   transaction: Doc<"transactions">;
@@ -141,7 +143,7 @@ export function TransactionReceipt({
     switch (transaction.type) {
       case "funding":
         return {
-          title: `${transaction.cardType || "Card"} Payment`,
+          title: `${transaction.cardType?.toUpperCase() || "Card"} Payment`,
           subtitle: "To Flickmart Wallet",
           recipient: user.name,
         };
@@ -183,16 +185,20 @@ export function TransactionReceipt({
       >
         {/* Compact Orange Brand Banner */}
         <div className="text-center py-3 bg-flickmart -mx-6 mb-6 relative">
-          <div className="flex items-center justify-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-md">
-              <div className="w-8 h-8 bg-flickmart rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">F</span>
-              </div>
+          <div className="flex flex-col items-center justify-center ">
+            <div className="flex gap-1 items-center">
+              <Image
+                src="/flickmart-logo.svg"
+                width={500}
+                height={500}
+                className="h-12 w-12"
+                alt=""
+              />
+              <h1 className="font-bold text-xl mt-2">
+                Flick<span className="text-white">Mart</span>
+              </h1>
             </div>
-            <div>
-              <h2 className="text-lg font-bold text-white">Flickmart</h2>
-              <p className="text-orange-100 text-xs">Transaction Receipt</p>
-            </div>
+              <p className="text-orange-100 text-sm">Transaction Receipt</p>
           </div>
         </div>
 
@@ -200,9 +206,16 @@ export function TransactionReceipt({
         <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
+              {transaction.type !== "funding" && transaction.type !==  "transfer_in" ? (
+
               <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center border border-orange-200">
                 <ArrowUpRight className="h-5 w-5 text-flickmart" />
               </div>
+              ): (
+              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center border border-green-200">
+                <ArrowDownLeft  className="h-5 w-5 text-flickmart" />
+              </div>
+              )}
               <div>
                 <p className="text-sm font-semibold text-gray-900 mb-1">
                   {transactionInfo.title}
@@ -362,7 +375,7 @@ export function TransactionReceipt({
               Generated on {new Date().toLocaleString()}
             </p>
             <p className="text-xs text-gray-400">
-              Customer Service: support@flickmart.com
+              Customer Service: support@flickmart.app
             </p>
           </div>
         </div>
