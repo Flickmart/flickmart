@@ -6,6 +6,7 @@ import {
   Store,
   ThumbsDown,
   ThumbsUp,
+  X,
 } from "lucide-react";
 import {
   Carousel,
@@ -33,10 +34,13 @@ import useSlider from "@/hooks/useSlider";
 import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
 import CommentContent from "@/components/products/CommentContent";
 import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { useIsLarge } from "@/hooks/useLarge";
 
 export default function ProductPage() {
   const isVisible = useNav();
   const isMobile = useIsMobile();
+  const isLarge = useIsLarge();
   const params = useParams();
   const productId = params.id as Id<"product">;
   const likeProduct = useMutation(api.product.likeProduct);
@@ -99,7 +103,6 @@ export default function ProductPage() {
         // bookmarked?.added
 
         typeof bookmarked === "object" && bookmarked?.added
-
           ? toast.success(`Item added to ${label}`)
           : toast.success(`Item removed from ${label}`);
       }
@@ -108,28 +111,77 @@ export default function ProductPage() {
     }
   };
 
+  const [enlarge, setEnlarge] = useState(false);
+
+  if (!isLarge && enlarge) setEnlarge(false);
+
   return (
     <Drawer>
       <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
-        <div className="lg:flex gap-5 space-y-3">
-          <div className="lg:w-2/4  flex  flex-col  justify-center items-center  space-y-5">
-            <Carousel setApi={setApi}>
-              <CarouselContent>
-                {productData?.images.map((image, index) => {
-                  return (
-                    <CarouselItem key={index}>
-                      <Image
-                        src={image}
-                        alt={productData.title}
-                        width={500}
-                        height={500}
-                        className=" w-full lg:h-[550px] object-cover  aspect-square"
-                      />
-                    </CarouselItem>
-                  );
-                })}
-              </CarouselContent>
-            </Carousel>
+        <div className="lg:grid lg:grid-cols-2 gap-5 space-y-3">
+          <div className="flex  flex-col  justify-center items-center  space-y-5">
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setEnlarge(false);
+              }}
+              className={
+                enlarge
+                  ? "hidden lg:block lg:bg-black/75 lg:fixed lg:w-screen lg:h-screen lg:z-40 lg:top-0 lg:right-0"
+                  : "hidden"
+              }
+            ></div>
+            <div
+              onClick={() => {
+                  console.log("yam");
+
+                if (isLarge) {
+                  setEnlarge(true);
+                }
+              }}
+              className={`lg:cursor-pointer ${enlarge ? "enlarge" : ""}`}
+            >
+              <Carousel setApi={setApi}>
+                <CarouselContent>
+                  {productData?.images.map((image, index) => {
+                    return (
+                      <CarouselItem key={index}>
+                        <Image
+                          src={image}
+                          alt={productData.title}
+                          width={500}
+                          height={500}
+                          className=" w-full lg:h-[550px] object-cover  aspect-square"
+                        />
+                      </CarouselItem>
+                    );
+                  })}
+                </CarouselContent>
+              </Carousel>
+              {enlarge && (
+                <div className="bg-white rounded-md flex justify-around w-full p-3 mt-2">
+                  {productIcons.map((item) => {
+                    return (
+                      <div
+                        key={item.label}
+                        onClick={() => handleGestures(item.label)}
+                        className="capitalize space-y-3 text-center cursor-pointer"
+                      >
+                        <div className={`flex justify-center`}>{item.icon}</div>{" "}
+                        <span className="inline-block text-sm lg:text-lg">
+                          {productData?.likes && item.label === "likes"
+                            ? productData.likes
+                            : productData?.dislikes && item.label === "dislikes"
+                              ? productData.dislikes
+                              : item.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             {isMobile ? (
               <ProductHeader
                 description={productData?.description || ""}
@@ -141,39 +193,41 @@ export default function ProductPage() {
                 userId={productData?.userId!}
               />
             ) : null}
-            <div className="bg-white rounded-md flex justify-around w-full p-5">
-              {productIcons.map((item) => {
-                return (
-                  <div
-                    key={item.label}
-                    onClick={() => handleGestures(item.label)}
-                    className="capitalize space-y-3 text-center cursor-pointer"
-                  >
-                    <div className={`flex justify-center`}>{item.icon}</div>{" "}
+            {!enlarge && (
+              <div className="bg-white rounded-md flex justify-around w-full p-5">
+                {productIcons.map((item) => {
+                  return (
+                    <div
+                      key={item.label}
+                      onClick={() => handleGestures(item.label)}
+                      className="capitalize space-y-3 text-center cursor-pointer"
+                    >
+                      <div className={`flex justify-center`}>{item.icon}</div>{" "}
+                      <span className="inline-block text-sm lg:text-lg">
+                        {productData?.likes && item.label === "likes"
+                          ? productData.likes
+                          : productData?.dislikes && item.label === "dislikes"
+                            ? productData.dislikes
+                            : item.label}
+                      </span>
+                    </div>
+                  );
+                })}
+                <DrawerTrigger className="">
+                  <div className="capitalize space-y-3 text-center cursor-pointer">
+                    <div className={`flex justify-center`}>
+                      <MessageCircle />
+                    </div>
                     <span className="inline-block text-sm lg:text-lg">
-                      {productData?.likes && item.label === "likes"
-                        ? productData.likes
-                        : productData?.dislikes && item.label === "dislikes"
-                          ? productData.dislikes
-                          : item.label}
+                      {comments?.length ? comments.length : "comment"}
                     </span>
                   </div>
-                );
-              })}
-              <DrawerTrigger className="">
-                <div className="capitalize space-y-3 text-center cursor-pointer">
-                  <div className={`flex justify-center`}>
-                    <MessageCircle />
-                  </div>
-                  <span className="inline-block text-sm lg:text-lg">
-                    {comments?.length ? comments.length : "comment"}
-                  </span>
-                </div>
-              </DrawerTrigger>
-              <CommentContent productId={productId} />
-            </div>
+                </DrawerTrigger>
+                <CommentContent productId={productId} />
+              </div>
+            )}
           </div>
-          <div className=" lg:w-2/4 flex flex-col justify-center space-y-3">
+          <div className="flex flex-col justify-center space-y-3">
             {isMobile && comments?.length ? (
               <Comment productId={productId} />
             ) : null}
