@@ -74,28 +74,14 @@ export default function PublicProfile() {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold">{user?.name}</h1>
-                  {user?.verified && (
-                    <Badge variant="secondary">Verified</Badge>
-                  )}
-                </div>
+              <div className="flex flex-col  gap-2">
+                <h1 className="text-2xl font-semibold">{user?.name}</h1>
                 <p className="text-sm text-muted-foreground">
                   @{user?.username}
                 </p>
-                <div className="mt-2 flex items-center">
-                  {/* <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="ml-1 text-sm font-medium">
-                    {user?.rating}
-                  </span>
-                  <span className="ml-1 text-sm text-muted-foreground">
-                    ({user?.reviews} reviews)
-                  </span> */}
-                  <span className="ml-1 text-sm text-muted-foreground">
-                    %ROLE%
-                  </span>
-                </div>
+                <span className="ml-1 text-sm text-muted-foreground">
+                  %ROLE%
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-2 ">
@@ -146,7 +132,7 @@ export default function PublicProfile() {
 
             {/* Recent Listings */}
 
-            {userProducts?.length && (
+            {!userProducts?.length ? null : (
               <Card className="p-6">
                 <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">

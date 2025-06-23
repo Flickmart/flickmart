@@ -16,6 +16,7 @@ import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { useSession } from "@clerk/clerk-react";
 import { toast } from "sonner";
+import { MoonLoader } from "react-spinners";
 
 interface VerificationType {
   onDialogClose: () => void;
@@ -32,6 +33,7 @@ export default function VerificationComponent({
 }: VerificationType) {
   const { session } = useSession();
   const [code, setCode] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [startingFirstFactor, setStartingFirstFactor] = useState<
     EmailCodeFactor | undefined
   >(undefined);
@@ -75,6 +77,7 @@ export default function VerificationComponent({
   // Verification of Code
   const handleVerificationAttempt = async () => {
     try {
+      setIsLoading(true);
       // Attempt to verify the session using the email code
       await session?.attemptFirstFactorVerification({
         strategy: "email_code",
@@ -86,15 +89,20 @@ export default function VerificationComponent({
     } catch (err) {
       // Any error that occurs during verification
       toast.error("Error verifying session");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <DialogContent className="w-[90vw] sm:w-[400px] rounded-lg">
       <DialogHeader className="space-y-3">
-        <DialogTitle>Re-Verify Your Account</DialogTitle>
+        <DialogTitle className="font-bold text-gray-600">
+          This action requires verification
+        </DialogTitle>
         <DialogDescription>
-          To perform this action, enter verification code sent to
+          Enter verification code sent to:{" "}
+          {startingFirstFactor?.safeIdentifier || "your email"}.
         </DialogDescription>
       </DialogHeader>
       <div className="flex justify-center">
@@ -107,7 +115,7 @@ export default function VerificationComponent({
       <DialogFooter>
         <div className="flex justify-center gap-3">
           <Button onClick={handleVerificationAttempt} className="w-1/3">
-            Verify
+            {isLoading ? <MoonLoader size={15} /> : "Verify"}
           </Button>
           <Button
             className="w-1/3"

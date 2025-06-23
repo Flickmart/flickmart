@@ -136,16 +136,6 @@ export default function MarketplaceProfile() {
         },
       ]);
     }
-    // const handleResize = () => {
-    //   if (window.innerWidth > 640 && typeof isEditMode === "string") {
-    //     setIsEditMode(false);
-    //   }
-    //   if (window.innerWidth < 640 && typeof isEditMode === "boolean") {
-    //     setIsEditMode(false);
-    //   }
-    // };
-    // window.addEventListener("resize", handleResize);
-    // return () => window.removeEventListener("resize", handleResize);
   }, [profile]);
 
   const [prevValue, setPrevValue] = useState<string | ProfileField[]>("");
@@ -359,7 +349,7 @@ export default function MarketplaceProfile() {
                             <div className="flex items-center gap-4 mt-3 sm:hidden">
                               <Button
                                 type="submit"
-                                className="p-2 h-8 rounded-sm"
+                                className="p-2 h-8 rounded-sm hover:bg-orange-600"
                               >
                                 Save
                               </Button>
@@ -396,7 +386,6 @@ export default function MarketplaceProfile() {
           </Card>
         </div>
       </section>
-      )
     </Dialog>
   );
 }

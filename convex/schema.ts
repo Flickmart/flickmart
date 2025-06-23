@@ -11,17 +11,12 @@ export default defineSchema({
     email: v.optional(v.string()),
 
     paystackCustomerId: v.optional(v.string()), // Store Paystack Customer ID
+    role: v.optional(v.union(v.literal("buyer"), v.literal("seller"))),
 
     username: v.optional(v.string()),
-    verified: v.optional(v.boolean()),
     description: v.optional(v.string()),
-    rating: v.optional(v.number()),
-    reviews: v.optional(v.number()),
     contact: v.optional(
       v.object({
-        facebook: v.optional(v.string()),
-        instagram: v.optional(v.string()),
-        x: v.optional(v.string()),
         phone: v.optional(v.string()),
         address: v.optional(v.string()),
       })
@@ -210,7 +205,9 @@ export default defineSchema({
         transferId: v.optional(v.id("transfers")),
         escrowId: v.optional(v.id("escrows")),
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
-        plan: v.optional(v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))), // Ad plan type
+        plan: v.optional(
+          v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
+        ), // Ad plan type
       })
     ),
   })
