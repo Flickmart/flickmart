@@ -64,9 +64,9 @@ export default function ChatSidebar({
   const SidebarContent = () => (
     <>
       {/* Sidebar Header */}
-      <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1  ">
+      <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1 ">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-3xl md:text-xl">Chats</h2>
+          <h2 className="text-flickmart font-bold text-3xl md:text-xl  ">Chats</h2>
         </div>
         <Menu className="md:block hidden" />
       </div>
@@ -161,7 +161,7 @@ export default function ChatSidebar({
                   </AvatarFallback>
                 </Avatar>
                 <div className="ml-3 flex-1 overflow-hidden">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center !leading-normal">
                     <h3
                       className={cn(
                         "font-medium truncate",
