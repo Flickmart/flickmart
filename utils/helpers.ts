@@ -5,6 +5,7 @@ interface ChatParams {
     user: Doc<"users"> | null;
     userId: Id<"users">;
     onNavigate: (path: string)=> void
+    productId?: Id<"product">;
 }
 interface ShareParams{
     title: string;
@@ -12,7 +13,7 @@ interface ShareParams{
     productId: Id<"product">;
   }
 
-export const initialChat = async ({user, userId, onNavigate}: ChatParams) => {
+export const initialChat = async ({user, userId, onNavigate, productId}: ChatParams) => {
     if (!user) {
       toast.error("Please login to chat with vendor");
       return;
@@ -20,7 +21,7 @@ export const initialChat = async ({user, userId, onNavigate}: ChatParams) => {
     console.log("chat vendor clicked")
 
     // Navigate to chat page with vendor ID as query parameter
-    onNavigate(`/chats?vendorId=${userId}`);
+    onNavigate(`/chats?vendorId=${userId}&productId=${productId}`);
 
     toast.success("Starting chat with vendor");
   };

@@ -71,6 +71,7 @@ export default function ProductHeader({
       user: user ?? null,
       userId,
       onNavigate: router.push,
+      productId,
     });
   };
 
