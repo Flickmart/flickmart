@@ -1,9 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getCurrentUserOrThrow } from "./users";
-import { timeStamp } from "console";
-import { Id } from "./_generated/dataModel";
-import { errorHandler } from "./error";
 
 // Get all products
 export const getAll = query({
@@ -387,30 +384,26 @@ export const addBookmark = mutation({
 export const getSavedOrWishlistProduct = query({
   args: { productId: v.id("product"), type: v.string() },
   handler: async (ctx, args) => {
-    const response = await errorHandler(async () => {
-      const user = await getCurrentUserOrThrow(ctx);
-      if (!user) {
-        throw new ConvexError("User not found");
-      }
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      throw new ConvexError("User not found");
+    }
 
-      const product = await ctx.db.get(args.productId);
-      if (!product) {
-        return;
-      }
-      const saved = await ctx.db
-        .query("bookmarks")
-        .filter((q) =>
-          q.and(
-            q.eq(q.field("productId"), product._id),
-            q.eq(q.field("userId"), user._id),
-            q.eq(q.field("type"), args.type)
-          )
+    const product = await ctx.db.get(args.productId);
+    if (!product) {
+      return;
+    }
+    const saved = await ctx.db
+      .query("bookmarks")
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("productId"), product._id),
+          q.eq(q.field("userId"), user._id),
+          q.eq(q.field("type"), args.type)
         )
-        .first();
-      return saved;
-    });
-
-    return response;
+      )
+      .first();
+    return saved;
   },
 });
 

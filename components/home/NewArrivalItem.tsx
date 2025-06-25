@@ -1,9 +1,11 @@
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import * as Sentry from "@sentry/nextjs";
 import { useQuery } from "convex/react";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import React from "react";
+import { toast } from "sonner";
 
 interface NewArrivalsProp {
   image: string;
@@ -12,16 +14,30 @@ interface NewArrivalsProp {
   productId: Id<"product">;
 }
 
+function useSavedOrWishlistProduct(productId: Id<"product">) {
+  try {
+    const saved = useQuery(api.product.getSavedOrWishlistProduct, {
+      productId,
+      type: "saved",
+    });
+    return saved;
+  } catch (err) {
+    const error = err as Error;
+    toast("Something went wrong...", {
+      description: error.message,
+    });
+    Sentry.captureException(error);
+  }
+}
+
 export default function NewArrivalItem({
   image,
   name,
   price,
   productId,
 }: NewArrivalsProp) {
-  const saved = useQuery(api.product.getSavedOrWishlistProduct, {
-    productId,
-    type: "saved",
-  });
+  const saved = useSavedOrWishlistProduct(productId);
+
   return (
     <div className="flex flex-col justify-between lg:w-1/4 min-w-60 min-h-60 relative  flex-grow">
       <span className="absolute bg-white uppercase px-3 py-1 top-5 left-5 font-bold text-black rounded-sm">
