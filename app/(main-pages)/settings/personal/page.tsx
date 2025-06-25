@@ -75,7 +75,9 @@ export default function PublicProfile() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col  gap-2">
-                <h1 className="text-2xl font-semibold">{user?.name}</h1>
+                <h1 className="text-2xl text-center font-semibold">
+                  {user?.name}
+                </h1>
                 <p className="text-sm text-muted-foreground">
                   @{user?.username}
                 </p>
