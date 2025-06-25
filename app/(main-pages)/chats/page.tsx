@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react"; // Added useCallback
 import { Button } from "@/components/ui/button";
 import WelcomeScreen from "@/components/chats/welcome-screen";
 import ChatSidebar from "@/components/chats/chat-sidebar";
@@ -34,6 +34,7 @@ interface Message {
   conversationId: Id<"conversations">;
   _creationTime: number;
   readByUsers?: Id<"users">[];
+  images?: string[]; // Add images to the Message interface
 }
 
 interface ConversationUser {
@@ -61,17 +62,22 @@ export default function ChatPage() {
   const [showProfile, setShowProfile] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
+  const [hasInitialMessageSent, setHasInitialMessageSent] = useState(false);
+  const [processedProductId, setProcessedProductId] =
+    useState<Id<"product"> | null>(null);
 
   useEffect(() => {
     if (window.innerWidth < 768) {
       setSidebarOpen(true);
     }
-  }, [window.innerWidth]);
+  }, []); // Empty dependency array means this runs once on mount
+
   // Get conversation ID from URL path or query params
   const conversationId = params?.conversationId as
     | Id<"conversations">
     | undefined;
   const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
+  const productId = searchParams?.get("productId") as Id<"product"> | null;
   const activeConversationParam = searchParams?.get(
     "active"
   ) as Id<"conversations"> | null;
@@ -151,6 +157,33 @@ export default function ChatPage() {
     activeChat ? { conversationId: activeChat } : "skip"
   );
 
+  // Function to send initial product message - Use useCallback to memoize
+  const sendInitialProductMessage = useCallback(
+    async (
+      conversationId: Id<"conversations">,
+      currentProductId: Id<"product">
+    ) => {
+      if (!user?._id || processedProductId === currentProductId) return;
+
+      try {
+        const message = `Hey! I'm interested in Product ID: ${currentProductId}`;
+        await sendMessage({
+          senderId: user._id,
+          content: message,
+          conversationId: conversationId,
+          images: [],
+        });
+        setProcessedProductId(currentProductId);
+        setHasInitialMessageSent(true);
+        toast.success("Initial product message sent!");
+      } catch (error) {
+        console.error("Failed to send initial product message:", error);
+        toast.error("Failed to send initial product message");
+      }
+    },
+    [user?._id, processedProductId, sendMessage]
+  );
+
   // Handle archiving/unarchiving a conversation
   const handleArchiveToggle = async () => {
     if (!user?._id || !activeChat) return;
@@ -207,7 +240,14 @@ export default function ChatPage() {
   // Handle initiating chat with vendor
   useEffect(() => {
     const initVendorChat = async () => {
-      if (vendorId && user?._id) {
+      // Only proceed if we have a vendorId, user, and productId,
+      // and this specific productId hasn't been processed yet.
+      if (
+        vendorId &&
+        user?._id &&
+        productId &&
+        processedProductId !== productId
+      ) {
         try {
           // Check if the conversation already exists
           const existingConv = conversations?.find(
@@ -216,29 +256,46 @@ export default function ChatPage() {
               (conv.user1 === user._id && conv.user2 === vendorId)
           );
 
+          let targetConversationId: Id<"conversations">;
+
           if (existingConv) {
-            // Use existing conversation
-            setActiveChat(existingConv._id);
-            // Update URL to remove query param
-            router.replace(`/chats`);
+            targetConversationId = existingConv._id;
+            setActiveChat(targetConversationId);
           } else {
             // Create new conversation
-            const newConversationId = await startConversation({
+            targetConversationId = await startConversation({
               user1Id: user._id,
               user2Id: vendorId,
             });
-            setActiveChat(newConversationId);
-            // Update URL to remove query param
-            router.replace(`/chats`);
+            setActiveChat(targetConversationId);
           }
+
+          // Send initial product message, passing the determined conversation ID and product ID
+          await sendInitialProductMessage(targetConversationId, productId);
+
+          // Update URL to remove query params if successful
+          router.replace(`/chats`);
         } catch (error) {
           console.error("Failed to start conversation with vendor:", error);
+          toast.error("Failed to start conversation with vendor");
         }
       }
     };
 
-    initVendorChat();
-  }, [vendorId, user?._id, conversations, startConversation, router]);
+    // Ensure conversations and user are loaded before attempting to initialize vendor chat
+    if (conversations !== undefined && user !== undefined) {
+      initVendorChat();
+    }
+  }, [
+    vendorId,
+    user,
+    conversations,
+    startConversation,
+    router,
+    productId,
+    processedProductId, // Keep this here to re-run only when product id changes
+    sendInitialProductMessage, // Add sendInitialProductMessage to dependencies
+  ]);
 
   // Set active chat based on URL params
   useEffect(() => {
@@ -393,7 +450,6 @@ export default function ChatPage() {
       // Get the last message
       const lastMessage =
         conversationMessages.length > 0 ? conversationMessages[0] : null;
-
       const containsImage: boolean =
         conversationMessages[0]?.images?.length &&
         conversationMessages[0].images?.length > 0
@@ -419,9 +475,7 @@ export default function ChatPage() {
           : 0;
 
       const name =
-        otherUser?._id === user?._id
-          ? "Me"
-          : otherUser?.name || "Unknown user";
+        otherUser?._id === user?._id ? "Me" : otherUser?.name || "Unknown user";
 
       return {
         id: conversation._id,
@@ -577,7 +631,7 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
+    <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100 !leading-normal">
       {/* Sidebar */}
       <ChatSidebar
         sidebarOpen={sidebarOpen}
@@ -592,7 +646,7 @@ export default function ChatPage() {
       />
 
       {/* Main chat area */}
-      <div className="flex flex-col flex-1 w-full h-full overflow-hidden">
+      <div className="flex flex-col flex-1 w-full h-full overflow-hidden !leading-normal">
         {activeChat ? (
           <div className="flex flex-col h-full">
             <ChatHeader
@@ -618,23 +672,6 @@ export default function ChatPage() {
               <div ref={messagesEndRef} />
             </div>
             <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">
-              {/* <Button
-                size="icon"
-                className="rounded-full"
-                variant={isActiveConversationArchived ? "outline" : "default"}
-                onClick={handleArchiveToggle}
-                title={
-                  isActiveConversationArchived
-                    ? "Unarchive conversation"
-                    : "Archive conversation"
-                }
-              >
-                {isActiveConversationArchived ? (
-                  <ArchiveRestore className="w-5 h-5" />
-                ) : (
-                  <Archive className="w-5 h-5" />
-                )}
-              </Button> */}
               <Button
                 size="icon"
                 className="rounded-full shadow-md bg-green-600 hover:bg-green-700"
