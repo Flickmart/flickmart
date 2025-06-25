@@ -370,7 +370,8 @@ export default function MarketplaceProfile() {
                           <p
                             className={clsx({
                               "text-gray-400": field.title === "Email",
-                              "text-muted-foreground ": field.title !== "Email",
+                              "text-muted-foreground !leading-normal":
+                                field.title !== "Email",
                             })}
                           >
                             {field.title === "Username" && "@"}

@@ -19,7 +19,6 @@ function useBookmarks() {
     return { saved, wishlist };
   } catch (err) {
     console.log(err);
-    return null;
   }
 }
 

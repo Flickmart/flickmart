@@ -75,14 +75,14 @@ export default function PublicProfile() {
                 </AvatarFallback>
               </Avatar>
               <div className="flex flex-col  gap-2">
-                <h1 className="text-2xl text-center font-semibold">
+                <h1 className="text-2xl min-w-10 font-semibold">
                   {user?.name}
                 </h1>
                 <p className="text-sm text-muted-foreground">
                   @{user?.username}
                 </p>
                 <span className="ml-1 text-sm text-muted-foreground">
-                  %ROLE%
+                  Buyer
                 </span>
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function PublicProfile() {
           <Separator className="my-4" />
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <span className="font-medium">%SOLD%</span> items sold
+              <span className="font-medium">10</span> items sold
             </div>
             <div>
               <span className="font-medium">{userProducts?.length}</span> items
@@ -125,7 +125,7 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">About Me</h2>
               <Separator className="my-4" />
-              <p>
+              <p className="!leading-normal">
                 {user?.description || (
                   <i className="text-gray-400 text-sm">about not provided</i>
                 )}
@@ -198,7 +198,7 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">Location</h2>
               <Separator className="my-4" />
-              <div className="flex items-start gap-2 capitalize">
+              <div className="flex items-center gap-2 capitalize">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
                 <p>
                   {user?.contact?.address || (

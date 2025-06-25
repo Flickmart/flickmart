@@ -1,33 +1,15 @@
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import * as Sentry from "@sentry/nextjs";
-import { useQuery } from "convex/react";
+import { useSavedOrWishlistProduct } from "@/hooks/useQueryHandlers";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import React from "react";
-import { toast } from "sonner";
+import { Id } from "@/convex/_generated/dataModel";
 
 interface NewArrivalsProp {
   image: string;
   name: string;
   price: number;
   productId: Id<"product">;
-}
-
-function useSavedOrWishlistProduct(productId: Id<"product">) {
-  try {
-    const saved = useQuery(api.product.getSavedOrWishlistProduct, {
-      productId,
-      type: "saved",
-    });
-    return saved;
-  } catch (err) {
-    const error = err as Error;
-    toast("Something went wrong...", {
-      description: error.message,
-    });
-    Sentry.captureException(error);
-  }
 }
 
 export default function NewArrivalItem({

@@ -12,10 +12,10 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // useEffect(() => {
-  //   Sentry.captureException(error);
-  // }, [error]);
-  // console.log(error);
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+  console.log(error);
   return (
     <html>
       <body className="bg-white h-full flex items-center justify-center">
