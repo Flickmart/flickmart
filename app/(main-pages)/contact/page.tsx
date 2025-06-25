@@ -26,7 +26,7 @@ export default function Contact() {
                     <div className="mt-4">
                         <textarea id="message" className="leading-tight border border-gray-300 rounded-md py-3 p-2 w-full" rows={5} placeholder="Your message..."></textarea>
                     </div>
-                    <button type="submit" className="w-full mt-4 bg-flickmart text-white py-4 px-4 rounded-md">Send Message</button>
+                    <button type="submit" className="w-full mt-4 bg-flickmart text-white py-4 px-4 rounded-md">Send Message to us</button>
                 </form>
                 
                 <div className="w-full md:w-6/12 md:border md:rounded-md">
