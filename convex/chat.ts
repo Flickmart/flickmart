@@ -62,9 +62,14 @@ export const startConversation = mutation({
 export const sendMessage = mutation({
   args: {
     senderId: v.id("users"),
-    content: v.string(),
+    content: v.optional(v.string()),
     conversationId: v.id("conversations"),
     images: v.optional(v.array(v.string())),
+    type: v.optional(v.union(v.literal("text"), v.literal("product"))),
+    productId: v.optional(v.id("product")),
+    price: v.optional(v.number()),
+    title: v.optional(v.string()),
+    productImage: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -88,6 +93,11 @@ export const sendMessage = mutation({
       images: args.images || [],
       conversationId: args.conversationId,
       readByUsers: [args.senderId], // The sender has read their own message
+      type: args.type,
+      productId: args.productId,
+      title: args.title,
+      price: args.price,
+      productImage: args.productImage
     });
 
     // Determine the recipient
@@ -124,7 +134,7 @@ export const sendMessage = mutation({
       type: "new_message",
       relatedId: messageId,
       title: `${sender?.name || "Someone"} sent you a message`,
-      content: args.content,
+      content: args.content || "",
       imageUrl: sender?.imageUrl,
       isRead: false,
       timestamp: now,
@@ -273,7 +283,18 @@ export const getMessages = query({
       .query("message")
       .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
       .collect();
-    return messages;
+
+    const messagesWithProducts = await Promise.all(
+      messages.map(async (message) => {
+        if (message.type === "product" && message.productId) {
+          const product = await ctx.db.get(message.productId);
+          return { ...message, product };
+        }
+        return message;
+      })
+    );
+
+    return messagesWithProducts;
   },
 });
 
@@ -299,7 +320,17 @@ export const getAllConversationsMessages = query({
       allMessages.push(...messages);
     }
 
-    return allMessages;
+    const messagesWithProducts = await Promise.all(
+      allMessages.map(async (message) => {
+        if (message.type === "product" && message.productId) {
+          const product = await ctx.db.get(message.productId);
+          return { ...message, product };
+        }
+        return message;
+      })
+    );
+
+    return messagesWithProducts;
   },
 });
 

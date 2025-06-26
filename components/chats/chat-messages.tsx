@@ -10,6 +10,10 @@ interface Message {
   images?: string[];
   role: "user" | "assistant";
   timestamp: Date;
+  type?: "text" | "product" | "image";
+  title?: string;
+  price?: number;
+  productImage?: string;
 }
 
 interface ChatMessagesProps {
@@ -151,6 +155,10 @@ export default function ChatMessages({
                 toggleSelectionMode={toggleSelectionMode}
                 handleLongPress={handleLongPress}
                 selectedMessages={selectedMessages}
+                title={message.title}
+                price={message.price}
+                image={message.productImage}
+                type={message.type}
               />
             ))}
           </div>
