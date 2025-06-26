@@ -1,8 +1,9 @@
-import { Check, CheckCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
-import { Id } from "@/convex/_generated/dataModel";
 import { PhotoView } from "react-photo-view";
+import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import { LinkIcon } from "lucide-react";
 
 interface MessageBubbleProps {
   id: string;
@@ -16,6 +17,10 @@ interface MessageBubbleProps {
   handleLongPress: (messageId: string) => void;
   toggleMessageSelection: (messageId: string) => void;
   toggleSelectionMode: () => void;
+  type?: "text" | "product" | "image";
+  title?: string;
+  price?: number;
+  image?: string;
 }
 
 export default function MessageBubble({
@@ -30,6 +35,10 @@ export default function MessageBubble({
   toggleMessageSelection,
   toggleSelectionMode,
   handleLongPress,
+  type = "text", // Default to 'text'
+  title = "",
+  price = 0,
+  image = "", // Default to empty string
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -154,10 +163,19 @@ export default function MessageBubble({
             </div>
           </div>
         )}
-        <p className={cn("break-words text-sm md:text-base",  selectedMessages.includes(id) && " text-right ")}>{message}</p>
+        <p
+          className={cn(
+            "break-words text-sm md:text-base",
+            selectedMessages.includes(id) && " text-right "
+          )}
+        >
+          {type !== "product" && message}
+        </p>
 
         <div className="flex items-center justify-end mt-1 space-x-1">
-          <span className="text-[10px] md:text-[10px] opacity-70">{timestamp}</span>
+          <span className="text-[10px] md:text-[10px] opacity-70">
+            {timestamp}
+          </span>
           {/* {isUser && (
             <span className="text-[10px] md:text-xs">
               {status === "sent" && <Check className="h-4 w-4 inline" />}
@@ -170,6 +188,56 @@ export default function MessageBubble({
             </span>
           )} */}
         </div>
+        {type === "product" && (
+          <ProductChatMessage
+            productImage={image}
+            productTitle={title}
+            productPrice={price}
+            message={message}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface ProductChatMessageProps {
+  productImage: string;
+  productTitle: string;
+  message: string;
+  productPrice: number;
+}
+
+export function ProductChatMessage({
+  productImage,
+  productTitle,
+  productPrice,
+  message,
+}: ProductChatMessageProps) {
+  return (
+    <div className="flex justify-end">
+      <div className="max-w-xs bg-flickmart text-white ">
+        {/* Product Details Section - Highlighted */}
+        <div className="bg-orange-600 rounded-lg p-3 mb-3 border border-orange-400 flex items-center gap-3" >
+          <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden">
+            <Image
+              src={productImage || "/placeholder.svg"}
+              alt={productTitle}
+              layout="fill"
+              objectFit="cover"
+              className="rounded-md"
+            />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold line-clamp-2 leading-tight flex items-center gap-1">
+              {productTitle}
+              <LinkIcon className="w-3 h-3 text-orange-200" /> {/* Link icon */}
+            </p>
+            <p className="text-xs font-medium text-orange-100 mt-1">${productPrice.toFixed(2)}</p>
+          </div>
+        </div>
+        {/* Message Text */}
+        <p className="text-sm leading-relaxed">{message}</p>
       </div>
     </div>
   );

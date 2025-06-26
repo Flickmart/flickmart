@@ -35,6 +35,12 @@ interface Message {
   _creationTime: number;
   readByUsers?: Id<"users">[];
   images?: string[]; // Add images to the Message interface
+  type?: "text" | "product" | "image";
+  product?: {
+    title: string;
+    price: number;
+    image: string;
+  };
 }
 
 interface ConversationUser {
@@ -62,7 +68,6 @@ export default function ChatPage() {
   const [showProfile, setShowProfile] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
-  const [hasInitialMessageSent, setHasInitialMessageSent] = useState(false);
   const [processedProductId, setProcessedProductId] =
     useState<Id<"product"> | null>(null);
 
@@ -157,28 +162,40 @@ export default function ChatPage() {
     activeChat ? { conversationId: activeChat } : "skip"
   );
 
+  // Fetch product data if productId is present
+  const product = useQuery(
+    api.product.getById,
+    productId ? { productId } : "skip"
+  );
+
   // Function to send initial product message - Use useCallback to memoize
   const sendInitialProductMessage = useCallback(
     async (
       conversationId: Id<"conversations">,
-      currentProductId: Id<"product">
+      currentProductId: Id<"product">,
+
     ) => {
-      if (!user?._id || processedProductId === currentProductId) return;
+      if (
+        !user?._id ||
+        processedProductId === currentProductId || !product
+      )
+        return;
 
       try {
-        const message = `Hey! I'm interested in Product ID: ${currentProductId}`;
         await sendMessage({
           senderId: user._id,
-          content: message,
           conversationId: conversationId,
-          images: [],
+          type: "product",
+          productId: currentProductId,
+          price: product?.price,
+          title: product?.title,
+          productImage: product?.images[0],
+          content: `Hey i'm interested in this product, ${product?.title} is it still available?`,
         });
         setProcessedProductId(currentProductId);
-        setHasInitialMessageSent(true);
-        toast.success("Initial product message sent!");
       } catch (error) {
         console.error("Failed to send initial product message:", error);
-        toast.error("Failed to send initial product message");
+        toast.error("Failed to send message");
       }
     },
     [user?._id, processedProductId, sendMessage]
@@ -246,6 +263,7 @@ export default function ChatPage() {
         vendorId &&
         user?._id &&
         productId &&
+        product &&
         processedProductId !== productId
       ) {
         try {
@@ -271,7 +289,10 @@ export default function ChatPage() {
           }
 
           // Send initial product message, passing the determined conversation ID and product ID
-          await sendInitialProductMessage(targetConversationId, productId);
+          await sendInitialProductMessage(
+            targetConversationId,
+            productId,
+          );
 
           // Update URL to remove query params if successful
           router.replace(`/chats`);
@@ -283,7 +304,11 @@ export default function ChatPage() {
     };
 
     // Ensure conversations and user are loaded before attempting to initialize vendor chat
-    if (conversations !== undefined && user !== undefined) {
+    if (
+      conversations !== undefined &&
+      user !== undefined &&
+      product !== undefined
+    ) {
       initVendorChat();
     }
   }, [
@@ -295,6 +320,7 @@ export default function ChatPage() {
     productId,
     processedProductId, // Keep this here to re-run only when product id changes
     sendInitialProductMessage, // Add sendInitialProductMessage to dependencies
+    product,
   ]);
 
   // Set active chat based on URL params
@@ -481,7 +507,7 @@ export default function ChatPage() {
         id: conversation._id,
         name: name,
         imageUrl: otherUser?.imageUrl || "",
-        lastMessage: lastMessage ? lastMessage.content : "No messages yet",
+        lastMessage: lastMessage?.content ?? "No messages yet",
         containsImage: containsImage,
         time: lastMessageTime,
         unread: userUnreadCount,
@@ -496,7 +522,7 @@ export default function ChatPage() {
       // Apply search filter
       const matchesSearch =
         chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        chat.lastMessage.toLowerCase().includes(searchQuery.toLowerCase());
+        chat.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Apply tab filter
       if (activeFilter === "unread") {
@@ -528,11 +554,15 @@ export default function ChatPage() {
       return {
         id: message._id,
         chatId: message.conversationId,
-        content: message.content,
+        content: message.content ?? "", // Ensure content is always a string
         images: message.images || [],
         role,
         timestamp: new Date(message._creationTime),
         status: message.senderId === user?._id ? status : undefined,
+        type: message.type,
+        title: message.title || "",
+        price: message.price || 0,
+        productImage: message.productImage || "",
       };
     });
   }, [messages, user?._id]);
@@ -613,6 +643,7 @@ export default function ChatPage() {
         content: input,
         conversationId: activeChat,
         images: imageUrls,
+        type: "text",
       });
 
       setInput("");
