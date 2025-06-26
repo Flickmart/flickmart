@@ -108,11 +108,16 @@ export default defineSchema({
     .index("byUser2Id", ["user2"]),
   message: defineTable({
     senderId: v.id("users"),
-    content: v.string(),
-    conversationId: v.id("conversations"),
+    content: v.optional(v.string()),
     readByUsers: v.optional(v.array(v.id("users"))),
+    productId: v.optional(v.id("product")),
+    conversationId: v.id("conversations"),
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
+    type: v.optional(v.union(v.literal("text"), v.literal("product"))),
+    price: v.optional(v.number()),
+    title: v.optional(v.string()),
+    productImage: v.optional(v.string()),
   }),
   notifications: defineTable({
     title: v.string(),

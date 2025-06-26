@@ -12,6 +12,7 @@ const http = httpRouter();
 const ALLOWED_ORIGINS = [
   "http://localhost:3000",
   "http://localhost:3001",
+  "https://flickmart.app",
   "https://flickmart-demo.vercel.app"
 ];
 
@@ -91,7 +92,7 @@ http.route({
       headers.get("Origin") !== null &&
       headers.get("Access-Control-Request-Method") !== null &&
       headers.get("Access-Control-Request-Headers") !== null
-    ) {
+  ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
       });
