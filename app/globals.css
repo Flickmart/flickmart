@@ -178,9 +178,9 @@
   }
 }
 
-body {
+/* body {
   line-height: 0.5 !important;
-}
+} */
 
 #capture_div {
   line-height: normal;
