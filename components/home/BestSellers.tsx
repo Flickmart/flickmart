@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState } from "react";
 import Container from "./Container";
 
@@ -17,7 +17,7 @@ const useRecommendations = () => {
 };
 
 export default function BestSellers() {
-  const all = useQuery(api.product.getAll, { limit: 10})
+  const all = useQuery(api.product.getAll, { limit: 10 });
   const recommendations = useRecommendations();
 
   return (
@@ -27,18 +27,27 @@ export default function BestSellers() {
       </h2>
       <Container>
         <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full grid-rows-2 lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
-          {!recommendations?.length? 
-            all?.map((product, index) => (
-              <Link href={`/product/${product._id}`} key={product._id}>
-                <ProductCard image={product.images[0]} title={product.title} price={product.price} key={index}/> 
-              </Link>
-            )) : 
-            recommendations?.map((product, index) => (
-              <Link href={`/product/${product._id}`} key={product._id}>
-                <ProductCard image={product.images[0]} title={product.title} price={product.price} key={index}/> 
-              </Link>
-            ))
-          }
+          {!recommendations?.length
+            ? all?.map((product, index) => (
+                <Link href={`/product/${product._id}`} key={product._id}>
+                  <ProductCard
+                    image={product.images[0]}
+                    title={product.title}
+                    price={product.price}
+                    key={index}
+                  />
+                </Link>
+              ))
+            : recommendations?.map((product, index) => (
+                <Link href={`/product/${product._id}`} key={product._id}>
+                  <ProductCard
+                    image={product.images[0]}
+                    title={product.title}
+                    price={product.price}
+                    key={index}
+                  />
+                </Link>
+              ))}
         </div>
       </Container>
     </div>

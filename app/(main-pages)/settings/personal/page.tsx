@@ -7,6 +7,8 @@ import {
   Instagram,
   Twitter,
   ArrowLeft,
+  Phone,
+  Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -28,51 +30,10 @@ import { useParams, useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 
 // This would typically come from an API or database
-const getUserProfile = (username: string) => ({
-  fullName: "Panji Dwi",
-  username: "@panjidwi",
-  bio: "Passionate about vintage collectibles and tech gadgets. Always on the lookout for unique items!",
-  joinDate: "Member since January 2020",
-  itemsSold: 152,
-  itemsForSale: 23,
-  rating: 4.8,
-  reviewCount: 98,
-  isVerified: true,
-  preferredPayments: ["PayPal", "Venmo", "Cash"],
-  profilePicture: `/avatar/placeholder.svg`,
-  contactInfo: {
-    email: "dwipanji@gmail.com",
-    facebook: "facebook.com/panjidwi",
-    instagram: "instagram.com/panjidwi",
-    twitter: "twitter.com/panjidwi",
-  },
-  address: "Manchester, Kentucky",
-  recentListings: [
-    {
-      id: 1,
-      title: "Vintage Camera",
-      price: "$120",
-      image: "/placeholder.svg",
-    },
-    {
-      id: 2,
-      title: "Mechanical Keyboard",
-      price: "$80",
-      image: "/placeholder.svg",
-    },
-    {
-      id: 3,
-      title: "Retro Game Console",
-      price: "$150",
-      image: "/placeholder.svg",
-    },
-  ],
-});
 
 export default function PublicProfile() {
   const params = useParams();
-  const username = params.username as string;
-  const profile = getUserProfile(username);
+  // const username = params.username as string;
   const user = useQuery(api.users.current);
   const userProducts = useQuery(api.product.getByUserId, {
     userId: user?._id as Id<"users">,
@@ -113,25 +74,16 @@ export default function PublicProfile() {
                     .join("")}
                 </AvatarFallback>
               </Avatar>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-semibold">{user?.name}</h1>
-                  {user?.verified && (
-                    <Badge variant="secondary">Verified</Badge>
-                  )}
-                </div>
+              <div className="flex flex-col  gap-2">
+                <h1 className="text-2xl min-w-10 font-semibold">
+                  {user?.name}
+                </h1>
                 <p className="text-sm text-muted-foreground">
-                  {user?.username}
+                  @{user?.username}
                 </p>
-                <div className="mt-2 flex items-center">
-                  <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="ml-1 text-sm font-medium">
-                    {user?.rating}
-                  </span>
-                  <span className="ml-1 text-sm text-muted-foreground">
-                    ({user?.reviews} reviews)
-                  </span>
-                </div>
+                <span className="ml-1 text-sm text-muted-foreground">
+                  Buyer
+                </span>
               </div>
             </div>
             <div className="flex flex-col gap-2 ">
@@ -155,8 +107,7 @@ export default function PublicProfile() {
           <Separator className="my-4" />
           <div className="flex flex-wrap gap-4 text-sm">
             <div>
-              <span className="font-medium">{profile.itemsSold}</span> items
-              sold
+              <span className="font-medium">10</span> items sold
             </div>
             <div>
               <span className="font-medium">{userProducts?.length}</span> items
@@ -174,36 +125,43 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">About Me</h2>
               <Separator className="my-4" />
-              <p>{user?.description}</p>
+              <p className="!leading-normal">
+                {user?.description || (
+                  <i className="text-gray-400 text-sm">about not provided</i>
+                )}
+              </p>
             </Card>
 
             {/* Recent Listings */}
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {userProducts
-                  ?.slice()
-                  .reverse()
-                  .slice(0, 3)
-                  .map((listing) => (
-                    <Link key={listing._id} href={`/product/${listing._id}`}>
-                      <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <img
-                          src={listing.images[0] || "/placeholder.svg"}
-                          alt={listing.title}
-                          className="w-full h-32 object-cover"
-                        />
-                        <div className="p-2 space-y-1">
-                          <h3 className="font-medium">{listing.title}</h3>
-                          <p className="text-sm text-muted-foreground">
-                            &#8358;{listing.price.toLocaleString("en-US")}
-                          </p>
+
+            {!userProducts?.length ? null : (
+              <Card className="p-6">
+                <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                  {userProducts
+                    ?.slice()
+                    .reverse()
+                    .slice(0, 3)
+                    .map((listing) => (
+                      <Link key={listing._id} href={`/product/${listing._id}`}>
+                        <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                          <img
+                            src={listing.images[0] || "/placeholder.svg"}
+                            alt={listing.title}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className="p-2 space-y-1">
+                            <h3 className="font-medium">{listing.title}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              &#8358;{listing.price.toLocaleString("en-US")}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
-              </div>
-            </Card>
+                      </Link>
+                    ))}
+                </div>
+              </Card>
+            )}
           </div>
 
           {/* Right Column */}
@@ -215,40 +173,23 @@ export default function PublicProfile() {
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{user?.email}</span>
+                  <span>
+                    {user?.email || (
+                      <i className="text-gray-400 text-sm">
+                        email not provided
+                      </i>
+                    )}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Facebook className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={user?.contact?.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {user?.contact?.facebook}
-                  </a>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Instagram className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={user?.contact?.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {user?.contact?.instagram}
-                  </a>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Twitter className="h-4 w-4 text-muted-foreground" />
-                  <a
-                    href={user?.contact?.x}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:underline"
-                  >
-                    {user?.contact?.x}
-                  </a>
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span>
+                    {user?.contact?.phone || (
+                      <i className="text-gray-400 text-sm">
+                        phone not provided
+                      </i>
+                    )}
+                  </span>
                 </div>
               </div>
             </Card>
@@ -257,10 +198,25 @@ export default function PublicProfile() {
             <Card className="p-6">
               <h2 className="text-lg font-semibold">Location</h2>
               <Separator className="my-4" />
-              <div className="flex items-start gap-2">
+              <div className="flex items-center gap-2 capitalize">
                 <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                <p>{user?.contact?.address}</p>
+                <p>
+                  {user?.contact?.address || (
+                    <i className="normal-case text-gray-400 text-sm">
+                      location not provided
+                    </i>
+                  )}
+                </p>
               </div>
+            </Card>
+            <Card className="p-6">
+              <Link
+                href="/wallet"
+                className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
+              >
+                <Wallet />
+                <span className="text-lg font-semibold">Wallet</span>
+              </Link>
             </Card>
           </div>
         </div>

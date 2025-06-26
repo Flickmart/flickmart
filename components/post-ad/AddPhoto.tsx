@@ -35,7 +35,7 @@ export default function AddPhoto({
     },
     onUploadError: (err) => {
       setIsError(true);
-      console.log(err)
+      console.log(err);
       toast.error("Upload Error");
     },
   });
@@ -76,11 +76,11 @@ export default function AddPhoto({
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
-    const options={
+    const options = {
       maxSizeMB: 1,
       maxWidthOrHeight: 1920,
-      useWebWorker: true
-    }
+      useWebWorker: true,
+    };
 
     if (!files || files.length < 2 || files.length > 5) {
       setError("*Images must not be less than two or greater than five");
@@ -91,14 +91,14 @@ export default function AddPhoto({
         const imageFiles = Array.from(files);
         setImageFilesArr(imageFiles);
 
-       const compressedPromises= imageFiles.map(async (file) => {
-         const compressedFile = await imageCompression(file, options);
-         setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
-         setFileName((prev) => [...prev, file.name]);
-         return compressedFile
+        const compressedPromises = imageFiles.map(async (file) => {
+          const compressedFile = await imageCompression(file, options);
+          setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
+          setFileName((prev) => [...prev, file.name]);
+          return compressedFile;
         });
 
-        const compressedFiles= await Promise.all(compressedPromises)
+        const compressedFiles = await Promise.all(compressedPromises);
         setImageFilesArr(compressedFiles);
 
         const uploadedImg = await startUpload(compressedFiles);
