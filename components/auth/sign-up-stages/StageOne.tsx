@@ -42,9 +42,9 @@ export default function StageOne({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) {
-  const updateEmail = useUserStore((state) => state.updateEmail);
   const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signUp } = useSignUp();
+  const [isSending, setIsSending] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -70,10 +70,12 @@ export default function StageOne({
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors);
+        console.log(err);
         console.error(err, null, 2);
       });
   };
+
+  const setEmail = useUserStore((state) => state.updateUserInfo);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!isLoaded) return;
@@ -89,13 +91,16 @@ export default function StageOne({
         password: values.password,
       });
 
+      // Update email in the user store
+      setEmail({
+        email: values.email,
+      });
+
       // Send the user an email with the verification code
+      setIsSending(true);
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
-
-      // Update email in the store for use in next stage
-      updateEmail(values.email);
 
       // Move to the next stage
       setStage(2);
@@ -106,6 +111,7 @@ export default function StageOne({
       console.error(err);
     } finally {
       setIsLoading(false);
+      setIsSending(false);
     }
   };
 
@@ -187,9 +193,13 @@ export default function StageOne({
                 <Button
                   className="submit-btn"
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isSending}
                 >
-                  {isLoading ? "Processing..." : "Sign Up"}
+                  {isLoading
+                    ? "Processing..."
+                    : isSending
+                      ? "Sending..."
+                      : "Sign Up"}
                 </Button>
                 <Button
                   className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"
