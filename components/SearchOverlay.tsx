@@ -33,6 +33,11 @@ export default function SearchOverlay({
     },
     [open]
   );
+  useEffect(() => {
+    if (retrievePreviousInputs?.error) {
+      console.log(retrievePreviousInputs.error);
+    }
+  }, [retrievePreviousInputs]);
   return (
     <>
       {open && (
@@ -57,9 +62,10 @@ export default function SearchOverlay({
           {autoSuggest?.length === 0 || !searchValue ? (
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
-                {(retrievePreviousInputs?.length ?? 0) > 0 && "recent searches"}
+                {(retrievePreviousInputs?.data?.length ?? 0) > 0 &&
+                  "recent searches"}
               </p>
-              {retrievePreviousInputs?.map((item) => {
+              {retrievePreviousInputs?.data?.map((item) => {
                 return (
                   <div
                     key={item._id}

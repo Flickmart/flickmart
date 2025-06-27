@@ -45,6 +45,13 @@ export default function SearchInput({
   });
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (retrievePreviousInputs?.error) {
+      console.log(retrievePreviousInputs.error);
+    }
+  }, [retrievePreviousInputs]);
+
   function handleKeyPress<T extends HTMLElement>(
     event: React.KeyboardEvent<T>
   ) {
@@ -167,11 +174,11 @@ export default function SearchInput({
           </MotionCommandList>
         ) : focus &&
           !isOverlayOpen &&
-          retrievePreviousInputs &&
-          retrievePreviousInputs.length > 0 ? (
+          retrievePreviousInputs?.data &&
+          retrievePreviousInputs.data?.length > 0 ? (
           <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
             <CommandGroup heading="Recent Searches">
-              {retrievePreviousInputs?.map((item, index) => (
+              {retrievePreviousInputs?.data?.map((item, index) => (
                 <div
                   key={index}
                   onMouseDown={(e) => e.preventDefault()}

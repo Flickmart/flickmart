@@ -5,6 +5,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import ChatInput from "../chats/chat-input";
 import { DrawerContent, DrawerHeader, DrawerTitle } from "../ui/drawer";
+import { toast } from "sonner";
 
 export default function CommentContent({
   productId,
@@ -15,9 +16,15 @@ export default function CommentContent({
   const [input, setInput] = useState("");
   const addComment = useMutation(api.comments.addComment);
   const commentRef = useRef<HTMLParagraphElement>(null);
+  const user = useQuery(api.users.current);
 
   function handleComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!user) {
+      toast.error("Please sign in to perform this action");
+      setInput("");
+      return;
+    }
     addComment({ productId, content: input });
     setInput("");
   }

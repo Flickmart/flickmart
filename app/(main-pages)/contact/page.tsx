@@ -1,12 +1,17 @@
+"use client";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight, Mail, MapPinned } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Contact() {
+  const isMobile = useIsMobile();
   return (
     <main className="w-full text-center">
       <div className="w-11/12 mx-auto my-6">
-        <h1 className="text-3xl font-bold mb-3">Contact Us</h1>
+        <h1 className="text-3xl lg:text-5xl font-extrabold text-gray-800 mb-3">
+          Contact Us
+        </h1>
         <p className="leading-relaxed">
           Have questions? Your shopping experience matters to us.Whether it’s
           about a product, a seller, or your account, we are here to help here
@@ -14,9 +19,9 @@ export default function Contact() {
         </p>
       </div>
       <section className="w-full md:w-11/12 md:mx-auto flex flex-col md:flex-row gap-6 mb-12">
-        <form className="w-11/12 md:w-6/12 mx-auto md:mx-0 mt-6 md:mt-0 rounded-md p-4 border border-gray-300">
+        <form className="w-11/12 lg:flex flex-col justify-center gap-7 md:w-6/12 mx-auto md:mx-0 mt-6 md:mt-0 rounded-md p-4 border border-gray-300">
           <div className="mb-4 text-left">
-            <h1 className="text-3xl font-bold mb-2">
+            <h1 className="text-3xl lg:text-6xl font-bold mb-2">
               <span className="text-flickmart">Get</span> in touch
             </h1>
             <p className="leading-tight">
@@ -29,7 +34,7 @@ export default function Contact() {
               type="text"
               id="name"
               placeholder="Fullname"
-              className="border border-gray-300 rounded-md py-3 p-2 w-full"
+              className="border border-gray-300 rounded-md lg:h-14 py-3 p-2 w-full"
             />
           </div>
           <div className="mt-4">
@@ -37,20 +42,20 @@ export default function Contact() {
               type="email"
               id="email"
               placeholder="Email"
-              className="border border-gray-300 rounded-md py-3 p-2 w-full"
+              className="border border-gray-300 rounded-md lg:h-14 py-3 p-2 w-full"
             />
           </div>
           <div className="mt-4">
             <textarea
               id="message"
               className="leading-tight border border-gray-300 rounded-md py-3 p-2 w-full"
-              rows={5}
+              rows={isMobile ? 5 : 10}
               placeholder="Your message..."
             ></textarea>
           </div>
           <button
             type="submit"
-            className="w-full mt-4 bg-flickmart text-white py-4 px-4 rounded-md"
+            className="w-full mt-4 hover:scale-105 transition-all duration-300 bg-flickmart lg:h-14 text-white py-4 px-4 rounded-md"
           >
             Send Message
           </button>
@@ -67,7 +72,7 @@ export default function Contact() {
             />
           </div>
           <div className="w-full bg-flickmart-chat-orange text-white py-4 text-center">
-            <h1 className="capitalize text-2xl font-bold">Still need help?</h1>
+            <h1 className="text-2xl font-bold">For further inquiries</h1>
           </div>
           <div className="w-full flex flex-col">
             <div className="w-11/12 mx-auto grid grid-cols-2 gap-4 my-4">
@@ -114,7 +119,7 @@ export default function Contact() {
                 <Link
                   href={"tel:phonenumber"}
                   target="_blank"
-                  className="w-full mt-4 inline-block bg-flickmart-chat-orange text-white text-sm font-medium py-3 px-4 rounded-md"
+                  className="w-full mt-5 inline-block bg-flickmart-chat-orange text-white text-sm font-medium py-3 px-4 rounded-md"
                 >
                   Give Us a Call
                 </Link>

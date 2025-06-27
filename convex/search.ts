@@ -48,11 +48,12 @@ export const getSearchHistory = query({
       };
     }
 
-    return await ctx.db
+    const history = await ctx.db
       .query("history")
       .filter((q) => q.eq(q.field("userId"), user._id))
       .order("desc")
       .take(10);
+    return { success: true, data: history, error: null };
   },
 });
 
