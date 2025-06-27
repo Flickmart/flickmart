@@ -22,7 +22,7 @@ import { OAuthStrategy } from "@clerk/types";
 import { toast } from "sonner";
 
 export const formSchema = z.object({
-  firstName: z
+  firstName: z  
     .string()
     .min(2, { message: "First name must be at least 2 characters" }),
   lastName: z
