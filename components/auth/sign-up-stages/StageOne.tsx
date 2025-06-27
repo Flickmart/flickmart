@@ -42,7 +42,6 @@ export default function StageOne({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) {
-  
   const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signUp } = useSignUp();
   const [isSending, setIsSending] = useState(false);
@@ -76,6 +75,8 @@ export default function StageOne({
       });
   };
 
+  const setEmail = useUserStore((state) => state.updateUserInfo);
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!isLoaded) return;
 
@@ -90,13 +91,16 @@ export default function StageOne({
         password: values.password,
       });
 
+      // Update email in the user store
+      setEmail({
+        email: values.email,
+      });
+
       // Send the user an email with the verification code
       setIsSending(true);
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
-
-      
 
       // Move to the next stage
       setStage(2);
@@ -191,7 +195,11 @@ export default function StageOne({
                   type="submit"
                   disabled={isLoading || isSending}
                 >
-                  {isLoading ? "Processing..." : isSending ? "Sending..." : "Sign Up"}
+                  {isLoading
+                    ? "Processing..."
+                    : isSending
+                      ? "Sending..."
+                      : "Sign Up"}
                 </Button>
                 <Button
                   className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"

@@ -18,6 +18,7 @@ const useUserStore = create<UserStore>((set, get) => ({
     last_sign_in_at: "",
     phone: "",
   },
+  updateEmail: (email: string) => set((state) => ({ ...state, email })),
   updateUserInfo: (user) => set((state) => ({ ...state, user: { ...user } })),
   createSession: (sessionObj) =>
     set((state) => ({
