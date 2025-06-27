@@ -62,6 +62,17 @@ export const deleteComment = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     const comment = await ctx.db.get(args.commentId);
+    if (!user) {
+      return {
+        success: false,
+        error: {
+          status: 401,
+          message: "Authentication Required",
+          code: "USER_NOT_FOUND",
+        },
+        data: null,
+      };
+    }
 
     if (!comment) {
       throw Error("Comment not found");

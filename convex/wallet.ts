@@ -22,6 +22,17 @@ export const createWallet = mutation({
 export const getCurrentWallet = query({
   handler: async (ctx) => {
     const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      return {
+        success: false,
+        error: {
+          status: 401,
+          message: "Authentication Required",
+          code: "USER_NOT_FOUND",
+        },
+        data: null,
+      };
+    }
     const wallet = await ctx.db
       .query("wallets")
       .withIndex("by_user", (q) => q.eq("userId", user._id))

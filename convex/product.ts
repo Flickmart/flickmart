@@ -2,6 +2,11 @@ import { query, mutation } from "./_generated/server";
 import { ConvexError, v } from "convex/values";
 import { getCurrentUserOrThrow } from "./users";
 
+export const errorObject = {
+  status: 401,
+  message: "Authentication Required",
+  code: "USER_NOT_FOUND",
+};
 // Get all products
 export const getAll = query({
   args: {
@@ -87,6 +92,9 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      throw Error("User must be authenticated to perform this action");
+    }
 
     const productId = await ctx.db.insert("product", {
       userId: user._id,
@@ -135,6 +143,10 @@ export const update = mutation({
     const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
 
+    if (!user) {
+      return errorObject;
+    }
+
     if (!product) {
       throw new Error("Product not found");
     }
@@ -181,6 +193,10 @@ export const remove = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
+
+    if (!user) {
+      return errorObject;
+    }
 
     if (!product) {
       throw new Error("Product not found");
@@ -293,6 +309,14 @@ export const dislikeProduct = mutation({
     const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
 
+    if (!user) {
+      return {
+        status: 401,
+        message: "Authentication Required",
+        code: "USER_NOT_FOUND",
+      };
+    }
+
     if (!product) {
       throw new Error("Product not found");
     }
@@ -386,12 +410,20 @@ export const getSavedOrWishlistProduct = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new ConvexError("User not found");
+      return { success: false, error: errorObject, data: null };
     }
 
     const product = await ctx.db.get(args.productId);
     if (!product) {
-      return;
+      return {
+        success: false,
+        error: {
+          status: 404,
+          message: "Product does not exist",
+          code: "PRODUCT_NOT_FOUND",
+        },
+        data: null,
+      };
     }
     const saved = await ctx.db
       .query("bookmarks")
@@ -403,7 +435,7 @@ export const getSavedOrWishlistProduct = query({
         )
       )
       .first();
-    return saved;
+    return { success: true, error: null, data: saved };
   },
 });
 
@@ -414,7 +446,7 @@ export const getAllSavedOrWishlist = query({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw Error("You need to logged in");
+      return { error: errorObject, success: false, data: null };
     }
     const saved = await ctx.db
       .query("bookmarks")
@@ -433,7 +465,7 @@ export const getAllSavedOrWishlist = query({
       })
     );
 
-    return savedList;
+    return { success: true, data: savedList, error: null };
   },
 });
 
@@ -561,6 +593,9 @@ export const getRecommendations = query({
     const user = await getCurrentUserOrThrow(ctx);
     const limit = args.limit || 10;
 
+    if (!user) {
+      return { success: false, error: errorObject, data: null };
+    }
     // Query db based on user likes
     const likedProducts = await ctx.db
       .query("likes")
@@ -583,8 +618,6 @@ export const getRecommendations = query({
       .query("product")
       .filter((q) => q.neq(q.field("userId"), user._id))
       .collect();
-
-    console.log(allProducts);
 
     const scoreProducts = allProducts.map((product) => {
       // score determines if product is recommended or not
@@ -655,7 +688,7 @@ export const getRecommendations = query({
       .slice(0, limit)
       .map((item) => item.product);
 
-    return recommendations;
+    return { success: true, error: null, data: recommendations };
   },
 });
 

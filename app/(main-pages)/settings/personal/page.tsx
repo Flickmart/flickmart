@@ -1,19 +1,8 @@
 "use client";
-import {
-  Mail,
-  MapPin,
-  Star,
-  Facebook,
-  Instagram,
-  Twitter,
-  ArrowLeft,
-  Phone,
-  Wallet,
-} from "lucide-react";
+import { Mail, MapPin, ArrowLeft, Phone, Wallet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
@@ -27,18 +16,38 @@ import Link from "next/link";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useParams, useRouter } from "next/navigation";
-import { Id } from "@/convex/_generated/dataModel";
+import { useEffect, useState } from "react";
+import Loader from "@/components/multipage/Loader";
+import RecentListings from "@/components/settings/RecentListings";
 
 // This would typically come from an API or database
 
 export default function PublicProfile() {
-  const params = useParams();
-  // const username = params.username as string;
+  // const params = useParams();
   const user = useQuery(api.users.current);
-  const userProducts = useQuery(api.product.getByUserId, {
-    userId: user?._id as Id<"users">,
-  });
+  const [userProductsLength, setUserProductsLength] = useState<number>(0);
+
   const router = useRouter();
+
+  useEffect(
+    function () {
+      if (!user) {
+        router.push("/sign-in");
+      }
+    },
+    [user]
+  );
+
+  function updateUserProductsLength(length: number) {
+    setUserProductsLength(length);
+  }
+
+  if (!user)
+    return (
+      <div className="h-screen grid place-items-center">
+        <Loader />
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-gray-50/50 px-4 pb-10 pt-0 lg:p-8">
@@ -110,7 +119,7 @@ export default function PublicProfile() {
               <span className="font-medium">10</span> items sold
             </div>
             <div>
-              <span className="font-medium">{userProducts?.length}</span> items
+              <span className="font-medium">{userProductsLength}</span> items
               for sale
             </div>
             <div>Preferred payments: Flickpay</div>
@@ -133,35 +142,10 @@ export default function PublicProfile() {
             </Card>
 
             {/* Recent Listings */}
-
-            {!userProducts?.length ? null : (
-              <Card className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Recent Listings</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                  {userProducts
-                    ?.slice()
-                    .reverse()
-                    .slice(0, 3)
-                    .map((listing) => (
-                      <Link key={listing._id} href={`/product/${listing._id}`}>
-                        <div className="border rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-                          <img
-                            src={listing.images[0] || "/placeholder.svg"}
-                            alt={listing.title}
-                            className="w-full h-32 object-cover"
-                          />
-                          <div className="p-2 space-y-1">
-                            <h3 className="font-medium">{listing.title}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              &#8358;{listing.price.toLocaleString("en-US")}
-                            </p>
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                </div>
-              </Card>
-            )}
+            <RecentListings
+              userId={user._id}
+              updateLength={updateUserProductsLength}
+            />
           </div>
 
           {/* Right Column */}

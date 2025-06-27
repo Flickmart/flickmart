@@ -2,31 +2,27 @@
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BookedMarkedItem from "@/components/BookMarkedItem";
-import { SyncLoader } from "react-spinners";
 import Empty from "@/components/saved/Empty";
 import { motion } from "motion/react";
-
-function useBookmarks() {
-  try {
-    const saved = useQuery(api.product.getAllSavedOrWishlist, {
-      type: "saved",
-    });
-    const wishlist = useQuery(api.product.getAllSavedOrWishlist, {
-      type: "wishlist",
-    });
-    return { saved, wishlist };
-  } catch (err) {
-    console.log(err);
-  }
-}
+import { useRouter } from "next/navigation";
+import Loader from "@/components/multipage/Loader";
+import { SyncLoader } from "react-spinners";
 
 export default function SavedPage() {
   const [selectedTab, setSelectedTab] = useState(false);
-  const bookmarks = useBookmarks();
-  const saved = bookmarks?.saved;
-  const wishlist = bookmarks?.wishlist;
+  const router = useRouter();
+
+  const saved = useQuery(api.product.getAllSavedOrWishlist, {
+    type: "saved",
+  });
+  const wishlist = useQuery(api.product.getAllSavedOrWishlist, {
+    type: "wishlist",
+  });
+
+  const savedLength = saved?.data?.length;
+  const wishlistLength = wishlist?.data?.length;
 
   const toggleAd = () => {
     setSelectedTab(false);
@@ -35,6 +31,15 @@ export default function SavedPage() {
   const toggleWl = () => {
     setSelectedTab(true);
   };
+  useEffect(
+    function () {
+      if (saved?.error || wishlist?.error) {
+        router.push("/sign-in");
+      }
+    },
+    [saved, saved?.error, router]
+  );
+  if (!saved?.success) return <Loader />;
   return (
     <main className="w-full flex flex-col h-[90vh] bg-gray-100 pb-12">
       <div className="w-full flex shadow-lg ">
@@ -46,7 +51,7 @@ export default function SavedPage() {
               : `w-full py-5 text-center text-flickmart font-bold`
           }
         >
-          Saved ({saved?.length || 0})
+          Saved ({savedLength || 0})
         </button>
         <button
           onClick={toggleWl}
@@ -56,7 +61,7 @@ export default function SavedPage() {
               : `w-full py-5 text-center text-flickmart-gray font-bold`
           }
         >
-          Wishlist ({wishlist?.length || 0})
+          Wishlist ({wishlistLength || 0})
         </button>
       </div>
       {saved === undefined || wishlist === undefined ? (
@@ -72,10 +77,10 @@ export default function SavedPage() {
               transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
               className="w-[95%] mx-auto pb-10 flex flex-col gap-3 mt-3"
             >
-              {saved?.length === 0 ? (
+              {savedLength === 0 ? (
                 <Empty message="You have no saved items" />
               ) : (
-                saved
+                saved?.data
                   ?.slice()
                   .reverse()
                   .map((item) => {
@@ -94,10 +99,10 @@ export default function SavedPage() {
               transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
               className=" w-[95%] pb-5 mx-auto flex flex-col gap-3 mt-3"
             >
-              {wishlist?.length === 0 ? (
+              {wishlistLength === 0 ? (
                 <Empty message="Your wishlist is empty" />
               ) : (
-                wishlist
+                wishlist?.data
                   ?.slice()
                   .reverse()
                   .map((item) => {

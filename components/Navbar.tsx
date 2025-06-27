@@ -15,6 +15,7 @@ import React, { useState } from "react";
 import {
   Sheet,
   SheetContent,
+  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -24,15 +25,22 @@ import { Button } from "./ui/button";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-export default function Navbar({children}: {children?: React.ReactNode}) {
+export default function Navbar({ children }: { children?: React.ReactNode }) {
   const { isSignedIn, isLoaded } = useUser();
+  const [open, setOpen] = useState(false);
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
+  const wishlist = useQuery(api.product.getAllSavedOrWishlist, {
+    type: "wishlist",
+  });
 
   const userStore = useQuery(api.store.getStoresByUserId);
 
   const pathname = usePathname();
 
+  if (wishlist?.error) {
+    console.log("Not Logged In");
+  }
   return (
     <header
       className={cn(
@@ -46,7 +54,7 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
     >
       <div className="w-[95%] mx-auto py-1">
         <div className="w-full flex justify-between items-center">
-          <Link href={"/"} className="flex gap-1 items-center">
+          <Link href={"/"} className="flex gap-1   items-center">
             <Image
               src="/flickmart-logo.svg"
               width={500}
@@ -54,7 +62,7 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
               className="h-12 w-12"
               alt=""
             />
-            <h1 className="font-bold text-xl mt-2">
+            <h1 className="font-bold text-xl pt-1">
               Flick<span className="text-flickmart">Mart</span>
             </h1>
           </Link>
@@ -128,7 +136,7 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
               </Link>
             </button>
           </div>
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
               <div className="relative  lg:hidden ">
                 {unreadNotifications.length > 0 && (
@@ -145,42 +153,48 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
             <SheetContent side="top" className="p-0">
               <div className=" inset-0 z-30 w-full h-screen bg-white">
                 <div className="w-[95%] mx-auto h-full">
-                  <div className="w-full flex items-center justify-between py-1">
-                    <div className="flex gap-1 items-center">
-                      <Image
-                        src="/flickmart-logo.svg"
-                        width={500}
-                        height={500}
-                        className="h-12 w-12"
-                        alt=""
-                      />
-                      <h1 className="font-bold text-xl mt-2">
-                        Flick<span className="text-flickmart">Mart</span>
-                      </h1>
+                  <SheetHeader>
+                    <div className="w-full flex items-center justify-between py-1">
+                      <div className="flex gap-1 items-center">
+                        <Image
+                          src="/flickmart-logo.svg"
+                          width={500}
+                          height={500}
+                          className="h-12 w-12"
+                          alt=""
+                        />
+                        <SheetTitle className="font-bold text-xl pt-1">
+                          Flick<span className="text-flickmart">Mart</span>
+                        </SheetTitle>
+                      </div>
                     </div>
-                  </div>
+                  </SheetHeader>
                   <div className="w-full flex flex-col justify-between h-4/6">
                     <div className="w-full flex flex-col font-medium">
                       <Link
-                        href={"#"}
+                        onClick={() => setOpen(false)}
+                        href={"/wallet"}
                         className="border-b border-[#E8ECEF] py-4"
                       >
                         Wallet
                       </Link>
                       <Link
+                        onClick={() => setOpen(false)}
                         href="/settings"
                         className="border-b border-[#E8ECEF] py-4 "
                       >
                         <span>Setting</span>
                       </Link>
                       <Link
+                        onClick={() => setOpen(false)}
                         href={"#"}
                         className="border-b border-[#E8ECEF] py-4 "
                       >
                         <span>About Us</span>
                       </Link>
                       <Link
-                        href={"#"}
+                        onClick={() => setOpen(false)}
+                        href={"/contact"}
                         className="border-b border-[#E8ECEF] py-4"
                       >
                         Contact Us
@@ -188,6 +202,7 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
                     </div>
                     <div className="text-[#6C7275]">
                       <Link
+                        onClick={() => setOpen(false)}
                         href="/notifications"
                         className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
                       >
@@ -199,28 +214,33 @@ export default function Navbar({children}: {children?: React.ReactNode}) {
                         </span>
                       </Link>
                       <Link
+                        onClick={() => setOpen(false)}
                         href="/wishlist"
                         className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
                       >
                         <span>Wishlist</span>
                         <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
-                          <span className="mt-[1px]">2</span>
+                          <span className="mt-[1px]">
+                            {wishlist?.data?.length || 0}
+                          </span>
                         </span>
                       </Link>
-                      <SignedIn>
-                        <SignOutButton>
-                          <button className="bg-black text-white rounded-md py-3 w-full mt-2">
-                            Logout
-                          </button>
-                        </SignOutButton>
-                      </SignedIn>
-                      <SignedOut>
-                        <Link href="/sign-in">
-                          <button className="bg-black text-white rounded-md py-3 w-full mt-2">
-                            Sign in
-                          </button>
-                        </Link>
-                      </SignedOut>
+                      <div className="pt-5">
+                        <SignedIn>
+                          <SignOutButton>
+                            <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                              Logout
+                            </button>
+                          </SignOutButton>
+                        </SignedIn>
+                        <SignedOut>
+                          <Link href="/sign-in">
+                            <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                              Sign in
+                            </button>
+                          </Link>
+                        </SignedOut>
+                      </div>
                     </div>
                   </div>
                 </div>

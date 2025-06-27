@@ -1,9 +1,9 @@
 import { api } from "@/convex/_generated/api";
-import { useSavedOrWishlistProduct } from "@/hooks/useQueryHandlers";
 import { Check } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
 
 interface NewArrivalsProp {
   image: string;
@@ -18,7 +18,14 @@ export default function NewArrivalItem({
   price,
   productId,
 }: NewArrivalsProp) {
-  const saved = useSavedOrWishlistProduct(productId);
+  const saved = useQuery(api.product.getSavedOrWishlistProduct, {
+    productId,
+    type: "saved",
+  });
+  if (saved?.error && saved.data === null) {
+    console.log(saved.error.message);
+    return;
+  }
 
   return (
     <div className="flex flex-col justify-between lg:w-1/4 min-w-60 min-h-60 relative  flex-grow">
@@ -34,10 +41,10 @@ export default function NewArrivalItem({
           className="lg:h-2/3 h-48 w-3/4 object-cover "
         />
         <button
-          className={`bg-flickmart flex  items-center justify-center gap-2 ${saved?.added ? "bg-white border border-flickmart text-gray-800" : "text-white"}  w-5/6 rounded-lg py-3`}
+          className={`bg-flickmart flex  items-center justify-center gap-2 ${saved?.data?.added ? "bg-white border border-flickmart text-gray-800" : "text-white"}  w-5/6 rounded-lg py-3`}
         >
-          {saved?.added ? "Saved" : "Save"}
-          {saved?.added && <Check />}
+          {saved?.data?.added ? "Saved" : "Save"}
+          {saved?.data?.added && <Check />}
         </button>
       </div>
       <div className=" flex flex-col lg:py-4 lg:space-y-3 space-y-1 pt-2 font-semibold">

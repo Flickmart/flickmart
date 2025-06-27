@@ -35,22 +35,24 @@ export const insertSearchHistory = mutation({
 
 export const getSearchHistory = query({
   handler: async (ctx) => {
-    try {
-      const user = await getCurrentUserOrThrow(ctx);
-      // return await ctx.db
-      //   .query("history")
-      //   .withIndex("by_userId")
-      //   .filter((q) => q.eq(q.field("userId"), user._id))
-      //   .order("desc")
-      //   .take(10);
-      return await ctx.db
-        .query("history")
-        .filter((q) => q.eq(q.field("userId"), user._id))
-        .order("desc")
-        .take(10);
-    } catch (err) {
-      console.log(err);
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      return {
+        success: false,
+        error: {
+          status: 401,
+          message: "Authentication Required",
+          code: "USER_NOT_FOUND",
+        },
+        data: null,
+      };
     }
+
+    return await ctx.db
+      .query("history")
+      .filter((q) => q.eq(q.field("userId"), user._id))
+      .order("desc")
+      .take(10);
   },
 });
 
