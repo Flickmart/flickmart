@@ -24,7 +24,6 @@ export default function NewArrivalItem({
   });
   if (saved?.error && saved.data === null) {
     console.log(saved.error.message);
-    return;
   }
 
   return (
