@@ -81,5 +81,15 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "5.7.2"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "@clerk/shared",
+      "@sentry/cli"
+    ],
+    "onlyBuiltDependencies": [
+      "@clerk/shared",
+      "@sentry/cli"
+    ]
   }
 }
