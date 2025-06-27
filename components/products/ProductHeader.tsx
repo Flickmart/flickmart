@@ -67,6 +67,10 @@ export default function ProductHeader({
   };
 
   const handleChat = () => {
+    if (!user) {
+      toast.error("Please sign in to perform this action");
+      return;
+    }
     initialChat({
       user: user ?? null,
       userId,
@@ -74,24 +78,6 @@ export default function ProductHeader({
       productId,
     });
   };
-
-  // State to track if copy was successful
-  // const [copied, setCopied] = useState(false);
-
-  // Function to handle copying to clipboard
-  // const handleCopy = () => {
-  //   const url = `https://flickmart-demo.vercel.app/product/${productId}`;
-  //   navigator.clipboard
-  //     .writeText(url)
-  //     .then(() => {
-  //       setCopied(true);
-  //       // Reset copied state after 2 seconds
-  //       setTimeout(() => setCopied(false), 2000);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to copy: ", err);
-  //     });
-  // };
 
   async function handleShare() {
     shareProduct({ title, description, productId });

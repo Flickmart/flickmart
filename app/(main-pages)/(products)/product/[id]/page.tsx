@@ -23,7 +23,7 @@ import SimilarAdverts from "@/components/products/SimilarAdverts";
 import useNav from "@/hooks/useNav";
 import ProductHeader from "@/components/products/ProductHeader";
 import Comment from "@/components/products/Comment";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useIsMobile } from "@/hooks/use-mobile";
 import Link from "next/link";
 import { useMutation, useQuery } from "convex/react";
@@ -62,6 +62,8 @@ export default function ProductPage() {
   const exchangePossible = productData?.exchange === true ? "yes" : "no";
   const { setApi } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
+  const user = useQuery(api.users.current);
+  const router = useRouter();
 
   const productIcons = [
     {
@@ -84,7 +86,7 @@ export default function ProductPage() {
       label: "wishlist",
       icon: (
         <Heart
-          className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.added ? "fill-red-600 stroke-none" : "fill-none stroke-current"}`}
+          className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.data?.added ? "fill-red-600 stroke-none" : "fill-none stroke-current"}`}
         />
       ),
     },
@@ -92,6 +94,10 @@ export default function ProductPage() {
 
   const handleGestures = async (label: string) => {
     try {
+      if (!user) {
+        toast.error("Please sign in to perform this action");
+        return;
+      }
       if (label === "likes") {
         await likeProduct({ productId });
       }
@@ -311,20 +317,23 @@ export default function ProductPage() {
             >
               <div
                 onClick={() => handleGestures("saved")}
-                className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center"
+                className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center hover:scale-110 transition-all duration-300"
               >
-                <button className="rounded-full text-flickmart-chat-orange p-2 shadow-lg bg-white">
+                <button className="rounded-full text-flickmart-chat-orange p-2 shadow-lg bg-white ">
                   <Bookmark
-                    className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${saved?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+                    className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
                   />
                 </button>
               </div>
-              <button className="bg-flickmart-chat-orange flex text-white py-4 capitalize gap-10 font-medium items-center rounded-md w-full justify-center">
-                <Store size={25} className="!font-thin" />
-                <Link href="/post-ad">
+              <Link
+                href="/post-ad"
+                className="w-full hover:scale-105 transition-all duration-300"
+              >
+                <button className="bg-flickmart-chat-orange flex text-white py-4 capitalize gap-10 font-medium items-center rounded-md w-full justify-center">
+                  <Store size={25} className="!font-thin" />
                   <span className="text-lg">post ads like this</span>
-                </Link>
-              </button>
+                </button>
+              </Link>
             </div>
           </div>
         </div>
