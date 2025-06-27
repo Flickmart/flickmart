@@ -24,8 +24,8 @@ const useUserStore = create<UserStore>((set, get) => ({
       ...state,
       session: { ...state.session, ...sessionObj },
     })),
-  updateEmail: (email) =>
-    set((state) => ({ ...state, user: { ...state.user, email } })),
+  email: "",
+  
 }));
 
 export default useUserStore;

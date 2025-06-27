@@ -21,7 +21,8 @@ export interface UserStore {
   user: UserType;
   updateUserInfo: (user: UserType) => void;
   createSession: (sessionObj: SessionType) => void;
-  updateEmail: (email: string) => void;
+  
+  
 }
 
 
