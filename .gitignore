@@ -46,4 +46,9 @@ next-env.d.ts
 # clerk configuration (can include secrets)
 /.clerk/
 
+
 gemini.md
+
+# Sentry Config File
+.env.sentry-build-plugin
+

@@ -22,12 +22,16 @@ export default function BookedMarkedItem({
   product: Doc<"product">;
   type: "saved" | "wishlist";
 }) {
-  const user = useQuery(api.users.current);
+  const [isDelOpen, setIsDelOpen] = useState(false);
   const router = useRouter();
   const { title, description, _id } = product;
   const bookmarkProduct = useMutation(api.product.addBookmark);
+  const user = useQuery(api.users.current);
 
-  const [isDelOpen, setIsDelOpen] = useState(false);
+  if (!user) {
+    console.log("User Authentication Required");
+    router.push("/sign-in");
+  }
 
   return (
     <div className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm">

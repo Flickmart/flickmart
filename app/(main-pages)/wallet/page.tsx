@@ -49,6 +49,8 @@ import {
 
 import dynamic from "next/dynamic";
 import ClientOnly from "@/components/client-only";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/multipage/Loader";
 // ... other imports remain the same ...
 
 const PaystackButton = dynamic(
@@ -95,18 +97,23 @@ export default function WalletPage() {
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
 
+  const user = useQuery(api.users.current);
+  const router = useRouter();
+
+  // Fetch banks when withdrawal dialog opens
+  useEffect(() => {
+    if (!user) {
+      router.push("/sign-in");
+    }
+    if (withdrawOpen) {
+      fetchBanks();
+    }
+  }, [user, withdrawOpen]);
+
   useEffect(() => {
     setIsLoading(false);
   }, []);
 
-  // Fetch banks when withdrawal dialog opens
-  useEffect(() => {
-    if (withdrawOpen) {
-      fetchBanks();
-    }
-  }, [withdrawOpen]);
-
-  const user = useQuery(api.users.current);
   const wallet = useQuery(
     api.wallet.getWalletByUserId,
     user ? { userId: user._id } : "skip"
@@ -422,7 +429,11 @@ export default function WalletPage() {
 
   // Ensure user exists before proceeding
   if (!user) {
-    return <div>User not found</div>;
+    return (
+      <div className="h-screen grid place-items-center">
+        <Loader />
+      </div>
+    );
   }
 
   return (

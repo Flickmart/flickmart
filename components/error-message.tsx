@@ -30,7 +30,9 @@ const ErrorMessage = ({
         </div>
       )}
 
-      <p className="text-gray-500 mb-8 max-w-md">{description}</p>
+      <p className="text-gray-500 mb-8 max-w-md leading-normal">
+        {description}
+      </p>
 
       <div className="flex flex-col sm:flex-row gap-4">
         <Button onClick={() => (window.location.href = "/")}>

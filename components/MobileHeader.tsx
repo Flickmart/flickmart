@@ -33,7 +33,9 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
     >
       <button
         onClick={() =>
-          pathname.includes("/categories") || pathname.includes("/post-ad")
+          pathname.includes("/categories") ||
+          pathname.includes("/post-ad") ||
+          pathname.includes("/sign-in")
             ? router.push("/")
             : router.back()
         }

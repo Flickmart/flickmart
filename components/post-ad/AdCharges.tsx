@@ -119,7 +119,7 @@ export default function AdCharges({
             transactionId: data.data.transactionId,
             metadata: {
               adId: adId,
-              plan: plan
+              plan: plan,
             },
           });
         }, 4000);
@@ -149,7 +149,7 @@ export default function AdCharges({
         </div>
         <Button
           onClick={handlePostAdClick}
-          className="w-full py-7 lg:py-9 lg:rounded-none text-xl bg-flickmart"
+          className="w-full py-7 lg:py-9 lg:rounded-none text-xl bg-flickmart hover:scale-110 transition-all duration-300"
           disabled={isPending || isProcessing}
           type="button"
         >

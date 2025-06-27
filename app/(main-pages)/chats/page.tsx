@@ -16,7 +16,8 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import UserProfile from "@/components/chats/user-profile";
-import { uploadFiles, useUploadThing } from "@/utils/uploadthing";
+import { useUploadThing } from "@/utils/uploadthing";
+import Loader from "@/components/multipage/Loader";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -70,7 +71,6 @@ export default function ChatPage() {
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [processedProductId, setProcessedProductId] =
     useState<Id<"product"> | null>(null);
-
   useEffect(() => {
     if (window.innerWidth < 768) {
       setSidebarOpen(true);
@@ -91,6 +91,11 @@ export default function ChatPage() {
 
   // Fetch current user
   const user = useQuery(api.users.current);
+  useEffect(() => {
+    if (!user) {
+      router.push("/sign-in");
+    }
+  }, [user]);
 
   // Presence-related mutations
   const updatePresence = useMutation(api.presence.updatePresence);
@@ -172,13 +177,9 @@ export default function ChatPage() {
   const sendInitialProductMessage = useCallback(
     async (
       conversationId: Id<"conversations">,
-      currentProductId: Id<"product">,
-
+      currentProductId: Id<"product">
     ) => {
-      if (
-        !user?._id ||
-        processedProductId === currentProductId || !product
-      )
+      if (!user?._id || processedProductId === currentProductId || !product)
         return;
 
       try {
@@ -289,10 +290,7 @@ export default function ChatPage() {
           }
 
           // Send initial product message, passing the determined conversation ID and product ID
-          await sendInitialProductMessage(
-            targetConversationId,
-            productId,
-          );
+          await sendInitialProductMessage(targetConversationId, productId);
 
           // Update URL to remove query params if successful
           router.replace(`/chats`);
@@ -660,7 +658,12 @@ export default function ChatPage() {
       target: { value },
     } as React.ChangeEvent<HTMLInputElement>);
   };
-
+  if (!user)
+    return (
+      <div className="h-screen grid place-items-center">
+        <Loader />
+      </div>
+    );
   return (
     <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100 !leading-normal">
       {/* Sidebar */}

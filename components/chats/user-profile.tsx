@@ -11,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { useEffect, useState } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
@@ -192,6 +192,7 @@ export default function UserProfile({
   if (isMobile) {
     return (
       <Sheet open={open} onOpenChange={onClose}>
+        <SheetTitle>Profile</SheetTitle>
         <SheetContent className="w-full overflow-y-auto p-0" side="right">
           <ProfileContent user={user!} store={store!} />
         </SheetContent>
