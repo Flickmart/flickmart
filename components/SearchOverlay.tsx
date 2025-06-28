@@ -62,8 +62,9 @@ export default function SearchOverlay({
           {autoSuggest?.length === 0 || !searchValue ? (
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
-                {(retrievePreviousInputs?.data?.length ?? 0) > 0 &&
-                  "recent searches"}
+                {(retrievePreviousInputs?.data?.length ?? 0) > 0
+                  ? "recent searches"
+                  : "no recent searches"}
               </p>
               {retrievePreviousInputs?.data?.map((item) => {
                 return (
