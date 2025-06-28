@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import UserProfile from "@/components/chats/user-profile";
 import { useUploadThing } from "@/utils/uploadthing";
 import Loader from "@/components/multipage/Loader";
+import useCheckUser from "@/hooks/useCheckUser";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -91,11 +92,7 @@ export default function ChatPage() {
 
   // Fetch current user
   const user = useQuery(api.users.current);
-  useEffect(() => {
-    if (!user) {
-      router.push("/sign-in");
-    }
-  }, [user]);
+  const loading = useCheckUser();
 
   // Presence-related mutations
   const updatePresence = useMutation(api.presence.updatePresence);
@@ -658,7 +655,7 @@ export default function ChatPage() {
       target: { value },
     } as React.ChangeEvent<HTMLInputElement>);
   };
-  if (!user)
+  if (loading)
     return (
       <div className="h-screen grid place-items-center">
         <Loader />

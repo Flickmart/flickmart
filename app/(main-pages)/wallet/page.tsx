@@ -49,8 +49,7 @@ import {
 
 import dynamic from "next/dynamic";
 import ClientOnly from "@/components/client-only";
-import { useRouter } from "next/navigation";
-import Loader from "@/components/multipage/Loader";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 // ... other imports remain the same ...
 
 const PaystackButton = dynamic(
@@ -98,17 +97,13 @@ export default function WalletPage() {
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
 
   const user = useQuery(api.users.current);
-  const router = useRouter();
 
   // Fetch banks when withdrawal dialog opens
   useEffect(() => {
-    if (!user) {
-      router.push("/sign-in");
-    }
     if (withdrawOpen) {
       fetchBanks();
     }
-  }, [user, withdrawOpen]);
+  }, [withdrawOpen]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -428,13 +423,6 @@ export default function WalletPage() {
   }
 
   // Ensure user exists before proceeding
-  if (!user) {
-    return (
-      <div className="h-screen grid place-items-center">
-        <Loader />
-      </div>
-    );
-  }
 
   return (
     <ClientOnly>
@@ -447,16 +435,16 @@ export default function WalletPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="w-12 h-12">
-                    <AvatarImage src={user.imageUrl} alt={user.name} />
+                    <AvatarImage src={user?.imageUrl} alt={user?.name} />
                     <AvatarFallback>
-                      {user.name
+                      {user?.name
                         .split(" ")
                         .map((n) => n[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h2 className="font-semibold text-lg">{user.name}</h2>
+                    <h2 className="font-semibold text-lg">{user?.name}</h2>
                     <p className="text-sm text-gray-500">
                       Welcome, let's make payment
                     </p>
@@ -816,7 +804,7 @@ export default function WalletPage() {
                   <TransactionDetails
                     key={transaction._id}
                     transaction={transaction}
-                    user={user}
+                    user={user as Doc<"users">}
                     handlePaystackSuccess={handlePaystackSuccess}
                     handlePaystackClose={handlePaystackClose}
                   />
@@ -835,16 +823,16 @@ export default function WalletPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={user.imageUrl} alt={user.name} />
+                      <AvatarImage src={user?.imageUrl} alt={user?.name} />
                       <AvatarFallback>
-                        {user.name
+                        {user?.name
                           .split(" ")
                           .map((n) => n[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <h2 className="font-semibold text-lg">{user.name}</h2>
+                      <h2 className="font-semibold text-lg">{user?.name}</h2>
                       <p className="text-sm text-gray-500">
                         Welcome, let's make payment
                       </p>
@@ -1210,7 +1198,7 @@ export default function WalletPage() {
                         <TransactionDetails
                           key={transaction._id}
                           transaction={transaction}
-                          user={user}
+                          user={user as Doc<"users">}
                           handlePaystackSuccess={handlePaystackSuccess}
                           handlePaystackClose={handlePaystackClose}
                         />

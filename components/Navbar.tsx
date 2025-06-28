@@ -30,17 +30,15 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
-  const wishlist = useQuery(api.product.getAllSavedOrWishlist, {
-    type: "wishlist",
-  });
+  const wishlistLength =
+    useQuery(api.product.getAllSavedOrWishlist, {
+      type: "wishlist",
+    })?.data?.length || 0;
 
   const userStore = useQuery(api.store.getStoresByUserId);
 
   const pathname = usePathname();
 
-  if (wishlist?.error) {
-    console.log("Not Logged In");
-  }
   return (
     <header
       className={cn(
@@ -215,27 +213,28 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       </Link>
                       <Link
                         onClick={() => setOpen(false)}
-                        href="/wishlist"
+                        href="/saved?wishlist=true"
                         className="border-b border-[#E8ECEF] py-4 flex justify-between items-center"
                       >
                         <span>Wishlist</span>
                         <span className="h-6 w-6 flex justify-center items-center bg-black rounded-full px-1.5 py-0.5 text-[10px] text-white">
-                          <span className="mt-[1px]">
-                            {wishlist?.data?.length || 0}
-                          </span>
+                          <span className="mt-[1px]">{wishlistLength}</span>
                         </span>
                       </Link>
                       <div className="pt-5">
                         <SignedIn>
-                          <SignOutButton>
-                            <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                          <SignOutButton signOutOptions={{ redirectUrl: "/" }}>
+                            <button
+                              onClick={() => setOpen(false)}
+                              className="bg-black hover:scale-105 h-12 transition-all duration-300 text-white rounded-md py-3 w-full mt-2"
+                            >
                               Logout
                             </button>
                           </SignOutButton>
                         </SignedIn>
                         <SignedOut>
                           <Link href="/sign-in">
-                            <button className="bg-black text-white rounded-md py-3 w-full mt-2">
+                            <button className="bg-black hover:scale-105 h-12 transition-all duration-300 text-white rounded-md py-3 w-full mt-2">
                               Sign in
                             </button>
                           </Link>

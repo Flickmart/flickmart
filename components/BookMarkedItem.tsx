@@ -5,6 +5,8 @@ import { initialChat, shareProduct } from "@/utils/helpers";
 import { useMutation, useQuery } from "convex/react";
 import {
   EllipsisVertical,
+  ImageIcon,
+  ImageOff,
   MapPin,
   MessageSquareText,
   Share,
@@ -35,14 +37,18 @@ export default function BookedMarkedItem({
 
   return (
     <div className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm">
-      <div className="w-2/5 h-48 aspect-square flex lg:h-80 justify-center items-center">
-        <Image
-          src={product.images[0]}
-          className="h-full  w-full   object-cover"
-          alt={product.title}
-          height={1000}
-          width={1000}
-        />
+      <div className="w-2/5 h-48 aspect-square flex text-gray-700 lg:h-80 justify-center items-center">
+        {product.images[0] ? (
+          <Image
+            src={product.images[0]}
+            className="size-full   object-cover"
+            alt={product.title}
+            height={1000}
+            width={1000}
+          />
+        ) : (
+          <ImageIcon strokeWidth={1} className="size-full" />
+        )}
       </div>
       <div className="flex gap-3 w-3/5 lg:justify-between flex-col py-3 capitalize">
         <div className="flex items-center justify-between">

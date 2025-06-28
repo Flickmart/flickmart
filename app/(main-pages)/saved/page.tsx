@@ -6,13 +6,14 @@ import { useEffect, useState } from "react";
 import BookedMarkedItem from "@/components/BookMarkedItem";
 import Empty from "@/components/saved/Empty";
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Loader from "@/components/multipage/Loader";
 import { SyncLoader } from "react-spinners";
 
 export default function SavedPage() {
   const [selectedTab, setSelectedTab] = useState(false);
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const query = searchParams.get("wishlist");
 
   const saved = useQuery(api.product.getAllSavedOrWishlist, {
     type: "saved",
@@ -24,6 +25,12 @@ export default function SavedPage() {
   const savedLength = saved?.data?.length;
   const wishlistLength = wishlist?.data?.length;
 
+  useEffect(() => {
+    if (query === "true") {
+      setSelectedTab(true);
+    }
+  }, [searchParams]);
+
   const toggleAd = () => {
     setSelectedTab(false);
   };
@@ -31,15 +38,7 @@ export default function SavedPage() {
   const toggleWl = () => {
     setSelectedTab(true);
   };
-  useEffect(
-    function () {
-      if (saved?.error || wishlist?.error) {
-        router.push("/sign-in");
-      }
-    },
-    [saved, saved?.error, router]
-  );
-  if (!saved?.success) return <Loader />;
+
   return (
     <main className="w-full flex flex-col h-[90vh] bg-gray-100 pb-12">
       <div className="w-full flex shadow-lg ">

@@ -137,11 +137,11 @@ const Page = () => {
     addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
-  
+
   useEffect(() => {
-    return ()=>{
+    return () => {
       markAllAsRead();
-    }
+    };
   }, []);
 
   // Group notifications by day (today, yesterday, older)

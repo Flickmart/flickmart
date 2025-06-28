@@ -9,22 +9,13 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import Loader from "@/components/multipage/Loader";
+import useCheckUser from "@/hooks/useCheckUser";
 
 const page = () => {
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
-  const user = useQuery(api.users.current);
-  const router = useRouter();
+  const loading = useCheckUser();
 
-  useEffect(
-    function () {
-      if (!user) {
-        router.push("/sign-in");
-      }
-    },
-    [user, router]
-  );
-
-  if (!user) return <Loader />;
+  if (loading) return <Loader />;
   return (
     <>
       <main

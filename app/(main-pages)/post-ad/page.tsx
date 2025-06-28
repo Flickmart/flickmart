@@ -1,29 +1,16 @@
 "use client";
 import Loader from "@/components/multipage/Loader";
 import PostAdForm from "@/components/post-ad/PostAdForm";
-import { api } from "@/convex/_generated/api";
+import useCheckUser from "@/hooks/useCheckUser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useQuery } from "convex/react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function Page() {
   const queryClient = new QueryClient();
   const [clear, setClear] = useState<boolean>(false);
-  const router = useRouter();
+  const loading = useCheckUser();
 
-  const user = useQuery(api.users.current);
-
-  useEffect(
-    function () {
-      if (!user) {
-        router.push("/sign-in");
-      }
-    },
-    [user, router]
-  );
-
-  if (!user) return <Loader />;
+  if (loading) return <Loader />;
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -13,41 +13,24 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import Link from "next/link";
+import { useState } from "react";
+import RecentListings from "@/components/settings/RecentListings";
+import { useRouter } from "next/navigation";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import Loader from "@/components/multipage/Loader";
-import RecentListings from "@/components/settings/RecentListings";
+import { Id } from "@/convex/_generated/dataModel";
 
 // This would typically come from an API or database
 
 export default function PublicProfile() {
   // const params = useParams();
-  const user = useQuery(api.users.current);
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
-
+  const user = useQuery(api.users.current);
   const router = useRouter();
-
-  useEffect(
-    function () {
-      if (!user) {
-        router.push("/sign-in");
-      }
-    },
-    [user]
-  );
 
   function updateUserProductsLength(length: number) {
     setUserProductsLength(length);
   }
-
-  if (!user)
-    return (
-      <div className="h-screen grid place-items-center">
-        <Loader />
-      </div>
-    );
 
   return (
     <div className="min-h-screen bg-gray-50/50 px-4 pb-10 pt-0 lg:p-8">
@@ -143,7 +126,7 @@ export default function PublicProfile() {
 
             {/* Recent Listings */}
             <RecentListings
-              userId={user._id}
+              userId={user?._id as Id<"users">}
               updateLength={updateUserProductsLength}
             />
           </div>

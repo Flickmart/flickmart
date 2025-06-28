@@ -30,27 +30,8 @@ import {
   MessageSquare,
   Info,
 } from "lucide-react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import Loader from "@/components/multipage/Loader";
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export default function SettingsPage() {
-  const user = useQuery(api.users.current);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) {
-      router.push("/sign-in");
-    }
-  }, [user]);
-  if (!user)
-    return (
-      <div className="h-screen grid place-items-center">
-        <Loader />
-      </div>
-    );
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6">
