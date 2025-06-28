@@ -223,7 +223,9 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       </Link>
                       <div className="pt-5">
                         <SignedIn>
-                          <SignOutButton signOutOptions={{ redirectUrl: "/" }}>
+                          <SignOutButton
+                            signOutOptions={{ redirectUrl: "/sign-in" }}
+                          >
                             <button
                               onClick={() => setOpen(false)}
                               className="bg-black hover:scale-105 h-12 transition-all duration-300 text-white rounded-md py-3 w-full mt-2"

@@ -17,11 +17,7 @@ const layout = ({ children }: { children: ReactNode }) => {
     return null;
   }
   if (loading) {
-    return (
-      <div className="h-screen grid place-items-center">
-        <Loader />
-      </div>
-    );
+    return <Loader />;
   }
   if (typeof window !== "undefined") {
     return <>{children}</>;

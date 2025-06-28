@@ -11,6 +11,7 @@ import {
   EyeOff,
   Bell,
   RefreshCw,
+  Headphones,
 } from "lucide-react";
 import {
   BalanceSkeleton,
@@ -451,7 +452,7 @@ export default function WalletPage() {
                   </div>
                 </div>
                 <div className="relative">
-                  <Bell className="w-6 h-6 text-gray-600" />
+                  <Headphones className="w-6 h-6 text-gray-600" />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
                     <span className="text-[10px]">1</span>
                   </div>
