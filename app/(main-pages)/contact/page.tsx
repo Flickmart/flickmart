@@ -24,7 +24,7 @@ export default function Contact() {
             <h1 className="text-3xl lg:text-6xl font-bold mb-2">
               <span className="text-flickmart">Get</span> in touch
             </h1>
-            <p className="leading-tight">
+            <p className="leading-tight md:mt-4">
               Prefer not to chat? You can also reach us directly by filling out
               the form below
             </p>

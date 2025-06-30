@@ -143,41 +143,57 @@ export default function Footer() {
           </article>
         </article>
 
-        <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center border-[#6C7275] border-t pt-9 mb-2 lg:mb-0">
-          <span>Copyright &copy; {new Date().getFullYear()} FlickMart. All rights reserved</span>
-          <span className="hidden lg:block">|</span>
-          <span className="flex items-center gap-3 ">
-            <Link href="#" className="">
-              Privacy Policy
-            </Link>
-            <Link href="#" className="">
-              Terms & Conditions
-            </Link>
-          </span>
-          <div className=" flex gap-5 justify-self-end">
-            <Image
-              src="/visa.png"
-              alt="visa"
-              className=" size-7 object-cover"
-              width={500}
-              height={500}
-            />
-            <Image
-              src="/master.png"
-              alt="master"
-              className=" size-7 object-cover"
-              width={500}
-              height={500}
-            />
-            <Image
-              src="/visa.png"
-              alt="visa"
-              className=" size-7 object-cover"
-              width={500}
-              height={500}
-            />
+        <div className="flex flex-col justify-center gap-4">
+          <div>
+            <h1 className="text-lg">Connect with us</h1>
+            <div className="flex gap-3 mt-2">
+              <Link href={'#'} target="_blank">
+                <Image src="/ig.png" alt="Instagram" width={30} height={30} />
+              </Link>
+              <Link href={'#'} target="_blank">
+                <Image src="/x.png" alt="Facebook" width={26} height={26} />
+              </Link>
+              <Link href={'#'} target="_blank">
+                <Image src="/wa.png" alt="Facebook" width={30} height={30} />
+              </Link>
+            </div>
           </div>
-        </article>
+          <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center border-[#6C7275] border-t pt-9 mb-2 lg:mb-0">
+            <span>Copyright &copy; {new Date().getFullYear()} FlickMart. All rights reserved</span>
+            <span className="hidden lg:block">|</span>
+            <span className="flex items-center gap-3 ">
+              <Link href="#" className="">
+                Privacy Policy
+              </Link>
+              <Link href="#" className="">
+                Terms & Conditions
+              </Link>
+            </span>
+            <div className=" flex gap-5 justify-self-end">
+              <Image
+                src="/visa.png"
+                alt="visa"
+                className=" size-7 object-cover"
+                width={500}
+                height={500}
+              />
+              <Image
+                src="/master.png"
+                alt="master"
+                className=" size-7 object-cover"
+                width={500}
+                height={500}
+              />
+              <Image
+                src="/visa.png"
+                alt="visa"
+                className=" size-7 object-cover"
+                width={500}
+                height={500}
+              />
+            </div>
+          </article>
+        </div>
       </div>
     </footer>
   );
