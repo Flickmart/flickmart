@@ -1,6 +1,8 @@
 "use client";
 import {
+  ArrowLeft,
   Bookmark,
+  ChevronLeft,
   Heart,
   MessageCircle,
   Store,
@@ -120,7 +122,7 @@ export default function ProductPage() {
 
   const [enlarge, setEnlarge] = useState(false);
 
-  if (!isLarge && enlarge) setEnlarge(false);
+  // if (!isLarge && enlarge) setEnlarge(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -142,9 +144,9 @@ export default function ProductPage() {
 
   return (
     <Drawer>
-      <div className="min-h-screen pt-3  lg:p-5 space-y-7 bg-slate-100  gap-x-6">
+      <div className="min-h-screen lg:p-5 space-y-7 bg-slate-100  gap-x-6">
         <div className="lg:grid lg:grid-cols-2 gap-5 space-y-3">
-          <div className="flex  flex-col  justify-center items-center  space-y-5">
+          <div className="flex flex-col justify-center items-center gap-y-5 border">
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -152,17 +154,24 @@ export default function ProductPage() {
               }}
               className={
                 enlarge
-                  ? "hidden lg:block lg:bg-black/75 lg:fixed lg:w-screen lg:h-screen lg:z-40 lg:top-0 lg:right-0"
+                  ? "block bg-black fixed w-screen h-screen z-[60] top-0 right-0  sm:bg-black/75"
                   : "hidden"
               }
-            ></div>
+            >
+              <button type="button">
+                <ChevronLeft
+                  size={30}
+                  className="text-white absolute hover:text-flickmart top-6 left-2 transition-colors sm:hidden"
+                />
+                <X
+                  size={30}
+                  className="text-white absolute hover:text-flickmart top-6 left-2 transition-colors hidden sm:block"
+                />
+              </button>
+            </div>
             <div
               onClick={() => {
-                console.log("yam");
-
-                if (isLarge) {
-                  setEnlarge(true);
-                }
+                setEnlarge(true);
               }}
               className={`lg:cursor-pointer ${enlarge ? "enlarge" : ""}`}
             >
@@ -176,7 +185,7 @@ export default function ProductPage() {
                           alt={productData.title}
                           width={500}
                           height={500}
-                          className=" w-full lg:h-[550px] object-cover  aspect-square"
+                          className="w-full h-full lg:h-[550px] object-cover aspect-square"
                         />
                       </CarouselItem>
                     );
@@ -184,7 +193,7 @@ export default function ProductPage() {
                 </CarouselContent>
               </Carousel>
               {enlarge && (
-                <div className="bg-white rounded-md flex justify-around w-full p-3 mt-2">
+                <div className="bg-white rounded-md justify-around w-full p-3 hidden sm:flex">
                   {productIcons.map((item) => {
                     return (
                       <div
