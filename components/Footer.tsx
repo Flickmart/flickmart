@@ -147,14 +147,14 @@ export default function Footer() {
           <div>
             <h1 className="text-lg">Connect with us</h1>
             <div className="flex gap-3 mt-2">
-              <Link href={'#'} target="_blank">
-                <Image src="/ig.png" alt="Instagram" width={30} height={30} />
+              <Link href={'#'} target="_blank" className="group">
+                <Image src="/ig.png" alt="Instagram" className="h-6 w-6 group-hover:scale-105 transition-all duration-500" width={30} height={30} />
               </Link>
-              <Link href={'#'} target="_blank">
-                <Image src="/x.png" alt="Facebook" width={26} height={26} />
+              <Link href={'#'} target="_blank" className="group">
+                <Image src="/x.png" alt="Facebook" className="h-6 w-6 group-hover:scale-105 transition-all duration-500" width={26} height={26} />
               </Link>
-              <Link href={'#'} target="_blank">
-                <Image src="/wa.png" alt="Facebook" width={30} height={30} />
+              <Link href={'#'} target="_blank" className="group">
+                <Image src="/wa.png" alt="Facebook" className="h-6 w-6 group-hover:scale-105 transition-all duration-500" width={30} height={30} />
               </Link>
             </div>
           </div>
