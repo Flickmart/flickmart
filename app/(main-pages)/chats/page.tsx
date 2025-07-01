@@ -196,7 +196,7 @@ export default function ChatPage() {
         toast.error("Failed to send message");
       }
     },
-    [user?._id, processedProductId, sendMessage]
+    [user?._id, processedProductId, sendMessage, product]
   );
 
   // Handle archiving/unarchiving a conversation
