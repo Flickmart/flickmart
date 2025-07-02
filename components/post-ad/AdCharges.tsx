@@ -72,8 +72,12 @@ export default function AdCharges({
   };
 
   const handleCharge = async () => {
-    if (!user || !wallet) {
+    if (!user) {
       toast.error("Please log in to post an ad");
+      return;
+    }
+    if (!wallet) {
+      toast.error("Please create a wallet first");
       return;
     }
 
