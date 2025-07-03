@@ -819,4 +819,88 @@ http.route({
   }),
 });
 
+// UPDATED: User-to-user transfer endpoint rebuilt for the new flow.
+http.route({
+  path: "/wallet/transfer",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/wallet/transfer",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { sellerId, amount, productIds } = await request.json();
+    if (!sellerId || !amount) {
+      return new Response(JSON.stringify({ error: "Missing required fields: sellerId, amount" }), { status: 400, headers });
+    }
+
+    try {
+        const result = await ctx.runMutation(api.wallet.transferToUserWithEscrow, {
+            sellerId: sellerId as Id<"users">,
+            amount: Number(amount),
+            productIds: productIds as Id<"product">[] || [],
+        });
+        
+        return new Response(JSON.stringify(result), { status: 200, headers });
+
+    } catch (error: any) {
+        console.error("Error during transfer:", error);
+        return new Response(JSON.stringify({ error: error.message || "An internal error occurred." }), { status: 500, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/orders/confirm-completion",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/orders/confirm-completion",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { orderId } = await request.json();
+    if (!orderId) {
+      return new Response(JSON.stringify({ error: "Missing required field: orderId" }), { status: 400, headers });
+    }
+
+    try {
+        const result = await ctx.runMutation(api.orders.confirmOrderCompletion, {
+            orderId: orderId as Id<"orders">,
+        });
+        
+        return new Response(JSON.stringify(result), { status: 200, headers });
+
+    } catch (error: any) {
+        console.error("Error during order confirmation:", error);
+        return new Response(JSON.stringify({ error: error.message || "An internal error occurred." }), { status: 500, headers });
+    }
+  }),
+});
+
+
 export default http;
