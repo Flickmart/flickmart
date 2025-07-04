@@ -1,6 +1,6 @@
 import * as React from "react";
 
-const LARGE_BREAKPOINT = 1024;
+const LARGE_BREAKPOINT = 640;
 
 export function useIsLarge() {
   const [isLarge, setIsLarge] = React.useState<boolean | undefined>(undefined);
