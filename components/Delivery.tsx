@@ -33,7 +33,7 @@ export default function Delivery() {
         width={500}
         height={500}
         alt="delivery"
-        className="lg:w-5/12 h-full object-cover"
+        className="lg:w-5/12 w-full h-full object-cover"
       />
       <div className="flex-grow flex items-center capitalize ">
         <div className="lg:p-5 p-7 flex flex-col justify-center lg:space-y-7 space-y-4">
@@ -44,13 +44,16 @@ export default function Delivery() {
             <h3 className=" lg:text-2xl text-xl normal-case">
               Become a delivery partner with us.
             </h3>
-            <p className="">
-              bringing your orders right to your doorstep
-            </p>
+            <p className="">bringing your orders right to your doorstep</p>
             <span>quick services - no delays</span>
           </div>
-          
-          <Button onClick={()=> toast.success("Coming Soon...")} className="w-2/4 py-5 capitalize bg-black">apply now</Button>
+
+          <Button
+            onClick={() => toast.success("Coming Soon...")}
+            className="w-2/4 py-5 capitalize bg-black"
+          >
+            apply now
+          </Button>
         </div>
       </div>
     </div>

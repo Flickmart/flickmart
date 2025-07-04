@@ -13,7 +13,7 @@ export const metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Flickmart",
   description:
-    "The all in one store for university students to buy and sell products",
+    "A classified online marketplace where students and locals discover, buy, and sell everything they need — securely and with greater visibility for sellers, all in one trusted platform.",
 };
 const inter = Inter({
   subsets: ["latin"],

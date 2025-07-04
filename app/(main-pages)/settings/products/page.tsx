@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const demoProducts = [
   {
@@ -110,11 +111,27 @@ export default function ProductsPage() {
             }
           )}
         >
-          <div className="relative size-20 sm:size-32">
+          {/* <div className="relative size-20 sm:size-32">
             <Image src="/store-avatar.png" alt="avatar" fill />
-          </div>
+          </div> */}
+          <Avatar className="size-20 sm:size-32">
+            {userStore?.data?.image && (
+              <AvatarImage
+                src={userStore?.data?.image}
+                alt="business profile image"
+              />
+            )}
+            <AvatarFallback>
+              {userStore?.data?.name
+                ?.split(" ")
+                .map((item) => item[0].toUpperCase())
+                .join(" ")}
+            </AvatarFallback>
+          </Avatar>
           <div>
-            <h1 className="text-xl capitalize sm:text-2xl">Mbah Tolu stores</h1>
+            <h1 className="text-xl capitalize sm:text-2xl">
+              {userStore?.data?.name}
+            </h1>
             <p className="text-xs text-black/60 sm:text-sm">
               {" "}
               Select goods from this store

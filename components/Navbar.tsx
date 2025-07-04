@@ -128,7 +128,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             <button className="text-sm font-bold rounded-md bg-flickmart text-white">
               <Link
                 className="py-2 px-8 inline-block"
-                href={userStore?.[0] ? "/post-ad" : "/create-store"}
+                href={userStore?.data ? "/post-ad" : "/create-store"}
               >
                 SELL
               </Link>

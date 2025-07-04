@@ -1,7 +1,7 @@
 import { internal } from "./_generated/api";
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUser } from "./users";
+import { getCurrentUser, getCurrentUserOrThrow } from "./users";
 // Create a new store
 export const createStore = mutation({
   args: {
@@ -81,23 +81,40 @@ export const getAllStores = query({
 // Get stores by userId
 export const getStoresByUserId = query({
   handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return [];
+    // Retrieve User
+    const user = await getCurrentUserOrThrow(ctx);
+    const errorObject = {
+      success: false,
+      data: null,
+      error: {
+        code: "USER_NOT_FOUND",
+        message: "Authentication Required",
+        status: 401,
+      },
+    };
 
-    const user = await ctx.db
-      .query("users")
-      .withIndex("byExternalId", (q) => q.eq("externalId", identity.subject))
-      .unique();
+    // Return error object if there is no user
+    if (!user) {
+      return errorObject;
+    }
 
-    if (!user) return [];
-
-    const store = await ctx.db
+    // Retrieve Store if user exists
+    const [store] = await ctx.db
       .query("store")
       .filter((q) => q.eq(q.field("userId"), user._id))
       .collect();
-    if (!store) return [];
 
-    return store;
+    if (!store)
+      return {
+        ...errorObject,
+        error: {
+          code: "STORE_NOT_FOUND",
+          message: "Create a store",
+          status: 404,
+        },
+      };
+
+    return { data: store, success: true, error: null };
   },
 });
 

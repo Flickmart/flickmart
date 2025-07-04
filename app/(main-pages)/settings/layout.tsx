@@ -1,7 +1,7 @@
 "use client";
 import Loader from "@/components/multipage/Loader";
 import useCheckUser from "@/hooks/useCheckUser";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
   children,
@@ -18,10 +18,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">
-      {/* <AppSidebar /> */}
-      <SidebarInset>
-        <div className="flex-1 overflow-auto">{children}</div>
-      </SidebarInset>
+      <div className="flex-1 overflow-auto">{children}</div>
     </SidebarProvider>
   );
 }
