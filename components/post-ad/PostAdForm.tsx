@@ -110,7 +110,7 @@ export default function PostAdForm({
   const createNewAd = useMutationConvex(api.product.create);
   let postToastId: ReturnType<typeof toast.loading>;
   const [allowAdPost, setAllowAdPost] = useState<boolean>(false);
-  const userStore = useQuery(api.store.getStoresByUserId)?.[0];
+  const userStore = useQuery(api.store.getStoresByUserId)?.data;
   const businessId = userStore?._id as Id<"store">;
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
