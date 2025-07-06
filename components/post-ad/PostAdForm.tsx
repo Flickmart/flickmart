@@ -71,7 +71,10 @@ const formSchema = z.object({
     .string()
     .min(5, { message: "Title length is too short" })
     .max(100, { message: "Maximum character length reached" }),
-  description: z.string().min(30, { message: "description is too short" }),
+  description: z
+    .string()
+    .min(30, { message: "Description is too short" })
+    .max(900, { message: "Description cannot exceed 900 characters" }),
   price: z.union([
     z.string(),
     z.number({
@@ -219,7 +222,7 @@ export default function PostAdForm({
             textAreaLength={textAreaLength}
             setTextAreaLength={setTextAreaLength}
           />
-          <InputField name="price" form={form} />
+          <InputField type="numberField" name="price" form={form} />
         </div>
 
         <Separator className="h-5 bg-gray-100 w-full" />

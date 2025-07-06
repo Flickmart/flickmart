@@ -40,7 +40,7 @@ export const getByUserId = query({
 
 // Get products by business ID
 export const getByBusinessId = query({
-  args: { businessId: v.id("store") },
+  args: { businessId: v.optional(v.id("store")) },
   handler: async (ctx, args) => {
     return await ctx.db
       .query("product")

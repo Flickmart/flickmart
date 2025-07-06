@@ -38,7 +38,7 @@ export default function PublicProfile() {
         <div className="flex items-center gap-2 text-gray-600">
           <ArrowLeft
             className="cursor-pointer size-7 "
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/settings")}
           />
           <Breadcrumb className="bg-white py-7 pl-2">
             <BreadcrumbList>

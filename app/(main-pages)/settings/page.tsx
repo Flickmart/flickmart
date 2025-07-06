@@ -4,7 +4,14 @@ import { useRouter } from "next/navigation";
 
 import { useSidebar } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { Store, MessageSquare, Bell, ChevronLeft } from "lucide-react";
+import {
+  Store,
+  MessageSquare,
+  ChevronLeft,
+  ChartNoAxesCombined,
+  UserPen,
+  ShoppingBag,
+} from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchForm } from "@/components/settings/search-form";
 import { useQuery } from "convex/react";
@@ -13,44 +20,52 @@ import { api } from "@/convex/_generated/api";
 const data = {
   navMain: [
     {
-      title: "Main Settings",
-      url: "#",
+      title: "Account Settings",
+      items: [
+        {
+          title: "Profile",
+          icon: UserPen,
+          description: "Manage your personal details",
+          url: "/settings/personal",
+        },
+      ],
+    },
+    {
+      title: "Store Settings",
       items: [
         {
           title: "Products",
-          icon: Store,
-          description: "Create and edit your products",
+          icon: ShoppingBag,
+          description: "View and edit your products",
           url: "/settings/products",
         },
       ],
     },
     {
-      title: "Account Settings",
-      url: "#",
+      title: "",
       items: [
         {
-          title: "Store Details",
+          title: "Store",
           icon: Store,
-          description: "Create or edit your store details",
+          description: "Manage your store details",
           url: "/settings/business",
         },
       ],
     },
     {
-      title: "Preferences",
-      url: "#",
+      title: "Performance",
       items: [
         {
-          title: "Notifications",
-          icon: Bell,
-          description: "Manage your notification preferences",
-          url: "/settings/notifications",
+          title: "Analytics",
+          icon: ChartNoAxesCombined,
+          description: "Track your store performance",
+          url: "/settings/analytics",
         },
       ],
     },
     {
       title: "Support",
-      url: "#",
+      url: "/settings/support",
       items: [
         {
           title: "Contact Support",

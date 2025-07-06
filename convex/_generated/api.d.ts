@@ -25,6 +25,7 @@ import type * as search from "../search.js";
 import type * as store from "../store.js";
 import type * as transactions from "../transactions.js";
 import type * as users from "../users.js";
+import type * as views from "../views.js";
 import type * as wallet from "../wallet.js";
 
 /**
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   store: typeof store;
   transactions: typeof transactions;
   users: typeof users;
+  views: typeof views;
   wallet: typeof wallet;
 }>;
 export declare const api: FilterApi<

@@ -44,6 +44,7 @@ export default defineSchema({
     category: v.string(),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
+    views: v.optional(v.number()),
     negotiable: v.optional(v.boolean()),
     commentsId: v.optional(v.id("comments")),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
@@ -71,6 +72,14 @@ export default defineSchema({
     content: v.string(),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
+  }),
+
+  // Views
+  views: defineTable({
+    productId: v.id("product"),
+    userId: v.id("users"),
+    viewed: v.boolean(),
+    timeStamp: v.string(),
   }),
 
   // Likes

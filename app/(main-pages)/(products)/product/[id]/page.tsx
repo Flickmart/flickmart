@@ -1,6 +1,5 @@
 "use client";
 import {
-  ArrowLeft,
   Bookmark,
   ChevronLeft,
   Heart,
@@ -41,6 +40,7 @@ import { useIsLarge } from "@/hooks/useLarge";
 import { SyncLoader } from "react-spinners";
 
 export default function ProductPage() {
+  const [viewed, setViewed] = useState(false);
   const isVisible = useNav();
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
@@ -61,6 +61,7 @@ export default function ProductPage() {
     productId,
     type: "wishlist",
   });
+  const view = useMutation(api.views.createView);
   const exchangePossible = productData?.exchange === true ? "yes" : "no";
   const { setApi, setAutoScroll } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
@@ -132,10 +133,16 @@ export default function ProductPage() {
   useEffect(() => {
     if (!productData) {
       setLoading(true);
-    } else {
-      setLoading(false);
+      return;
     }
-  }, [productData]);
+    // View Page once it loads
+    if (!viewed) {
+      view({ productId }).then((data) => console.log(data));
+      setViewed(true);
+      return;
+    }
+    setLoading(false);
+  }, [productData, viewed]);
 
   if (loading) {
     return (
@@ -149,7 +156,7 @@ export default function ProductPage() {
     <Drawer>
       <div className="min-h-screen lg:p-5 space-y-7 bg-slate-100  gap-x-6">
         <div className="lg:grid lg:grid-cols-2 gap-5 space-y-3">
-          <div className="flex flex-col justify-center items-center gap-y-5 border">
+          <div className="flex flex-col justify-center items-center border">
             <div
               onClick={(e) => {
                 e.stopPropagation();
@@ -178,7 +185,7 @@ export default function ProductPage() {
                 setEnlarge(true);
                 setAutoScroll(false);
               }}
-              className={`cursor-pointer sm:cursor-default ${enlarge ? "enlarge" : ""}`}
+              className={`cursor-pointer  sm:cursor-default ${enlarge ? "enlarge" : ""}`}
             >
               <Carousel setApi={setApi}>
                 <CarouselContent>

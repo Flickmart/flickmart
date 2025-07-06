@@ -8,7 +8,7 @@ import { FormType, NameType } from "@/types/form";
 type FieldType = {
   name: NameType;
   form: FormType;
-  type?: "textField" | "textArea";
+  type?: "textField" | "textArea" | "numberField";
 };
 
 export default function InputField({
@@ -28,27 +28,35 @@ export default function InputField({
   const {
     formState: { errors },
   } = form;
+
   return (
     <FormField
       control={form.control}
       name={name}
       render={({ field }) => {
-        let value ="";
+        let value = "";
         if (typeof field.value === "string") {
-          value =val || field.value;
+          value = val || field.value;
         }
+
         return (
           <div className={`${type === "textArea" && "mt-5"}`}>
             {type === "textArea" && (
               <span className="text-xs text-gray-500  w-full flex justify-end">
-                {textAreaLength}/300
+                <span
+                  className={`${(textAreaLength ?? 0) > 900 ? "text-red-500" : ""}`}
+                >
+                  {textAreaLength}
+                </span>
+                /900
               </span>
             )}
             <FormItem className={` `}>
               <FormControl>
-                {type === "textField" ? (
+                {type === "textField" || type === "numberField" ? (
                   <div>
                     <Input
+                      type={type === "numberField" ? "number" : undefined}
                       disabled={disabled}
                       required
                       className="w-full placeholder:capitalize  border lg:!text-lg  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
@@ -63,17 +71,18 @@ export default function InputField({
                 ) : (
                   <div>
                     <Textarea
+                      rows={7}
                       required
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
                         setTextAreaLength?.(target.value.length);
                       }}
                       placeholder={`${name}*`}
-                      className="placeholder:capitalize placeholder:text-lg h-48 placeholder:text-gray-500 lg:!text-lg"
+                      className="placeholder:capitalize  placeholder:text-lg   placeholder:text-gray-500 lg:!text-lg"
                       {...field}
                       value={val || value}
                     />
-                    <p className="capitalize py-3 font-medium  text-red-500">
+                    <p className=" py-3 font-medium  text-red-500">
                       {errors[name]?.message}
                     </p>
                   </div>
