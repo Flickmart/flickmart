@@ -37,6 +37,7 @@ export const create = internalMutation({
         escrowId: v.optional(v.id("escrows")),
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
         plan: v.optional(v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))), // Ad plan type
+        productIds: v.optional(v.array(v.id("product"))), // Array of product IDs for ads
       })
     ),
   },

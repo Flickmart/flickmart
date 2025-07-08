@@ -19,6 +19,7 @@ import type * as comments from "../comments.js";
 import type * as http from "../http.js";
 import type * as internal_ from "../internal.js";
 import type * as notifications from "../notifications.js";
+import type * as orders from "../orders.js";
 import type * as presence from "../presence.js";
 import type * as product from "../product.js";
 import type * as search from "../search.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   internal: typeof internal_;
   notifications: typeof notifications;
+  orders: typeof orders;
   presence: typeof presence;
   product: typeof product;
   search: typeof search;

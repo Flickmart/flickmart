@@ -4,28 +4,34 @@ import { getCurrentUser } from "./users";
 
 export const createNotification = internalMutation({
   args: {
+    userId: v.optional(v.id("users")),
     type: v.union(
       v.literal("new_message"),
       v.literal("new_like"),
       v.literal("new_comment"),
       v.literal("new_sale"),
       v.literal("advertisement"),
-      v.literal("reminder")
+      v.literal("reminder"),
+      v.literal("escrow_funded"),
+      v.literal("escrow_released"),
+      v.literal("completion_confirmed")
     ),
     relatedId: v.optional(
       v.union(
         v.id("product"),
         v.id("message"),
         v.id("comments"),
+        v.id("store"),
         v.id("conversations"),
+        v.id("orders"),
         v.id("users")
       )
     ),
     title: v.string(),
     content: v.string(),
     imageUrl: v.optional(v.string()),
-    isRead: v.boolean(),
-    timestamp: v.number(),
+    isRead: v.optional(v.boolean()),
+    timestamp: v.optional(v.number()),
     link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -41,7 +47,7 @@ export const createNotification = internalMutation({
     }
 
     const notificationId = await ctx.db.insert("notifications", {
-      userId: user._id,
+      userId: args.userId ? args.userId : user._id,
       type: args.type,
       title: args.title,
       relatedId: args.relatedId,
