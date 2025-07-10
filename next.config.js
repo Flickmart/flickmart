@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+   experimental: {
+    serverComponentsExternalPackages: [`require-in-the-middle`],
+  },
   images: {
     remotePatterns: [
       {
@@ -31,11 +34,16 @@ const nextConfig = {
   },
 };
 
+
 module.exports = nextConfig;
 
 // Injected content via Sentry wizard below
 
 const { withSentryConfig } = require("@sentry/nextjs");
+
+if (!process.env.TURBOPACK) {
+  module.exports = withSentryConfig(module.exports, { ... });
+}
 
 module.exports = withSentryConfig(
   module.exports,
