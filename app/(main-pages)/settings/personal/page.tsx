@@ -40,7 +40,7 @@ export default function PublicProfile() {
   }
 
   return (
-    <>
+    <div className="w-full">
       <div className="flex items-center shadow-md px-4 gap-2 text-gray-600">
         <ChevronLeft
           className="cursor-pointer size-7  rounded-full transition-all duration-300 hover:bg-gray-200 "
@@ -200,6 +200,6 @@ export default function PublicProfile() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

@@ -16,9 +16,5 @@ export default function DashboardLayout({
       </div>
     );
 
-  return (
-    <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">
-      {children}
-    </SidebarProvider>
-  );
+  return <SidebarProvider>{children}</SidebarProvider>;
 }

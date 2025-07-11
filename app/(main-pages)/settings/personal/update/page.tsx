@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { useSidebar } from "@/components/ui/sidebar";
 import MarketplaceProfile from "@/components/settings/profile";
-import { ArrowLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 export default function PersonalDetailsPage() {
@@ -36,7 +36,7 @@ export default function PersonalDetailsPage() {
     <div className="flex flex-col gap-4 p-5">
       <header className="text-gray-500">
         {isMobile && (
-          <ArrowLeft
+          <ChevronLeft
             className="cursor-pointer size-7 "
             onClick={() => router.back()}
           />

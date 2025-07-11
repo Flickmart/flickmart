@@ -120,8 +120,8 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col  min-h-screen">
-      <div className=" w-screen bg-white">
+    <div className="flex flex-col w-full min-h-screen pb-16 ">
+      <div className="  bg-white">
         {isMobile && (
           <div className=" text-gray-600 flex items-center px-3 gap-2 h-[10vh] shadow-md ">
             <div
@@ -153,7 +153,7 @@ export default function SettingsPage() {
         </div>
         <SearchForm onSearch={handleSearch} />
       </div>
-      <div className="scrollbar-none flex flex-col p-5 gap-7 flex-grow  w-screen ">
+      <div className="scrollbar-none flex flex-col  p-5 gap-7 flex-grow  ">
         {filteredNavMain.map((group) => (
           <div className="space-y-2" key={group.title}>
             <h2 className="text-gray-600 text-sm font-medium">{group.title}</h2>
