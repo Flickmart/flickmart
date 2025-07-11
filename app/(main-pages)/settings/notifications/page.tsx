@@ -12,24 +12,27 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function NotificationsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
+  const router = useRouter();
 
   return (
-    <div>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+    <div className="flex flex-col w-full">
+      <header className="flex shadow-md  h-20 shrink-0 items-center   px-4">
         {!isMobile ? (
           <SidebarTrigger className="-ml-1" />
         ) : (
           <>
-            <ArrowLeft
-              className="cursor-pointer -ml-1"
-              onClick={() => setOpenMobile(!openMobile)}
+            <ChevronLeft
+              className="cursor-pointer size-7"
+              onClick={() => router.back()}
             />
           </>
         )}
@@ -37,7 +40,7 @@ export default function NotificationsPage() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+              <Link href="/settings">Settings</Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -47,7 +50,7 @@ export default function NotificationsPage() {
         </Breadcrumb>
       </header>
       <div className="space-y-4">
-        <div className="rounded-lg border p-4 space-y-4">
+        <div className="rounded-lg border p-4 py-6 space-y-4">
           <h2 className="text-lg font-semibold">Notifications</h2>
 
           <div className="flex items-center justify-between pt-4">

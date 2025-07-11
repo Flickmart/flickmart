@@ -42,10 +42,14 @@ export const getByUserId = query({
 export const getByBusinessId = query({
   args: { businessId: v.optional(v.id("store")) },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const products = await ctx.db
       .query("product")
       .filter((q) => q.eq(q.field("businessId"), args.businessId))
       .collect();
+
+    if (!products.length) return null;
+
+    return products;
   },
 });
 

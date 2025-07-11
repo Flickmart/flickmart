@@ -11,6 +11,7 @@ import {
   ChartNoAxesCombined,
   UserPen,
   ShoppingBag,
+  Bell,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SearchForm } from "@/components/settings/search-form";
@@ -64,6 +65,17 @@ const data = {
       ],
     },
     {
+      title: "Notification Preferences",
+      items: [
+        {
+          title: "Notifications",
+          icon: Bell,
+          description: "Control alerts preferences.",
+          url: "/settings/notifications",
+        },
+      ],
+    },
+    {
       title: "Support",
       url: "/settings/support",
       items: [
@@ -71,7 +83,7 @@ const data = {
           title: "Contact Support",
           icon: MessageSquare,
           description: "Get help with your account",
-          url: "/settings/support",
+          url: "/contact",
         },
       ],
     },
@@ -108,7 +120,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col  min-h-screen">
       <div className=" w-screen bg-white">
         {isMobile && (
           <div className=" text-gray-600 flex items-center px-3 gap-2 h-[10vh] shadow-md ">

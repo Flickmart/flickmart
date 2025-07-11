@@ -85,7 +85,9 @@
   "pnpm": {
     "ignoredBuiltDependencies": [
       "@clerk/shared",
-      "@sentry/cli"
+      "@sentry/cli",
+      "esbuild",
+      "msgpackr-extract"
     ],
     "onlyBuiltDependencies": [
       "@clerk/shared",

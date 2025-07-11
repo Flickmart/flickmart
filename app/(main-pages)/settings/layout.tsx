@@ -18,7 +18,7 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">
-      <div className="flex-1 overflow-auto">{children}</div>
+      {children}
     </SidebarProvider>
   );
 }

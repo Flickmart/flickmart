@@ -13,6 +13,7 @@ import { useSidebar } from "@/components/ui/sidebar";
 import clsx from "clsx";
 import {
   ArrowLeft,
+  ChevronLeft,
   EllipsisVertical,
   Eye,
   Pencil,
@@ -23,7 +24,7 @@ import {
   X,
 } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AnimatedSearchBar from "@/components/AnimatedSearchBar";
 import {
   DropdownMenu,
@@ -49,15 +50,16 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ClipLoader } from "react-spinners";
+import { motion } from "motion/react";
 
 export default function ProductsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const { openMobile, setOpenMobile } = useSidebar();
   const userStore = useQuery(api.store.getStoresByUserId);
-  const userProducts = useQuery(api.product.getByBusinessId, {
+  const products = useQuery(api.product.getByBusinessId, {
     businessId: userStore?.data?._id as Id<"store">,
   });
+  const [userProducts, setUserProducts] = useState(products);
   const deleteProduct = useMutation(api.product.remove);
   const formatDesc = (desc: string) => {
     if (desc.length > 50) {
@@ -69,9 +71,9 @@ export default function ProductsPage() {
   const router = useRouter();
   const analyticsObj = userProducts?.reduce(
     (previous, current) => ({
-      likes: (current.likes ?? 0) + previous.likes,
-      views: (current.views ?? 0) + previous.views,
-      dislikes: (current.dislikes ?? 0) + previous.dislikes,
+      likes: (current?.likes ?? 0) + previous.likes,
+      views: (current?.views ?? 0) + previous.views,
+      dislikes: (current?.dislikes ?? 0) + previous.dislikes,
     }),
     {
       likes: 0,
@@ -96,19 +98,35 @@ export default function ProductsPage() {
       title: "dislikes",
     },
   ];
+  useEffect(() => {
+    setUserProducts(products);
+  }, [products]);
+
+  function handleSearch(textInput: string) {
+    const filteredProducts = products?.filter((item) => {
+      const { title, description, price } = item;
+
+      return (
+        title.toLowerCase().startsWith(textInput) ||
+        description.toLowerCase().startsWith(textInput) ||
+        price.toString().toLowerCase().startsWith(textInput)
+      );
+    });
+    setUserProducts(filteredProducts);
+  }
   return (
-    <>
-      <header className="flex items-center shadow-sm p-5">
-        <ArrowLeft
-          className="cursor-pointer -ml-1"
-          onClick={() => setOpenMobile(!openMobile)}
+    <div className="flex w-full flex-col ">
+      <header className="flex items-center shadow-md p-5">
+        <ChevronLeft
+          className="cursor-pointer size-7"
+          onClick={() => router.back()}
         />
 
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+              <Link href="/settings">Settings</Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
@@ -152,11 +170,11 @@ export default function ProductsPage() {
               <h1 className="text-xl capitalize sm:text-2xl">
                 {userStore?.data?.name}
               </h1>
-              <span className="text-base ">Welcome back, Flickmartan!</span>
-              {/* <span className="text-xs">What are we selling today?</span> */}
+              <span className="text-sm ">Welcome back, Flickmartan!</span>
             </div>
           </div>
           <AnimatedSearchBar
+            handleSearch={handleSearch}
             placeholder="Search for anything..."
             isExpanded={isExpanded}
           />
@@ -191,134 +209,155 @@ export default function ProductsPage() {
         <div className="space-y-2 ">
           <h3 className="capitalize font-semibold text-lg">my products</h3>
           <ul className="flex flex-col gap-5">
-            {!userProducts?.length ? (
+            {userProducts === null ? (
               <div className="h-96 flex justify-center items-center  flex-grow">
-                <span>You hav'nt posted any product yet</span>
+                <span>You have not posted any product yet</span>
+              </div>
+            ) : userProducts?.length === 0 ? (
+              <div className="h-96  flex justify-center capitalize text-lg items-center  flex-grow">
+                <span>no product found</span>
               </div>
             ) : (
               userProducts?.map((product) => (
-                <Link
-                  href={`/product/${product._id}`}
+                <motion.div
+                  initial={{
+                    opacity: 0,
+                  }}
+                  animate={{
+                    opacity: 1,
+                  }}
+                  transition={{
+                    duration: 0.5,
+                  }}
                   key={product._id}
-                  className="hover:scale-105 hover:rotate-1 hover:bg-gray-200 transition-all duration-300"
+                  className=" hover:bg-gray-200 transition-all duration-300"
                 >
-                  <li className="flex justify-between bg-inherit p-[6px] rounded-sm items-center shadow-md relative sm:p-2">
-                    <div className="flex gap-3 items-center">
-                      <div className="size-20 sm:size-28 relative flex-shrink-0">
-                        {product.images[0] && (
-                          <Image
-                            className="object-cover rounded-sm"
-                            fill
-                            src={product.images[0]}
-                            alt={product.title}
-                          />
-                        )}
+                  <Link href={`/product/${product._id}`}>
+                    <li className="flex justify-between bg-inherit p-[6px] rounded-sm items-center shadow-md relative sm:p-2">
+                      <div className="flex gap-3 items-center">
+                        <div className="size-20 sm:size-28 relative flex-shrink-0">
+                          {product.images[0] && (
+                            <Image
+                              className="object-cover rounded-sm"
+                              fill
+                              src={product.images[0]}
+                              alt={product.title}
+                            />
+                          )}
+                        </div>
+                        <div className="flex flex-col justify-center gap-2">
+                          <h2 className="sm:text-lg font-bold">
+                            {product.title}
+                          </h2>
+                          <p className="text-xs sm:text-sm font-light">
+                            {formatDesc(product.description)}
+                          </p>
+                          <span className="text-xs sm:text-sm font-bold text-flickmart">
+                            &#8358;{product.price.toLocaleString()}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <h2 className="sm:text-lg font-bold">
-                          {product.title}
-                        </h2>
-                        <p className="text-xs sm:text-sm font-light mb-1 sm:mb-2 md:mb-4">
-                          {formatDesc(product.description)}
-                        </p>
-                        <span className="text-xs sm:text-sm font-bold text-flickmart">
-                          &#8358;{product.price}
-                        </span>
-                      </div>
-                    </div>
 
-                    <Dialog open={deleteDialog} onOpenChange={setDeleteDialog}>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          className="rounded-full p-2 hover:bg-gray-300 transition-all duration-300"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                        >
-                          <EllipsisVertical className="cursor-pointer" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                          }}
-                          className="w-28 min-w-0"
-                        >
-                          <DropdownMenuItem
-                            onClick={() =>
-                              router.push(`/post-ad?product-id=${product._id}`)
-                            }
-                          >
-                            <Pencil className="mr-2" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="!text-red-500">
-                            <DialogTrigger className="flex items-center">
-                              <Trash className="mr-2" />
-                              Delete
-                            </DialogTrigger>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                      <DialogContent
-                        className="rounded-lg"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
+                      <Dialog
+                        open={deleteDialog}
+                        onOpenChange={setDeleteDialog}
                       >
-                        <DialogHeader>
-                          <DialogTitle>
-                            Are you sure you want to delete this product?
-                          </DialogTitle>
-                          <DialogDescription>
-                            Deleting this product will remove it from your store
-                            permanently.
-                          </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter className="gap-3">
-                          <Button
-                            variant="outline"
-                            onClick={() => setDeleteDialog(false)}
-                            disabled={isDeleting}
-                          >
-                            Cancel
-                          </Button>
-                          <Button
-                            onClick={async () => {
-                              try {
-                                setIsDeleting(true);
-                                await deleteProduct({ productId: product._id });
-                                toast.success(
-                                  "Product deleted successfully..."
-                                );
-                                setDeleteDialog(false);
-                              } catch (err) {
-                                console.log(err);
-                              } finally {
-                                setIsDeleting(false);
-                              }
+                        <DropdownMenu>
+                          <DropdownMenuTrigger
+                            className="rounded-full p-2 hover:bg-gray-300 transition-all duration-300"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
                             }}
-                            disabled={isDeleting}
-                            className="bg-flickmart"
                           >
-                            {isDeleting ? (
-                              <ClipLoader size={20} color="#ffffff" />
-                            ) : (
-                              "Yes, Delete"
-                            )}
-                          </Button>
-                        </DialogFooter>
-                      </DialogContent>
-                    </Dialog>
-                  </li>
-                </Link>
+                            <EllipsisVertical className="cursor-pointer" />
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                            }}
+                            className="w-28 min-w-0"
+                          >
+                            <DropdownMenuItem
+                              onClick={() =>
+                                router.push(
+                                  `/post-ad?product-id=${product._id}`
+                                )
+                              }
+                            >
+                              <Pencil className="mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem className="!text-red-500">
+                              <DialogTrigger className="flex items-center">
+                                <Trash className="mr-2" />
+                                Delete
+                              </DialogTrigger>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                        <DialogContent
+                          className="rounded-lg"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                          }}
+                        >
+                          <DialogHeader>
+                            <DialogTitle>
+                              Are you sure you want to delete this product?
+                            </DialogTitle>
+                            <DialogDescription>
+                              Deleting this product will remove it from your
+                              store permanently.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter className="gap-3">
+                            <Button
+                              variant="outline"
+                              onClick={() => setDeleteDialog(false)}
+                              disabled={isDeleting}
+                            >
+                              Cancel
+                            </Button>
+                            <Button
+                              onClick={async () => {
+                                try {
+                                  setIsDeleting(true);
+                                  await deleteProduct({
+                                    productId: product._id,
+                                  });
+                                  toast.success(
+                                    "Product deleted successfully..."
+                                  );
+                                  setDeleteDialog(false);
+                                } catch (err) {
+                                  console.log(err);
+                                } finally {
+                                  setIsDeleting(false);
+                                }
+                              }}
+                              disabled={isDeleting}
+                              className="bg-flickmart"
+                            >
+                              {isDeleting ? (
+                                <ClipLoader size={20} color="#ffffff" />
+                              ) : (
+                                "Yes, Delete"
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </li>
+                  </Link>
+                </motion.div>
               ))
             )}
           </ul>
         </div>
       </div>
-    </>
+    </div>
   );
 }
