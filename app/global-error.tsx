@@ -1,20 +1,21 @@
 "use client";
-// import * as Sentry from "@sentry/nextjs";
-// import Error from "next/error";
-// import { useEffect } from "react";
+import * as Sentry from "@sentry/nextjs";
+import Error from "next/error";
+import { useEffect } from "react";
 import { Error500Illustration } from "@/components/error-illustration";
 import ErrorMessage from "@/components/error-message";
 
 export default function GlobalError({
-  // error,
+  error,
   reset,
 }: {
-  // error: Error & { digest?: string };
+  error: Error & { digest?: string };
   reset: () => void;
 }) {
-  // useEffect(() => {
-  //   Sentry.captureException(error);
-  // }, [error]);
+  useEffect(() => {
+    Sentry.captureException(error);
+  }, [error]);
+
   return (
     <div className="bg-white h-full flex items-center justify-center">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">

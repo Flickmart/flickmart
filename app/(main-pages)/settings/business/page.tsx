@@ -34,7 +34,8 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 import { Textarea } from "@/components/ui/textarea";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft } from "lucide-react";
+import Link from "next/link";
 const businessFormSchema = z.object({
   businessName: z.string().min(1, "Business name is required"),
   description: z
@@ -87,22 +88,17 @@ export default function BusinessDetailsPage() {
 
   return (
     <div className="flex flex-col gap-4 p-4">
-      <header className=" flex items-center">
-        {!isMobile ? (
-          <SidebarTrigger className="-ml-1" />
-        ) : (
-          <>
-            <ArrowLeft
-              className="cursor-pointer -ml-1"
-              onClick={() => setOpenMobile(!openMobile)}
-            />
-          </>
-        )}
+      <header className=" flex shadow-md items-center">
+        <ChevronLeft
+          className="cursor-pointer size-7"
+          onClick={() => setOpenMobile(!openMobile)}
+        />
+
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="/settings">Settings</BreadcrumbLink>
+              <Link href="/settings">Settings</Link>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
