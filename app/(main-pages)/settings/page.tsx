@@ -138,7 +138,7 @@ export default function SettingsPage() {
             <Avatar className="size-12 rounded-full">
               <AvatarImage src={user?.imageUrl} alt={user?.name} />
               <AvatarFallback className="rounded-full">
-                {user?.name.split(" ").map((item) => item[0].toUpperCase())}
+                {user?.name.split(" ").map((item) => item[0]?.toUpperCase())}
               </AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left  text-sm leading-tight">
