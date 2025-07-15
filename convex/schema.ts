@@ -170,6 +170,12 @@ export default defineSchema({
     ),
     recipientCode: v.optional(v.string()), // Paystack recipient code
     paystackCustomerId: v.optional(v.string()), // Paystack customer ID
+    // PIN security fields
+    pinHash: v.optional(v.string()), // bcrypt hashed PIN
+    pinAttempts: v.optional(v.number()), // Failed PIN attempts counter
+    pinLockedUntil: v.optional(v.number()), // Timestamp when lock expires
+    pinCreatedAt: v.optional(v.number()), // PIN creation timestamp
+    pinUpdatedAt: v.optional(v.number()), // Last PIN update timestamp
   }).index("by_user", ["userId"]),
 
   // All transactions for audit trail

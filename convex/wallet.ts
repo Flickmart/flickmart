@@ -74,6 +74,145 @@ export const updateBalance = internalMutation({
   },
 });
 
+// PIN Management Functions (Internal mutations for HTTP actions)
+export const createPinInternal = internalMutation({
+  args: {
+    userId: v.id("users"),
+    hashedPin: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get user's wallet
+    const wallet = await ctx.db
+      .query("wallets")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    if (!wallet) {
+      throw new Error("Wallet not found. Please create a wallet first.");
+    }
+
+    // Check if PIN already exists
+    if (wallet.pinHash) {
+      throw new Error("PIN already exists. Use change PIN instead.");
+    }
+
+    // Update wallet with PIN
+    await ctx.db.patch(wallet._id, {
+      pinHash: args.hashedPin,
+      pinAttempts: 0,
+      pinLockedUntil: undefined,
+      pinCreatedAt: Date.now(),
+      pinUpdatedAt: Date.now(),
+    });
+
+    return { success: true, message: "PIN created successfully" };
+  },
+});
+
+export const verifyPinInternal = internalMutation({
+  args: {
+    userId: v.id("users"),
+    pin: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get user's wallet
+    const wallet = await ctx.db
+      .query("wallets")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    if (!wallet) {
+      throw new Error("Wallet not found.");
+    }
+
+    if (!wallet.pinHash) {
+      throw new Error("PIN not set. Please create a PIN first.");
+    }
+
+    // Check if wallet is locked
+    if (wallet.pinLockedUntil && wallet.pinLockedUntil > Date.now()) {
+      const remainingTime = Math.ceil((wallet.pinLockedUntil - Date.now()) / 60000);
+      throw new Error(`Wallet is locked. Try again in ${remainingTime} minutes.`);
+    }
+
+    return { wallet, hashedPin: wallet.pinHash };
+  },
+});
+
+export const updatePinAttempts = internalMutation({
+  args: {
+    walletId: v.id("wallets"),
+    attempts: v.number(),
+    lockUntil: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.walletId, {
+      pinAttempts: args.attempts,
+      pinLockedUntil: args.lockUntil,
+    });
+  },
+});
+
+export const resetPinAttempts = internalMutation({
+  args: {
+    walletId: v.id("wallets"),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.walletId, {
+      pinAttempts: 0,
+      pinLockedUntil: undefined,
+    });
+  },
+});
+
+export const changePinInternal = internalMutation({
+  args: {
+    userId: v.id("users"),
+    hashedPin: v.string(),
+  },
+  handler: async (ctx, args) => {
+    // Get wallet
+    const wallet = await ctx.db
+      .query("wallets")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .unique();
+
+    if (!wallet) {
+      throw new Error("Wallet not found.");
+    }
+
+    // Update wallet with new PIN
+    await ctx.db.patch(wallet._id, {
+      pinHash: args.hashedPin,
+      pinAttempts: 0,
+      pinLockedUntil: undefined,
+      pinUpdatedAt: Date.now(),
+    });
+
+    return { success: true, message: "PIN changed successfully" };
+  },
+});
+
+export const checkPinExists = query({
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      return { exists: false };
+    }
+
+    const wallet = await ctx.db
+      .query("wallets")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .unique();
+
+    return { 
+      exists: !!(wallet?.pinHash),
+      isLocked: wallet?.pinLockedUntil ? wallet.pinLockedUntil > Date.now() : false,
+      lockExpiresAt: wallet?.pinLockedUntil
+    };
+  },
+});
+
 export const transferToUserWithEscrow = mutation({
   args: {
     sellerId: v.id("users"),
@@ -92,6 +231,9 @@ export const transferToUserWithEscrow = mutation({
     if (buyer._id === sellerId) {
       throw new Error("You cannot send money to yourself.");
     }
+
+    // 0. Verify PIN before proceeding with transfer
+    // PIN verification will be handled in the HTTP action
 
     // 1. Get buyer and seller wallets
     const buyerWallet = await ctx.db
