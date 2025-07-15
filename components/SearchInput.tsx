@@ -15,7 +15,7 @@ import {
 import Link from "next/link";
 import { Search, X } from "lucide-react";
 import { motion } from "motion/react";
-const MotionCommandList = motion(CommandList);
+const MotionCommandList = motion.create(CommandList);
 
 export default function SearchInput({
   query,

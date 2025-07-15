@@ -18,16 +18,11 @@ export default function SupportPage() {
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-        {!isMobile ? (
-          <SidebarTrigger className="-ml-1" />
-        ) : (
-          <>
-            <ArrowLeft
-              className="cursor-pointer -ml-1"
-              onClick={() => setOpenMobile(!openMobile)}
-            />
-          </>
-        )}
+        <SidebarTrigger className="-ml-1" />
+        <ArrowLeft
+          className="cursor-pointer -ml-1"
+          onClick={() => setOpenMobile(!openMobile)}
+        />
         <Separator orientation="vertical" className="mr-2 h-4" />
         <Breadcrumb>
           <BreadcrumbList>

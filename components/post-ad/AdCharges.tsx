@@ -22,7 +22,7 @@ interface AdChargesProps {
   isPending: boolean;
   formTrigger: () => Promise<boolean>;
   formSubmit: () => Promise<void>;
-  allowAdPost: boolean;
+  images: Array<string>;
   adId: Id<"product"> | undefined;
 }
 
@@ -37,7 +37,7 @@ export default function AdCharges({
   isPending,
   formTrigger,
   formSubmit,
-  allowAdPost,
+  images,
   adId,
 }: AdChargesProps) {
   const [showChargeDialog, setShowChargeDialog] = useState(false);
@@ -55,15 +55,14 @@ export default function AdCharges({
   const chargeAmount = PLAN_PRICES[plan];
 
   const handlePostAdClick = async () => {
+    if (!images.length) {
+      toast.error("Please add at least one image");
+      return;
+    }
     // First validate the form
     const isValid = await formTrigger();
     if (!isValid) {
       toast.error("Please fill in all required fields");
-      return;
-    }
-
-    if (!allowAdPost) {
-      toast.error("Please add at least one image");
       return;
     }
 

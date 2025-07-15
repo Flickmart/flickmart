@@ -48,7 +48,7 @@ export default defineSchema({
     negotiable: v.optional(v.boolean()),
     commentsId: v.optional(v.id("comments")),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
-    exchange: v.boolean(),
+    exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
     timeStamp: v.string(),
     location: v.union(v.literal("enugu"), v.literal("nsukka")),

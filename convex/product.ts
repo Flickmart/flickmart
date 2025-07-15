@@ -85,7 +85,7 @@ export const create = mutation({
     businessId: v.id("store"),
     category: v.string(),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
-    exchange: v.boolean(),
+    exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
     location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),

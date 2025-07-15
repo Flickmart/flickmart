@@ -3,19 +3,17 @@ import { Plus, Upload, X } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
 import { useOthersStore } from "@/store/useOthersStore";
 import Image from "next/image";
-import { useUploadThing } from "@/utils/uploadthing";
 import { toast } from "sonner";
 import { MoonLoader } from "react-spinners";
 import imageCompression from "browser-image-compression";
+import { useUpload } from "@/hooks/useUpload";
 
 export default function AddPhoto({
-  setAllowAdPost,
   isSubmitted,
   setIsSubmitted,
   clear,
   setClear,
 }: {
-  setAllowAdPost: React.Dispatch<React.SetStateAction<boolean>>;
   isSubmitted: boolean;
   setIsSubmitted: React.Dispatch<React.SetStateAction<boolean>>;
   clear: boolean;
@@ -26,19 +24,9 @@ export default function AddPhoto({
   const [filePath, setFilePath] = useState<Array<string | null>>([]);
   const storeImage = useOthersStore((state) => state.storeImage);
   const [error, setError] = useState<string>("");
-  const [isError, setIsError] = useState<boolean>(false);
   const [imageFilesArr, setImageFilesArr] = useState<Array<File>>([]);
+  const { startUpload, isUploading, isError, setIsError } = useUpload();
 
-  const { startUpload, isUploading } = useUploadThing("imageUploader", {
-    onClientUploadComplete: () => {
-      toast.success("Images Uploaded");
-    },
-    onUploadError: (err) => {
-      setIsError(true);
-      console.log(err);
-      toast.error("Upload Error");
-    },
-  });
   const handleBtnClick = () => {
     if (fileRef.current && !isUploading) {
       setFilePath([]);
@@ -60,11 +48,7 @@ export default function AddPhoto({
       let toastId: ReturnType<typeof toast.loading>;
       if (isUploading) {
         toastId = toast.loading("Uploading Images...");
-        setAllowAdPost(false);
-      } else {
-        setAllowAdPost(true);
       }
-
       return () => {
         if (toastId) {
           toast.dismiss(toastId);

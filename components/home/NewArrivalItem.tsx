@@ -37,12 +37,12 @@ export default function NewArrivalItem({
             alt={name}
             width={500}
             height={500}
-            className="size-full  "
+            className="size-full object-cover "
           />
         </div>
         <div className=" w-full py-6 flex justify-center h-1/4">
           <button
-            className={`bg-flickmart text-white  w-5/6 rounded-lg py-4 lg:py-3.5`}
+            className={`bg-flickmart text-white  w-5/6 rounded-lg py-3 lg:py-3.5`}
           >
             Save
           </button>

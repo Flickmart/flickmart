@@ -126,6 +126,7 @@ export const updateStore = mutation({
     location: v.optional(v.string()),
     description: v.optional(v.string()),
     image: v.optional(v.string()),
+    phone: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const { id, ...fieldsToUpdate } = args;
