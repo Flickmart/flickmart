@@ -53,7 +53,6 @@ import {
 import dynamic from "next/dynamic";
 import ClientOnly from "@/components/client-only";
 import { Doc, Id } from "@/convex/_generated/dataModel";
-// ... other imports remain the same ...
 
 const PaystackButton = dynamic(
   () => import("react-paystack").then((mod) => mod.PaystackButton),

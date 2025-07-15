@@ -83,8 +83,10 @@ export const deleteNotification = mutation({
 });
 
 export const getNotifications = query({
-  args: {},
-  handler: async (ctx) => {
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
       throw new Error("Unauthorized");
@@ -98,7 +100,7 @@ export const getNotifications = query({
 
     const notifications = await ctx.db
       .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
       .order("desc")
       .collect();
 
