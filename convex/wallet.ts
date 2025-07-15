@@ -184,7 +184,7 @@ export const transferToUserWithEscrow = mutation({
       title: "Funds Received in Escrow",
       content: notificationContentForSeller,
       relatedId: orderId,
-      
+      link: `/orders/${orderId}`,
     });
     await ctx.runMutation(internal.notifications.createNotification, {
       userId: buyer._id,
@@ -192,6 +192,7 @@ export const transferToUserWithEscrow = mutation({
       title: "Funds Sent to Escrow",
       content: `You sent ${args.amount} ${buyerWallet.currency} to escrow for your order.`,
       relatedId: orderId,
+      link: `/orders/${orderId}`,
     });
 
     return { success: true, orderId };

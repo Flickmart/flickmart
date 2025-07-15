@@ -1,6 +1,6 @@
 // convex/orders.ts
 
-import { mutation } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUserOrThrow } from "./users";
 import { internal } from "./_generated/api";
@@ -14,8 +14,8 @@ export const confirmOrderCompletion = mutation({
     const order = await ctx.db.get(args.orderId);
 
     if (!currentUser) {
-        throw new Error("Order not found.")
-        return;
+      throw new Error("Order not found.");
+      return;
     }
     if (!order) throw new Error("Order not found.");
     if (order.status !== "in_escrow")
@@ -72,9 +72,9 @@ export const confirmOrderCompletion = mutation({
         });
 
       // 3. Log "transfer_in" transaction for seller
-       const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 8);
-    const reference = `FLK-TRI-${timestamp}-${randomStr}`;
+      const timestamp = Date.now();
+      const randomStr = Math.random().toString(36).substring(2, 8);
+      const reference = `FLK-TRI-${timestamp}-${randomStr}`;
       await ctx.runMutation(internal.transactions.create, {
         userId: updatedOrder.sellerId,
         walletId: sellerWallet._id,
@@ -130,5 +130,27 @@ export const confirmOrderCompletion = mutation({
         message: "Confirmation recorded. Waiting for the other party.",
       };
     }
+  },
+});
+
+
+// NEW: Query to get a specific order by its ID
+export const getOrderById = query({
+  args: { orderId: v.id("orders") },
+  handler: async (ctx, args) => {
+    const order = await ctx.db.get(args.orderId);
+    if (!order) {
+      return null;
+    }
+
+  
+    const buyer = await ctx.db.get(order.buyerId);
+    const seller = await ctx.db.get(order.sellerId);
+
+    return {
+      ...order,
+      buyerName: buyer?.name,
+      sellerName: seller?.name,
+    };
   },
 });
