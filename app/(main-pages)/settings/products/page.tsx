@@ -200,7 +200,9 @@ export default function ProductsPage() {
             >
               <item.icon size={28} />
               <div className="flex flex-col items-center">
-                <span className="text-xl font-semibold">{item.number}</span>
+                <span className="text-xl font-semibold">
+                  {item.number ?? "--"}
+                </span>
                 <span className="text-xs">{item.title}</span>
               </div>
             </div>

@@ -78,7 +78,7 @@ export default function BookedMarkedItem({
               e.preventDefault();
               setIsDelOpen(false);
               const deleted = await bookmarkProduct({
-                productId: product._id,
+                productId: product?._id,
                 type,
               });
               deleted === "removed" &&
@@ -90,17 +90,17 @@ export default function BookedMarkedItem({
           </motion.button>
         )}
         <span className="font-semibold text-sm lg:text-xl">
-          &#8358;{product.price.toLocaleString()}
+          &#8358;{product?.price.toLocaleString()}
         </span>
         <div>
           <span className="bg-flickmart text-white py-1.5 px-2 rounded-xs text-[10px] lg:text-sm">
-            {product.condition}
+            {product?.condition}
           </span>
         </div>
 
         <div className="flex gap-1 items-center text-flickmart-gray text-[10px] lg:text-base">
           <MapPin className="size-4" />
-          <span>{product.location}</span>
+          <span>{product?.location}</span>
         </div>
         <div
           onClick={(e) => {
@@ -114,7 +114,7 @@ export default function BookedMarkedItem({
             onClick={() => {
               initialChat({
                 user: user ?? null,
-                userId: product.userId,
+                userId: product?.userId,
                 onNavigate: router.push,
               });
             }}
@@ -127,9 +127,9 @@ export default function BookedMarkedItem({
             whileHover={{ scale: 1.05 }}
             onClick={() =>
               shareProduct({
-                title: product.title,
-                description: product.description,
-                productId: product._id,
+                title: product?.title,
+                description: product?.description,
+                productId: product?._id,
               })
             }
             className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm w-2/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
