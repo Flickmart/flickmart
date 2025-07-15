@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Loader from "@/components/multipage/Loader";
+import useCheckUser from "@/hooks/useCheckUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -96,7 +98,7 @@ export default function WalletPage() {
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
-
+  const loading = useCheckUser();
   const user = useQuery(api.users.current);
 
   // Fetch banks when withdrawal dialog opens
@@ -425,6 +427,9 @@ export default function WalletPage() {
 
   // Ensure user exists before proceeding
 
+  if (loading) {
+    return <Loader />;
+  }
   return (
     <ClientOnly>
       <div className="min-h-screen bg-gray-50">
