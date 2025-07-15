@@ -26,7 +26,6 @@ export default function BookedMarkedItem({
 }) {
   const [isDelOpen, setIsDelOpen] = useState(false);
   const router = useRouter();
-  const { title, description, _id } = product;
   const bookmarkProduct = useMutation(api.product.addBookmark);
   const user = useQuery(api.users.current);
 
@@ -124,7 +123,13 @@ export default function BookedMarkedItem({
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            onClick={() => shareProduct({ title, description, productId: _id })}
+            onClick={() =>
+              shareProduct({
+                title: product.title,
+                description: product.description,
+                productId: product._id,
+              })
+            }
             className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm w-2/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
           >
             <Share className="size-4" /> <span>Share</span>

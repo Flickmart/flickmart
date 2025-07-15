@@ -96,7 +96,7 @@ export default function Footer() {
           </AccordionItem>
 
           <div className="flex flex-col justify-center gap-4">
-            <div>
+            <div className=" pt-5">
               <h1 className="text-lg">Connect with us</h1>
               <div className="flex gap-3 mt-2">
                 <Link
