@@ -37,6 +37,10 @@ export const confirmOrderCompletion = mutation({
     const updatedOrder = await ctx.db.get(args.orderId);
     if (!updatedOrder) throw new Error("Order vanished after update.");
 
+
+    const buyer = await ctx.db.get(updatedOrder.buyerId)
+    const seller = await ctx.db.get(updatedOrder.sellerId)
+
     // Check if BOTH parties have now confirmed
     if (
       updatedOrder.buyerConfirmedCompletion &&
@@ -95,8 +99,9 @@ export const confirmOrderCompletion = mutation({
         type: "escrow_released",
         title: "Transaction Complete",
         // UPDATED: More generic notification text
-        content: `Your transaction with has been successfully completed and funds have been released to the seller.`,
+        content: `Your transaction with ${seller?.name} has been successfully completed and funds have been released to the ${seller?.name}.`,
         relatedId: updatedOrder._id,
+        link: `/orders/${updatedOrder._id}`
       });
       await ctx.runMutation(internal.notifications.createNotification, {
         userId: updatedOrder.sellerId,
@@ -104,6 +109,7 @@ export const confirmOrderCompletion = mutation({
         title: "Funds Released",
         content: `Funds for your order have been released to your wallet.`,
         relatedId: updatedOrder._id,
+        link: `/orders/${updatedOrder._id}`
       });
 
       return {
@@ -122,6 +128,7 @@ export const confirmOrderCompletion = mutation({
         title: "Confirmation Received",
         content: `${currentUser?.name} has confirmed the transaction. We are now waiting for your confirmation to release the funds.`,
         relatedId: updatedOrder._id,
+        link: `/orders/${updatedOrder._id}`
       });
 
       return {
@@ -143,7 +150,7 @@ export const getOrderById = query({
       return null;
     }
 
-  
+
     const buyer = await ctx.db.get(order.buyerId);
     const seller = await ctx.db.get(order.sellerId);
 
