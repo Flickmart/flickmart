@@ -37,8 +37,6 @@ export const confirmOrderCompletion = mutation({
     const updatedOrder = await ctx.db.get(args.orderId);
     if (!updatedOrder) throw new Error("Order vanished after update.");
 
-
-    const buyer = await ctx.db.get(updatedOrder.buyerId)
     const seller = await ctx.db.get(updatedOrder.sellerId)
 
     // Check if BOTH parties have now confirmed
