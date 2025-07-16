@@ -12,6 +12,7 @@ export default defineSchema({
 
     paystackCustomerId: v.optional(v.string()), // Store Paystack Customer ID
     role: v.optional(v.union(v.literal("buyer"), v.literal("seller"))),
+    allowNotifications: v.optional(v.boolean()),
 
     username: v.optional(v.string()),
     description: v.optional(v.string()),

@@ -5,23 +5,28 @@ import { Switch } from "@/components/ui/switch";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ArrowLeft, ChevronLeft } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 export default function NotificationsPage() {
-  const [emailNotifications, setEmailNotifications] = useState(true);
   const [pushNotifications, setPushNotifications] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const { isMobile, openMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
+  const user = useQuery(api.users.current);
+  const [emailNotification, setEmailNotification] = useState(
+    user?.allowNotifications
+  );
+  const updateNotifications = useMutation(api.users.updateUser);
 
   return (
     <div className="flex flex-col w-full">
@@ -73,8 +78,11 @@ export default function NotificationsPage() {
               </p>
             </div>
             <Switch
-              checked={emailNotifications}
-              onCheckedChange={setEmailNotifications}
+              checked={emailNotification}
+              onCheckedChange={(checked) => {
+                setEmailNotification(checked);
+                updateNotifications({ allowNotifications: checked });
+              }}
             />
           </div>
 

@@ -5,9 +5,9 @@ interface SpinnerProps {
   className?: string;
 }
 
-export const Spinner: React.FC<SpinnerProps> = ({ 
-  size = "md", 
-  className = "" 
+export const Spinner: React.FC<SpinnerProps> = ({
+  size = "md",
+  className = "",
 }) => {
   const sizeClass = {
     sm: "w-4 h-4",
@@ -20,4 +20,4 @@ export const Spinner: React.FC<SpinnerProps> = ({
       <div className="w-full h-full border-4 border-gray-200 border-t-flickmart rounded-full animate-spin"></div>
     </div>
   );
-}; 
+};

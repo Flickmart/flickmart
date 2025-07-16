@@ -181,7 +181,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                         href="/settings"
                         className="border-b border-[#E8ECEF] py-4 "
                       >
-                        <span>Setting</span>
+                        <span>Settings</span>
                       </Link>
                       <Link
                         onClick={() => setOpen(false)}
