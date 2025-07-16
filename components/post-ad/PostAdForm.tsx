@@ -105,7 +105,7 @@ export default function PostAdForm({
       price: 0,
       store: "",
       phone: "",
-      plan: "pro",
+      plan: "premium",
     },
   });
   const { images } = useOthersStore((state) => state);

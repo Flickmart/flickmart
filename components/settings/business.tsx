@@ -131,7 +131,10 @@ export default function BusinessSettings() {
                   )}
                 </div>
                 <div className=" w-full space-y-2">
-                  <Label htmlFor="business-name" className="block mb-1">
+                  <Label
+                    htmlFor="business-name"
+                    className="block font-semibold mb-1"
+                  >
                     Business Name
                   </Label>
                   {isEditMode ? (
@@ -153,7 +156,9 @@ export default function BusinessSettings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="business-description">Description</Label>
+                <Label htmlFor="business-description" className="font-semibold">
+                  Description
+                </Label>
                 {isEditMode ? (
                   <Textarea
                     id="business-description"

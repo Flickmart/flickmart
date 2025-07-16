@@ -130,7 +130,7 @@ export default function SettingsPage() {
             >
               <ChevronLeft size={30} />
             </div>
-            <h2 className="text-xl font-medium">Settings</h2>
+            <h2 className="text-lg font-medium">Settings</h2>
           </div>
         )}
         <div className="flex py-5 p-3 gap-2 items-center">
@@ -163,8 +163,10 @@ export default function SettingsPage() {
                   <div className="flex items-center gap-2 hover:bg-gray-100 hover:rounded-xl  hover:p-3 transition-all duration-300">
                     <item.icon className="text-gray-800" size={30} />
                     <div className="flex flex-col text-sm z-10 ">
-                      <span className="text-lg font-medium">{item.title}</span>
-                      <span className="text-muted-foreground leading-tight text-base">
+                      <span className="text-base font-medium">
+                        {item.title}
+                      </span>
+                      <span className="text-muted-foreground leading-tight text-sm">
                         {item.description}
                       </span>
                     </div>

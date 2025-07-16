@@ -1,6 +1,13 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+export const notificationToEmail = mutation({
+  handler: async () => {},
+});
 
 export const createNotification = internalMutation({
   args: {
