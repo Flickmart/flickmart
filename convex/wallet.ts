@@ -1,7 +1,7 @@
 import { query, mutation, internalMutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUserOrThrow } from "./users";
-import { api, internal } from "./_generated/api";
+import { internal } from "./_generated/api";
 
 export const createWallet = mutation({
   args: {
@@ -205,7 +205,7 @@ export const checkPinExists = query({
       .withIndex("by_user", (q) => q.eq("userId", user._id))
       .unique();
 
-    return { 
+    return {
       exists: !!(wallet?.pinHash),
       isLocked: wallet?.pinLockedUntil ? wallet.pinLockedUntil > Date.now() : false,
       lockExpiresAt: wallet?.pinLockedUntil
@@ -232,8 +232,6 @@ export const transferToUserWithEscrow = mutation({
       throw new Error("You cannot send money to yourself.");
     }
 
-    // 0. Verify PIN before proceeding with transfer
-    // PIN verification will be handled in the HTTP action
 
     // 1. Get buyer and seller wallets
     const buyerWallet = await ctx.db
@@ -259,6 +257,11 @@ export const transferToUserWithEscrow = mutation({
       );
     }
 
+    const seller = await ctx.db.get(sellerId);
+
+    if (!seller) {
+      throw new Error("Could not find seller to notify.");
+    }
     // 2. Debit buyer's wallet
     await ctx.db.patch(buyerWallet._id, {
       balance: buyerWallet.balance - amountInCents,
@@ -306,15 +309,11 @@ export const transferToUserWithEscrow = mutation({
         orderId: orderId,
         recipientUserId: sellerId,
         productIds: productIds,
+        recipientName: seller.name
       },
     });
 
     // 7. Send notifications to both parties
-    const seller = await ctx.db.get(sellerId);
-    if (!seller) {
-      throw new Error("Could not find seller to notify.");
-    }
-
     const notificationContentForSeller =
       productIds.length > 1
         ? `${buyer.name} has sent ${args.amount} ${buyerWallet.currency} for multiple items. The funds are now held in escrow.`
