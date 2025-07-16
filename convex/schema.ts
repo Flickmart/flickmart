@@ -217,6 +217,7 @@ export default defineSchema({
       v.object({
         orderId: v.optional(v.id("orders")),
         recipientUserId: v.optional(v.id("users")),
+        recipientName: v.optional(v.string()),
         transferId: v.optional(v.id("transfers")),
         escrowId: v.optional(v.id("escrows")),
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted

@@ -15,7 +15,7 @@ export const confirmOrderCompletion = mutation({
 
     if (!currentUser) {
       throw new Error("Order not found.");
-      return;
+
     }
     if (!order) throw new Error("Order not found.");
     if (order.status !== "in_escrow")
@@ -38,6 +38,9 @@ export const confirmOrderCompletion = mutation({
     if (!updatedOrder) throw new Error("Order vanished after update.");
 
     const seller = await ctx.db.get(updatedOrder.sellerId)
+
+    if (!seller) throw new Error("Seller not found.");
+
 
     // Check if BOTH parties have now confirmed
     if (
@@ -88,6 +91,8 @@ export const confirmOrderCompletion = mutation({
         metadata: {
           orderId: updatedOrder._id,
           productIds: updatedOrder.productIds,
+          recipientUserId: updatedOrder.sellerId,
+          recipientName: seller.name
         },
       });
 
@@ -96,7 +101,6 @@ export const confirmOrderCompletion = mutation({
         userId: updatedOrder.buyerId,
         type: "escrow_released",
         title: "Transaction Complete",
-        // UPDATED: More generic notification text
         content: `Your transaction with ${seller?.name} has been successfully completed and funds have been released to the ${seller?.name}.`,
         relatedId: updatedOrder._id,
         link: `/orders/${updatedOrder._id}`
