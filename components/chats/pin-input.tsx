@@ -57,65 +57,66 @@ export function PinInput({
   }, [isError, onPinChange])
 
   return (
-    <div className="w-full">
+    <div className="flex flex-col items-center justify-center w-full">
       {/* PIN Display */}
-      <div className="flex justify-center mb-8">
+      <div className="flex justify-center mb-8 max-w-md">
         <div className="flex gap-3">
           {Array.from({ length: maxLength }).map((_, index) => (
             <div
               key={index}
-              className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${
-                index < pin.length
-                  ? isError
-                    ? "bg-red-500 border-red-500"
-                    : "bg-blue-500 border-blue-500"
-                  : "border-gray-300"
-              } ${isError ? "animate-pulse" : ""}`}
+              className={`w-4 h-4 rounded-full border-2 transition-all duration-200 ${index < pin.length
+                ? isError
+                  ? "bg-red-500 border-red-500"
+                  : "bg-blue-500 border-blue-500"
+                : "border-gray-300"
+                } ${isError ? "animate-pulse" : ""}`}
             />
           ))}
         </div>
       </div>
 
       {/* Numeric Keypad */}
-      <div className="grid grid-cols-3 gap-4">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
+      <div className="bg-gray-200 w-full p-2">
+        <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
+            <Button
+              key={number}
+              variant="secondary"
+              className="h-16 text-2xl font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
+              onClick={() => handleNumberClick(number.toString())}
+              disabled={disabled}
+            >
+              {number}
+            </Button>
+          ))}
+
           <Button
-            key={number}
             variant="secondary"
-            className="h-16 text-2xl font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
-            onClick={() => handleNumberClick(number.toString())}
+            className="h-16 text-lg font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
+            onClick={handleClear}
             disabled={disabled}
           >
-            {number}
+            Clear
           </Button>
-        ))}
 
-        <Button
-          variant="secondary"
-          className="h-16 text-lg font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
-          onClick={handleClear}
-          disabled={disabled}
-        >
-          Clear
-        </Button>
+          <Button
+            variant="secondary"
+            className="h-16 text-2xl font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
+            onClick={() => handleNumberClick("0")}
+            disabled={disabled}
+          >
+            0
+          </Button>
 
-        <Button
-          variant="secondary"
-          className="h-16 text-2xl font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
-          onClick={() => handleNumberClick("0")}
-          disabled={disabled}
-        >
-          0
-        </Button>
-
-        <Button
-          variant="secondary"
-          className="h-16 text-lg font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
-          onClick={handleBackspace}
-          disabled={disabled}
-        >
-          ⌫
-        </Button>
+          <Button
+            variant="secondary"
+            className="h-16 text-lg font-medium bg-white hover:bg-gray-50 text-gray-900 rounded-2xl border-0 shadow-sm disabled:opacity-50"
+            onClick={handleBackspace}
+            disabled={disabled}
+          >
+            ⌫
+          </Button>
+        </div>
       </div>
     </div>
   )
