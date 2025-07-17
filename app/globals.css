@@ -161,6 +161,26 @@
       @apply -translate-x-1/2 -translate-y-1/2 sm:scale-[1.4] lg:scale-110
     }
   }
+
+  /* Enhanced animations for product selection feedback */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .scale-98 {
+    transform: scale(0.98);
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 @layer components {
