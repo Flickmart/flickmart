@@ -31,10 +31,42 @@ export const getById = query({
 export const getByUserId = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
-    return await ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("userId"), args.userId))
-      .collect();
+    try {
+      // Validate that the user exists
+      const user = await ctx.db.get(args.userId);
+      if (!user) {
+        throw new ConvexError({
+          message: "User not found",
+          code: "USER_NOT_FOUND",
+        });
+      }
+
+      // Get all products for the user
+      const products = await ctx.db
+        .query("product")
+        .filter((q) => q.eq(q.field("userId"), args.userId))
+        .collect();
+
+      // Filter out any products that might be considered inactive
+      // Since there's no explicit status field, we'll return all products
+      // but ensure they have required fields
+      const activeProducts = products.filter(product => 
+        product.title && 
+        product.price > 0 && 
+        product.images && 
+        product.images.length > 0
+      );
+
+      return activeProducts;
+    } catch (error) {
+      if (error instanceof ConvexError) {
+        throw error;
+      }
+      throw new ConvexError({
+        message: "Failed to fetch products",
+        code: "FETCH_ERROR",
+      });
+    }
   },
 });
 

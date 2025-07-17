@@ -1134,11 +1134,46 @@ http.route({
           walletId: wallet._id,
         });
 
+        // Validate and format productIds array
+        let validatedProductIds: Id<"product">[] = [];
+        if (productIds && Array.isArray(productIds)) {
+          validatedProductIds = productIds.filter((id: any) => typeof id === 'string' && id.length > 0);
+          
+          // Validate that all products belong to the seller
+          if (validatedProductIds.length > 0) {
+            const products = await Promise.all(
+              validatedProductIds.map(productId => ctx.runQuery(api.product.getById, { productId: productId }))
+            );
+            
+            // Check if any products don't exist or don't belong to the seller
+            const invalidProducts = products.filter((product, index) => {
+              if (!product) {
+                console.error(`Product not found: ${validatedProductIds[index]}`);
+                return true;
+              }
+              if (product.userId !== sellerId) {
+                console.error(`Product ${product._id} does not belong to seller ${sellerId}`);
+                return true;
+              }
+              return false;
+            });
+            
+            if (invalidProducts.length > 0) {
+              return new Response(
+                JSON.stringify({ 
+                  error: "One or more selected products are invalid or do not belong to the seller. Please refresh and try again." 
+                }), 
+                { status: 400, headers }
+              );
+            }
+          }
+        }
+
         // Now proceed with the transfer
         const result = await ctx.runMutation(api.wallet.transferToUserWithEscrow, {
             sellerId: sellerId as Id<"users">,
             amount: Number(amount),
-            productIds: productIds as Id<"product">[] || [],
+            productIds: validatedProductIds,
         });
         
         return new Response(JSON.stringify(result), { status: 200, headers });
