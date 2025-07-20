@@ -2,7 +2,7 @@
 
 import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUserOrThrow } from "./users";
+import { getCurrentUser } from "./users";
 import { internal } from "./_generated/api";
 
 export const confirmOrderCompletion = mutation({
@@ -10,7 +10,7 @@ export const confirmOrderCompletion = mutation({
     orderId: v.id("orders"),
   },
   handler: async (ctx, args) => {
-    const currentUser = await getCurrentUserOrThrow(ctx);
+    const currentUser = await getCurrentUser(ctx);
     const order = await ctx.db.get(args.orderId);
 
     if (!currentUser) {
@@ -143,15 +143,72 @@ export const confirmOrderCompletion = mutation({
 });
 
 
-// NEW: Query to get a specific order by its ID
+// Query to get all orders for a user (both as buyer and seller)
+export const getUserOrders = query({
+  handler: async (ctx) => {
+    const currentUser = await getCurrentUser(ctx);
+    if (!currentUser) {
+      // Return empty array instead of error object to match frontend expectations
+      return [];
+    }
+
+    // Get orders where user is buyer
+    const buyerOrders = await ctx.db
+      .query("orders")
+      .withIndex("by_buyer", (q) => q.eq("buyerId", currentUser._id))
+      .collect();
+
+    // Get orders where user is seller
+    const sellerOrders = await ctx.db
+      .query("orders")
+      .withIndex("by_seller", (q) => q.eq("sellerId", currentUser._id))
+      .collect();
+
+    // Combine and deduplicate orders
+    const allOrders = [...buyerOrders, ...sellerOrders];
+    const uniqueOrders = allOrders.filter(
+      (order, index, self) => 
+        index === self.findIndex(o => o._id === order._id)
+    );
+
+    // Enrich orders with user data and role information
+    const enrichedOrders = await Promise.all(
+      uniqueOrders.map(async (order) => {
+        const buyer = await ctx.db.get(order.buyerId);
+        const seller = await ctx.db.get(order.sellerId);
+        
+        return {
+          ...order,
+          buyerName: buyer?.name,
+          sellerName: seller?.name,
+          userRole: order.buyerId === currentUser._id ? "buyer" as const : "seller" as const,
+        };
+      })
+    );
+
+    // Sort by creation date (newest first)
+    return enrichedOrders.sort((a, b) => b.createdAt - a.createdAt);
+  },
+});
+
+// Query to get a specific order by its ID with enriched user data
 export const getOrderById = query({
   args: { orderId: v.id("orders") },
   handler: async (ctx, args) => {
+    const currentUser = await getCurrentUser(ctx);
+    if (!currentUser) {
+      throw new Error("User must be authenticated to view order details");
+    }
+
     const order = await ctx.db.get(args.orderId);
     if (!order) {
       return null;
     }
 
+    // Check if user is part of this order
+    if (order.buyerId !== currentUser._id && order.sellerId !== currentUser._id) {
+      throw new Error("You are not authorized to view this order");
+    }
 
     const buyer = await ctx.db.get(order.buyerId);
     const seller = await ctx.db.get(order.sellerId);
@@ -160,6 +217,30 @@ export const getOrderById = query({
       ...order,
       buyerName: buyer?.name,
       sellerName: seller?.name,
+      buyerImageUrl: buyer?.imageUrl,
+      sellerImageUrl: seller?.imageUrl,
+      userRole: order.buyerId === currentUser._id ? "buyer" as const : "seller" as const,
     };
+  },
+});
+
+// Query to fetch multiple products by IDs for order details
+export const getProductsByIds = query({
+  args: { productIds: v.array(v.id("product")) },
+  handler: async (ctx, args) => {
+    if (args.productIds.length === 0) {
+      return [];
+    }
+
+    // Fetch all products by their IDs
+    const products = await Promise.all(
+      args.productIds.map(async (productId) => {
+        const product = await ctx.db.get(productId);
+        return product;
+      })
+    );
+
+    // Filter out any null products (in case some products were deleted)
+    return products.filter((product): product is NonNullable<typeof product> => product !== null);
   },
 });
