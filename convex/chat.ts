@@ -1,6 +1,8 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
+import { sendEmailNotification } from "./notifications";
+import { internal } from "./_generated/api";
 
 export const startConversation = mutation({
   args: {
@@ -97,7 +99,7 @@ export const sendMessage = mutation({
       productId: args.productId,
       title: args.title,
       price: args.price,
-      productImage: args.productImage
+      productImage: args.productImage,
     });
 
     // Determine the recipient
@@ -127,6 +129,7 @@ export const sendMessage = mutation({
     });
 
     const sender = await ctx.db.get(args.senderId);
+    const receiver = await ctx.db.get(recipientId);
 
     // Create notification for the recipient
     await ctx.db.insert("notifications", {
@@ -140,6 +143,17 @@ export const sendMessage = mutation({
       timestamp: now,
       link: `/chats?active=${args.conversationId}`,
     });
+
+    // Send Notification Email to Recipient if recipient has email notifications enabled
+    if (receiver?.allowNotifications) {
+      await ctx.runMutation(internal.notifications.sendEmailNotification, {
+        username: sender?.name ?? "A customer",
+        subject: "You have a new chat message",
+        recipient: receiver?.email as string,
+        ctaLink: "https://flickmart.app/chats",
+        messagePreview: args.content || "",
+      });
+    }
 
     return messageId;
   },

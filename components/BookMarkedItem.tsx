@@ -26,7 +26,6 @@ export default function BookedMarkedItem({
 }) {
   const [isDelOpen, setIsDelOpen] = useState(false);
   const router = useRouter();
-  const { title, description, _id } = product;
   const bookmarkProduct = useMutation(api.product.addBookmark);
   const user = useQuery(api.users.current);
 
@@ -38,11 +37,11 @@ export default function BookedMarkedItem({
   return (
     <div className="w-full py-1 relative items-center  bg-white flex lg:gap-5 gap-3 text-sm">
       <div className="w-2/5 h-48 aspect-square flex text-gray-700 lg:h-80 justify-center items-center">
-        {product.images[0] ? (
+        {product?.images[0] ? (
           <Image
-            src={product.images[0]}
+            src={product?.images[0]}
             className="size-full   object-cover"
-            alt={product.title}
+            alt={product?.title}
             height={1000}
             width={1000}
           />
@@ -52,7 +51,9 @@ export default function BookedMarkedItem({
       </div>
       <div className="flex gap-3 w-3/5 lg:justify-between flex-col py-3 capitalize">
         <div className="flex items-center justify-between">
-          <h1 className="text-sm lg:text-2xl font-semibold">{product.title}</h1>
+          <h1 className="text-sm lg:text-2xl font-semibold">
+            {product?.title}
+          </h1>
           <div
             onMouseEnter={() => setIsDelOpen(true)}
             onMouseLeave={() => setIsDelOpen(false)}
@@ -77,7 +78,7 @@ export default function BookedMarkedItem({
               e.preventDefault();
               setIsDelOpen(false);
               const deleted = await bookmarkProduct({
-                productId: product._id,
+                productId: product?._id,
                 type,
               });
               deleted === "removed" &&
@@ -89,17 +90,17 @@ export default function BookedMarkedItem({
           </motion.button>
         )}
         <span className="font-semibold text-sm lg:text-xl">
-          &#8358;{product.price.toLocaleString()}
+          &#8358;{product?.price.toLocaleString()}
         </span>
         <div>
           <span className="bg-flickmart text-white py-1.5 px-2 rounded-xs text-[10px] lg:text-sm">
-            {product.condition}
+            {product?.condition}
           </span>
         </div>
 
         <div className="flex gap-1 items-center text-flickmart-gray text-[10px] lg:text-base">
           <MapPin className="size-4" />
-          <span>{product.location}</span>
+          <span>{product?.location}</span>
         </div>
         <div
           onClick={(e) => {
@@ -113,7 +114,7 @@ export default function BookedMarkedItem({
             onClick={() => {
               initialChat({
                 user: user ?? null,
-                userId: product.userId,
+                userId: product?.userId,
                 onNavigate: router.push,
               });
             }}
@@ -124,7 +125,13 @@ export default function BookedMarkedItem({
           </motion.button>
           <motion.button
             whileHover={{ scale: 1.05 }}
-            onClick={() => shareProduct({ title, description, productId: _id })}
+            onClick={() =>
+              shareProduct({
+                title: product?.title,
+                description: product?.description,
+                productId: product?._id,
+              })
+            }
             className="border border-flickmart flex items-center gap-2 py-2 text-xs px-2 rounded-sm w-2/4 lg:w-1/4 lg:text-lg lg:py-2.5 text-flickmart justify-center"
           >
             <Share className="size-4" /> <span>Share</span>

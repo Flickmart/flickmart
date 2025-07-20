@@ -146,7 +146,7 @@
   }
 
   .enlarge {
-    @apply fixed w-full transition-all z-[70] animate-[enlarge_0.2s_linear_1_forwards] sm:w-auto;
+    @apply fixed w-full transition-all z-[70] animate-[enlarge_0.2s_linear_1_forwards];
   }
 
   @keyframes enlarge {
@@ -158,7 +158,7 @@
     100% {
       left: 50%;
       top: 50%;
-      @apply -translate-x-1/2 -translate-y-1/2 sm:scale-[1.4] lg:scale-110
+      @apply -translate-x-1/2 -translate-y-1/2;
     }
   }
 

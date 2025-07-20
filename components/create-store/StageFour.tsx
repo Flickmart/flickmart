@@ -4,13 +4,13 @@ import { api } from "@/convex/_generated/api";
 import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 const StageFour = () => {
-  const router = useRouter(); 
+  const router = useRouter();
   const userStore = useQuery(api.store.getStoresByUserId);
   return (
     <div className="fixed w-5/6 abs-center-x abs-center-y md:static md:translate-x-0 md:translate-y-0">
       <div className="mx-auto size-32 relative cursor-pointer mb-7 md:mb-10">
         <Image
-          src={userStore?.[0]?.image || "/default-profile.png"}
+          src={userStore?.data?.image || "/default-profile.png"}
           className="w-full h-full object-cover inline-block rounded-full hover:outline hover:outline-2 hover:outline-offset-2"
           height={60}
           width={60}
@@ -25,7 +25,7 @@ const StageFour = () => {
         />
       </div>
       <p className="text-sm mb-16 md:text-base md:mb-0">
-        Welcome to Flickmart {userStore?.[0]?.name}, your biggest business
+        Welcome to Flickmart {userStore?.data?.image}, your biggest business
         platform yet
       </p>
       <button

@@ -18,7 +18,7 @@ export default function AdPromotion({ form }: { form: FormType }) {
 
     if (activePlan === plan) {
       setActivePlan(null);
-      form.setValue("plan", ("" as "basic"));
+      form.setValue("plan", "" as "basic");
     } else {
       setActivePlan(plan);
       form.setValue("plan", plan);

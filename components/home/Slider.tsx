@@ -1,19 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-  // CarouselNext,
-  // CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Button } from "../ui/button";
+
 import useSlider from "@/hooks/useSlider";
 
 const banners = [
+  "flick-ban-5.jpg",
   "flick-ban-1.jpg",
   "flick-ban-2.jpg",
   "flick-ban-3.jpg",

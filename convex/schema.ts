@@ -12,6 +12,7 @@ export default defineSchema({
 
     paystackCustomerId: v.optional(v.string()), // Store Paystack Customer ID
     role: v.optional(v.union(v.literal("buyer"), v.literal("seller"))),
+    allowNotifications: v.optional(v.boolean()),
 
     username: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -44,10 +45,11 @@ export default defineSchema({
     category: v.string(),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
+    views: v.optional(v.number()),
     negotiable: v.optional(v.boolean()),
     commentsId: v.optional(v.id("comments")),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
-    exchange: v.boolean(),
+    exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
     timeStamp: v.string(),
     location: v.union(v.literal("enugu"), v.literal("nsukka")),
@@ -71,6 +73,14 @@ export default defineSchema({
     content: v.string(),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
+  }),
+
+  // Views
+  views: defineTable({
+    productId: v.id("product"),
+    userId: v.id("users"),
+    viewed: v.boolean(),
+    timeStamp: v.string(),
   }),
 
   // Likes
