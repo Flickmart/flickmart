@@ -67,6 +67,7 @@
     "recharts": "^2.15.1",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
+    "require-in-the-middle": "^7.5.2",
     "sonner": "^2.0.2",
     "svix": "^1.61.4",
     "uploadthing": "^7.6.0",
