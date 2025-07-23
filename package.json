@@ -4,7 +4,8 @@
     "dev": "next dev  --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@clerk/backend": "^2.1.0",

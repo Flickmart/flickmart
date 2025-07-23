@@ -29,7 +29,7 @@ export default function MobileNav() {
   ).length;
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats"];
+  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats", "/notifications", ];
   const userStore = useQuery(api.store.getStoresByUserId);
   const firstUserStore = userStore?.data;
 
