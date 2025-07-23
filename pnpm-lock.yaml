@@ -95,6 +95,9 @@ importers:
       bcryptjs:
         specifier: ^3.0.2
         version: 3.0.2
+      botid:
+        specifier: ^1.4.4
+        version: 1.4.4(next@15.2.4(@babel/core@7.27.4)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       browser-image-compression:
         specifier: ^2.0.2
         version: 2.0.2
@@ -2130,6 +2133,17 @@ packages:
   binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
+
+  botid@1.4.4:
+    resolution: {integrity: sha512-srandpZ5upyMRzT9ZD0yXW0o/e1LfPLghBjCOBgYPvqgYE6yjXp5xxzqdwe8zNvyA7hIxGc252G34fRfE5ySHQ==}
+    peerDependencies:
+      next: '*'
+      react: ^18.0.0 || ^19.0.0
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
 
   brace-expansion@2.0.1:
     resolution: {integrity: sha512-XnAIvQ8eM+kC6aULx6wuQiwVsnzsi9d3WxzV3FpWTGA19F621kwdbsAcFKXgKUHZWsy+mY6iL1sHTxWEFCytDA==}
@@ -5476,6 +5490,11 @@ snapshots:
   bcryptjs@3.0.2: {}
 
   binary-extensions@2.3.0: {}
+
+  botid@1.4.4(next@15.2.4(@babel/core@7.27.4)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
+    optionalDependencies:
+      next: 15.2.4(@babel/core@7.27.4)(@opentelemetry/api@1.9.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
 
   brace-expansion@2.0.1:
     dependencies:

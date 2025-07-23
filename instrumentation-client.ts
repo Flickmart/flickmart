@@ -3,6 +3,26 @@
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
 import * as Sentry from "@sentry/nextjs";
+import { initBotId } from 'botid/client/core';
+
+initBotId({
+  protect: [
+    {
+      path: '/sign-in/*',
+      method: 'POST',
+    },
+    {
+      // Wildcards can be used to expand multiple segments
+      // /team/*/activate will match
+      // /team/a/activate
+      // /team/a/b/activate
+      // /team/a/b/c/activate
+      // ...
+      path: '/sign-up/*',
+      method: 'POST',
+    },
+  ],
+});
 
 Sentry.init({
   dsn: "https://da66257b2541a1a390dfd3bcf66776b9@o4509559715463168.ingest.us.sentry.io/4509559717101568",
