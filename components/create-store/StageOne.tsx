@@ -21,11 +21,11 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       </h2>
       <p className="text-sm font-light text-flickmart-gray md:text-base">
         Read our{" "}
-        <Link href="#" className="text-flickmart font-medium">
+        <Link href="/privacy-policy" className="text-flickmart font-medium">
           Privacy Policy
         </Link>
         . Tap agree and continue to accept the{" "}
-        <Link href="#" className="text-flickmart font-medium">
+        <Link href="/terms-of-service" className="text-flickmart font-medium">
           Terms of Service
         </Link>{" "}
       </p>
