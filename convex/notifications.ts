@@ -177,7 +177,7 @@ export const getNotifications = query({
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      return [];
     }
 
     const notifications = await ctx.db
