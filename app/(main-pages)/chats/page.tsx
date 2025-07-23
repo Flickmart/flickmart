@@ -19,6 +19,7 @@ import UserProfile from "@/components/chats/user-profile";
 import { useUploadThing } from "@/utils/uploadthing";
 import Loader from "@/components/multipage/Loader";
 import useCheckUser from "@/hooks/useCheckUser";
+import Link from "next/link";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
 interface ChatMessage {
@@ -703,12 +704,14 @@ export default function ChatPage() {
               <div ref={messagesEndRef} />
             </div>
             <div className="fixed bottom-[120px] right-6 z-20 flex flex-col gap-2">
-              <Button
-                size="icon"
-                className="rounded-full shadow-md bg-green-600 hover:bg-green-700"
-              >
-                <Wallet className="w-4 h-4 " />
-              </Button>
+              <Link href={`/wallet/transfer?vendorId=${otherUserId}`}>
+                <Button
+                  size="icon"
+                  className="rounded-full shadow-md bg-green-600 hover:bg-green-700"
+                >
+                  <Wallet className="w-4 h-4 " />
+                </Button>
+              </Link>
             </div>
             <div className={`w-full ${sidebarOpen ? "md:pl-64" : ""}`}>
               <ChatInput

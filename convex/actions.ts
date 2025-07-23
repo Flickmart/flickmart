@@ -2,6 +2,7 @@
 
 import { action } from "./_generated/server";
 import { v } from "convex/values";
+import { api, internal } from "./_generated/api";
 
 export const verifyPaystackWebhook = action({
   args: {
@@ -26,5 +27,27 @@ export const generateTransactionReference = action({
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
     return `FLK-${args.type.substring(0, 3).toUpperCase()}-${timestamp}-${randomStr}`;
+  },
+});
+
+export const hashPin = action({
+  args: {
+    pin: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    const bcrypt = require('bcryptjs');
+    const saltRounds = 12;
+    return await bcrypt.hash(args.pin, saltRounds);
+  },
+});
+
+export const verifyPin = action({
+  args: {
+    pin: v.string(),
+    hashedPin: v.string(),
+  },
+  handler: async (_ctx, args) => {
+    const bcrypt = require('bcryptjs');
+    return await bcrypt.compare(args.pin, args.hashedPin);
   },
 });

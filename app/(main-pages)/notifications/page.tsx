@@ -107,7 +107,17 @@ const Page = () => {
   ];
 
   const user = useUser();
-  const allNotifications = useQuery(api.notifications.getNotifications) || [];
+
+  const convexUser = useQuery(api.users.current);
+  const allNotifications =
+    useQuery(
+      api.notifications.getNotifications,
+      convexUser?._id
+        ? {
+            userId: convexUser?._id,
+          }
+        : "skip"
+    ) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const markAllAsRead = useMutation(

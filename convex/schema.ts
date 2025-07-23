@@ -134,7 +134,10 @@ export default defineSchema({
       v.literal("new_sale"),
       v.literal("new_store"),
       v.literal("advertisement"),
-      v.literal("reminder")
+      v.literal("reminder"),
+      v.literal("escrow_funded"),
+      v.literal("escrow_released"),
+      v.literal("completion_confirmed"),
     ),
     relatedId: v.optional(
       v.union(
@@ -143,6 +146,7 @@ export default defineSchema({
         v.id("comments"),
         v.id("store"),
         v.id("conversations"),
+        v.id("orders"),
         v.id("users")
       )
     ),
@@ -176,6 +180,12 @@ export default defineSchema({
     ),
     recipientCode: v.optional(v.string()), // Paystack recipient code
     paystackCustomerId: v.optional(v.string()), // Paystack customer ID
+    // PIN security fields
+    pinHash: v.optional(v.string()), // bcrypt hashed PIN
+    pinAttempts: v.optional(v.number()), // Failed PIN attempts counter
+    pinLockedUntil: v.optional(v.number()), // Timestamp when lock expires
+    pinCreatedAt: v.optional(v.number()), // PIN creation timestamp
+    pinUpdatedAt: v.optional(v.number()), // Last PIN update timestamp
   }).index("by_user", ["userId"]),
 
   // All transactions for audit trail
@@ -217,9 +227,11 @@ export default defineSchema({
       v.object({
         orderId: v.optional(v.id("orders")),
         recipientUserId: v.optional(v.id("users")),
+        recipientName: v.optional(v.string()),
         transferId: v.optional(v.id("transfers")),
         escrowId: v.optional(v.id("escrows")),
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
+        productIds : v.optional(v.array( v.id("product"))), 
         plan: v.optional(
           v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
         ), // Ad plan type
@@ -230,6 +242,25 @@ export default defineSchema({
     .index("by_wallet", ["walletId"])
     .index("by_reference", ["reference"])
     .index("by_paystack_reference", ["paystackReference"]),
+
+  orders: defineTable({
+    productIds: v.array(v.id("product")),
+    buyerId: v.id("users"),
+    sellerId: v.id("users"),
+    amount: v.number(),
+    status: v.union(
+      v.literal("in_escrow"),
+      v.literal("completed"),
+      v.literal("cancelled"),
+      v.literal("disputed")
+    ),
+    buyerConfirmedCompletion: v.boolean(),
+    sellerConfirmedCompletion: v.boolean(),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_buyer", ["buyerId"])
+    .index("by_seller", ["sellerId"]),
 
   transfers: defineTable({
     fromUserId: v.id("users"),

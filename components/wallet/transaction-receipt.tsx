@@ -8,7 +8,7 @@ import {
   Download,
   CheckCircle,
   Clock,
-ArrowDownLeft,
+  ArrowDownLeft,
   XCircle,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,6 +36,7 @@ export function TransactionReceipt({
 }: TransactionReceiptProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [isCapturing, setIsCapturing] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
 
   const config = {
@@ -46,6 +47,9 @@ export function TransactionReceipt({
 
   const generateReceiptImage = async (): Promise<Blob | null> => {
     if (!receiptRef.current) return null;
+    
+    setIsCapturing(true);
+    
     if (receiptRef.current) {
       receiptRef.current.style.animation = "none";
     }
@@ -73,6 +77,7 @@ export function TransactionReceipt({
       if (receiptRef.current) {
         receiptRef.current.style.animation = "";
       }
+      setIsCapturing(false);
       setIsDownloading(false);
     }
   };
@@ -139,6 +144,7 @@ export function TransactionReceipt({
     }
   };
 
+  const recipient = transaction.metadata?.recipientName
   const getTransactionDescription = () => {
     switch (transaction.type) {
       case "funding":
@@ -157,7 +163,13 @@ export function TransactionReceipt({
         return {
           title: "Transfer Received",
           subtitle: "To Flickmart Wallet",
-          recipient: "Flickmart Wallet",
+          recipient: recipient ? recipient : user.name,
+        };
+      case "transfer_out":
+        return {
+          title: "Transfer Received",
+          subtitle: "To Flickmart Wallet",
+          recipient: recipient ? recipient : user.name,
         };
       case "ads_posting":
         return {
@@ -182,6 +194,7 @@ export function TransactionReceipt({
         className="px-6 space-y-2 bg-white relative z-10"
         id="capture_div"
         ref={receiptRef}
+        style={isCapturing ? { width: '400px' } : {}}
       >
         {/* Compact Orange Brand Banner */}
         <div className="text-center py-3 bg-flickmart -mx-6 mb-6 relative">
@@ -198,7 +211,7 @@ export function TransactionReceipt({
                 Flick<span className="text-white">Mart</span>
               </h1>
             </div>
-              <p className="text-orange-100 text-sm">Transaction Receipt</p>
+            <p className="text-orange-100 text-sm">Transaction Receipt</p>
           </div>
         </div>
 
@@ -206,15 +219,15 @@ export function TransactionReceipt({
         <div className="bg-gray-50 rounded-xl p-5 border border-gray-200">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              {transaction.type !== "funding" && transaction.type !==  "transfer_in" ? (
+              {transaction.type !== "funding" && transaction.type !== "transfer_in" ? (
 
-              <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center border border-orange-200">
-                <ArrowUpRight className="h-5 w-5 text-flickmart" />
-              </div>
-              ): (
-              <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center border border-green-200">
-                <ArrowDownLeft  className="h-5 w-5 text-green-500" />
-              </div>
+                <div className="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center border border-orange-200">
+                  <ArrowUpRight className="h-5 w-5 text-flickmart" />
+                </div>
+              ) : (
+                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center border border-green-200">
+                  <ArrowDownLeft className="h-5 w-5 text-green-500" />
+                </div>
               )}
               <div>
                 <p className="text-sm font-semibold text-gray-900 mb-1">
@@ -417,7 +430,7 @@ export function TransactionReceipt({
             </Button>
 
             {transaction.type === "funding" &&
-            transaction.status === "pending" ? (
+              transaction.status === "pending" ? (
               <PaystackButton
                 {...config}
                 onSuccess={handlePaystackSuccess}

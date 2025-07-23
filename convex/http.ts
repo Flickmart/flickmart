@@ -819,4 +819,411 @@ http.route({
   }),
 });
 
+// PIN Management Endpoints
+
+http.route({
+  path: "/wallet/pin/check",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+http.route({
+  path: "/wallet/pin/check",
+  method: "GET",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    try {
+      const result = await ctx.runQuery(api.wallet.checkPinExists);
+      return new Response(JSON.stringify(result), { status: 200, headers });
+    } catch (error: any) {
+      return new Response(JSON.stringify({ error: error.message }), { status: 400, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/create",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/create",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { pin } = await request.json();
+    if (!pin) {
+      return new Response(JSON.stringify({ error: "PIN is required" }), { status: 400, headers });
+    }
+
+    // Validate PIN format (6 digits)
+    if (!/^\d{6}$/.test(pin)) {
+      return new Response(JSON.stringify({ error: "PIN must be exactly 6 digits" }), { status: 400, headers });
+    }
+
+    try {
+      const user = await ctx.runQuery(api.users.current);
+      if (!user) {
+        return new Response(JSON.stringify({ error: "User not found" }), { status: 404, headers });
+      }
+
+      // Hash the PIN
+      const hashedPin = await ctx.runAction(api.actions.hashPin, { pin });
+
+      // Create PIN
+      const result = await ctx.runMutation(internal.wallet.createPinInternal, {
+        userId: user._id,
+        hashedPin,
+      });
+
+      return new Response(JSON.stringify(result), { status: 200, headers });
+    } catch (error: any) {
+      return new Response(JSON.stringify({ error: error.message }), { status: 400, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/verify",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/verify",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { pin } = await request.json();
+    if (!pin) {
+      return new Response(JSON.stringify({ error: "PIN is required" }), { status: 400, headers });
+    }
+
+    try {
+      const user = await ctx.runQuery(api.users.current);
+      if (!user) {
+        return new Response(JSON.stringify({ error: "User not found" }), { status: 404, headers });
+      }
+
+      // Get wallet and PIN info
+      const { wallet, hashedPin } = await ctx.runMutation(internal.wallet.verifyPinInternal, {
+        userId: user._id,
+        pin,
+      });
+
+      // Verify PIN
+      const isValid = await ctx.runAction(api.actions.verifyPin, {
+        pin,
+        hashedPin,
+      });
+
+      if (!isValid) {
+        const attempts = (wallet.pinAttempts || 0) + 1;
+        const maxAttempts = 3;
+
+        if (attempts >= maxAttempts) {
+          // Lock wallet for 5 minutes
+          await ctx.runMutation(internal.wallet.updatePinAttempts, {
+            walletId: wallet._id,
+            attempts,
+            lockUntil: Date.now() + 5 * 60 * 1000,
+          });
+          return new Response(
+            JSON.stringify({ error: "Too many failed attempts. Wallet locked for 5 minutes." }),
+            { status: 400, headers }
+          );
+        } else {
+          await ctx.runMutation(internal.wallet.updatePinAttempts, {
+            walletId: wallet._id,
+            attempts,
+          });
+          return new Response(
+            JSON.stringify({ error: `Incorrect PIN. ${maxAttempts - attempts} attempts remaining.` }),
+            { status: 400, headers }
+          );
+        }
+      }
+
+      // Reset attempts on successful verification
+      await ctx.runMutation(internal.wallet.resetPinAttempts, {
+        walletId: wallet._id,
+      });
+
+      return new Response(JSON.stringify({ success: true, message: "PIN verified successfully" }), {
+        status: 200,
+        headers,
+      });
+    } catch (error: any) {
+      return new Response(JSON.stringify({ error: error.message }), { status: 400, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/change",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/wallet/pin/change",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { currentPin, newPin } = await request.json();
+    if (!currentPin || !newPin) {
+      return new Response(JSON.stringify({ error: "Both current PIN and new PIN are required" }), { status: 400, headers });
+    }
+
+    // Validate new PIN format
+    if (!/^\d{6}$/.test(newPin)) {
+      return new Response(JSON.stringify({ error: "New PIN must be exactly 6 digits" }), { status: 400, headers });
+    }
+
+    try {
+      const user = await ctx.runQuery(api.users.current);
+      if (!user) {
+        return new Response(JSON.stringify({ error: "User not found" }), { status: 404, headers });
+      }
+
+      // First verify current PIN
+      const { wallet, hashedPin } = await ctx.runMutation(internal.wallet.verifyPinInternal, {
+        userId: user._id,
+        pin: currentPin,
+      });
+
+      const isCurrentPinValid = await ctx.runAction(api.actions.verifyPin, {
+        pin: currentPin,
+        hashedPin,
+      });
+
+      if (!isCurrentPinValid) {
+        return new Response(JSON.stringify({ error: "Current PIN is incorrect" }), { status: 400, headers });
+      }
+
+      // Hash new PIN
+      const newHashedPin = await ctx.runAction(api.actions.hashPin, { pin: newPin });
+
+      // Update PIN
+      const result = await ctx.runMutation(internal.wallet.changePinInternal, {
+        userId: user._id,
+        hashedPin: newHashedPin,
+      });
+
+      return new Response(JSON.stringify(result), { status: 200, headers });
+    } catch (error: any) {
+      return new Response(JSON.stringify({ error: error.message }), { status: 400, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/wallet/transfer",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/wallet/transfer",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { sellerId, amount, productIds, pin } = await request.json();
+    if (!sellerId || !amount || !pin) {
+      return new Response(JSON.stringify({ error: "Missing required fields: sellerId, amount, pin" }), { status: 400, headers });
+    }
+
+    try {
+        // First verify the PIN
+        const user = await ctx.runQuery(api.users.current);
+        if (!user) {
+          return new Response(JSON.stringify({ error: "User not found" }), { status: 404, headers });
+        }
+
+        // Get wallet and verify PIN
+        const { wallet, hashedPin } = await ctx.runMutation(internal.wallet.verifyPinInternal, {
+          userId: user._id,
+          pin,
+        });
+
+        // Verify PIN
+        const isValid = await ctx.runAction(api.actions.verifyPin, {
+          pin,
+          hashedPin,
+        });
+
+        if (!isValid) {
+          const attempts = (wallet.pinAttempts || 0) + 1;
+          const maxAttempts = 3;
+
+          if (attempts >= maxAttempts) {
+            // Lock wallet for 5 minutes
+            await ctx.runMutation(internal.wallet.updatePinAttempts, {
+              walletId: wallet._id,
+              attempts,
+              lockUntil: Date.now() + 5 * 60 * 1000,
+            });
+            return new Response(
+              JSON.stringify({ error: "Too many failed attempts. Wallet locked for 5 minutes." }),
+              { status: 400, headers }
+            );
+          } else {
+            await ctx.runMutation(internal.wallet.updatePinAttempts, {
+              walletId: wallet._id,
+              attempts,
+            });
+            return new Response(
+              JSON.stringify({ error: `Incorrect PIN. ${maxAttempts - attempts} attempts remaining.` }),
+              { status: 400, headers }
+            );
+          }
+        }
+
+        // Reset attempts on successful verification
+        await ctx.runMutation(internal.wallet.resetPinAttempts, {
+          walletId: wallet._id,
+        });
+
+        // Validate and format productIds array
+        let validatedProductIds: Id<"product">[] = [];
+        if (productIds && Array.isArray(productIds)) {
+          validatedProductIds = productIds.filter((id: any) => typeof id === 'string' && id.length > 0);
+          
+          // Validate that all products belong to the seller
+          if (validatedProductIds.length > 0) {
+            const products = await Promise.all(
+              validatedProductIds.map(productId => ctx.runQuery(api.product.getById, { productId: productId }))
+            );
+            
+            // Check if any products don't exist or don't belong to the seller
+            const invalidProducts = products.filter((product, index) => {
+              if (!product) {
+                console.error(`Product not found: ${validatedProductIds[index]}`);
+                return true;
+              }
+              if (product.userId !== sellerId) {
+                console.error(`Product ${product._id} does not belong to seller ${sellerId}`);
+                return true;
+              }
+              return false;
+            });
+            
+            if (invalidProducts.length > 0) {
+              return new Response(
+                JSON.stringify({ 
+                  error: "One or more selected products are invalid or do not belong to the seller. Please refresh and try again." 
+                }), 
+                { status: 400, headers }
+              );
+            }
+          }
+        }
+
+        // Now proceed with the transfer
+        const result = await ctx.runMutation(api.wallet.transferToUserWithEscrow, {
+            sellerId: sellerId as Id<"users">,
+            amount: Number(amount),
+            productIds: validatedProductIds,
+        });
+        
+        return new Response(JSON.stringify(result), { status: 200, headers });
+
+    } catch (error: any) {
+        console.error("Error during transfer:", error);
+        return new Response(JSON.stringify({ error: error.message || "An internal error occurred." }), { status: 500, headers });
+    }
+  }),
+});
+
+http.route({
+  path: "/orders/confirm-completion",
+  method: "OPTIONS",
+  handler: httpAction(async (_, request) => {
+    const origin = request.headers.get("Origin");
+    return new Response(null, { headers: getCorsHeaders(origin) });
+  }),
+});
+
+http.route({
+  path: "/orders/confirm-completion",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const origin = request.headers.get("Origin");
+    const headers = getJsonHeaders(origin);
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers });
+    }
+
+    const { orderId } = await request.json();
+    if (!orderId) {
+      return new Response(JSON.stringify({ error: "Missing required field: orderId" }), { status: 400, headers });
+    }
+
+    try {
+        const result = await ctx.runMutation(api.orders.confirmOrderCompletion, {
+            orderId: orderId as Id<"orders">,
+        });
+        
+        return new Response(JSON.stringify(result), { status: 200, headers });
+
+    } catch (error: any) {
+        console.error("Error during order confirmation:", error);
+        return new Response(JSON.stringify({ error: error.message || "An internal error occurred." }), { status: 500, headers });
+    }
+  }),
+});
+
+
 export default http;
