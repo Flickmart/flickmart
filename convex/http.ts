@@ -1079,17 +1079,17 @@ http.route({
 
       if (!isValid) {
         const attempts = (wallet.pinAttempts || 0) + 1;
-        const maxAttempts = 3;
+        const maxAttempts = 5;
 
         if (attempts >= maxAttempts) {
-          // Lock wallet for 5 minutes
+          // Lock wallet for 15 minutes
           await ctx.runMutation(internal.wallet.updatePinAttempts, {
             walletId: wallet._id,
             attempts,
-            lockUntil: Date.now() + 5 * 60 * 1000,
+            lockUntil: Date.now() + 15 * 60 * 1000,
           });
           return new Response(
-            JSON.stringify({ error: "Too many failed attempts. Wallet locked for 5 minutes." }),
+            JSON.stringify({ error: "Too many failed attempts. Wallet locked for 15 minutes." }),
             { status: 400, headers }
           );
         } else {
@@ -1112,36 +1112,7 @@ http.route({
       // Validate and format productIds array
       let validatedProductIds: Id<"product">[] = [];
       if (productIds && Array.isArray(productIds)) {
-        validatedProductIds = productIds.filter((id: any) => typeof id === 'string' && id.length > 0);
-
-        // Validate that all products belong to the seller
-        if (validatedProductIds.length > 0) {
-          const products = await Promise.all(
-            validatedProductIds.map(productId => ctx.runQuery(api.product.getById, { productId: productId }))
-          );
-
-          // Check if any products don't exist or don't belong to the seller
-          const invalidProducts = products.filter((product, index) => {
-            if (!product) {
-              console.error(`Product not found: ${validatedProductIds[index]}`);
-              return true;
-            }
-            if (product.userId !== sellerId) {
-              console.error(`Product ${product._id} does not belong to seller ${sellerId}`);
-              return true;
-            }
-            return false;
-          });
-
-          if (invalidProducts.length > 0) {
-            return new Response(
-              JSON.stringify({
-                error: "One or more selected products are invalid or do not belong to the seller. Please refresh and try again."
-              }),
-              { status: 400, headers }
-            );
-          }
-        }
+        validatedProductIds = productIds
       }
 
       // Now proceed with the transfer
