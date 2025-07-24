@@ -341,7 +341,7 @@ export default function OrderDetailsPage() {
                   onClick={handleConfirm}
                   disabled={isConfirming}
                   size="lg"
-                  className="w-full bg-green-600 hover:bg-green-700 h-12 sm:h-auto text-sm sm:text-base"
+                  className="w-full bg-green-600 hover:bg-green-700  text-sm sm:text-base"
                 >
                   {isConfirming ? (
                     <>
@@ -351,7 +351,9 @@ export default function OrderDetailsPage() {
                   ) : (
                     <>
                       <CheckCircle className="mr-2 h-4 w-4 flex-shrink-0" />
-                      <span className="truncate">Confirm Transaction Completion</span>
+                      <span className="truncate">
+                        {isBuyer ? "I have received the product" : "I have delivered the products "}
+                      </span>
                     </>
                   )}
                 </Button>
