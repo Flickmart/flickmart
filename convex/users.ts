@@ -77,6 +77,14 @@ export const upsertFromClerk = internalMutation({
     if (user === null) {
       // First create the user
       const userId = await ctx.db.insert("users", userAttributes);
+
+      // Automatically create a wallet for the new user
+      await ctx.db.insert("wallets", {
+        userId: userId,
+        balance: 0,
+        currency: "NGN",
+        status: "active",
+      });
     } else {
       await ctx.db.patch(user._id, userAttributes);
     }
