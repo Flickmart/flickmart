@@ -20,8 +20,8 @@ const categoryItems: Array<CategoryObj> = [
 
 export default function Categories() {
   return (
-    <Container>
-      <div className="lg:w-4/6 grid lg:grid-cols-4 lg:grid-rows-3 grid-cols-3 lg:gap-x-3 lg:gap-y-6  gap-3 cursor-pointer">
+    <Container className={"!min-h-0 pt-8 pb-4"}>
+      <div className="grid grid-cols-4 cursor-pointer w-full justify-between max-w-[370px] sm:max-w-none sm:w-auto gap-x-4 gap-y-3 sm:gap-x-7 lg:gap-y-6 lg:gap-x-10">
         {categoryItems.map((item) => (
           <CategoryItem
             key={item.categoryName}

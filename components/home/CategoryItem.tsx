@@ -1,22 +1,27 @@
-'use client';
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function CategoryItem({ categoryName } : { categoryName: string; }) {
-
+export default function CategoryItem({
+  categoryName,
+}: {
+  categoryName: string;
+}) {
   return (
     <Link href={`/categories/${categoryName}`}>
-      <div className="hover:cursor-pointer">
-        <div className="bg-[#f4f7fa] lg:p-0  h-36 lg:h-52 lg:rounded-xl capitalize flex flex-col items-center justify-center space-y-4 lg:space-y-7 text-gray-800">
+      <div className="hover:cursor-pointer transition-transform sm:hover:-translate-y-2 duration-300 flex flex-col items-center gap-[6px]">
+        <div className="bg-[#f4f7fa] rounded-lg shadow-sm shadow-black/30 lg:p-0 size-[70px] lg:rounded-xl capitalize flex flex-col items-center sm:size-[90px] justify-center">
           <Image
             src={`/${categoryName}.png`}
             alt={categoryName}
             width={200}
             height={200}
-            className="h-1/3 w-3/4 object-contain "
+            className="w-3/4 h-3/5 object-contain"
           />
-          <span className="font-bold text-sm lg:text-xl">{categoryName}</span>
         </div>
+        <span className="font-bold text-gray-800 text-[13px] capitalize sm:text-sm md:text-[15px]">
+          {categoryName}
+        </span>
       </div>
     </Link>
   );
