@@ -8,9 +8,9 @@ export default function CategoryItem({
   categoryName: string;
 }) {
   return (
-    <Link href={`/categories/${categoryName}`}>
-      <div className="hover:cursor-pointer transition-transform sm:hover:-translate-y-2 duration-300 flex flex-col items-center gap-[6px]">
-        <div className="bg-[#f4f7fa] rounded-lg shadow-sm shadow-black/30 lg:p-0 size-[70px] lg:rounded-xl capitalize flex flex-col items-center sm:size-[90px] justify-center">
+    <Link href={`/categories/${categoryName}`} className="block">
+      <div className="hover:cursor-pointer flex flex-col items-center gap-[6px] h-full md:gap-2">
+        <div className="bg-[#f4f7fa] rounded-lg capitalize flex flex-col w-full h-full items-center justify-center lg:rounded-xl">
           <Image
             src={`/${categoryName}.png`}
             alt={categoryName}
@@ -19,7 +19,7 @@ export default function CategoryItem({
             className="w-3/4 h-3/5 object-contain"
           />
         </div>
-        <span className="font-bold text-gray-800 text-[13px] capitalize sm:text-sm md:text-[15px]">
+        <span className="font-bold text-gray-800 text-[13px] capitalize sm:text-sm md:text-base xl:text-xl">
           {categoryName}
         </span>
       </div>
