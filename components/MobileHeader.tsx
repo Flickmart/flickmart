@@ -15,7 +15,7 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
   if (pathname.includes("/product")) {
     title = "Products";
   }
-  const hiddenPaths = ["/notifications", "/settings", "/chats", "/search"];
+  const hiddenPaths = ["/notifications", "/settings", "/chats", "/search", "/wallet"];
 
   const isHidden = () => {
     if (pathname === "/") {
@@ -34,8 +34,8 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
       <button
         onClick={() =>
           pathname.includes("/categories") ||
-          pathname.includes("/post-ad") ||
-          pathname.includes("/sign-in")
+            pathname.includes("/post-ad") ||
+            pathname.includes("/sign-in")
             ? router.push("/")
             : router.back()
         }
