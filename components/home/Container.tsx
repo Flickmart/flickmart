@@ -8,7 +8,7 @@ export default function Container({
   className?: String;
 }) {
   return (
-    <div className={` min-h-[50vh] grid place-items-center ${className}`}>
+    <div className={`min-h-[50vh] grid place-items-center ${className}`}>
       {children}
     </div>
   );
