@@ -18,7 +18,7 @@ import { toast } from "sonner";
 import UserProfile from "@/components/chats/user-profile";
 import { useUploadThing } from "@/utils/uploadthing";
 import Loader from "@/components/multipage/Loader";
-import useCheckUser from "@/hooks/useCheckUser";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import Link from "next/link";
 
 // This interface must match what's expected in components/chats/chat-messages.tsx
@@ -91,9 +91,8 @@ export default function ChatPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Fetch current user
-  const user = useQuery(api.users.current);
-  const loading = useCheckUser();
+  // Fetch current user with improved authentication handling
+  const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
 
   // Presence-related mutations
   const updatePresence = useMutation(api.presence.updatePresence);
@@ -656,12 +655,17 @@ export default function ChatPage() {
       target: { value },
     } as React.ChangeEvent<HTMLInputElement>);
   };
-  if (loading)
+  if (authLoading) {
     return (
       <div className="h-screen grid place-items-center">
         <Loader />
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
+  }
   return (
     <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100 !leading-normal">
       {/* Sidebar */}

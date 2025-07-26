@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useParams } from "next/navigation";
 import { useQuery } from "convex/react";
 import { useAuth, useUser } from "@clerk/nextjs";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import {
   CheckCircle,
   Clock,
@@ -71,7 +72,7 @@ export default function OrderDetailsPage() {
   const params = useParams();
   const orderId = params.orderId as Id<"orders">;
 
-  const user = useQuery(api.users.current);
+  const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const { getToken } = useAuth();
   const [isConfirming, setIsConfirming] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,7 +111,7 @@ export default function OrderDetailsPage() {
     return <OrderNotFound />;
   }
 
-  if (!user) {
+  if (authLoading) {
     return (
       <div className="max-w-4xl mx-auto p-4 sm:p-6">
         <Card>
@@ -123,6 +124,10 @@ export default function OrderDetailsPage() {
         </Card>
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
   }
 
   const isBuyer = order.buyerId === user?._id;

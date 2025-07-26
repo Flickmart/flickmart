@@ -1,6 +1,6 @@
 "use client";
 import Loader from "@/components/multipage/Loader";
-import useCheckUser from "@/hooks/useCheckUser";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 export default function DashboardLayout({
@@ -8,13 +8,19 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const loading = useCheckUser();
-  if (loading)
+  const { user, isLoading, isAuthenticated } = useAuthUser();
+  
+  if (isLoading) {
     return (
       <div className="h-screen grid place-items-center">
-        <Loader />;
+        <Loader />
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
+  }
 
   return (
     <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">

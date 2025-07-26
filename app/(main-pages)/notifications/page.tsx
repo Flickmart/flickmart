@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { useAuthUser } from "@/hooks/useAuthUser";
 export interface Notification {
   icon: string;
   text: string;
@@ -75,8 +75,7 @@ const Page = () => {
   const [selectedType, setSelectedType] = useState<NotificationType>("all");
 
   const user = useUser();
-
-  const convexUser = useQuery(api.users.current);
+  const { user: convexUser, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const allNotifications =
     useQuery(
       api.notifications.getNotifications,
@@ -137,11 +136,7 @@ const Page = () => {
     setLastScrollY(window.scrollY);
   }
 
-  useEffect(() => {
-    if (!user) {
-      redirect("/sign-in");
-    }
-  }, [user]);
+  // Remove the redirect effect since useAuthUser handles it
 
   useEffect(() => {
     addEventListener("scroll", handleScroll);
@@ -203,12 +198,16 @@ const Page = () => {
     );
   })();
 
-  if (!filteredNotifications) {
+  if (authLoading || !filteredNotifications) {
     return (
       <div className="h-screen flex items-center justify-center">
         <Spinner />
       </div>
     );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
   }
 
   return (

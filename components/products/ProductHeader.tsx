@@ -5,10 +5,9 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Id } from "@/convex/_generated/dataModel";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
 import { toast } from "sonner";
-import { api } from "@/convex/_generated/api";
 import { initialChat, shareProduct } from "@/utils/helpers";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function ProductHeader({
   location,
@@ -31,7 +30,7 @@ export default function ProductHeader({
   const dateNow = new Date();
   const dateDiff = dateNow.getTime() - date.getTime();
   const router = useRouter();
-  const user = useQuery(api.users.current);
+  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
@@ -67,7 +66,7 @@ export default function ProductHeader({
   };
 
   const handleChat = () => {
-    if (!user) {
+    if (!isAuthenticated) {
       toast.error("Please sign in to perform this action");
       return;
     }

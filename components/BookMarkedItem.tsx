@@ -2,7 +2,7 @@
 import { api } from "@/convex/_generated/api";
 import { Doc } from "@/convex/_generated/dataModel";
 import { initialChat, shareProduct } from "@/utils/helpers";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import {
   EllipsisVertical,
   ImageIcon,
@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function BookedMarkedItem({
   product,
@@ -28,11 +29,11 @@ export default function BookedMarkedItem({
   const router = useRouter();
   const { title, description, _id } = product;
   const bookmarkProduct = useMutation(api.product.addBookmark);
-  const user = useQuery(api.users.current);
+  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
 
-  if (!user) {
-    console.log("User Authentication Required");
-    router.push("/sign-in");
+  // If user is not authenticated, don't render the component
+  if (!isAuthenticated) {
+    return null;
   }
 
   return (

@@ -16,8 +16,7 @@ import Link from "next/link";
 import { useState } from "react";
 import RecentListings from "@/components/settings/RecentListings";
 import { useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { Id } from "@/convex/_generated/dataModel";
 
 // This would typically come from an API or database
@@ -25,8 +24,20 @@ import { Id } from "@/convex/_generated/dataModel";
 export default function PublicProfile() {
   // const params = useParams();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
-  const user = useQuery(api.users.current);
+  const { user, isLoading, isAuthenticated } = useAuthUser();
   const router = useRouter();
+
+  if (isLoading) {
+    return (
+      <div className="h-screen grid place-items-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-flickmart"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
+  }
 
   function updateUserProductsLength(length: number) {
     setUserProductsLength(length);
