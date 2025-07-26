@@ -153,3 +153,21 @@ export const getUserByToken = query({
     return user;
   },
 });
+
+
+export const getUserById = query({
+  args: {
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("User is not authenticated");
+    }
+
+    const user = await ctx.db.get(args.userId)
+
+    return user
+  }
+
+})
