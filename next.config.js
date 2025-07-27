@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const { withBotId } = require('botid/next/config');
+const { withSentryConfig } = require('@sentry/nextjs');
+
+const baseConfig = {
   reactStrictMode: true,
   serverComponentsExternalPackages: [`require-in-the-middle`],
   images: {
@@ -32,13 +35,8 @@ const nextConfig = {
   },
 };
 
-module.exports = nextConfig;
-
-// Injected content via Sentry wizard below
-
-const { withSentryConfig } = require("@sentry/nextjs");
-
-const sentryConfig = {
+// Sentry config
+const sentryOptions = {
   org: "flickmart",
   project: "javascript-nextjs",
   silent: !process.env.CI,
@@ -47,6 +45,10 @@ const sentryConfig = {
   automaticVercelMonitors: true,
 };
 
-module.exports = process.env.TURBOPACK
-  ? nextConfig
-  : withSentryConfig(nextConfig, sentryConfig);
+let finalConfig = withBotId(baseConfig);
+
+if (!process.env.TURBOPACK) {
+  finalConfig = withSentryConfig(finalConfig, sentryOptions);
+}
+
+module.exports = finalConfig;

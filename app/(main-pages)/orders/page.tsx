@@ -2,6 +2,7 @@
 
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { Spinner } from "@/components/Spinner";
 import Link from "next/link";
 import { useState, useMemo } from "react";
@@ -217,6 +218,7 @@ const OrdersTable = ({ orders }: { orders: OrderDisplay[] }) => {
 
 // Main Orders page component
 export default function OrdersPage() {
+  const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const orders = useQuery(api.orders.getUserOrders);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -257,6 +259,19 @@ export default function OrdersPage() {
 
     return filtered;
   }, [orders, searchTerm, statusFilter, roleFilter, sortBy]);
+
+  // Handle authentication loading
+  if (authLoading) {
+    return (
+      <div className="flex justify-center items-center py-12">
+        <Spinner size="lg" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
+  }
 
   return (
     <main className="min-h-screen bg-gray-50">

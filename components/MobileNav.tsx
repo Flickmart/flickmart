@@ -29,7 +29,7 @@ export default function MobileNav() {
   ).length;
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chats", "/notifications", ];
+  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chat"];
   const userStore = useQuery(api.store.getStoresByUserId);
   const firstUserStore = userStore?.data;
 
@@ -106,12 +106,12 @@ export default function MobileNav() {
           </div>
         </Link>
         <Link
-          href={"/chats"}
+          href={"/chat"}
           className="flex flex-col items-center justify-center gap-1.5 group relative"
         >
           <div className="relative">
             <MessageSquareText
-              className={`${pathname === "/chats" ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
+              className={`${pathname.startsWith("/chat") ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
             />
             {unreadCount > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 flex items-center justify-center px-1">
@@ -120,7 +120,7 @@ export default function MobileNav() {
             )}
           </div>
           <span
-            className={`${pathname === "/chats" ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
+            className={`${pathname.startsWith("/chat") ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
           >
             Chats
           </span>

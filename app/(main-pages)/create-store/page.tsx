@@ -9,13 +9,14 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { api } from "@/convex/_generated/api";
 import Loader from "@/components/multipage/Loader";
-import useCheckUser from "@/hooks/useCheckUser";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 const page = () => {
   const [stage, setStage] = useState<1 | 2 | 3 | 4>(1);
-  const loading = useCheckUser();
+  const { user, isLoading, isAuthenticated } = useAuthUser();
 
-  if (loading) return <Loader />;
+  if (isLoading) return <Loader />;
+  if (!isAuthenticated) return null; // Will be redirected by useAuthUser
   return (
     <>
       <main

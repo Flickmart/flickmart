@@ -25,7 +25,7 @@ export default function Footer() {
     "post-ad",
     "/create-store",
     "/saved",
-    "/chats",
+    "/chat",
     "/business",
   ];
 

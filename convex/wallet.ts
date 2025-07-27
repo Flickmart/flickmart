@@ -331,7 +331,7 @@ export const transferToUserWithEscrow = mutation({
       userId: buyer._id,
       type: "escrow_funded",
       title: "Funds Sent to Escrow",
-      content: `You sent ${args.amount} ${buyerWallet.currency} to escrow for your order.`,
+      content: `You sent ${args.amount} ${buyerWallet.currency} to ${seller.name} for your order.`,
       relatedId: orderId,
       link: `/orders/${orderId}`,
     });

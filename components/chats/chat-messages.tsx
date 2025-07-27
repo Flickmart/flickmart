@@ -10,7 +10,7 @@ interface Message {
   images?: string[];
   role: "user" | "assistant";
   timestamp: Date;
-  type?: "text" | "product" | "image";
+  type?: "text" | "product" | "image" | "escrow";
   title?: string;
   price?: number;
   productImage?: string;
