@@ -104,7 +104,7 @@ export default function AdCharges({
           body: JSON.stringify({
             amount: chargeAmount,
             plan,
-            userId: user._id,
+            userId: user?._id,
             walletId: wallet._id,
           }),
         }
