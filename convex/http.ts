@@ -5,6 +5,7 @@ import type { WebhookEvent } from "@clerk/backend";
 import { Webhook } from "svix";
 import { getCurrentUserOrThrow } from "./users";
 import { Id } from "./_generated/dataModel";
+import { resend } from "./email";
 
 const http = httpRouter();
 
@@ -1172,6 +1173,12 @@ http.route({
 });
 
 
-
+http.route({
+  path: "/resend-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, req) => {
+    return await resend.handleResendEventWebhook(ctx, req);
+  }),
+});
 
 export default http;
