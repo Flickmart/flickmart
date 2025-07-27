@@ -141,10 +141,10 @@ export default function Footer() {
               </span>
               <span className="hidden lg:block">|</span>
               <span className="flex items-center gap-3 ">
-                <Link href="#" className="">
+                <Link href="/privacy-policy" className="">
                   Privacy Policy
                 </Link>
-                <Link href="#" className="">
+                <Link href="/terms-of-service" className="">
                   Terms & Conditions
                 </Link>
               </span>

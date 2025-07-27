@@ -21,7 +21,7 @@ export default function Home() {
       <SearchOverlay openSearch={openSearch} open={searchOpen} />
       <SearchBox openSearch={openSearch} open={searchOpen} />
       <Slider />
-      <div className="lg:p-10 p-5 min-h-screen text-white lg:space-y-10 space-y-5 ">
+      <div className="sm:px-10 px-5 min-h-screen text-white sm:space-y-10 space-y-5">
         <Categories />
         <BestSellers />
         <NewArrivals />

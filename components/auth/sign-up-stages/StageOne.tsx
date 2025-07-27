@@ -170,7 +170,7 @@ export default function StageOne({
                         I agree with{" "}
                         <Link
                           className="text-flickmart font-semibold hover:underline"
-                          href=""
+                          href="/privacy-policy"
                         >
                           Privacy Policy
                         </Link>{" "}
