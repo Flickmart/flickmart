@@ -11,7 +11,7 @@ import Loader from "@/components/multipage/Loader";
 export default function TransferPage() {
   const params = useSearchParams();
   const router = useRouter();
-  const vendorId = params.get("vendorId") as Id<"users"> | null;
+  const vendorId = params.get("vendorId") as Id<"users">;
   const { user, isLoading, isAuthenticated } = useAuthUser();
 
   useEffect(() => {
