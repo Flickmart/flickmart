@@ -3,9 +3,13 @@ import { useQuery } from "convex/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { toast } from "sonner";
+import { Doc } from "@/convex/_generated/dataModel";
+
+// Type for the user document from Convex
+type ConvexUser = Doc<"users">;
 
 interface UseAuthUserReturn {
-  user: any;
+  user: ConvexUser | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isError: boolean;
