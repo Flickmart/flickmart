@@ -283,9 +283,10 @@ export const getConversations = query({
           q.eq(q.field("user2"), args.userId)
         )
       )
-      .order("desc")
       .collect();
-    return conversations;
+    
+    // Sort conversations by updatedAt (most recent message) in descending order
+    return conversations.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   },
 });
 
