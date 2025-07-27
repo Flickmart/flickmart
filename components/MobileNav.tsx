@@ -31,7 +31,7 @@ export default function MobileNav() {
   // Pages where SearchBox should not be shown
   const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chat"];
   const userStore = useQuery(api.store.getStoresByUserId);
-  const firstUserStore = userStore?.[0];
+  const firstUserStore = userStore?.data;
 
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component
@@ -90,7 +90,7 @@ export default function MobileNav() {
           href={
             userStore === undefined
               ? "#"
-              : userStore?.[0]
+              : userStore?.data
                 ? "/post-ad"
                 : "/create-store"
           }

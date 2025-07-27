@@ -1,6 +1,5 @@
 "use client";
 import {
-  ArrowLeft,
   Bookmark,
   ChevronLeft,
   Heart,
@@ -42,6 +41,7 @@ import { SyncLoader } from "react-spinners";
 import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function ProductPage() {
+  const [viewed, setViewed] = useState(false);
   const isVisible = useNav();
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
@@ -62,8 +62,9 @@ export default function ProductPage() {
     productId,
     type: "wishlist",
   });
+  const view = useMutation(api.views.createView);
   const exchangePossible = productData?.exchange === true ? "yes" : "no";
-  const { setApi } = useSlider();
+  const { setApi, setAutoScroll } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
   const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
   const router = useRouter();
@@ -123,17 +124,26 @@ export default function ProductPage() {
 
   const [enlarge, setEnlarge] = useState(false);
 
-  // if (!isLarge && enlarge) setEnlarge(false);
+  if (isLarge && enlarge) {
+    setEnlarge(false);
+    setAutoScroll(true);
+  }
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!productData) {
       setLoading(true);
-    } else {
-      setLoading(false);
+      return;
     }
-  }, [productData]);
+    // View Page once it loads
+    if (!viewed) {
+      view({ productId }).then((data) => console.log(data));
+      setViewed(true);
+      return;
+    }
+    setLoading(false);
+  }, [productData, viewed]);
 
   if (loading) {
     return (
@@ -147,11 +157,12 @@ export default function ProductPage() {
     <Drawer>
       <div className="min-h-screen lg:p-5 space-y-7 bg-slate-100  gap-x-6">
         <div className="lg:grid lg:grid-cols-2 gap-5 space-y-3">
-          <div className="flex flex-col justify-center items-center gap-y-5 border">
+          <div className="flex flex-col justify-center items-center border">
             <div
               onClick={(e) => {
                 e.stopPropagation();
                 setEnlarge(false);
+                setAutoScroll(true);
               }}
               className={
                 enlarge
@@ -173,8 +184,9 @@ export default function ProductPage() {
             <div
               onClick={() => {
                 setEnlarge(true);
+                setAutoScroll(false);
               }}
-              className={`lg:cursor-pointer ${enlarge ? "enlarge" : ""}`}
+              className={`cursor-pointer  sm:cursor-default ${enlarge ? "enlarge" : ""}`}
             >
               <Carousel setApi={setApi}>
                 <CarouselContent>
@@ -193,28 +205,6 @@ export default function ProductPage() {
                   })}
                 </CarouselContent>
               </Carousel>
-              {enlarge && (
-                <div className="bg-white rounded-md justify-around w-full p-3 hidden sm:flex">
-                  {productIcons.map((item) => {
-                    return (
-                      <div
-                        key={item.label}
-                        onClick={() => handleGestures(item.label)}
-                        className="capitalize space-y-3 text-center cursor-pointer"
-                      >
-                        <div className={`flex justify-center`}>{item.icon}</div>{" "}
-                        <span className="inline-block text-sm lg:text-lg">
-                          {productData?.likes && item.label === "likes"
-                            ? productData.likes
-                            : productData?.dislikes && item.label === "dislikes"
-                              ? productData.dislikes
-                              : item.label}
-                        </span>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
 
             {isMobile ? (
@@ -228,39 +218,37 @@ export default function ProductPage() {
                 userId={productData?.userId!}
               />
             ) : null}
-            {!enlarge && (
-              <div className="bg-white rounded-md flex justify-around w-full p-5">
-                {productIcons.map((item) => {
-                  return (
-                    <div
-                      key={item.label}
-                      onClick={() => handleGestures(item.label)}
-                      className="capitalize space-y-3 text-center cursor-pointer"
-                    >
-                      <div className={`flex justify-center`}>{item.icon}</div>{" "}
-                      <span className="inline-block text-sm lg:text-lg">
-                        {productData?.likes && item.label === "likes"
-                          ? productData.likes
-                          : productData?.dislikes && item.label === "dislikes"
-                            ? productData.dislikes
-                            : item.label}
-                      </span>
-                    </div>
-                  );
-                })}
-                <DrawerTrigger className="">
-                  <div className="capitalize space-y-3 text-center cursor-pointer">
-                    <div className={`flex justify-center`}>
-                      <MessageCircle />
-                    </div>
+            <div className="bg-white rounded-md flex justify-around w-full p-5">
+              {productIcons.map((item) => {
+                return (
+                  <div
+                    key={item.label}
+                    onClick={() => handleGestures(item.label)}
+                    className="capitalize space-y-3 text-center cursor-pointer"
+                  >
+                    <div className={`flex justify-center`}>{item.icon}</div>{" "}
                     <span className="inline-block text-sm lg:text-lg">
-                      {comments?.length ? comments.length : "comment"}
+                      {productData?.likes && item.label === "likes"
+                        ? productData.likes
+                        : productData?.dislikes && item.label === "dislikes"
+                          ? productData.dislikes
+                          : item.label}
                     </span>
                   </div>
-                </DrawerTrigger>
-                <CommentContent productId={productId} />
-              </div>
-            )}
+                );
+              })}
+              <DrawerTrigger className="">
+                <div className="capitalize space-y-3 text-center cursor-pointer">
+                  <div className={`flex justify-center`}>
+                    <MessageCircle />
+                  </div>
+                  <span className="inline-block text-sm lg:text-lg">
+                    {comments?.length ? comments.length : "comment"}
+                  </span>
+                </div>
+              </DrawerTrigger>
+              <CommentContent productId={productId} />
+            </div>
           </div>
           <div className="flex flex-col justify-center space-y-3">
             {isMobile && comments?.length ? (

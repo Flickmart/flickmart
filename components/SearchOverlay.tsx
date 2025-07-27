@@ -6,7 +6,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { motion } from "motion/react";
 
-const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
+// const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
 
 export default function SearchOverlay({
   open,
@@ -44,7 +44,11 @@ export default function SearchOverlay({
         <motion.div
           initial={{ y: "100%", x: "-100%" }}
           animate={{ y: 0, x: 0 }}
-          transition={transitionProps}
+          transition={{
+            duration: 0.2,
+            type: "tween",
+            ease: "easeInOut",
+          }}
           className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
         >
           <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">

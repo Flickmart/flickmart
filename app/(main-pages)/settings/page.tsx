@@ -1,224 +1,181 @@
 "use client";
+import * as React from "react";
+import { useRouter } from "next/navigation";
 
+import { useSidebar } from "@/components/ui/sidebar";
+import Link from "next/link";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  ChartSpline,
   Store,
-  Palette,
-  Activity,
-  UserCog,
-  ShieldCheck,
-  Languages,
-  Bell,
-  HelpCircle,
   MessageSquare,
-  Info,
+  ChevronLeft,
+  ChartNoAxesCombined,
+  UserPen,
+  ShoppingBag,
+  Bell,
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SearchForm } from "@/components/settings/search-form";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+
+const data = {
+  navMain: [
+    {
+      title: "Account Settings",
+      items: [
+        {
+          title: "Profile",
+          icon: UserPen,
+          description: "Manage your personal details",
+          url: "/settings/personal",
+        },
+      ],
+    },
+    {
+      title: "Store Settings",
+      items: [
+        {
+          title: "Products",
+          icon: ShoppingBag,
+          description: "View and edit your products",
+          url: "/settings/products",
+        },
+      ],
+    },
+    {
+      title: "",
+      items: [
+        {
+          title: "Store",
+          icon: Store,
+          description: "Manage your store details",
+          url: "/settings/business",
+        },
+      ],
+    },
+    {
+      title: "Performance",
+      items: [
+        {
+          title: "Analytics",
+          icon: ChartNoAxesCombined,
+          description: "Track your store performance",
+          url: "/settings/analytics",
+        },
+      ],
+    },
+    {
+      title: "Notification Preferences",
+      items: [
+        {
+          title: "Notifications",
+          icon: Bell,
+          description: "Control alerts preferences.",
+          url: "/settings/notifications",
+        },
+      ],
+    },
+    {
+      title: "Support",
+      url: "/settings/support",
+      items: [
+        {
+          title: "Contact Support",
+          icon: MessageSquare,
+          description: "Get help with your account",
+          url: "/contact",
+        },
+      ],
+    },
+  ],
+};
 
 export default function SettingsPage() {
+  const [searchQuery, setSearchQuery] = React.useState("");
+  const { isMobile, setOpenMobile } = useSidebar();
+  const router = useRouter();
+  const user = useQuery(api.users.current);
+
+  React.useEffect(() => {
+    if (isMobile) {
+      setOpenMobile(true);
+    }
+  }, [isMobile]);
+
+  const filteredNavMain = React.useMemo(() => {
+    if (!searchQuery) return data.navMain;
+
+    return data.navMain
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) =>
+          item.title.toLowerCase().includes(searchQuery.toLowerCase())
+        ),
+      }))
+      .filter((group) => group.items.length > 0);
+  }, [searchQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+  };
+
   return (
-    <div>
-      <header className="flex h-16 shrink-0 items-center gap-2 border-b px-6">
-        {/* <SidebarTrigger className="-ml-1" />
-        <Separator orientation="vertical" className="mr-2 h-4" /> */}
-        <Breadcrumb>
-          <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink href="/">Home</BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <BreadcrumbPage>Settings</BreadcrumbPage>
-            </BreadcrumbItem>
-          </BreadcrumbList>
-        </Breadcrumb>
-      </header>
-      <div className="flex flex-1 flex-col gap-6 p-6">
-        <h1 className="text-2xl font-bold">Settings Dashboard</h1>
-        <p className="text-muted-foreground">
-          Manage your account settings and preferences
-        </p>
-
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Main Settings */}
-          {/* <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <ChartSpline className="h-5 w-5" />
-              <div>
-                <CardTitle>Analytics</CardTitle>
-                <CardDescription>
-                  View your sales and performance metrics
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/analytics"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage analytics settings →
-              </a>
-            </CardContent>
-          </Card> */}
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Store className="h-5 w-5" />
-              <div>
-                <CardTitle>Products</CardTitle>
-                <CardDescription>
-                  Manage your product listings and inventory
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/products"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage product settings →
-              </a>
-            </CardContent>
-          </Card>
-
-          {/* Display & Appearance */}
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Palette className="h-5 w-5" />
-              <div>
-                <CardTitle>Theme Settings</CardTitle>
-                <CardDescription>
-                  Customize the look and feel of your interface
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/appearance"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage appearance settings →
-              </a>
-            </CardContent>
-          </Card>
-
-          {/* <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Activity className="h-5 w-5" />
-              <div>
-                <CardTitle>Accessibility</CardTitle>
-                <CardDescription>Configure accessibility preferences</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a href="/settings/accessibility" className="text-sm text-blue-600 hover:underline">Manage accessibility settings →</a>
-            </CardContent>
-          </Card> */}
-
-          {/* Account Settings */}
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <UserCog className="h-5 w-5" />
-              <div>
-                <CardTitle>Personal Details</CardTitle>
-                <CardDescription>
-                  Update your personal information
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/personal"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage personal details →
-              </a>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Store className="h-5 w-5" />
-              <div>
-                <CardTitle>Business Details</CardTitle>
-                <CardDescription>
-                  Update your business information
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/business"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage business details →
-              </a>
-            </CardContent>
-          </Card>
-
-          {/* <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <ShieldCheck className="h-5 w-5" />
-              <div>
-                <CardTitle>Privacy & Security</CardTitle>
-                <CardDescription>Manage your privacy and security settings</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a href="/settings/privacy" className="text-sm text-blue-600 hover:underline">Manage privacy settings →</a>
-            </CardContent>
-          </Card> */}
-
-          {/* Preferences */}
-          {/* <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Languages className="h-5 w-5" />
-              <div>
-                <CardTitle>Language & Region</CardTitle>
-                <CardDescription>Set your preferred language and region</CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a href="/settings/language" className="text-sm text-blue-600 hover:underline">Manage language settings →</a>
-            </CardContent>
-          </Card> */}
-
-          <Card>
-            <CardHeader className="flex flex-row items-center gap-2">
-              <Bell className="h-5 w-5" />
-              <div>
-                <CardTitle>Notifications</CardTitle>
-                <CardDescription>
-                  Configure your notification preferences
-                </CardDescription>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <a
-                href="/settings/notifications"
-                className="text-sm text-blue-600 hover:underline"
-              >
-                Manage notification settings →
-              </a>
-            </CardContent>
-          </Card>
+    <div className="flex flex-col w-full min-h-screen pb-16 ">
+      <div className="  bg-white">
+        {isMobile && (
+          <div className=" text-gray-600 flex items-center px-3 gap-2 h-[10vh] shadow-md ">
+            <div
+              onClick={() => router.push("/")}
+              className=" hover:bg-gray-100 transition-all duration-200 rounded-full  p-2"
+            >
+              <ChevronLeft size={30} />
+            </div>
+            <h2 className="text-lg font-medium">Settings</h2>
+          </div>
+        )}
+        <div className="flex py-5 p-3 gap-2 items-center">
+          <Link href="/settings/personal/update" className="flex gap-2 ">
+            <Avatar className="size-12 rounded-full">
+              <AvatarImage src={user?.imageUrl} alt={user?.name} />
+              <AvatarFallback className="rounded-full">
+                {user?.name.split(" ").map((item) => item[0]?.toUpperCase())}
+              </AvatarFallback>
+            </Avatar>
+            <div className="grid flex-1 text-left  text-sm leading-tight">
+              <span className="truncate text-lg capitalize  font-semibold">
+                {user?.name}
+              </span>
+              <span className="truncate text-xs font-medium text-gray-600">
+                {"@" + user?.username || "No username"}
+              </span>
+            </div>
+          </Link>
         </div>
+        <SearchForm onSearch={handleSearch} />
+      </div>
+      <div className="scrollbar-none flex flex-col  p-5 gap-7 flex-grow  ">
+        {filteredNavMain.map((group) => (
+          <div className="space-y-2" key={group.title}>
+            <h2 className="text-gray-600 text-sm font-medium">{group.title}</h2>
+            <div>
+              {group.items.map((item) => (
+                <Link key={item.title} href={item.url}>
+                  <div className="flex items-center gap-2 hover:bg-gray-100 hover:rounded-xl  hover:p-3 transition-all duration-300">
+                    <item.icon className="text-gray-800" size={30} />
+                    <div className="flex flex-col text-sm z-10 ">
+                      <span className="text-base font-medium">
+                        {item.title}
+                      </span>
+                      <span className="text-muted-foreground leading-tight text-sm">
+                        {item.description}
+                      </span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -72,12 +72,16 @@ export const getByUserId = query({
 
 // Get products by business ID
 export const getByBusinessId = query({
-  args: { businessId: v.id("store") },
+  args: { businessId: v.optional(v.id("store")) },
   handler: async (ctx, args) => {
-    return await ctx.db
+    const products = await ctx.db
       .query("product")
       .filter((q) => q.eq(q.field("businessId"), args.businessId))
       .collect();
+
+    if (!products.length) return null;
+
+    return products;
   },
 });
 
@@ -113,7 +117,7 @@ export const create = mutation({
     businessId: v.id("store"),
     category: v.string(),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
-    exchange: v.boolean(),
+    exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
     location: v.union(v.literal("enugu"), v.literal("nsukka")),
     link: v.optional(v.string()),

@@ -2,29 +2,34 @@ import { Doc, Id } from "@/convex/_generated/dataModel";
 import { toast } from "sonner";
 
 interface ChatParams {
-    user: Doc<"users"> | null;
-    userId: Id<"users">;
-    onNavigate: (path: string)=> void
-    productId?: Id<"product">;
+  user: Doc<"users"> | null;
+  userId: Id<"users">;
+  onNavigate: (path: string) => void;
+  productId?: Id<"product">;
 }
-interface ShareParams{
-    title: string;
-    description: string;
-    productId: Id<"product">;
-  }
+interface ShareParams {
+  title: string;
+  description: string;
+  productId: Id<"product">;
+}
 
-export const initialChat = async ({user, userId, onNavigate, productId}: ChatParams) => {
-    if (!user) {
-      toast.error("Please login to chat with vendor");
-      return;
-    }
-    console.log("chat vendor clicked")
+export const initialChat = async ({
+  user,
+  userId,
+  onNavigate,
+  productId,
+}: ChatParams) => {
+  if (!user) {
+    toast.error("Please login to chat with vendor");
+    return;
+  }
+  console.log("chat vendor clicked");
 
     // Navigate to chat page with vendor ID as query parameter
     onNavigate(`/chat?vendorId=${userId}&productId=${productId}`);
 
-    toast.success("Starting chat with vendor");
-  };
+  toast.success("Starting chat with vendor");
+};
 
 export async function shareProduct({title, description, productId}: ShareParams){
     const shareData = {

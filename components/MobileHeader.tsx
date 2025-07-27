@@ -1,14 +1,23 @@
 "use client";
+
 import { cn } from "@/lib/utils";
 import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
-const MobileHeader = ({ children }: { children?: ReactNode }) => {
-  const router = useRouter();
+interface MobileHeaderProps {
+  rightSlot?: ReactNode;
+}
 
+const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
+  const router = useRouter();
   const pathname = usePathname();
+
+  // If the pathname is one where a custom MobileHeader is rendered, return null
+  const overrideRoutes = ["/notifications"];
+  if (overrideRoutes.includes(pathname) && !rightSlot) {
+    return null;
+  }
 
   let title = (pathname.split("/").at(-1) as string).split("-").join(" ");
 
@@ -27,7 +36,7 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
   return (
     <header
       className={cn(
-        "shadow-lg sticky top-0 h-[77px] flex items-center z-50 bg-white pl-2 pr-5 justify-between text-sm sm:hidden",
+        "shadow-lg sticky top-0 h-[77px] flex items-center z-50 bg-white px-4 justify-between text-sm sm:hidden",
         { hidden: isHidden() }
       )}
     >
@@ -44,8 +53,11 @@ const MobileHeader = ({ children }: { children?: ReactNode }) => {
         <ChevronLeft size={30} strokeWidth={1.5} />
         {title}
       </button>
-      {children}
+
+      {/* Right slot */}
+      {rightSlot && <div>{rightSlot}</div>}
     </header>
   );
 };
+
 export default MobileHeader;

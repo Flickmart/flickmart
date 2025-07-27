@@ -27,12 +27,17 @@ export const updateUser = mutation({
     about: v.optional(v.string()),
     location: v.optional(v.string()),
     phone: v.optional(v.string()),
+    allowNotifications: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
       throw Error("Please Login First...");
     }
+    args.allowNotifications &&
+      (await ctx.db.patch(user._id, {
+        allowNotifications: args.allowNotifications,
+      }));
 
     args.about && (await ctx.db.patch(user._id, { description: args.about }));
     args.location &&
@@ -71,6 +76,7 @@ export const upsertFromClerk = internalMutation({
       email: data.email_addresses?.[0]?.email_address,
       externalId: data.id,
       username: data.username || undefined,
+      allowNotifications: true,
     };
     const user = await userByExternalId(ctx, data.id);
 

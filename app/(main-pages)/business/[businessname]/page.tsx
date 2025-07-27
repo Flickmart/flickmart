@@ -248,7 +248,7 @@ export default function BusinessProfile() {
 
   return (
     <>
-      <Navbar />
+      {/* <Navbar /> */}
       <div className="container mx-auto py-8">
         <Card className="p-6">
           <div className="space-y-8">

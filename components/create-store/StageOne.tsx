@@ -9,11 +9,11 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const userStore = useQuery(api.store.getStoresByUserId);
 
   useEffect(() => {
-    if (userStore?.[0]) {
+    if (userStore?.data) {
       router.push("/post-ad");
     }
   }, [userStore, router]);
-  
+
   return (
     <div>
       <h2 className="capitalize font-medium text-2xl mb-3 md:text-4xl">

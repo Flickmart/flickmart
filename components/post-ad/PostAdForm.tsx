@@ -23,7 +23,7 @@ import AdCharges from "./AdCharges";
 type SubmitType = SubmitHandler<{
   category: string;
   location: "enugu" | "nsukka";
-  exchange: boolean;
+  negotiable: boolean;
   condition: "brand new" | "used";
   title: string;
   description: string;
@@ -65,13 +65,16 @@ const condition = ["brand new", "used"];
 const formSchema = z.object({
   category: z.string(),
   location: z.union([z.literal("enugu"), z.literal("nsukka")]),
-  exchange: z.boolean(),
+  negotiable: z.boolean(),
   condition: z.union([z.literal("brand new"), z.literal("used")]),
   title: z
     .string()
     .min(5, { message: "Title length is too short" })
     .max(100, { message: "Maximum character length reached" }),
-  description: z.string().min(30, { message: "description is too short" }),
+  description: z
+    .string()
+    .min(30, { message: "Description is too short" })
+    .max(900, { message: "Description cannot exceed 900 characters" }),
   price: z.union([
     z.string(),
     z.number({
@@ -96,21 +99,20 @@ export default function PostAdForm({
       category: "",
       location: undefined,
       title: "",
-      exchange: undefined,
+      negotiable: undefined,
       condition: undefined,
       description: "",
       price: 0,
       store: "",
       phone: "",
-      plan: undefined,
+      plan: "premium",
     },
   });
   const { images } = useOthersStore((state) => state);
   const router = useRouter();
   const createNewAd = useMutationConvex(api.product.create);
   let postToastId: ReturnType<typeof toast.loading>;
-  const [allowAdPost, setAllowAdPost] = useState<boolean>(false);
-  const userStore = useQuery(api.store.getStoresByUserId)?.[0];
+  const userStore = useQuery(api.store.getStoresByUserId)?.data;
   const businessId = userStore?._id as Id<"store">;
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
@@ -192,7 +194,6 @@ export default function PostAdForm({
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
           <Selector form={form} options={categories} name="category" />
           <AddPhoto
-            setAllowAdPost={setAllowAdPost}
             setIsSubmitted={setIsSubmitted}
             isSubmitted={isSubmitted}
             clear={clear}
@@ -208,8 +209,8 @@ export default function PostAdForm({
           <Selector
             form={form}
             options={returnable}
-            name="exchange"
-            label="exchange possible"
+            name="negotiable"
+            label="negotiable"
           />
           <Selector form={form} options={condition} name="condition" />
           <InputField
@@ -219,7 +220,7 @@ export default function PostAdForm({
             textAreaLength={textAreaLength}
             setTextAreaLength={setTextAreaLength}
           />
-          <InputField name="price" form={form} />
+          <InputField type="numberField" name="price" form={form} />
         </div>
 
         <Separator className="h-5 bg-gray-100 w-full" />
@@ -254,8 +255,8 @@ export default function PostAdForm({
             isPending={isPending}
             formTrigger={form.trigger}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
-            allowAdPost={allowAdPost}
             adId={adId}
+            images={images}
           />
           <p className="lg:w-2/4 text-center font-light capitalize leading-relaxed lg:text-sm text-xs">
             By clicking on Post Ad you accepted the{" "}

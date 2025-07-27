@@ -22,12 +22,5 @@ export default function DashboardLayout({
     return null; // Will be redirected by useAuthUser
   }
 
-  return (
-    <SidebarProvider className="lg:min-h-[calc(100svh-72px)]">
-      {/* <AppSidebar /> */}
-      <SidebarInset>
-        <div className="flex-1 overflow-auto">{children}</div>
-      </SidebarInset>
-    </SidebarProvider>
-  );
+  return <SidebarProvider>{children}</SidebarProvider>;
 }
