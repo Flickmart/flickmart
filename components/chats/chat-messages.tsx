@@ -125,11 +125,11 @@ export default function ChatMessages({
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-16">
+    <div className="flex-1 overflow-y-auto p-2 sm:p-4 sm:pr-5 space-y-4 pb-16">
       <div className="flex flex-col items-center justify-center gap-4">
-        <div className="flex items-center gap-2 rounded-full min-w-max border-2 border-gray-300 p-2 px-3 opacity-80 text-xs md:text-md text-gray-600">
-          <TriangleAlert className="w-5 h-5" /> Do not send money to vendors
-          outside the platform.
+        <div className="flex items-center gap-1 sm:gap-2 rounded-full border-2 border-gray-300 p-1 px-2 sm:p-2 sm:px-3 opacity-80 text-xs text-gray-600 max-w-[95%] text-center">
+          <TriangleAlert className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> 
+          <span className="truncate">Do not send money to vendors outside the platform.</span>
         </div>
       </div>
       <PhotoProvider>
