@@ -6,7 +6,7 @@ import { components } from "./_generated/api";
 
 // Internal Mutation for Email Notifications
 export const resend: Resend = new Resend(components.resend, {
-    testMode: false
+    testMode: true
 });
 
 export const sendTestEmail = internalMutation({
@@ -31,7 +31,7 @@ export const sendEmailNotification = internalMutation({
     handler: async (ctx, args) => {
         await resend.sendEmail(ctx, {
             from: "Flickmart <support@flickmart.app>",
-            to: `${args.recipient}`,
+            to: `ebukaj665@gmail.com`,
             subject: args.subject,
             html: `<!DOCTYPE html>
 <html>

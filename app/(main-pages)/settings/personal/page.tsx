@@ -81,7 +81,7 @@ export default function PublicProfile() {
                   <AvatarFallback>
                     {user?.name
                       .split(" ")
-                      .map((n) => n[0])
+                      .map((n: string) => n[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
