@@ -19,15 +19,15 @@ interface UseAuthUserReturn {
  * Enhanced hook for user authentication with better loading states and error handling
  * This hook handles the user authentication state more reliably than useCheckUser
  */
-export function useAuthUser(options?: {
+export function useAuthUser(options?: { 
   redirectOnUnauthenticated?: boolean;
   redirectTo?: string;
 }): UseAuthUserReturn {
-  const {
-    redirectOnUnauthenticated = true,
-    redirectTo = "/sign-in"
+  const { 
+    redirectOnUnauthenticated = true, 
+    redirectTo = "/sign-in" 
   } = options || {};
-
+  
   const user = useQuery(api.users.current);
   const router = useRouter();
   const hasRedirected = useRef(false);
@@ -46,7 +46,7 @@ export function useAuthUser(options?: {
     // User is not authenticated and we haven't redirected yet
     if (isError && !hasRedirected.current) {
       hasRedirected.current = true;
-
+      
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
@@ -57,7 +57,7 @@ export function useAuthUser(options?: {
           icon: "🔃",
         });
       }
-
+      
       // Use replace instead of push to prevent back button issues
       router.replace(redirectTo);
       return;
