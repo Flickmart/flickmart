@@ -74,14 +74,15 @@ export default function MessageBubble({
         isUser ? "justify-end" : "justify-start",
         selectionMode && "cursor-pointer"
       )}
-      onClick={() => selectionMode && toggleMessageSelection(id)}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        handleLongPress(id);
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
+      //DISABLED DELETE FEATURE 
+      // onClick={() => selectionMode && toggleMessageSelection(id)}
+      // onContextMenu={(e) => {
+      //   e.preventDefault();
+      //   handleLongPress(id);
+      // }}
+      // onTouchStart={handleTouchStart}
+      // onTouchEnd={handleTouchEnd}
+      // onTouchCancel={handleTouchEnd}
     >
       <div
         className={cn(
