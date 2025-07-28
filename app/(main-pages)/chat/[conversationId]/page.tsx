@@ -310,6 +310,7 @@ export default function ConversationPage() {
                 title: message.title || "",
                 price: message.price || 0,
                 productImage: message.productImage || "",
+                productId: message.productId
             };
         });
     }, [messages, user?._id]);

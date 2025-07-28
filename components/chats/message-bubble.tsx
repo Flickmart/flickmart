@@ -4,6 +4,7 @@ import { PhotoView } from "react-photo-view";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { LinkIcon } from "lucide-react";
+import Link from "next/link";
 
 interface MessageBubbleProps {
   id: string;
@@ -21,6 +22,7 @@ interface MessageBubbleProps {
   title?: string;
   price?: number;
   image?: string;
+  productId?: string;
 }
 
 export default function MessageBubble({
@@ -39,6 +41,7 @@ export default function MessageBubble({
   title = "",
   price = 0,
   image = "", // Default to empty string
+  productId = "",
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -195,6 +198,7 @@ export default function MessageBubble({
             productTitle={title}
             productPrice={price}
             message={message}
+            productId={productId}
           />
         )}
       </div>
@@ -207,6 +211,7 @@ interface ProductChatMessageProps {
   productTitle: string;
   message: string;
   productPrice: number;
+  productId: string;
 }
 
 export function ProductChatMessage({
@@ -214,8 +219,10 @@ export function ProductChatMessage({
   productTitle,
   productPrice,
   message,
+  productId,
 }: ProductChatMessageProps) {
   return (
+    <Link href={`/product/${productId}`}>
     <div className="flex justify-end">
       <div className="max-w-[280px] sm:max-w-xs bg-flickmart text-white">
         {/* Product Details Section - Highlighted */}
@@ -234,12 +241,13 @@ export function ProductChatMessage({
               <span className="truncate">{productTitle}</span>
               <LinkIcon className="w-3 h-3 text-orange-200 flex-shrink-0" />
             </p>
-            <p className="text-xs font-medium text-orange-100 mt-1">${productPrice.toFixed(2)}</p>
+            <p className="text-xs font-medium text-orange-100 mt-1">₦{productPrice.toFixed(2)}</p>
           </div>
         </div>
         {/* Message Text */}
         <p className="text-xs sm:text-sm leading-relaxed">{message}</p>
       </div>
     </div>
+     </Link>
   );
 }

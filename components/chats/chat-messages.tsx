@@ -14,6 +14,7 @@ interface Message {
   title?: string;
   price?: number;
   productImage?: string;
+  productId?: string;
 }
 
 interface ChatMessagesProps {
@@ -159,6 +160,7 @@ export default function ChatMessages({
                 price={message.price}
                 image={message.productImage}
                 type={message.type}
+                productId={message.productId}
               />
             ))}
           </div>
