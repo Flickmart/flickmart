@@ -41,9 +41,7 @@ export default function NewArrivalItem({
           />
         </div>
         <div className=" w-full py-6 flex justify-center h-1/4">
-          <button
-            className={`bg-flickmart text-white  w-5/6 rounded-lg py-3 lg:py-3.5`}
-          >
+          <button className={`bg-flickmart text-white  w-5/6 rounded-lg py-3 lg:py-3.5`}>
             Save
           </button>
         </div>
