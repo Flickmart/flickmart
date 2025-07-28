@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Loader from "@/components/multipage/Loader";
-import useCheckUser from "@/hooks/useCheckUser";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -97,8 +97,7 @@ export default function WalletPage() {
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
-  const loading = useCheckUser();
-  const user = useQuery(api.users.current);
+  const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
 
   // Fetch banks when withdrawal dialog opens
   useEffect(() => {
@@ -417,17 +416,15 @@ export default function WalletPage() {
     return true;
   });
 
-  const isLoadingUser = user === undefined;
   const isLoadingData =
-    isLoadingUser || wallet === undefined || transactions === undefined;
+    authLoading || wallet === undefined || transactions === undefined;
+  
   if (isLoadingData || isLoading) {
     return <WalletPageSkeleton />;
   }
 
-  // Ensure user exists before proceeding
-
-  if (loading) {
-    return <Loader />;
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
   }
   return (
     <ClientOnly>

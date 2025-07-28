@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useIsLarge } from "@/hooks/useLarge";
 import { SyncLoader } from "react-spinners";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -65,7 +66,7 @@ export default function ProductPage() {
   const exchangePossible = productData?.exchange === true ? "yes" : "no";
   const { setApi, setAutoScroll } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
-  const user = useQuery(api.users.current);
+  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
   const router = useRouter();
 
   const productIcons = [
@@ -97,7 +98,7 @@ export default function ProductPage() {
 
   const handleGestures = async (label: string) => {
     try {
-      if (!user) {
+      if (!isAuthenticated) {
         toast.error("Please sign in to perform this action");
         return;
       }

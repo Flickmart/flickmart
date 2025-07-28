@@ -41,7 +41,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   const [pinExists, setPinExists] = useState<boolean | null>(null);
   const [securityState, setSecurityState] = useState<SecurityState>({
     pinAttempts: 0,
-    maxPinAttempts: 3,
+    maxPinAttempts: 5,
     isLocked: false,
   });
 
@@ -57,6 +57,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   const { getToken } = useAuth();
 
   // Fetch seller's products using the existing getByUserId query
+  const seller = useQuery(api.users.getUserById, { userId: sellerId })
   const sellerProductsQuery = useQuery(api.product.getByUserId, { userId: sellerId });
   const isProductsLoading = sellerProductsQuery === undefined;
 
@@ -187,59 +188,6 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
     });
   }, []);
 
-  // Enhanced retry mechanism for failed product fetches
-
-
-  // Enhanced error categorization for better user feedback
-  const categorizeProductError = useCallback((error: any) => {
-    if (!error) return null;
-
-    // Network-related errors
-    if (error.message?.includes('fetch') || error.message?.includes('network')) {
-      return {
-        type: 'network',
-        message: 'Network connection issue. Please check your internet connection and try again.',
-        canRetry: true,
-        fallbackAvailable: true
-      };
-    }
-
-    // Server errors
-    if (error.status >= 500) {
-      return {
-        type: 'server',
-        message: 'Server is temporarily unavailable. Please try again in a moment.',
-        canRetry: true,
-        fallbackAvailable: true
-      };
-    }
-
-    // Authorization errors
-    if (error.status === 401 || error.status === 403) {
-      return {
-        type: 'auth',
-        message: 'You are not authorized to view this seller\'s products.',
-        canRetry: false,
-        fallbackAvailable: true
-      };
-    }
-
-    // Generic error
-    return {
-      type: 'generic',
-      message: 'Failed to load seller\'s products. This could be due to a network issue or server error.',
-      canRetry: true,
-      fallbackAvailable: true
-    };
-  }, []);
-
-  const presetAmounts = [
-    { label: "₦500.00", value: "500.00" },
-    { label: "₦1,000.00", value: "1000.00" },
-    { label: "₦2,000.00", value: "2000.00" },
-    { label: "₦3,000.00", value: "3000.00" },
-    { label: "₦5,000.00", value: "5000.00" },
-  ];
 
   const handleNumberClick = (number: string) => {
     if (amount.length < 10) {
@@ -586,7 +534,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
         setIsValidatingProducts(false);
         setSecurityState({
           pinAttempts: 0,
-          maxPinAttempts: 3,
+          maxPinAttempts: 5,
           isLocked: false,
         });
         break;
@@ -617,6 +565,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
         onClear={handleClear}
         onBackspace={handleBackspace}
         onTransfer={handleTransfer}
+        seller={seller ? seller : undefined}
       />
     );
   }

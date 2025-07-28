@@ -19,7 +19,7 @@ export default function Delivery() {
     "post-ad",
     "/create-store",
     "/saved",
-    "/chats",
+    "/chat",
   ];
 
   if (hiddenPages.includes(pathname)) {

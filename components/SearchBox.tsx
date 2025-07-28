@@ -33,7 +33,7 @@ export default function SearchBox({
     "post-ad",
     "/create-store",
     "/saved",
-    "/chats",
+    "/chat",
     "/business",
   ];
 

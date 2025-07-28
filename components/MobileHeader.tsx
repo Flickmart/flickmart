@@ -20,12 +20,19 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
   }
 
   let title = (pathname.split("/").at(-1) as string).split("-").join(" ");
-  if (pathname.includes("/product")) title = "Products";
 
-  const hiddenPaths = ["/settings", "/chats", "/search"];
-  const isHidden = () =>
-    pathname === "/" || hiddenPaths.some((p) => pathname.includes(p));
+  if (pathname.includes("/product")) {
+    title = "Products";
+  }
+  const hiddenPaths = ["/notifications", "/settings", "/chat", "/search", "/wallet"];
 
+  const isHidden = () => {
+    if (pathname === "/") {
+      return true;
+    }
+    // Check if the current pathname includes any of the hidden paths
+    return hiddenPaths.some((path) => pathname.includes(path));
+  };
   return (
     <header
       className={cn(
@@ -36,8 +43,8 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
       <button
         onClick={() =>
           pathname.includes("/categories") ||
-          pathname.includes("/post-ad") ||
-          pathname.includes("/sign-in")
+            pathname.includes("/post-ad") ||
+            pathname.includes("/sign-in")
             ? router.push("/")
             : router.back()
         }

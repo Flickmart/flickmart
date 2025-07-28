@@ -119,7 +119,7 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
-    type: v.optional(v.union(v.literal("text"), v.literal("product"))),
+    type: v.optional(v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
@@ -231,7 +231,7 @@ export default defineSchema({
         transferId: v.optional(v.id("transfers")),
         escrowId: v.optional(v.id("escrows")),
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
-        productIds : v.optional(v.array( v.id("product"))), 
+        productIds: v.optional(v.array(v.id("product"))),
         plan: v.optional(
           v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
         ), // Ad plan type

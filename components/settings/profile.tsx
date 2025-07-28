@@ -23,8 +23,9 @@ import { Label } from "@/components/ui/label";
 import clsx from "clsx";
 import cloneDeep from "lodash/cloneDeep";
 import { useReverification, useUser } from "@clerk/clerk-react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { toast } from "sonner";
 import { SessionVerificationLevel } from "@clerk/types";
 import VerificationDialog from "./VerificationDialog";
@@ -49,7 +50,7 @@ export default function MarketplaceProfile() {
   const [isEditMode, setIsEditMode] = useState<boolean | string>(false);
   const [open, setOpen] = useState<boolean>(false);
   const { user } = useUser();
-  const profile = useQuery(api.users.current);
+  const { user: profile, isLoading: profileLoading } = useAuthUser({ redirectOnUnauthenticated: false });
   const updateOthers = useMutation(api.users.updateUser);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [verificationState, setVerificationState] = useState<
@@ -269,7 +270,7 @@ export default function MarketplaceProfile() {
             </div>
             <Separator className="my-6 hidden sm:block" />
             <div className="space-y-3">
-              {fields === undefined ? (
+              {profileLoading || fields === undefined ? (
                 <p>loading...</p>
               ) : (
                 fields.map((field, index) => (

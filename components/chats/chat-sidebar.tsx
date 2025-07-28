@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Id } from "@/convex/_generated/dataModel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useRef, useEffect } from "react";
+import { useRouter, useParams } from "next/navigation";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
@@ -43,6 +43,10 @@ export default function ChatSidebar({
   setSidebarOpen,
   conversations,
 }: ChatSidebarProps) {
+  const router = useRouter();
+  const params = useParams();
+  const currentConversationId = params?.conversationId as Id<"conversations"> | undefined;
+
   // Count total unread messages
   const totalUnread = conversations.reduce((sum, chat) => sum + chat.unread, 0);
 
@@ -60,11 +64,19 @@ export default function ChatSidebar({
     }
   }, [searchQuery]);
 
+  // Handle chat selection
+  const handleChatSelect = (chatId: Id<"conversations">) => {
+    router.push(`/chat/${chatId}`);
+    if (window.innerWidth < 768) {
+      setSidebarOpen(false);
+    }
+  };
+
   // Content of the sidebar
   const SidebarContent = () => (
     <>
       {/* Sidebar Header */}
-      <div className="px-3 py-2 flex items-center justify-between mt-4 md:mt-1 ">
+      <div className="px-3 py-2 flex items-center justify-between md:mt-1 ">
         <div className="flex items-center">
           <h2 className="text-flickmart font-bold text-3xl md:text-xl  ">Chats</h2>
         </div>
@@ -144,15 +156,10 @@ export default function ChatSidebar({
               <div
                 key={chat.id}
                 className={cn(
-                  "flex items-center p-3 cursor-pointer hover:bg-gray-100 border-b border-gray-200 ",
-                  activeChat === chat.id && "bg-orange-50"
+                  "flex items-center p-3 pl-4 cursor-pointer hover:bg-gray-100 border-b border-gray-200 ",
+                  currentConversationId === chat.id && "bg-orange-50"
                 )}
-                onClick={() => {
-                  setActiveChat(chat.id);
-                  if (window.innerWidth < 768) {
-                    setSidebarOpen(false);
-                  }
-                }}
+                onClick={() => handleChatSelect(chat.id)}
               >
                 <Avatar className="h-10 w-10">
                   <AvatarImage src={chat.imageUrl} alt={chat.name} />
@@ -185,7 +192,7 @@ export default function ChatSidebar({
                       )}
                     >
                       {chat.containsImage && <Image className="h-4 w-4" />}
-                      {chat.lastMessage} 
+                      {chat.lastMessage.length > 20 ? chat.lastMessage.substring(0, 40) + "..." : chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
                       <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -203,20 +210,8 @@ export default function ChatSidebar({
   );
 
   return (
-    <>
-      {/* Mobile sidebar as Sheet */}
-      <div className="md:hidden">
-        <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
-          <SheetContent side="left" className="w-full p-1" hideCloseButton>
-            <SidebarContent />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Desktop sidebar as permanent element */}
-      <div className="hidden md:block w-[320px] border-r border-gray-200 bg-white mt-14 md:mt-0">
-        <SidebarContent />
-      </div>
-    </>
+    <div className="w-full h-full bg-white">
+      <SidebarContent />
+    </div>
   );
 }
