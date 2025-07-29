@@ -25,10 +25,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { cn } from "@/lib/utils";
-import { AlarmClock, Bell, ChevronDown, Megaphone, MessageCircle, MessageSquareText, ShoppingBag, ThumbsUp } from "lucide-react";
+import { AlarmClock, Bell, ChevronDown, Megaphone, MessageCircle, MessageSquareText, ShoppingBag, ThumbsUp, Banknote } from "lucide-react";
+
+
 export interface Notification {
   icon: string;
   text: string;
@@ -66,7 +67,10 @@ type NotificationType =
   | "new_comment"
   | "new_sale"
   | "advertisement"
-  | "reminder";
+  | "reminder"
+  | "escrow_funded"
+  | "escrow_released"
+  | "completion_confirmed"
 
 const notificationLabels: Record<NotificationType, string> = {
   all: "All Types",
@@ -76,6 +80,9 @@ const notificationLabels: Record<NotificationType, string> = {
   new_sale: "Sales",
   advertisement: "Ads",
   reminder: "Reminders",
+  escrow_funded: "Payment made",
+  escrow_released: "Payment released",
+  completion_confirmed: "Confirm Transaction",
 };
 
 // icons for each notification type
@@ -87,6 +94,9 @@ const notificationIcons: Record<NotificationType, JSX.Element> = {
   new_sale: <ShoppingBag className="w-5 h-5" />,
   advertisement: <Megaphone className="w-5 h-5" />,
   reminder: <AlarmClock className="w-5 h-5" />,
+  escrow_funded: <Banknote className="w-5 h-5" />,
+  escrow_released: <Banknote className="w-5 h-5" />,
+  completion_confirmed: <Banknote className="w-5 h-5" />,
 };
 
 const Page = () => {
@@ -104,9 +114,11 @@ const Page = () => {
     "new_sale",
     "advertisement",
     "reminder",
+    "escrow_funded",
+    "escrow_released",
+    "completion_confirmed",
   ];
 
-  const user = useUser();
   const { user: convexUser, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const allNotifications =
     useQuery(
