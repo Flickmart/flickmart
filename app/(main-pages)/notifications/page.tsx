@@ -68,16 +68,16 @@ type NotificationType =
   | "advertisement"
   | "reminder";
 
-  const notificationLabels: Record<NotificationType, string> = {
-    all: "All Types",
-    new_message: "Messages",
-    new_like: "Likes",
-    new_comment: "Comments",
-    new_sale: "Sales",
-    advertisement: "Ads",
-    reminder: "Reminders",
+const notificationLabels: Record<NotificationType, string> = {
+  all: "All Types",
+  new_message: "Messages",
+  new_like: "Likes",
+  new_comment: "Comments",
+  new_sale: "Sales",
+  advertisement: "Ads",
+  reminder: "Reminders",
 };
-  
+
 // icons for each notification type
 const notificationIcons: Record<NotificationType, JSX.Element> = {
   all: <Bell className="w-5 h-5" />,
@@ -113,27 +113,32 @@ const Page = () => {
       api.notifications.getNotifications,
       convexUser?._id
         ? {
-            userId: convexUser?._id,
-          }
+          userId: convexUser?._id,
+        }
         : "skip"
     ) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
+  const unreadNotificationsByReadStatus =
+    useQuery(api.notifications.getUnreadNotificationsByReadStatus) || [];
   const markAllAsRead = useMutation(
     api.notifications.markAllNotificationsAsRead
+  );
+  const markAllAsViewed = useMutation(
+    api.notifications.markAllNotificationsAsViewed
   );
   const deleteAllNotifications = useMutation(
     api.notifications.deleteAllNotifications
   );
 
   const filteredNotifications = (
-    activeTab === "all" ? allNotifications : unreadNotifications
+    activeTab === "all" ? allNotifications : unreadNotificationsByReadStatus
   ).filter(
     (notification) =>
       selectedType === "all" || notification.type === selectedType
   );
 
-  const unreadCount = unreadNotifications.length;
+  const unreadCount = unreadNotificationsByReadStatus.length;
 
   const handleMarkAllAsRead = async (): Promise<void> => {
     // Check if there are any unread notifications
@@ -176,10 +181,12 @@ const Page = () => {
   }, [lastScrollY]);
 
   useEffect(() => {
-    return () => {
-      markAllAsRead();
-    };
-  }, []);
+    // Mark all notifications as viewed when the page is opened
+    // This resets the unread count but doesn't mark individual notifications as read
+    if (convexUser?._id) {
+      markAllAsViewed();
+    }
+  }, [convexUser?._id, markAllAsViewed]);
 
   // Group notifications by day (today, yesterday, older)
   const groupedNotifications = (() => {
@@ -261,7 +268,7 @@ const Page = () => {
             <button className="flex items-center gap-2 px-3 py-2 font-medium transition">
               {notificationLabels[selectedType]}
               <ChevronDown
-              className={cn(
+                className={cn(
                   "w-5 h-5 transition-transform duration-200",
                   open && "rotate-180"
                 )}

@@ -153,11 +153,13 @@ export default defineSchema({
     content: v.string(),
     imageUrl: v.optional(v.string()),
     isRead: v.boolean(),
+    isViewed: v.optional(v.boolean()), // For tracking if notification was viewed (affects count)
     timestamp: v.number(),
     link: v.optional(v.string()),
   })
     .index("byUserId", ["userId"])
-    .index("byUserIdAndIsRead", ["userId", "isRead"]),
+    .index("byUserIdAndIsRead", ["userId", "isRead"])
+    .index("byUserIdAndIsViewed", ["userId", "isViewed"]),
 
   presence: defineTable({
     userId: v.id("users"),

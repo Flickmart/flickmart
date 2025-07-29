@@ -55,6 +55,7 @@ export const createNotification = internalMutation({
       content: args.content,
       imageUrl: args.imageUrl,
       isRead: false,
+      isViewed: false, // New notifications are not viewed initially
       timestamp: Date.now(),
       link: args.link,
     });
@@ -156,10 +157,16 @@ export const getUnreadNotifications = query({
       return [];
     }
 
+    // Get all notifications for the user and filter for unviewed ones
+    // This handles both isViewed: false and isViewed: undefined (for existing notifications)
     const notifications = await ctx.db
       .query("notifications")
-      .withIndex("byUserIdAndIsRead", (q) =>
-        q.eq("userId", user._id).eq("isRead", false)
+      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .filter((q) => 
+        q.or(
+          q.eq(q.field("isViewed"), false),
+          q.eq(q.field("isViewed"), undefined)
+        )
       )
       .collect();
 
@@ -246,5 +253,68 @@ export const getNotificationById = query({
       .first();
 
     return notification;
+  },
+});
+
+export const getUnreadNotificationsByReadStatus = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return [];
+    }
+
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return [];
+    }
+
+    // Get notifications that are actually unread (based on isRead field)
+    // This is used for the "Unread" tab in the notifications page
+    const notifications = await ctx.db
+      .query("notifications")
+      .withIndex("byUserIdAndIsRead", (q) =>
+        q.eq("userId", user._id).eq("isRead", false)
+      )
+      .collect();
+
+    return notifications;
+  },
+});
+
+export const markAllNotificationsAsViewed = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await getCurrentUser(ctx);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Mark all notifications as viewed (for count purposes) but not read
+    // Only update notifications that are not already viewed
+    const notifications = await ctx.db
+      .query("notifications")
+      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .filter((q) => 
+        q.or(
+          q.eq(q.field("isViewed"), false),
+          q.eq(q.field("isViewed"), undefined)
+        )
+      )
+      .collect();
+
+    for (const notification of notifications) {
+      await ctx.db.patch(notification._id, {
+        isViewed: true,
+      });
+    }
+
+    return true;
   },
 });
