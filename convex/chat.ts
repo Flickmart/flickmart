@@ -1,7 +1,105 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation , QueryCtx, MutationCtx} from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
 import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
+
+// Helper function to handle consolidated message notifications
+async function handleMessageNotification(
+  ctx: MutationCtx,
+  {
+    recipientId,
+    senderId,
+    conversationId,
+    messageContent,
+    senderName,
+    senderImageUrl,
+    timestamp,
+  }: {
+    recipientId: Id<"users">;
+    senderId: Id<"users">;
+    conversationId: Id<"conversations">;
+    messageContent: string;
+    senderName: string;
+    senderImageUrl?: string;
+    timestamp: number;
+  }
+) {
+  // Check if there's already an unread message notification from this conversation
+  const existingNotification = await ctx.db
+    .query("notifications")
+    .withIndex("byUserId", (q) => q.eq("userId", recipientId))
+    .filter((q: any) =>
+      q.and(
+        q.eq(q.field("type"), "new_message"),
+        q.eq(q.field("isRead"), false),
+        q.eq(q.field("relatedId"), conversationId)
+      )
+    )
+    .first();
+
+  // Get the current unread count from the conversation
+  const conversation = await ctx.db.get(conversationId);
+  const unreadCount = conversation?.unreadCount?.[recipientId] || 1;
+
+  if (existingNotification) {
+    // Update the existing notification with new count and latest timestamp
+    // Keep the original content (first unread message) but update the title with new count
+    const titleText = unreadCount === 1
+      ? `You received 1 new message from ${senderName}`
+      : `You received ${unreadCount} new messages from ${senderName}`;
+
+    await ctx.db.patch(existingNotification._id, {
+      title: titleText,
+      timestamp: timestamp,
+      content: `You received ${unreadCount} new messages from ${senderName}` ,
+      isViewed: false, // Reset viewed status so it shows in unread count again
+    });
+  } else {
+    // Get the first unread message content for this conversation
+    // Find the oldest unread message from the sender to this recipient
+    const unreadMessages = await ctx.db
+      .query("message")
+      .filter((q: any) =>
+        q.and(
+          q.eq(q.field("conversationId"), conversationId),
+          q.eq(q.field("senderId"), senderId)
+        )
+      )
+      .collect();
+
+    // Filter messages that haven't been read by the recipient
+    const actuallyUnreadMessages = unreadMessages.filter(
+      (msg: any) => !msg.readByUsers?.includes(recipientId)
+    );
+
+    // Get the first unread message (oldest)
+    const firstUnreadMessage = actuallyUnreadMessages.sort((a: any, b: any) =>
+      (a._creationTime || 0) - (b._creationTime || 0)
+    )[0];
+
+    // Use the first unread message content, or fallback to current message
+    const firstMessageContent = firstUnreadMessage?.content || messageContent || "New message";
+
+    // Create a new notification with the first unread message content
+    const titleText = unreadCount === 1
+      ? `You received 1 new message from ${senderName}`
+      : `You received ${unreadCount} new messages from ${senderName}`;
+
+    await ctx.db.insert("notifications", {
+      userId: recipientId,
+      type: "new_message",
+      relatedId: conversationId, // Use conversationId for consolidation
+      title: titleText,
+      content: firstMessageContent, // This will be the first unread message
+      imageUrl: senderImageUrl,
+      isRead: false,
+      isViewed: false,
+      timestamp: timestamp,
+      link: `/chat/${conversationId}`,
+    });
+  }
+}
 
 export const startConversation = mutation({
   args: {
@@ -131,17 +229,15 @@ export const sendMessage = mutation({
     const sender = await ctx.db.get(args.senderId);
     const receiver = await ctx.db.get(recipientId);
 
-    // Create notification for the recipient
-    await ctx.db.insert("notifications", {
-      userId: recipientId,
-      type: "new_message",
-      relatedId: messageId,
-      title: `${sender?.name || "Someone"} sent you a message`,
-      content: args.content || "",
-      imageUrl: sender?.imageUrl,
-      isRead: false,
+    // Handle consolidated message notifications
+    await handleMessageNotification(ctx, {
+      recipientId,
+      senderId: args.senderId,
+      conversationId: args.conversationId,
+      messageContent: args.content || "",
+      senderName: sender?.name || "Someone",
+      senderImageUrl: sender?.imageUrl,
       timestamp: now,
-      link: `/chat/${args.conversationId}`,
     });
 
 
@@ -202,6 +298,25 @@ export const markMessagesAsRead = mutation({
 
       await ctx.db.patch(args.conversationId, {
         unreadCount,
+      });
+    }
+
+    // Clear the consolidated message notification for this conversation
+    const messageNotification = await ctx.db
+      .query("notifications")
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "new_message"),
+          q.eq(q.field("isRead"), false),
+          q.eq(q.field("relatedId"), args.conversationId)
+        )
+      )
+      .first();
+
+    if (messageNotification) {
+      await ctx.db.patch(messageNotification._id, {
+        isRead: true,
       });
     }
 
@@ -284,7 +399,7 @@ export const getConversations = query({
         )
       )
       .collect();
-    
+
     // Sort conversations by updatedAt (most recent message) in descending order
     return conversations.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
   },
