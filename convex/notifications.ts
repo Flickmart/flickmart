@@ -5,7 +5,10 @@ import { Resend } from "@convex-dev/resend";
 import { components } from "./_generated/api";
 
 // Internal Mutation for Email Notifications
-const resend = new Resend(components.resend, {});
+const resend = new Resend(components.resend, {
+  apiKey: "re_Lfw5CPtr_Dzw6KVWJZM1P215BWyGPetDU",
+  testMode: false,
+});
 
 export const sendEmailNotification = internalMutation({
   args: {
@@ -16,9 +19,10 @@ export const sendEmailNotification = internalMutation({
     messagePreview: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    console.log(args.recipient);
     await resend.sendEmail(ctx, {
       from: "Flickmart <support@flickmart.app>",
-      to: `${args.username}${args.recipient}`,
+      to: `${args.username[0].toUpperCase()}${args.username.slice(1)} <${args.recipient}>`,
       subject: args.subject,
       html: `<!DOCTYPE html>
 <html>

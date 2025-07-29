@@ -19,12 +19,12 @@ const banners = [
 ];
 
 export default function Slider() {
-  const { api, setApi, count, current } = useSlider();
+  const { setApi } = useSlider();
   const catRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    catRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }, []);
+  // useEffect(() => {
+  //   catRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  // }, []);
 
   return (
     <div className="py-3 lg:py-5 px-1 lg:px-2" ref={catRef}>

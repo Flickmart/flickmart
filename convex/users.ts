@@ -34,7 +34,7 @@ export const updateUser = mutation({
     if (!user) {
       throw Error("Please Login First...");
     }
-    args.allowNotifications &&
+    args.allowNotifications !== undefined &&
       (await ctx.db.patch(user._id, {
         allowNotifications: args.allowNotifications,
       }));
