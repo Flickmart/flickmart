@@ -27,7 +27,7 @@ export default function Slider() {
   // }, []);
 
   return (
-    <div className="py-3 lg:py-5 px-1 lg:px-2" ref={catRef}>
+    <div className="py-3 lg:py-5" ref={catRef}>
       <Carousel setApi={setApi}>
         <CarouselContent>
           {banners.map((img, index) => (

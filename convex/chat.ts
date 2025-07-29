@@ -1,7 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
-import { sendEmailNotification } from "./notifications";
 import { internal } from "./_generated/api";
 
 export const startConversation = mutation({
@@ -87,6 +86,7 @@ export const sendMessage = mutation({
 
     // Get current timestamp
     const now = Date.now();
+    // await ctx.runMutation(internal.email.sendTestEmail)
 
     // Create the message with the sender already marked as having read it
     const messageId = await ctx.db.insert("message", {
@@ -141,16 +141,17 @@ export const sendMessage = mutation({
       imageUrl: sender?.imageUrl,
       isRead: false,
       timestamp: now,
-      link: `/chats?active=${args.conversationId}`,
+      link: `/chat/${args.conversationId}`,
     });
+
 
     // Send Notification Email to Recipient if recipient has email notifications enabled
     if (receiver?.allowNotifications) {
-      await ctx.runMutation(internal.notifications.sendEmailNotification, {
+      await ctx.runMutation(internal.email.sendEmailNotification, {
         username: sender?.name ?? "A customer",
         subject: "You have a new chat message",
         recipient: receiver?.email as string,
-        ctaLink: "https://flickmart.app/chats",
+        ctaLink: `https://flickmart.app/chat/${args.conversationId}`,
         messagePreview: args.content || "",
       });
     }
@@ -282,9 +283,29 @@ export const getConversations = query({
           q.eq(q.field("user2"), args.userId)
         )
       )
-      .order("desc")
       .collect();
-    return conversations;
+    
+    // Sort conversations by updatedAt (most recent message) in descending order
+    return conversations.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  },
+});
+
+export const getConversation = query({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    return conversation;
   },
 });
 

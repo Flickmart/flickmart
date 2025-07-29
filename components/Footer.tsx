@@ -25,7 +25,7 @@ export default function Footer() {
     "post-ad",
     "/create-store",
     "/saved",
-    "/chats",
+    "/chat",
     "/business",
   ];
 
@@ -44,7 +44,7 @@ export default function Footer() {
           <AccordionItem value="footer">
             <article className="flex flex-col lg:flex-row justify-between">
               <article className="w-full  lg:w-6/12 mb-8">
-                <AccordionTrigger className="hover:no-underline flex items-center ">
+                <AccordionTrigger className="[&>svg]:xl:hidden hover:no-underline flex items-center ">
                   <Link href={"/"} className="flex gap-2  items-center">
                     <Image
                       src="/flickmart-logo.svg"
@@ -61,7 +61,7 @@ export default function Footer() {
                 <p className=" lg:mt-6 mb-3">What you order is what you get.</p>
               </article>
               <AccordionContent>
-                <article className="lg:hidden w-full lg:w-6/12 flex flex-col lg:flex-row justify-between mb-9">
+                <article className="lg:hidden w-full lg:w-6/12 flex flex-col lg:flex-row justify-between mb-3 lg:mb-9">
                   <div className="w-full lg:w-3/6 flex items-start border-t lg:border-none py-6">
                     <div className="flex flex-col gap-5">
                       <h1 className="text-lg mb-2">Info</h1>
@@ -90,13 +90,51 @@ export default function Footer() {
                       </Link>
                     </div>
                   </div>
+                  <div className="border-t pt-5 mt-5">
+                    <h1 className="text-lg">Connect with us</h1>
+                    <div className="flex gap-3 mt-2">
+                      <Link
+                        href={
+                          "https://www.instagram.com/flickmartofficial?igsh=cDQwaWk3cHVkdndl"
+                        }
+                        target="_blank"
+                        className="group"
+                      >
+                        <Image
+                          src="/ig.png"
+                          alt="Instagram"
+                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
+                          width={30}
+                          height={30}
+                        />
+                      </Link>
+                      <Link href={"#"} target="_blank" className="group">
+                        <Image
+                          src="/x.png"
+                          alt="Facebook"
+                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
+                          width={26}
+                          height={26}
+                        />
+                      </Link>
+                      <Link href={"#"} target="_blank" className="group">
+                        <Image
+                          src="/wa.png"
+                          alt="Facebook"
+                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
+                          width={30}
+                          height={30}
+                        />
+                      </Link>
+                    </div>
+                  </div>
                 </article>
               </AccordionContent>
             </article>
           </AccordionItem>
 
           <div className="flex flex-col justify-center gap-4">
-            <div className=" pt-5">
+            <div className="hidden xl:block pt-5">
               <h1 className="text-lg">Connect with us</h1>
               <div className="flex gap-3 mt-2">
                 <Link
@@ -134,17 +172,17 @@ export default function Footer() {
                 </Link>
               </div>
             </div>
-            <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center  border-t pt-9 mb-2 lg:mb-0">
+            <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center pt-9 mb-2 lg:mb-0">
               <span>
                 Copyright &copy; {new Date().getFullYear()} FlickMart. All
                 rights reserved
               </span>
               <span className="hidden lg:block">|</span>
               <span className="flex items-center gap-3 ">
-                <Link href="#" className="">
+                <Link href="/privacy-policy" className="">
                   Privacy Policy
                 </Link>
-                <Link href="#" className="">
+                <Link href="/terms-of-service" className="">
                   Terms & Conditions
                 </Link>
               </span>

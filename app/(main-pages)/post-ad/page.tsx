@@ -1,16 +1,17 @@
 "use client";
 import Loader from "@/components/multipage/Loader";
 import PostAdForm from "@/components/post-ad/PostAdForm";
-import useCheckUser from "@/hooks/useCheckUser";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React, { useState } from "react";
 
 export default function Page() {
   const queryClient = new QueryClient();
   const [clear, setClear] = useState<boolean>(false);
-  const loading = useCheckUser();
+  const { user, isLoading, isAuthenticated } = useAuthUser();
 
-  if (loading) return <Loader />;
+  if (isLoading) return <Loader />;
+  if (!isAuthenticated) return null; // Will be redirected by useAuthUser
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -71,7 +71,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
               tabIndex={0} // Makes it focusable
             >
               <Link
-                href="/chats"
+                href="/chat"
                 className={cn({
                   "bg-white rounded-full shadow-[0_5px_5px_#00000050] p-[10px]":
                     pathname !== "/",

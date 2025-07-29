@@ -3,6 +3,7 @@
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@clerk/nextjs";
+import { useAuthUser } from "@/hooks/useAuthUser";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -43,8 +44,7 @@ export default function AdCharges({
   const [showChargeDialog, setShowChargeDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const { getToken } = useAuth();
-
-  const user = useQuery(api.users.current);
+  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
   const wallet = useQuery(
     api.wallet.getWalletByUserId,
     user ? { userId: user._id } : "skip"
@@ -71,8 +71,12 @@ export default function AdCharges({
   };
 
   const handleCharge = async () => {
-    if (!user || !wallet) {
+    if (!isAuthenticated) {
       toast.error("Please log in to post an ad");
+      return;
+    }
+    if (!wallet) {
+      toast.error("Please create a wallet first");
       return;
     }
 
@@ -100,7 +104,7 @@ export default function AdCharges({
           body: JSON.stringify({
             amount: chargeAmount,
             plan,
-            userId: user._id,
+            userId: user?._id,
             walletId: wallet._id,
           }),
         }

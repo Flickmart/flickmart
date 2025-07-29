@@ -4,6 +4,7 @@ import { PhotoView } from "react-photo-view";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { LinkIcon } from "lucide-react";
+import Link from "next/link";
 
 interface MessageBubbleProps {
   id: string;
@@ -17,10 +18,11 @@ interface MessageBubbleProps {
   handleLongPress: (messageId: string) => void;
   toggleMessageSelection: (messageId: string) => void;
   toggleSelectionMode: () => void;
-  type?: "text" | "product" | "image";
+  type?: "text" | "product" | "image" | "escrow";
   title?: string;
   price?: number;
   image?: string;
+  productId?: string;
 }
 
 export default function MessageBubble({
@@ -39,6 +41,7 @@ export default function MessageBubble({
   title = "",
   price = 0,
   image = "", // Default to empty string
+  productId = "",
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -74,29 +77,30 @@ export default function MessageBubble({
         isUser ? "justify-end" : "justify-start",
         selectionMode && "cursor-pointer"
       )}
-      onClick={() => selectionMode && toggleMessageSelection(id)}
-      onContextMenu={(e) => {
-        e.preventDefault();
-        handleLongPress(id);
-      }}
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-      onTouchCancel={handleTouchEnd}
+      //DISABLED DELETE FEATURE 
+      // onClick={() => selectionMode && toggleMessageSelection(id)}
+      // onContextMenu={(e) => {
+      //   e.preventDefault();
+      //   handleLongPress(id);
+      // }}
+      // onTouchStart={handleTouchStart}
+      // onTouchEnd={handleTouchEnd}
+      // onTouchCancel={handleTouchEnd}
     >
       <div
         className={cn(
-          "max-w-[75%] sm:max-w-[70%] md:max-w-[65%] rounded-lg py-1 px-2 md:p-3 shadow-sm",
+          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] md:max-w-[65%] rounded-lg py-1 px-2 sm:py-2 sm:px-3 md:p-3 shadow-sm",
           isUser
             ? "bg-flickmart text-white rounded-br-none"
             : "bg-background text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
-            "bg-orange-200 border-2 border-orange-400 min-w-full ",
+            "bg-orange-200 border-2 border-orange-400",
           images.length > 0 && "rounded-br-lg rounded-bl-lg py-0"
         )}
       >
         {images && images.length > 0 && (
           <div
-            className={`grid gap-1 mt-2 ${
+            className={`grid gap-1 mt-1 sm:mt-2 ${
               images.length === 1
                 ? "grid-cols-1"
                 : images.length >= 2
@@ -165,7 +169,7 @@ export default function MessageBubble({
         )}
         <p
           className={cn(
-            "break-words text-sm md:text-base",
+            "break-words text-xs sm:text-sm md:text-base leading-relaxed",
             selectedMessages.includes(id) && " text-right "
           )}
         >
@@ -194,6 +198,7 @@ export default function MessageBubble({
             productTitle={title}
             productPrice={price}
             message={message}
+            productId={productId}
           />
         )}
       </div>
@@ -206,6 +211,7 @@ interface ProductChatMessageProps {
   productTitle: string;
   message: string;
   productPrice: number;
+  productId: string;
 }
 
 export function ProductChatMessage({
@@ -213,13 +219,15 @@ export function ProductChatMessage({
   productTitle,
   productPrice,
   message,
+  productId,
 }: ProductChatMessageProps) {
   return (
+    <Link href={`/product/${productId}`}>
     <div className="flex justify-end">
-      <div className="max-w-xs bg-flickmart text-white ">
+      <div className="max-w-[280px] sm:max-w-xs bg-flickmart text-white">
         {/* Product Details Section - Highlighted */}
-        <div className="bg-orange-600 rounded-lg p-3 mb-3 border border-orange-400 flex items-center gap-3" >
-          <div className="relative w-16 h-16 flex-shrink-0 rounded-md overflow-hidden">
+        <div className="bg-orange-600 rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-orange-400 flex items-center gap-2 sm:gap-3">
+          <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 rounded-md overflow-hidden">
             <Image
               src={productImage || "/placeholder.svg"}
               alt={productTitle}
@@ -228,17 +236,18 @@ export function ProductChatMessage({
               className="rounded-md"
             />
           </div>
-          <div className="flex-1">
-            <p className="text-sm font-semibold line-clamp-2 leading-tight flex items-center gap-1">
-              {productTitle}
-              <LinkIcon className="w-3 h-3 text-orange-200" /> {/* Link icon */}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs sm:text-sm font-semibold line-clamp-2 leading-tight flex items-center gap-1">
+              <span className="truncate">{productTitle}</span>
+              <LinkIcon className="w-3 h-3 text-orange-200 flex-shrink-0" />
             </p>
-            <p className="text-xs font-medium text-orange-100 mt-1">${productPrice.toFixed(2)}</p>
+            <p className="text-xs font-medium text-orange-100 mt-1">₦{productPrice.toFixed(2)}</p>
           </div>
         </div>
         {/* Message Text */}
-        <p className="text-sm leading-relaxed">{message}</p>
+        <p className="text-xs sm:text-sm leading-relaxed">{message}</p>
       </div>
     </div>
+     </Link>
   );
 }

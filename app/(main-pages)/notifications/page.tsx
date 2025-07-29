@@ -2,19 +2,17 @@
 
 import MobileHeader from "@/components/MobileHeader";
 import Day from "@/components/notifications/Day";
-import { useState, useEffect } from "react";
+import { useState, useEffect, JSX } from "react";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { formatDistanceToNow } from "date-fns";
 import { Spinner } from "@/components/Spinner";
 import { toast } from "sonner";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -28,7 +26,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
-import { redirect } from "next/navigation";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { cn } from "@/lib/utils";
+import { AlarmClock, Bell, ChevronDown, Megaphone, MessageCircle, MessageSquareText, ShoppingBag, ThumbsUp } from "lucide-react";
 export interface Notification {
   icon: string;
   text: string;
@@ -68,14 +68,55 @@ type NotificationType =
   | "advertisement"
   | "reminder";
 
+  const notificationLabels: Record<NotificationType, string> = {
+    all: "All Types",
+    new_message: "Messages",
+    new_like: "Likes",
+    new_comment: "Comments",
+    new_sale: "Sales",
+    advertisement: "Ads",
+    reminder: "Reminders",
+};
+  
+// icons for each notification type
+const notificationIcons: Record<NotificationType, JSX.Element> = {
+  all: <Bell className="w-5 h-5" />,
+  new_message: <MessageCircle className="w-5 h-5" />,
+  new_like: <ThumbsUp className="w-5 h-5" />,
+  new_comment: <MessageSquareText className="w-5 h-5" />,
+  new_sale: <ShoppingBag className="w-5 h-5" />,
+  advertisement: <Megaphone className="w-5 h-5" />,
+  reminder: <AlarmClock className="w-5 h-5" />,
+};
+
 const Page = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
   const [selectedType, setSelectedType] = useState<NotificationType>("all");
+  const [open, setOpen] = useState(false); // Track popover open state
+
+  const options: NotificationType[] = [
+    "all",
+    "new_message",
+    "new_like",
+    "new_comment",
+    "new_sale",
+    "advertisement",
+    "reminder",
+  ];
 
   const user = useUser();
-  const allNotifications = useQuery(api.notifications.getNotifications) || [];
+  const { user: convexUser, isLoading: authLoading, isAuthenticated } = useAuthUser();
+  const allNotifications =
+    useQuery(
+      api.notifications.getNotifications,
+      convexUser?._id
+        ? {
+            userId: convexUser?._id,
+          }
+        : "skip"
+    ) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const markAllAsRead = useMutation(
@@ -127,11 +168,7 @@ const Page = () => {
     setLastScrollY(window.scrollY);
   }
 
-  useEffect(() => {
-    if (!user) {
-      redirect("/sign-in");
-    }
-  }, [user]);
+  // Remove the redirect effect since useAuthUser handles it
 
   useEffect(() => {
     addEventListener("scroll", handleScroll);
@@ -193,7 +230,7 @@ const Page = () => {
     );
   })();
 
-  if (!filteredNotifications) {
+  if (authLoading || !filteredNotifications) {
     return (
       <div className="h-screen flex items-center justify-center">
         <Spinner />
@@ -201,17 +238,59 @@ const Page = () => {
     );
   }
 
+  if (!isAuthenticated) {
+    return null; // Will be redirected by useAuthUser
+  }
+
   return (
-    <main>
-      <MobileHeader>
-        <button
-          type="button"
-          onClick={handleMarkAllAsRead}
-          className="text-flickmart font-medium cursor-pointer text-sm hover:underline"
-        >
-          Mark all as Read
-        </button>
-      </MobileHeader>
+    <main className="">
+      <MobileHeader
+        rightSlot={
+          <button
+            type="button"
+            onClick={handleMarkAllAsRead}
+            className="text-flickmart font-medium cursor-pointer text-sm hover:underline"
+          >
+            Mark all as Read
+          </button>
+        }
+      />
+      <div className="relative w-full flex items-center justify-center py-4">
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <button className="flex items-center gap-2 px-3 py-2 font-medium transition">
+              {notificationLabels[selectedType]}
+              <ChevronDown
+              className={cn(
+                  "w-5 h-5 transition-transform duration-200",
+                  open && "rotate-180"
+                )}
+              />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-screen md:w-[500px] xl:w-[500px] p-2 rounded-2xl z-50 bg-white text-gray-500 border">
+            <ul className="space-y-1">
+              {options.map((type) => (
+                <li key={type}>
+                  <button
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-4 rounded-lg transition",
+                      selectedType === type && "bg-flickmart/10 font-semibold text-black"
+                    )}
+                    onClick={() => {
+                      setSelectedType(type);
+                      setOpen(false);
+                    }}
+                  >
+                    {notificationIcons[type]}
+                    {notificationLabels[type]}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </PopoverContent>
+        </Popover>
+      </div>
       <div
         className={`${isVisible ? "translate-y-0" : "-translate-y-full"} h-[60px] transition-all duration-300 bg-white flex items-center px-[18px] justify-between shadow-lg font-semibold sticky top-[77px] z-30 sm:h-[80px] sm:translate-y-0 sm:top-0`}
       >
@@ -235,26 +314,8 @@ const Page = () => {
             Unread ({unreadCount})
           </button>
         </div>
-
-        <Select
-          value={selectedType}
-          onValueChange={(value) => setSelectedType(value as NotificationType)}
-        >
-          <SelectTrigger className="w-[140px] h-8 text-xs">
-            <SelectValue placeholder="Filter by type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            <SelectItem value="new_message">Messages</SelectItem>
-            <SelectItem value="new_like">Likes</SelectItem>
-            <SelectItem value="new_comment">Comments</SelectItem>
-            <SelectItem value="new_sale">Sales</SelectItem>
-            <SelectItem value="advertisement">Ads</SelectItem>
-            <SelectItem value="reminder">Reminders</SelectItem>
-          </SelectContent>
-        </Select>
       </div>
-      <div className="mt-10 px-[18px] flex justify-between items-center sm:block">
+      <div className="w-full mt-10 px-[18px] flex gap-2 justify-between items-center sm:block">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
@@ -287,7 +348,7 @@ const Page = () => {
         <Button
           type="button"
           onClick={handleMarkAllAsRead}
-          className="hidden sm:inline-block bg-flickmart hover:bg-flickmart/80"
+          className="ml-2 hidden sm:inline-block bg-flickmart hover:bg-flickmart/80"
         >
           Mark all as Read
         </Button>

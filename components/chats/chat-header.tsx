@@ -90,7 +90,7 @@ export default function ChatHeader({
         className="mr-2 text-white md:hidden"
         onClick={toggleSidebar}
       >
-        <ChevronLeft className="h-16 w-16 text-black" />
+        <ChevronLeft className="h-6 w-6 text-black" />
       </Button>
 
       <div

@@ -83,6 +83,14 @@ export const upsertFromClerk = internalMutation({
     if (user === null) {
       // First create the user
       const userId = await ctx.db.insert("users", userAttributes);
+
+      // Automatically create a wallet for the new user
+      await ctx.db.insert("wallets", {
+        userId: userId,
+        balance: 0,
+        currency: "NGN",
+        status: "active",
+      });
     } else {
       await ctx.db.patch(user._id, userAttributes);
     }
@@ -150,4 +158,36 @@ export const getUserByToken = query({
     const user = await userByExternalId(ctx, identity.subject);
     return user;
   },
+});
+
+
+export const getUserById = query({
+  args: {
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("User is not authenticated");
+    }
+
+    const user = await ctx.db.get(args.userId)
+
+    return user
+  }
+});
+
+export const getById = query({
+  args: {
+    userId: v.id("users")
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (identity === null) {
+      throw new Error("User is not authenticated");
+    }
+
+    const user = await ctx.db.get(args.userId);
+    return user;
+  }
 });
