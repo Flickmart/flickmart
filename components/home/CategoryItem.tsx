@@ -16,12 +16,10 @@ export default function CategoryItem({
             alt={categoryName}
             width={200}
             height={200}
-            className="w-3/4 h-3/5 object-contain"
+            className="h-1/3 w-3/4 object-contain "
           />
         </div>
-        <span className="font-bold text-gray-800 text-[13px] capitalize sm:text-sm md:text-base xl:text-xl">
-          {categoryName}
-        </span>
+        <span className="font-bold text-sm lg:text-xl">{categoryName}</span>
       </div>
     </Link>
   );
