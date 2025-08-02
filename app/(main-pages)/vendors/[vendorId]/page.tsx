@@ -1,36 +1,47 @@
+"use client";
+
 import Image from "next/image";
-import {
-  MessageSquare,
-  Share2,
-  ChevronRight,
-  Bookmark,
-  Search,
-  X,
-  ArrowLeft,
-} from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { MessageSquare, Share2, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { formatDistanceToNow } from "date-fns";
-import ProductCard from "../multipage/ProductCard";
+import ProductCard from "@/components/multipage/ProductCard";
 import Link from "next/link";
+import Loader from "@/components/multipage/Loader";
 
-interface UserProfileProps {
-  open?: boolean;
-  onClose: () => void;
-  userId: Id<"users">;
-}
+const VendorProfile = ({
+  params,
+}: {
+  params: Promise<{ vendorId: Id<"users"> }>;
+}) => {
+  const { vendorId } = use(params);
 
+  const user = useQuery(api.users.getUser, { userId: vendorId });
+  const store = useQuery(api.store.getStoreByUserId, { userId: vendorId });
+
+  if (!user) {
+    return <Loader />;
+  }
+
+  return (
+    <div className="z-50 flex">
+      <div className="relative bg-white h-full w-full overflow-y-auto max-w-5xl">
+        <ProfileContent user={user!} store={store!} />
+      </div>
+    </div>
+  );
+};
+export default VendorProfile;
+
+// Profile content component to share between mobile and desktop views
 interface ProfileContentProps {
   user: Doc<"users">;
   store: Doc<"store">;
 }
-// Profile content component to share between mobile and desktop views
+
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState("");
   const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
@@ -47,7 +58,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
     <>
       <div className="p-4">
         {/* Profile Header */}
-        <div className="flex flex-col items-start mt-8 mb-6 md:mt-0">
+        <div className="flex flex-col items-start mb-6">
           <div className="flex items-center gap-3">
             <div className="relative">
               <div className="absolute inset-0 rounded-full -z-10"></div>
@@ -88,15 +99,13 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             </div>
           ) : (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-sm">
-                Hey there i'm using flickmart!
-              </p>
+              <p className="text-sm">Hey there i'm using flickmart!</p>
             </div>
           )}
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
+        <div className="grid grid-cols-2 gap-3 mb-6 max-w-lg">
           <Button
             variant="outline"
             className="flex justify-center items-center py-5 rounded-xl border-gray-200 hover:bg-orange-50 hover:border-orange-200 transition-all"
@@ -162,57 +171,3 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
     </>
   );
 };
-
-export default function UserProfile({
-  open,
-  onClose,
-  userId,
-}: UserProfileProps) {
-  const user = useQuery(api.users.getUser, { userId: userId });
-  const store = useQuery(api.store.getStoreByUserId, { userId: userId });
-
-  // Always set up state and effects
-  const [isMobile, setIsMobile] = useState(false);
-  useEffect(() => {
-    const checkIsMobile = () => {
-      setIsMobile(window.innerWidth < 768); // md breakpoint is 768px
-    };
-
-    checkIsMobile();
-    window.addEventListener("resize", checkIsMobile);
-
-    return () => {
-      window.removeEventListener("resize", checkIsMobile);
-    };
-  }, []);
-
-  // Conditionally render based on user and open rather than returning early
-  if (!user || !open) {
-    return null;
-  }
-
-  // Render UI based on mobile or desktop
-  if (isMobile) {
-    return (
-      <Sheet open={open} onOpenChange={onClose}>
-        <SheetTitle>Profile</SheetTitle>
-        <SheetContent className="w-full overflow-y-auto p-0" side="right">
-          <ProfileContent user={user!} store={store!} />
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  return (
-    <div className="fixed inset-0 z-50 flex justify-end ">
-      <div className="absolute inset-0 bg-black/20" onClick={onClose}></div>
-      <div className="relative bg-white h-full w-full overflow-y-auto max-w-5xl shadow-xl">
-        <div className="flex gap-x-2 p-3">
-          <ArrowLeft className="h-8 w-8 cursor-pointer" onClick={onClose} />
-          <h2 className="text-2xl text-black font-bold ml-6">Profile</h2>
-        </div>
-        <ProfileContent user={user!} store={store!} />
-      </div>
-    </div>
-  );
-}
