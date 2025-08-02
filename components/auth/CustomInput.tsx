@@ -34,7 +34,7 @@ const CustomInput = ({
               <div className="flex">
                 <Input
                   type={showPassword ? "text" : "password"}
-                  className="auth-input peer"
+                  className="auth-input peer !ring-0"
                   placeholder={placeholder}
                   {...field}
                 />
@@ -50,7 +50,7 @@ const CustomInput = ({
               </div>
             ) : (
               <Input
-                className="auth-input"
+                className="auth-input !ring-0"
                 placeholder={placeholder}
                 {...field}
               />

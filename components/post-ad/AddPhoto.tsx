@@ -67,7 +67,7 @@ export default function AddPhoto({
     };
 
     if (!files || files.length < 2 || files.length > 5) {
-      setError("*Images must not be less than two or greater than five");
+      setError("*You must add between 2 and 5 images.");
     } else {
       setError("");
 
