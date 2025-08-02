@@ -56,7 +56,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
   };
   return (
     <>
-      <div className="p-4">
+      <div className="p-4 lg:w-4/6 lg:mx-auto">
         {/* Profile Header */}
         <div className="flex flex-col items-start mb-6">
           <div className="flex items-center gap-3">
