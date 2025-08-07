@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
-const { withBotId } = require('botid/next/config');
-const { withSentryConfig } = require('@sentry/nextjs');
+const { withBotId } = require("botid/next/config");
+const { withSentryConfig } = require("@sentry/nextjs");
 
 const baseConfig = {
   reactStrictMode: true,

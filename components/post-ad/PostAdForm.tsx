@@ -19,6 +19,7 @@ import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 
 import AdCharges from "./AdCharges";
+import CategorySheet from "./CategorySheet";
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -192,7 +193,7 @@ export default function PostAdForm({
         className="bg-white lg:w-5/6 w-full  grid place-items-center rounded-lg space-y-10"
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
-          <Selector form={form} options={categories} name="category" />
+          <CategorySheet form={form} name="category" />
           <AddPhoto
             setIsSubmitted={setIsSubmitted}
             isSubmitted={isSubmitted}

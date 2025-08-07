@@ -1,22 +1,7 @@
 import React from "react";
 import CategoryItem from "./CategoryItem";
 import Container from "./Container";
-
-interface CategoryObj {
-  categoryName: string;
-}
-const categoryItems: Array<CategoryObj> = [
-  { categoryName: "vehicles" },
-  { categoryName: "homes" },
-  { categoryName: "food" },
-  { categoryName: "mobiles" },
-  { categoryName: "appliances" },
-  { categoryName: "fashion" },
-  { categoryName: "electronics" },
-  { categoryName: "pets" },
-  { categoryName: "beauty" },
-  { categoryName: "services" },
-];
+import { categoryItems } from "@/utils/constants";
 
 export default function Categories() {
   return (

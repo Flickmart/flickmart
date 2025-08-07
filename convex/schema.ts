@@ -58,6 +58,18 @@ export default defineSchema({
     store: v.string(),
   }),
 
+  // Sub Categories
+  subcategories: defineTable({
+    category: v.string(),
+    items: v.array(
+      v.object({
+        title: v.string(),
+        image: v.string(),
+        size: v.number(),
+      })
+    ),
+  }),
+
   // History Search
   history: defineTable({
     userId: v.id("users"),
@@ -119,7 +131,9 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
-    type: v.optional(v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))),
+    type: v.optional(
+      v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))
+    ),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
@@ -137,7 +151,7 @@ export default defineSchema({
       v.literal("reminder"),
       v.literal("escrow_funded"),
       v.literal("escrow_released"),
-      v.literal("completion_confirmed"),
+      v.literal("completion_confirmed")
     ),
     relatedId: v.optional(
       v.union(
