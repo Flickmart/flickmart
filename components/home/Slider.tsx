@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/carousel";
 
 import useSlider from "@/hooks/useSlider";
-import { addCategories } from "@/utils/addCategory";
+// import { addCategories } from "@/utils/addCategory";
 import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -25,21 +25,22 @@ const banners = [
 export default function Slider() {
   const { setApi } = useSlider();
   const catRef = useRef<HTMLDivElement>(null);
-  const catInsert = useMutation(api.categories.insertSubCategory);
 
-  useEffect(() => {
-    try {
-      const insertToDB = async () => {
-        const category = await addCategories("electronics");
-        await catInsert(category);
-        toast.success("Categories added successfully");
-      };
+  // Adding categories
+  // const catInsert = useMutation(api.categories.insertSubCategory);
+  // useEffect(() => {
+  //   try {
+  //     const insertToDB = async () => {
+  //       const category = await addCategories("electronics");
+  //       await catInsert(category);
+  //       toast.success("Categories added successfully");
+  //     };
 
-      insertToDB();
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+  //     insertToDB();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, []);
 
   // useEffect(() => {
   //   catRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
