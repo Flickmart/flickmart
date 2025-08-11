@@ -887,7 +887,7 @@ function calculateTextSimilarity(text1: string, text2: string): number {
 
 // Get Products by category
 
-export const getProductsByCategory = query({
+export const getProductsByCategoryOrSubCategory = query({
   args: { category: v.string() },
   handler: async (ctx, args) => {
     const user = getCurrentUserOrThrow(ctx);
@@ -897,7 +897,12 @@ export const getProductsByCategory = query({
     }
     const products = await ctx.db
       .query("product")
-      .filter((q) => q.eq(q.field("category"), args.category))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("category"), args.category),
+          q.eq(q.field("subcategory"), args.category)
+        )
+      )
       .collect();
     return products;
   },
@@ -911,13 +916,19 @@ export const getProductsByFilters = query({
     max: v.number(),
     priceRange: v.string(),
     location: v.string(),
+    subcategory: v.string(),
   },
   handler: async (ctx, args) => {
     console.log(args);
 
     let query = ctx.db
       .query("product")
-      .filter((q) => q.eq(q.field("category"), args.category));
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("category"), args.category),
+          q.eq(q.field("subcategory"), args.subcategory)
+        )
+      );
 
     // Apply location filter if provided
     if (args.location) {
