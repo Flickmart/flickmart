@@ -43,6 +43,7 @@ export default defineSchema({
     price: v.number(),
     businessId: v.id("store"),
     category: v.string(),
+    subcategory: v.optional(v.string()),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
     views: v.optional(v.number()),

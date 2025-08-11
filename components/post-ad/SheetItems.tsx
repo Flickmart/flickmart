@@ -13,6 +13,9 @@ export default function SheetItems({
   imageUrl?: string;
   type: string;
 }) {
+  const imgSrc = categoryName.includes(":")
+    ? categoryName.split(" ").slice(0, 2).join(" ").replace(":", "")
+    : categoryName;
   return (
     <div
       onClick={() => {
@@ -26,10 +29,15 @@ export default function SheetItems({
     >
       <div className="flex items-center pl-4 gap-5">
         <div className="size-14">
-          <img
+          <Image
             height={300}
             width={300}
-            src={imageUrl || `/${categoryName}.png`}
+            src={
+              type === "categories"
+                ? `/${categoryName}.png`
+                : `/categories/${imgSrc}.png`
+            }
+            // src={imageUrl}
             alt={categoryName}
             className="size-full object-contain"
           />

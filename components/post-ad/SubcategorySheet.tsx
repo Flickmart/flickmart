@@ -10,12 +10,12 @@ export default function SubcategorySheet({
   children,
   category,
   closeSheet,
-  setCategory,
+  setSubcategory,
 }: {
   children: React.ReactNode;
   category: string;
   closeSheet: () => void;
-  setCategory: (value: string) => void;
+  setSubcategory: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const subcategories = useQuery(api.categories.getCategory, {
@@ -48,7 +48,7 @@ export default function SubcategorySheet({
                   closeSheet={() => {
                     setOpen(false);
                     closeSheet();
-                    setCategory(item.title);
+                    setSubcategory(item.title);
                   }}
                   type="subcategories"
                   imageUrl={item.image}

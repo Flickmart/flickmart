@@ -23,12 +23,13 @@ export default function CategorySheet({
   form: FormType;
 }) {
   const [open, setOpen] = useState(false);
-  const closeSheet = () => {
+  const closeSheet = (value: string) => {
+    form.setValue("category", value);
     setOpen(false);
   };
 
-  function setCategory(value: string) {
-    form.setValue("category", value);
+  function setSubcategory(value: string) {
+    form.setValue("subcategory", value);
   }
 
   return (
@@ -41,7 +42,7 @@ export default function CategorySheet({
             <SheetTrigger
               className={`w-full flex justify-between text-gray-500 p-3.5 items-center text-lg rounded-lg    capitalize outline-none  border border-gray-300 shadow-none focus:ring-0`}
             >
-              <span>{field.value || "Category*"}</span>
+              <span>{field.value || `${name}*`}</span>
               <div className="text-gray-400">
                 <ChevronDown size={15} />
               </div>
@@ -49,17 +50,20 @@ export default function CategorySheet({
             <SheetContent
               hideCloseButton={true}
               side="left"
-              className="w-full min-h-screen  bg-gray-200 p-0 pb-20 "
+              className="w-full min-h-screen  bg-gray-200 p-0 mb-20 "
             >
-              <CustomSheetHeader closeSheet={closeSheet} text="Find Category" />
+              <CustomSheetHeader
+                closeSheet={() => setOpen(false)}
+                text="Find Category"
+              />
               <div className="h-[83vh] flex flex-col  overflow-auto">
                 {categoryItems.map((item) => {
                   return (
                     <SubcategorySheet
-                      closeSheet={closeSheet}
+                      closeSheet={() => closeSheet(item.categoryName)}
                       key={item.categoryName}
                       category={item.categoryName}
-                      setCategory={setCategory}
+                      setSubcategory={setSubcategory}
                     >
                       <SheetItems
                         type="categories"
