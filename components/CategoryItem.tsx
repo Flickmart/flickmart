@@ -49,7 +49,10 @@ export default function CatItem({
           <h2 className="text-[16px] lg:text-sm font-medium md:font-normal capitalize md:tracking-tighter">
             {item.title}
           </h2>
-          <span className="text-[14px] lg:text-[10px] text-gray-500">{`${productsBySubCat?.length ?? 0} ads`}</span>
+          <span className="text-[14px] lg:text-[10px] text-gray-500">
+            {`${productsBySubCat?.length ?? 0}`}{" "}
+            {(productsBySubCat?.length ?? 0) === 1 ? "ad" : "ads"}
+          </span>
         </div>
       </div>
     </Link>

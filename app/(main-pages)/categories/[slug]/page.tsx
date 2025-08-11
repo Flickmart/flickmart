@@ -80,6 +80,7 @@ export default function DetailedCategoryPage() {
   const query = searchParams.get("subcategory");
   const router = useRouter();
   const products = useProductsByCategoryOrSubCategory(slug);
+  const [queryString, setQueryString] = useState(query);
 
   const saveProduct = useMutation(api.product.addBookmark);
 
@@ -117,18 +118,19 @@ export default function DetailedCategoryPage() {
     ? filteredProds
     : products;
   useEffect(() => {
-    router.push(`/categories/${category || slug}?subcategory=${query || ""}`);
+    router.push(`/categories/${category || slug}?subcategory=${queryString}`);
   }, [category]);
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setQueryString(query);
     if (!filteredProds) {
       setLoading(true);
     } else {
       setLoading(false);
     }
-  }, [filteredProds]);
+  }, [filteredProds, query]);
 
   if (loading) {
     return (
@@ -281,11 +283,14 @@ export default function DetailedCategoryPage() {
             isMobile={isMobile}
             handleFilterState={handleFilterState}
             category={category || slug}
+            resetQuery={() => {
+              setQueryString("");
+            }}
           />
           <div className="mt-3 flex flex-col h-[90vh]">
             {/* <div className="flex justify-between items-center px-3"> */}
             <h3 className="capitalize text-lg text-gray-800 font-semibold">
-              {query}
+              {queryString}
             </h3>
             {/* <div className="flex gap-2">
                 <button>
@@ -297,13 +302,13 @@ export default function DetailedCategoryPage() {
               </div> */}
             {/* </div> */}
             <div
-              className={`mt-2 ${displayProducts?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
+              className={`mt-2 ${filteredProds?.length ? "grid" : "block"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
             >
               {
                 typeof filteredProds === undefined ? (
                   <p>loading...</p>
                 ) : filteredProds?.length === 0 ? (
-                  <div className=" h-[50vh] lg:text-xl text-base grid place-items-center text-gray-500">
+                  <div className=" h-[50vh] lg:text-xl text-base grid place-items-center w-full text-gray-500">
                     <p>No product under this category</p>
                   </div>
                 ) : (

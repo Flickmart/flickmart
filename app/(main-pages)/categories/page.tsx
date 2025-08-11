@@ -11,11 +11,10 @@ import React, { useState } from "react";
 export default function Subcategories() {
   const searchParams = useSearchParams();
   const category = searchParams.get("category");
-  const [subCat, setSubCat] = useState("");
-
   const subcategories = useQuery(api.categories.getCategory, {
     category: category ?? "homes",
   });
+  const [subCat, setSubCat] = useState("");
   const productsByCat = useProductsByCategoryOrSubCategory(subCat ?? "");
 
   if (!subcategories) {
@@ -51,7 +50,8 @@ export default function Subcategories() {
               <div className="flex flex-col gap-1 capitalize">
                 <span className="font-bold text-base">{subcategory.title}</span>
                 <span className="text-sm normal-case">
-                  {productsByCat?.length} ads
+                  {productsByCat?.length}{" "}
+                  {(productsByCat?.length ?? 0) === 1 ? "ad" : "ads"}
                 </span>
               </div>
             </div>
