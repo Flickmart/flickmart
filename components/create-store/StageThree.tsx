@@ -25,12 +25,12 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       // Upload to UploadThing
       const res = await startUpload([file]);
 
-      if (res && res.length > 0 && userStore && userStore[0]) {
+      if (res && res.length > 0 && userStore && userStore.data) {
         // Update with the actual uploaded URL
 
         toast.success("Image uploaded successfully");
         await mutate({
-          storeId: userStore[0]._id!,
+          storeId: userStore.data._id!,
           image: res[0].ufsUrl,
         });
       }
@@ -69,9 +69,9 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             className="absolute invisible w-0"
             disabled={isUploading}
           />
-          {userStore && userStore[0] && userStore[0].image ? (
+          {userStore && userStore?.data && userStore?.data?.image ? (
             <Image
-              src={userStore[0].image}
+              src={userStore?.data?.image}
               className="w-full h-full object-cover inline-block rounded-full hover:outline hover:outline-2 hover:outline-offset-2"
               height={60}
               width={60}
@@ -81,8 +81,8 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             <Avatar>
               <AvatarImage src="/default-profile.png" alt="default profile" />
               <AvatarFallback>
-                {userStore && userStore[0] && userStore[0].name
-                  ? userStore[0].name.charAt(0)
+                {userStore && userStore?.data && userStore?.data?.name
+                  ? userStore?.data?.name.charAt(0)
                   : "U"}
               </AvatarFallback>
             </Avatar>
@@ -96,11 +96,11 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             <Camera color="white" size={15} />
           </span>
         </div>
-        {userStore && userStore[0] && userStore[0].image && (
+        {userStore && userStore?.data && userStore?.data.image && (
           <button
             onClick={() => {
               mutate({
-                storeId: userStore[0]._id!,
+                storeId: userStore?.data._id!,
                 image: "",
               });
               toast.success("Image removed successfully");

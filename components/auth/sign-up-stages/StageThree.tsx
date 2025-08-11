@@ -7,12 +7,12 @@ import { useUser } from "@clerk/nextjs";
 const StageThree = () => {
   const [redirectTimer, setRedirectTimer] = useState(5);
   const router = useRouter();
-  const { user, isLoaded } = useUser();
+  const { user } = useUser();
   
   useEffect(() => {
     const interval = setInterval(() => {
       if (redirectTimer <= 0) {
-        router.push("/home");
+        router.push("/");
       } else {
         setRedirectTimer((prev) => prev - 1);
       }
@@ -22,7 +22,7 @@ const StageThree = () => {
   }, [redirectTimer, router]);
   
   const handleGetStarted = () => {
-    router.push("/home");
+    router.push("/");
   };
 
   return (
@@ -35,7 +35,7 @@ const StageThree = () => {
         className="mx-auto"
       />
       <h3 className="text-3xl mt-10 mb-7 md:text-4xl">
-        {isLoaded && user?.firstName ? user.firstName : 'Your'} account has been created
+        {user?.firstName ? user.firstName : 'Your'} account has been created
       </h3>
       <h2 className="text-sm font-light mb-32 md:text-base">
         Welcome to flickmart, where possibility meets passion.

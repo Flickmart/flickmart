@@ -19,9 +19,12 @@ export interface UserType {
 export interface UserStore {
   session: SessionType;
   user: UserType;
+  /**
+   * Updates the user information, including the email.
+   * Use this method to update any user field, such as email, name, etc.
+   */
   updateUserInfo: (user: UserType) => void;
   createSession: (sessionObj: SessionType) => void;
-  updateEmail: (email: string) => void;
 }
 
 

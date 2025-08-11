@@ -33,6 +33,9 @@ yarn-error.log*
 .env*.local
 .env
 
+#convex
+/convex/auth.config.js
+
 # vercel
 .vercel
 
@@ -42,3 +45,11 @@ next-env.d.ts
 
 # clerk configuration (can include secrets)
 /.clerk/
+
+
+gemini.md
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+.kiro

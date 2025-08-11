@@ -1,9 +1,6 @@
 "use client";
-import { FormMessage, Message } from "@/components/form-message";
-import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -19,7 +16,7 @@ export default function ForgotPassword() {
     setLoadingStatus(true);
     // Short delay to show loading state
     const timer = setTimeout(() => {
-      router.push("/home");
+      router.push("/");
       setLoadingStatus(false);
     }, 1000);
     
@@ -28,7 +25,6 @@ export default function ForgotPassword() {
 
   return (
     <>
-      <AuthHeader />
       <section className="form-grid">
         <Image
           src="/forgot-password.svg"

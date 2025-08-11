@@ -1,5 +1,4 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,11 +18,11 @@ import Image from "next/image";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import useUserStore from "@/store/useUserStore";
 import { useSignUp } from "@clerk/nextjs";
-import { OAuthStrategy } from '@clerk/types'
+import { OAuthStrategy } from "@clerk/types";
 import { toast } from "sonner";
 
 export const formSchema = z.object({
-  firstName: z
+  firstName: z  
     .string()
     .min(2, { message: "First name must be at least 2 characters" }),
   lastName: z
@@ -43,9 +42,9 @@ export default function StageOne({
 }: {
   setStage: Dispatch<SetStateAction<number>>;
 }) {
-  const updateEmail = useUserStore((state) => state.updateEmail);
   const [isLoading, setIsLoading] = useState(false);
   const { isLoaded, signUp } = useSignUp();
+  const [isSending, setIsSending] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,21 +58,24 @@ export default function StageOne({
   });
 
   const signUpWith = (strategy: OAuthStrategy) => {
-    return signUp?.authenticateWithRedirect({
-      strategy,
-      redirectUrl: '/sign-up/sso-callback',
-      redirectUrlComplete: '/home',
-    })
+    return signUp
+      ?.authenticateWithRedirect({
+        strategy,
+        redirectUrl: "/sign-up/sso-callback",
+        redirectUrlComplete: "/",
+      })
       .then((res) => {
-        console.log(res)
+        console.log(res);
       })
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
-        console.error(err, null, 2)
-      })
-  }
+        console.log(err);
+        console.error(err, null, 2);
+      });
+  };
+
+  const setEmail = useUserStore((state) => state.updateUserInfo);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!isLoaded) return;
@@ -89,28 +91,32 @@ export default function StageOne({
         password: values.password,
       });
 
+      // Update email in the user store
+      setEmail({
+        email: values.email,
+      });
+
       // Send the user an email with the verification code
+      setIsSending(true);
       await signUp.prepareEmailAddressVerification({
         strategy: "email_code",
       });
 
-      // Update email in the store for use in next stage
-      updateEmail(values.email);
-
       // Move to the next stage
       setStage(2);
     } catch (err: any) {
-      toast.error(err.errors?.[0]?.message || "An error occurred during sign up");
+      toast.error(
+        err.errors?.[0]?.message || "An error occurred during sign up"
+      );
       console.error(err);
     } finally {
       setIsLoading(false);
+      setIsSending(false);
     }
   };
 
-
   return (
     <main className="relative min-h-screen">
-      <AuthHeader />
       <section className="form-grid">
         <Image
           src="/sign-up-illustration.svg"
@@ -164,7 +170,7 @@ export default function StageOne({
                         I agree with{" "}
                         <Link
                           className="text-flickmart font-semibold hover:underline"
-                          href=""
+                          href="/privacy-policy"
                         >
                           Privacy Policy
                         </Link>{" "}
@@ -183,19 +189,23 @@ export default function StageOne({
               />
               <div className="flex items-center space-y-4 flex-col pb-3">
                 {/* captcha to protect from bots */}
-              <div id="clerk-captcha"></div>
+                <div id="clerk-captcha"></div>
                 <Button
                   className="submit-btn"
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || isSending}
                 >
-                  {isLoading ? "Processing..." : "Sign Up"}
+                  {isLoading
+                    ? "Processing..."
+                    : isSending
+                      ? "Sending..."
+                      : "Sign Up"}
                 </Button>
                 <Button
                   className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"
                   variant="secondary"
                   type="button"
-                  onClick={() => signUpWith('oauth_google')}
+                  onClick={() => signUpWith("oauth_google")}
                 >
                   <Image
                     src="/icons/google.png"

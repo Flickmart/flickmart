@@ -1,4 +1,3 @@
-import AuthHeader from "../AuthHeader";
 import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -37,7 +36,8 @@ const StageTwo = ({
   const [isLoading, setIsLoading] = useState(false);
   const [countdown, setCountdown] = useState(30);
   const { isLoaded, signUp, setActive } = useSignUp();
-  const email = useUserStore((state) => state.user?.email);
+  const [isSending, setIsSending] = useState(false);
+  const email = useUserStore((state) => state.user.email);
 
   // Countdown timer for resending code
   useEffect(() => {
@@ -87,7 +87,7 @@ const StageTwo = ({
     if (!isLoaded) return;
 
     try {
-      setIsLoading(true);
+      setIsSending(true);
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setCountdown(30);
       toast.success("A new verification code has been sent to your email");
@@ -95,13 +95,12 @@ const StageTwo = ({
       toast.error(err.errors?.[0]?.message || "Failed to send verification code");
       console.error(err);
     } finally {
-      setIsLoading(false);
+      setIsSending(false);
     }
   };
 
   return (
     <main className="relative h-screen">
-      <AuthHeader />
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -146,23 +145,24 @@ const StageTwo = ({
           <Button
             className="submit-btn lg:w-4/5 lg:mt-20"
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || isSending}
           >
-            {isLoading ? "Verifying..." : "Verify"}
+            {isLoading ? "Verifying..." : isSending ? "Sending..." : "Verify"}
           </Button>
           <p className="font-light mt-8">
             Didn't receive any code?{" "}
             {countdown > 0 ? (
               <span className="text-flickmart">
-                You will receive a new code in the next {countdown} seconds
+                You can resend the code in {countdown} seconds
               </span>
             ) : (
               <button
                 type="button"
                 onClick={resendCode}
-                className="text-flickmart font-medium hover:underline"
+                disabled={isSending}
+                className="text-flickmart font-medium hover:underline disabled:opacity-50"
               >
-                Resend code
+                {isSending ? "Sending..." : "Resend code"}
               </button>
             )}
           </p>

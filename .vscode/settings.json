@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
-        "flickmart"
-    ]
+        "flickmart",
+        "paystack"
+    ],
+    "typescript.autoClosingTags": false
 }

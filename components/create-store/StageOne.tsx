@@ -9,11 +9,11 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const userStore = useQuery(api.store.getStoresByUserId);
 
   useEffect(() => {
-    if (userStore?.[0]) {
+    if (userStore?.data) {
       router.push("/post-ad");
     }
   }, [userStore, router]);
-  
+
   return (
     <div>
       <h2 className="capitalize font-medium text-2xl mb-3 md:text-4xl">
@@ -21,11 +21,11 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       </h2>
       <p className="text-sm font-light text-flickmart-gray md:text-base">
         Read our{" "}
-        <Link href="#" className="text-flickmart font-medium">
+        <Link href="/privacy-policy" className="text-flickmart font-medium">
           Privacy Policy
         </Link>
         . Tap agree and continue to accept the{" "}
-        <Link href="#" className="text-flickmart font-medium">
+        <Link href="/terms-of-service" className="text-flickmart font-medium">
           Terms of Service
         </Link>{" "}
       </p>

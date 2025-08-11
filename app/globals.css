@@ -103,7 +103,7 @@
     @apply text-base text-flickmart-gray;
   }
   .container-px {
-    @apply px-2 sm:px-4;
+    @apply px-5;
   }
   .form-grid {
     @apply lg:grid lg:grid-cols-2 lg:absolute lg:top-1/2 lg:-translate-y-1/2 lg:left-1/2 lg:-translate-x-1/2 lg:w-full lg:px-8 lg:max-w-[1140px] lg:items-center;
@@ -111,8 +111,75 @@
   .submit-btn {
     @apply w-full border-2 border-flickmart h-12 mt-8 bg-flickmart text-base font-medium hover:text-flickmart hover:!bg-white duration-300;
   }
-  .conditional-no-hover-effect:has(button:hover){
-    @apply !bg-white
+  .conditional-no-hover-effect:has(button:hover) {
+    @apply !bg-white;
+  }
+  .expand {
+    animation: expand 0.4s linear forwards;
+  }
+  .contract {
+    animation: contract 0.4s linear forwards;
+  }
+
+  @keyframes expand {
+    0% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+  }
+  @keyframes contract {
+    0% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+    100% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+  }
+
+  .enlarge {
+    @apply fixed w-full transition-all z-[70] animate-[enlarge_0.2s_linear_1_forwards];
+  }
+
+  @keyframes enlarge {
+    0% {
+      left: 0%;
+      top: 0%;
+      transform: translate(0%, 0%) scale(0%);
+    }
+    100% {
+      left: 50%;
+      top: 50%;
+      @apply -translate-x-1/2 -translate-y-1/2;
+    }
+  }
+
+  /* Enhanced animations for product selection feedback */
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+  }
+
+  .scale-98 {
+    transform: scale(0.98);
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
@@ -129,4 +196,12 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* body {
+  line-height: 0.5 !important;
+} */
+
+#capture_div {
+  line-height: normal;
 }

@@ -9,7 +9,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -32,7 +32,8 @@
     ".next/types/**/*.ts",
     "node_modules/.bin/schema.ts",
     "server/server.mts",
-    "db/index.ts"
+    "db/index.ts",
+    "components/wallet/transaction-details.tsx"
   ],
   "exclude": ["node_modules"]
 }

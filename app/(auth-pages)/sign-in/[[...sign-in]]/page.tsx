@@ -1,5 +1,4 @@
 "use client";
-import AuthHeader from "@/components/auth/AuthHeader";
 import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,7 +17,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSignIn, useUser } from "@clerk/nextjs";
-import { OAuthStrategy } from '@clerk/types'
+import { OAuthStrategy } from "@clerk/types";
 import { toast } from "sonner";
 
 const formSchema = z.object({
@@ -38,7 +37,7 @@ export default function SignIn() {
   // If user is already signed in, redirect to home
   useEffect(() => {
     if (isSignedIn) {
-      router.push("/home");
+      router.push("/");
     }
   }, [isSignedIn, router]);
 
@@ -51,21 +50,20 @@ export default function SignIn() {
     },
   });
   const signInWith = (strategy: OAuthStrategy) => {
-    return signIn?.authenticateWithRedirect({
-      strategy,
-      redirectUrl: '/sign-up/sso-callback',
-      redirectUrlComplete: '/home',
-    })
+    return signIn
+      ?.authenticateWithRedirect({
+        strategy,
+        redirectUrl: "/sign-up/sso-callback",
+        redirectUrlComplete: "/",
+      })
       .then((res) => {
-        console.log(res)
       })
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
-        console.log(err.errors)
-        console.error(err, null, 2)
-      })
-  }
+        console.error(err, null, 2);
+      });
+  };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if (!isLoaded) return;
@@ -82,7 +80,7 @@ export default function SignIn() {
       if (result.status === "complete") {
         // Set the user session active
         await setActive({ session: result.createdSessionId });
-        router.push("/home");
+        router.push("/");
       } else {
         toast.error("Sign in failed. Please check your credentials.");
       }
@@ -96,7 +94,6 @@ export default function SignIn() {
 
   return (
     <main className="relative h-screen">
-      <AuthHeader />
       <section className="form-grid">
         <Image
           priority
@@ -161,7 +158,7 @@ export default function SignIn() {
                   className="w-full border-2 border-flickmart h-12 mt-8 hover:bg-flickmart text-base font-medium text-flickmart !bg-white duration-300"
                   variant="secondary"
                   type="button"
-                  onClick={() => signInWith('oauth_google')}
+                  onClick={() => signInWith("oauth_google")}
                 >
                   <Image
                     src="/icons/google.png"

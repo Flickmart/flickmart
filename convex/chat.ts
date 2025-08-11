@@ -1,5 +1,105 @@
-import { query, mutation } from "./_generated/server";
+import { query, mutation , QueryCtx, MutationCtx} from "./_generated/server";
 import { v } from "convex/values";
+import { getCurrentUser } from "./users";
+import { internal } from "./_generated/api";
+import { Id } from "./_generated/dataModel";
+
+// Helper function to handle consolidated message notifications
+async function handleMessageNotification(
+  ctx: MutationCtx,
+  {
+    recipientId,
+    senderId,
+    conversationId,
+    messageContent,
+    senderName,
+    senderImageUrl,
+    timestamp,
+  }: {
+    recipientId: Id<"users">;
+    senderId: Id<"users">;
+    conversationId: Id<"conversations">;
+    messageContent: string;
+    senderName: string;
+    senderImageUrl?: string;
+    timestamp: number;
+  }
+) {
+  // Check if there's already an unread message notification from this conversation
+  const existingNotification = await ctx.db
+    .query("notifications")
+    .withIndex("byUserId", (q) => q.eq("userId", recipientId))
+    .filter((q: any) =>
+      q.and(
+        q.eq(q.field("type"), "new_message"),
+        q.eq(q.field("isRead"), false),
+        q.eq(q.field("relatedId"), conversationId)
+      )
+    )
+    .first();
+
+  // Get the current unread count from the conversation
+  const conversation = await ctx.db.get(conversationId);
+  const unreadCount = conversation?.unreadCount?.[recipientId] || 1;
+
+  if (existingNotification) {
+    // Update the existing notification with new count and latest timestamp
+    // Keep the original content (first unread message) but update the title with new count
+    const titleText = unreadCount === 1
+      ? `You received 1 new message from ${senderName}`
+      : `You received ${unreadCount} new messages from ${senderName}`;
+
+    await ctx.db.patch(existingNotification._id, {
+      title: titleText,
+      timestamp: timestamp,
+      content: `You received ${unreadCount} new messages from ${senderName}` ,
+      isViewed: false, // Reset viewed status so it shows in unread count again
+    });
+  } else {
+    // Get the first unread message content for this conversation
+    // Find the oldest unread message from the sender to this recipient
+    const unreadMessages = await ctx.db
+      .query("message")
+      .filter((q: any) =>
+        q.and(
+          q.eq(q.field("conversationId"), conversationId),
+          q.eq(q.field("senderId"), senderId)
+        )
+      )
+      .collect();
+
+    // Filter messages that haven't been read by the recipient
+    const actuallyUnreadMessages = unreadMessages.filter(
+      (msg: any) => !msg.readByUsers?.includes(recipientId)
+    );
+
+    // Get the first unread message (oldest)
+    const firstUnreadMessage = actuallyUnreadMessages.sort((a: any, b: any) =>
+      (a._creationTime || 0) - (b._creationTime || 0)
+    )[0];
+
+    // Use the first unread message content, or fallback to current message
+    const firstMessageContent = firstUnreadMessage?.content || messageContent || "New message";
+
+    // Create a new notification with the first unread message content
+    const titleText = unreadCount === 1
+      ? `You received 1 new message from ${senderName}`
+      : `You received ${unreadCount} new messages from ${senderName}`;
+
+    await ctx.db.insert("notifications", {
+      userId: recipientId,
+      type: "new_message",
+      relatedId: conversationId, // Use conversationId for consolidation
+      title: titleText,
+      content: firstMessageContent, // This will be the first unread message
+      imageUrl: senderImageUrl,
+      isRead: false,
+      isViewed: false,
+      timestamp: timestamp,
+      link: `/chat/${conversationId}`,
+    });
+  }
+}
 
 export const startConversation = mutation({
   args: {
@@ -61,8 +161,14 @@ export const startConversation = mutation({
 export const sendMessage = mutation({
   args: {
     senderId: v.id("users"),
-    content: v.string(),
+    content: v.optional(v.string()),
     conversationId: v.id("conversations"),
+    images: v.optional(v.array(v.string())),
+    type: v.optional(v.union(v.literal("text"), v.literal("product"))),
+    productId: v.optional(v.id("product")),
+    price: v.optional(v.number()),
+    title: v.optional(v.string()),
+    productImage: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -78,13 +184,20 @@ export const sendMessage = mutation({
 
     // Get current timestamp
     const now = Date.now();
+    // await ctx.runMutation(internal.email.sendTestEmail)
 
     // Create the message with the sender already marked as having read it
     const messageId = await ctx.db.insert("message", {
       senderId: args.senderId,
       content: args.content,
+      images: args.images || [],
       conversationId: args.conversationId,
       readByUsers: [args.senderId], // The sender has read their own message
+      type: args.type,
+      productId: args.productId,
+      title: args.title,
+      price: args.price,
+      productImage: args.productImage,
     });
 
     // Determine the recipient
@@ -114,19 +227,30 @@ export const sendMessage = mutation({
     });
 
     const sender = await ctx.db.get(args.senderId);
+    const receiver = await ctx.db.get(recipientId);
 
-    // Create notification for the recipient
-    await ctx.db.insert("notifications", {
-      userId: recipientId,
-      type: "new_message",
-      relatedId: messageId,
-      title: `${sender?.name || "Someone"} sent you a message`,
-      content: args.content,
-      imageUrl: sender?.imageUrl,
-      isRead: false,
+    // Handle consolidated message notifications
+    await handleMessageNotification(ctx, {
+      recipientId,
+      senderId: args.senderId,
+      conversationId: args.conversationId,
+      messageContent: args.content || "",
+      senderName: sender?.name || "Someone",
+      senderImageUrl: sender?.imageUrl,
       timestamp: now,
-      link: `/chats?active=${args.conversationId}`,
     });
+
+
+    // Send Notification Email to Recipient if recipient has email notifications enabled
+    if (receiver?.allowNotifications) {
+      await ctx.runMutation(internal.email.sendEmailNotification, {
+        username: sender?.name ?? "A customer",
+        subject: "You have a new chat message",
+        recipient: receiver?.email as string,
+        ctaLink: `https://flickmart.app/chat/${args.conversationId}`,
+        messagePreview: args.content || "",
+      });
+    }
 
     return messageId;
   },
@@ -174,6 +298,25 @@ export const markMessagesAsRead = mutation({
 
       await ctx.db.patch(args.conversationId, {
         unreadCount,
+      });
+    }
+
+    // Clear the consolidated message notification for this conversation
+    const messageNotification = await ctx.db
+      .query("notifications")
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("type"), "new_message"),
+          q.eq(q.field("isRead"), false),
+          q.eq(q.field("relatedId"), args.conversationId)
+        )
+      )
+      .first();
+
+    if (messageNotification) {
+      await ctx.db.patch(messageNotification._id, {
+        isRead: true,
       });
     }
 
@@ -255,9 +398,29 @@ export const getConversations = query({
           q.eq(q.field("user2"), args.userId)
         )
       )
-      .order("desc")
       .collect();
-    return conversations;
+
+    // Sort conversations by updatedAt (most recent message) in descending order
+    return conversations.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+  },
+});
+
+export const getConversation = query({
+  args: {
+    conversationId: v.id("conversations"),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const conversation = await ctx.db.get(args.conversationId);
+    if (!conversation) {
+      throw new Error("Conversation not found");
+    }
+
+    return conversation;
   },
 });
 
@@ -270,7 +433,18 @@ export const getMessages = query({
       .query("message")
       .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
       .collect();
-    return messages;
+
+    const messagesWithProducts = await Promise.all(
+      messages.map(async (message) => {
+        if (message.type === "product" && message.productId) {
+          const product = await ctx.db.get(message.productId);
+          return { ...message, product };
+        }
+        return message;
+      })
+    );
+
+    return messagesWithProducts;
   },
 });
 
@@ -296,6 +470,65 @@ export const getAllConversationsMessages = query({
       allMessages.push(...messages);
     }
 
-    return allMessages;
+    const messagesWithProducts = await Promise.all(
+      allMessages.map(async (message) => {
+        if (message.type === "product" && message.productId) {
+          const product = await ctx.db.get(message.productId);
+          return { ...message, product };
+        }
+        return message;
+      })
+    );
+
+    return messagesWithProducts;
+  },
+});
+
+export const editMessage = mutation({
+  args: {
+    messageId: v.id("message"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await getCurrentUser(ctx);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const message = await ctx.db.get(args.messageId);
+    if (!message) {
+      throw new Error("Message not found");
+    }
+
+    await ctx.db.patch(args.messageId, {
+      content: args.content,
+    });
+  },
+});
+
+export const deleteMessages = mutation({
+  args: {
+    messageIds: v.array(v.id("message")),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    try {
+      await Promise.all(
+        args.messageIds.map((messageId) => ctx.db.delete(messageId))
+      );
+      return { success: true };
+    } catch (error) {
+      return { success: false };
+    }
   },
 });

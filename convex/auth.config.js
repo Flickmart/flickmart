@@ -1,7 +1,7 @@
 export default {
   providers: [
     {
-      domain: "https://lasting-gar-39.clerk.accounts.dev",
+      domain: process.env.NEXT_PUBLIC_CLERK_SERVER_CONFIG,
       applicationID: "convex",
     },
   ],

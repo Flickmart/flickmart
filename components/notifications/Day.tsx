@@ -1,4 +1,4 @@
-import { Notification } from "@/app/notifications/page";
+import { Notification } from "@/app/(main-pages)/notifications/page";
 import SingleNotification from "./SingleNotification";
 
 const Day = ({
