@@ -86,17 +86,15 @@ async function handleMessageNotification(
       ? `You received 1 new message from ${senderName}`
       : `You received ${unreadCount} new messages from ${senderName}`;
 
-    await ctx.db.insert("notifications", {
+    await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: recipientId,
       type: "new_message",
       relatedId: conversationId, // Use conversationId for consolidation
       title: titleText,
       content: firstMessageContent, // This will be the first unread message
       imageUrl: senderImageUrl,
-      isRead: false,
-      isViewed: false,
-      timestamp: timestamp,
       link: `/chat/${conversationId}`,
+      sendPush: true
     });
   }
 }
