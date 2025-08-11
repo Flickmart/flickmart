@@ -13,8 +13,8 @@ export default function SheetItems({
   imageUrl?: string;
   type: string;
 }) {
-  const imgSrc = categoryName.includes(":")
-    ? categoryName.split(" ").slice(0, 2).join(" ").replace(":", "")
+  const imgSrc = categoryName.includes("-")
+    ? categoryName.split(" ").slice(0, 2).join(" ")
     : categoryName;
   return (
     <div
