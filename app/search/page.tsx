@@ -1,5 +1,5 @@
 "use client";
-import CategoryItem, { useProductsByCategory } from "@/components/CategoryItem";
+import CategoryItem from "@/components/CategoryItem";
 import {
   ArrowLeft,
   Bookmark,
@@ -244,14 +244,14 @@ export default function DetailedCategoryPage() {
       >
         <SidebarHeader>
           <div className="flex items-center pt-5 px-2 justify-between">
-            <h2 className="font-semibold text-flickmart-chat-orange">
-              Subcategories
+            <h2 className="font-semibold text-xl px-3 text-flickmart-chat-orange">
+              Filters
             </h2>
             {isMobile && <SidebarTrigger />}
           </div>
         </SidebarHeader>
         <SidebarContent>
-          <SidebarGroup>
+          {/* <SidebarGroup>
             <SidebarGroupLabel className="font-semibold text-sm capitalize">
               {slug}
             </SidebarGroupLabel>
@@ -265,11 +265,11 @@ export default function DetailedCategoryPage() {
                 </Link>
               </div>
             </SidebarGroupContent>
-          </SidebarGroup>
+          </SidebarGroup> */}
           <SidebarGroup>
-            <SidebarGroupLabel className="font-semibold text-sm capitalize">
+            {/* <SidebarGroupLabel className="font-semibold text-sm capitalize">
               Filters
-            </SidebarGroupLabel>
+            </SidebarGroupLabel> */}
             <DropdownMenu>
               <DropdownMenuTrigger className="px-5 w-full shadow-md py-2 flex justify-between items-center">
                 <div className="flex flex-col items-start space-y-1">
