@@ -9,8 +9,87 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-export default function BestSellers() {
-  const recommendations = useQuery(api.product.getRecommendations, {});
+const testData = {
+  "recommendations": {
+    "data": [
+      {
+        "_id": "p1001",
+        "images": [
+          "/mobiles.png"
+        ],
+        "title": "Classic White Sneakers",
+        "price": 4500
+      },
+      {
+        "_id": "p1002",
+        "images": [
+          "/jacket.png"
+        ],
+        "title": "Bluetooth Wireless Earbuds",
+        "price": 7500
+      },
+      {
+        "_id": "p1003",
+        "images": [
+          "/pets.png"
+        ],
+        "title": "Ergonomic Laptop Stand",
+        "price": 12000
+      },
+      {
+        "_id": "p1003",
+        "images": [
+          "/pets.png"
+        ],
+        "title": "Ergonomic Laptop Stand",
+        "price": 12000
+      },
+      {
+        "_id": "p1003",
+        "images": [
+          "/pets.png"
+        ],
+        "title": "Ergonomic Laptop Stand",
+        "price": 12000
+      },
+        {
+          "_id": "p1003",
+          "images": [
+            "/pets.png"
+          ],
+          "title": "Ergonomic Laptop Stand",
+          "price": 12000
+        },
+      {
+        "_id": "p1004",
+        "images": [
+          "/electronics.png"
+        ],
+        "title": "Smart Digital Watch",
+        "price": 18500
+      }
+    ],
+    "error": null
+  }
+}
+
+type Product = {
+  _id: string;
+  images: string[];
+  title: string;
+  price: number;
+};
+
+type RecommendationsResponse = {
+  recommendations: {
+    data: Product[];
+    error: string | null;
+  };
+};
+
+export default function PopularSection() {
+  // const recommendations = useQuery(api.product.getRecommendations, {});
+  const recommendations = testData.recommendations;
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
 
@@ -21,11 +100,11 @@ export default function BestSellers() {
   }, [recommendations]);
 
   return (
-    <div className="text-center capitalize lg:space-y-10 space-y-5">
+    <div className="text-center capitalize lg:space-y-10 space-y-5 pb-12">
       <h2 className=" lg:text-3xl text-2xl text-gray-800 font-semibold">
-        best sellers
+        Popular
       </h2>
-      <Container className="!min-h-[40vh]">
+      <Container>
         <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
           {recommendations === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
