@@ -16,6 +16,7 @@ export default defineSchema({
 
     username: v.optional(v.string()),
     description: v.optional(v.string()),
+    verified: v.optional(v.boolean()),
     contact: v.optional(
       v.object({
         phone: v.optional(v.string()),

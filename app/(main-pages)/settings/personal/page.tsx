@@ -6,6 +6,7 @@ import {
   Phone,
   Wallet,
   ChevronLeft,
+  Verified,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -25,6 +26,8 @@ import RecentListings from "@/components/settings/RecentListings";
 import { useRouter } from "next/navigation";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 // This would typically come from an API or database
 
@@ -33,6 +36,8 @@ export default function PublicProfile() {
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
   const { user, isLoading, isAuthenticated } = useAuthUser();
   const router = useRouter();
+  const store = useQuery(api.store.getStoresByUserId);
+  const hasStore = store?.error?.status;
 
   if (isLoading) {
     return (
@@ -92,9 +97,12 @@ export default function PublicProfile() {
                   <p className="text-sm text-muted-foreground">
                     @{user?.username}
                   </p>
-                  <span className="ml-1 text-sm text-muted-foreground">
-                    Buyer
-                  </span>
+                  <div className="flex items-center gap-3 text-amber-400">
+                    <span className="ml-1 text-sm text-muted-foreground">
+                      {hasStore === 404 ? "Buyer" : "Seller"}
+                    </span>
+                    {user?.verified ? <Verified size={23} /> : null}
+                  </div>
                 </div>
               </div>
               <div className="flex flex-col gap-2 ">
