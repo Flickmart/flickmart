@@ -9,6 +9,7 @@ import SearchBox from "@/components/SearchBox";
 import MobileNav from "@/components/MobileNav";
 import SearchOverlay from "@/components/SearchOverlay";
 import { useState } from "react";
+import PopularSection from "@/components/home/PopularSection";
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -25,6 +26,7 @@ export default function Home() {
         <Categories />
         <BestSellers />
         <NewArrivals />
+        <PopularSection />
       </div>
       <Delivery />
       <Footer />
