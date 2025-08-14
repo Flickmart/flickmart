@@ -13,6 +13,9 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const userStore = useQuery(api.store.getStoresByUserId);
   const mutate = useMutation(api.store.addImage);
 
+  console.log(userStore?.data?.name);
+  
+
   const { startUpload } = useUploadThing("imageUploader");
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -69,24 +72,20 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             className="absolute invisible w-0"
             disabled={isUploading}
           />
-          {userStore && userStore?.data && userStore?.data?.image ? (
-            <Image
+          <Avatar className="w-full h-full">
+            <AvatarImage
               src={userStore?.data?.image}
               className="w-full h-full object-cover inline-block rounded-full hover:outline hover:outline-2 hover:outline-offset-2"
               height={60}
               width={60}
               alt="default profile"
             />
-          ) : (
-            <Avatar>
-              <AvatarImage src="/default-profile.png" alt="default profile" />
-              <AvatarFallback>
-                {userStore && userStore?.data && userStore?.data?.name
-                  ? userStore?.data?.name.charAt(0)
-                  : "U"}
-              </AvatarFallback>
-            </Avatar>
-          )}
+            <AvatarFallback className="uppercase text-5xl font-medium bg-[#38CB89] text-white">
+              {userStore && userStore?.data && userStore?.data?.name
+                ? userStore?.data?.name.charAt(0)
+                : "U"}
+            </AvatarFallback>
+          </Avatar>
           {isUploading && (
             <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center">
               <div className="text-white text-xs">Uploading...</div>
