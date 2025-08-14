@@ -17,13 +17,13 @@ export default function NewArrivalItem({
   price,
   productId,
 }: NewArrivalsProp) {
-  // const saved = useQuery(api.product.getSavedOrWishlistProduct, {
-  //   productId,
-  //   type: "saved",
-  // });
-  // if (saved?.error && saved.data === null) {
-  //   console.log(saved.error.message);
-  // }
+  const saved = useQuery(api.product.getSavedOrWishlistProduct, {
+    productId,
+    type: "saved",
+  });
+  if (saved?.error && saved.data === null) {
+    console.log(saved.error.message);
+  }
 
   return (
     <div className="flex flex-col justify-between lg:min-w-72 min-w-60 min-h-60 lg:min-h-30 relative flex-grow">
