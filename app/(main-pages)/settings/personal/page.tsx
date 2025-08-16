@@ -207,15 +207,12 @@ export default function PublicProfile() {
                   <span className="text-lg font-semibold">Wallet</span>
                 </Link>
               </Card>
-<<<<<<< HEAD
               
               {/* Push Notifications */}
               <PushNotificationSetup />
               
               {/* Test Component (Development Only) */}
               <PushNotificationTest />
-=======
->>>>>>> 948505a8f8eb014f1511b0f33e3cd58f5b9ca100
             </div>
           </div>
         </div>
