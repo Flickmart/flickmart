@@ -19,9 +19,11 @@ import { useRouter } from "next/navigation";
 import { Id } from "@/convex/_generated/dataModel";
 
 import AdCharges from "./AdCharges";
+import CategorySheet from "./CategorySheet";
 
 type SubmitType = SubmitHandler<{
   category: string;
+  subcategory: string;
   location: "enugu" | "nsukka";
   negotiable: boolean;
   condition: "brand new" | "used";
@@ -35,6 +37,7 @@ type SubmitType = SubmitHandler<{
 
 type ErrorType = SubmitErrorHandler<{
   category: string;
+  subcategory: string;
   location: "enugu" | "nsukka";
   exchange: boolean;
   condition: "brand new" | "used";
@@ -64,6 +67,7 @@ const condition = ["brand new", "used"];
 
 const formSchema = z.object({
   category: z.string(),
+  subcategory: z.string(),
   location: z.union([z.literal("enugu"), z.literal("nsukka")]),
   negotiable: z.boolean(),
   condition: z.union([z.literal("brand new"), z.literal("used")]),
@@ -97,6 +101,7 @@ export default function PostAdForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       category: "",
+      subcategory: "",
       location: undefined,
       title: "",
       negotiable: undefined,
@@ -192,7 +197,8 @@ export default function PostAdForm({
         className="bg-white lg:w-5/6 w-full  grid place-items-center rounded-lg space-y-10"
       >
         <div className="bg-inherit lg:w-3/4 space-y-5 lg:p-10 w-full px-5 py-10   ">
-          <Selector form={form} options={categories} name="category" />
+          <CategorySheet form={form} name="category" />
+          <CategorySheet form={form} name="subcategory" />
           <AddPhoto
             setIsSubmitted={setIsSubmitted}
             isSubmitted={isSubmitted}

@@ -47,45 +47,48 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
     <>
       <div className="p-4">
         {/* Profile Header */}
-        <div className="flex flex-col items-center mb-6">
-          <div className="relative mb-4">
-            <div className="absolute inset-0 rounded-full -z-10 scale-110"></div>
-            <Image
-              src={`${user.imageUrl || "placeholder.svg"}`}
-              alt={`${user.name}'s profile picture`}
-              width={150}
-              height={150}
-              className="rounded-full border-4 border-white shadow-lg object-cover"
-              priority
-            />
-          </div>
-
-          <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-          {!!presence && (
-            <p className="text-sm text-gray-500 mt-1">
-              {presence?.status === "online" ? (
-                "online"
-              ) : (
-                <span>
-                  Last seen{" "}
-                  {formatDistanceToNow(presence?.lastUpdated, {
-                    addSuffix: true,
-                  })}{" "}
-                </span>
+        <div className="flex flex-col items-start mt-8 mb-6 md:mt-0">
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <div className="absolute inset-0 rounded-full -z-10"></div>
+              <Image
+                src={`${user.imageUrl || "placeholder.svg"}`}
+                alt={`${user.name}'s profile picture`}
+                width={150}
+                height={150}
+                className="rounded-full border-4 border-white size-[80px] shadow-lg object-cover"
+                priority
+              />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">{user.name}</h1>
+              {!!presence && (
+                <p className="text-xs text-gray-500 mt-1">
+                  {presence?.status === "online" ? (
+                    "online"
+                  ) : (
+                    <span>
+                      Last seen{" "}
+                      {formatDistanceToNow(presence?.lastUpdated, {
+                        addSuffix: true,
+                      })}{" "}
+                    </span>
+                  )}
+                </p>
               )}
-            </p>
-          )}
+            </div>
+          </div>
 
           {store ? (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm">
                 I sell quality shoes in the industry u can also get bags,
                 clothes and other accessories from my store here in flickmart.
               </p>
             </div>
           ) : (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-sm">
                 Hey there i'm using flickmart!
               </p>
             </div>

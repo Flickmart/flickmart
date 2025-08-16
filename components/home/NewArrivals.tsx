@@ -16,9 +16,9 @@ export default function NewArrivals() {
   const all = useQuery(api.product.getAll, { limit: 10 });
 
   return (
-    <Container className="!flex items-center flex-col justify-start py-5 capitalize text-gray-800 space-y-5 ">
+    <div className="mt-0 lg:w-5/6 mx-auto !flex items-center flex-col justify-start py-5 capitalize text-gray-800 space-y-5 ">
       <div className="lg:w-5/6 w-full flex justify-between ">
-        <h2 className=" lg:text-3xl text-2xl  font-semibold">new arrivals</h2>
+        <h2 className=" lg:text-3xl text-2xl font-semibold">new arrivals</h2>
         <p className=" flex  space-x-2 pt-1.5 lg:pt-2">
           <span className=" underline underline-offset-8 lg:text-base text-xs">
             more products
@@ -26,7 +26,7 @@ export default function NewArrivals() {
           <ArrowRight className="text-gray-600 text-xs " />
         </p>
       </div>
-      <div className=" flex justify-between    lg:w-5/6 gap-x-5 lg:gap-x-10 w-full overflow-x-auto ">
+      <div className=" flex justify-between lg:w-5/6 gap-x-5 lg:gap-x-10 w-full overflow-x-auto ">
         {firstTenProducts === undefined || all === undefined
           ? Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
               <div
@@ -57,6 +57,6 @@ export default function NewArrivals() {
               </Link>
             ))}
       </div>
-    </Container>
+    </div>
   );
 }

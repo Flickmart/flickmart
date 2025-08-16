@@ -1,5 +1,6 @@
 "use client";
-import CategoryItem, { useProductsByCategory } from "@/components/CategoryItem";
+import CategoryItem from "@/components/CategoryItem";
+import { useProductsByCategoryOrSubCategory } from "@/hooks/useProdByCat";
 import {
   Bookmark,
   ChevronDown,
@@ -9,7 +10,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
@@ -47,37 +48,6 @@ interface FilterObjectType {
   priceRange: string;
 }
 
-const subCategories = {
-  vehicles: ["car", "motorcycle", "tricycle", "buses"],
-  electronics: [
-    "hp",
-    "apple",
-    "lenovo",
-    "acer",
-    "samsung",
-    "xiaomi",
-    "asus",
-    "dell",
-  ],
-  beauty: ["make up", "skin care", "soaps", "hair beauty", "gym equipment"],
-  fashion: [
-    "bags",
-    "men's clothing",
-    "women's clothing",
-    "men's shoe",
-    "women's shoe",
-    "watches",
-  ],
-  homes: ["single room", "self contain", "flat", "duplex", "bungalow"],
-  mobiles: [
-    "apple phones",
-    "android phones",
-    "tablet",
-    "phones & tablets accessories",
-  ],
-  pets: ["dogs", "cats", "pets accessories"],
-};
-
 const initialState: FilterObjectType = {
   min: 0,
   max: 0,
@@ -106,21 +76,27 @@ function reducer(
 export default function DetailedCategoryPage() {
   const params = useParams();
   let slug = params.slug as string;
-  const subCatItems = subCategories[slug as keyof typeof subCategories]?.map(
-    (title) => ({ title })
-  );
+  const searchParams = useSearchParams();
+  const query = searchParams.get("subcategory");
   const router = useRouter();
-  const products = useProductsByCategory(slug);
+  const products = useProductsByCategoryOrSubCategory(slug);
+  const [queryString, setQueryString] = useState(query);
+
   const saveProduct = useMutation(api.product.addBookmark);
+
   const [state, dispatch] = useReducer(reducer, initialState);
   const { min, max, location, priceRange } = state;
   const {
     filterState: { category, minPrice, maxPrice, location: locationFilter },
     handleFilterState,
   } = useFilters();
+  const subcategories = useQuery(api.categories.getCategory, {
+    category: slug ?? category,
+  });
   const filteredProds = useQuery(api.product.getProductsByFilters, {
     ...state,
     category: slug,
+    subcategory: query ?? "",
     min: minPrice || min,
     max: maxPrice || max,
     location: locationFilter || location,
@@ -142,18 +118,19 @@ export default function DetailedCategoryPage() {
     ? filteredProds
     : products;
   useEffect(() => {
-    router.push(`/categories/${category || slug}`);
+    router.push(`/categories/${category || slug}?subcategory=${queryString}`);
   }, [category]);
 
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    setQueryString(query);
     if (!filteredProds) {
       setLoading(true);
     } else {
       setLoading(false);
     }
-  }, [filteredProds]);
+  }, [filteredProds, query]);
 
   if (loading) {
     return (
@@ -179,17 +156,22 @@ export default function DetailedCategoryPage() {
           <SidebarContent>
             <SidebarGroup>
               <SidebarGroupLabel className="font-semibold text-sm capitalize">
-                {slug}
+                {category || slug}
               </SidebarGroupLabel>
               <SidebarGroupContent className="flex flex-col text-sm text-gray-800">
-                {subCatItems?.map((item, index) => (
-                  <CategoryItem key={index} item={item} />
+                {subcategories?.items.map((item, index) => (
+                  <CategoryItem
+                    key={index}
+                    item={item}
+                    toggleSidebar={toggleSidebar}
+                    category={slug || category}
+                  />
                 ))}
-                <div className="w-full flex justify-end text-[12px]">
+                {/* <div className="w-full flex justify-end text-[12px]">
                   <Link href={"#"} className="text-flickmart-chat-orange mt-2">
                     Show More
                   </Link>
-                </div>
+                </div> */}
               </SidebarGroupContent>
             </SidebarGroup>
             <SidebarGroup>
@@ -301,27 +283,32 @@ export default function DetailedCategoryPage() {
             isMobile={isMobile}
             handleFilterState={handleFilterState}
             category={category || slug}
+            resetQuery={() => {
+              setQueryString("");
+            }}
           />
           <div className="mt-3 flex flex-col h-[90vh]">
-            <div className="flex justify-between items-center px-3">
-              <span>Sort By:</span>
-              <div className="flex gap-2">
+            {/* <div className="flex justify-between items-center px-3"> */}
+            <h3 className="capitalize text-lg text-gray-800 font-semibold">
+              {queryString}
+            </h3>
+            {/* <div className="flex gap-2">
                 <button>
                   <LayoutGrid className="text-flickmart-chat-orange h-5 w-5" />
                 </button>
                 <button>
                   <LayoutPanelLeft className="text-gray-500 h-5 w-5" />
                 </button>
-              </div>
-            </div>
+              </div> */}
+            {/* </div> */}
             <div
-              className={`mt-2 ${displayProducts?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
+              className={`mt-2 ${filteredProds?.length ? "grid" : "block"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
             >
               {
                 typeof filteredProds === undefined ? (
                   <p>loading...</p>
                 ) : filteredProds?.length === 0 ? (
-                  <div className=" h-[50vh] lg:text-xl text-base grid place-items-center text-gray-500">
+                  <div className=" h-[50vh] lg:text-xl text-base grid place-items-center w-full text-gray-500">
                     <p>No product under this category</p>
                   </div>
                 ) : (

@@ -25,8 +25,8 @@ export default function BestSellers() {
       <h2 className=" lg:text-3xl text-2xl text-gray-800 font-semibold">
         best sellers
       </h2>
-      <Container>
-        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full grid-rows-2 lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
+      <Container className="!min-h-[40vh]">
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
           {recommendations === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader

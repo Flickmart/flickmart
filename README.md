@@ -21,7 +21,7 @@ The motivation behind FlickMart is to create a seamless and intuitive platform w
 - React Query for data fetching
 - Zod for form validation
 - Tailwind CSS for styling
-- Supabase for storage and authentication
+- Convex for backend and Clerk for auth
 
 ## Getting Started
 

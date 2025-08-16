@@ -4,7 +4,6 @@ import { getCurrentUser } from "./users";
 import { api } from "./_generated/api";
 
 
-
 export const createNotification = internalMutation({
   args: {
     userId: v.optional(v.id("users")),
