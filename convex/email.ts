@@ -1,6 +1,5 @@
-import { query, mutation, internalMutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUser } from "./users";
 import { Resend } from "@convex-dev/resend";
 import { components } from "./_generated/api";
 

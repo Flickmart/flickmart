@@ -4,6 +4,7 @@ import { getCurrentUser } from "./users";
 import { api } from "./_generated/api";
 
 
+
 export const createNotification = internalMutation({
   args: {
     userId: v.optional(v.id("users")),
@@ -319,7 +320,6 @@ export const markAllNotificationsAsViewed = mutation({
     return true;
   },
 });
-
 // Push notification functions
 export const savePushSubscription = mutation({
   args: {
@@ -521,3 +521,4 @@ export const createTestNotificationWithPush = mutation({
     return notificationId;
   },
 });
+

@@ -330,12 +330,12 @@ export default defineSchema({
     processedAt: v.optional(v.number()),
   }).index("by_user", ["userId"]),
 
-  // Push notification subscriptions
-  pushSubscriptions: defineTable({
-    userId: v.id("users"),
-    subscription: v.string(), // JSON stringified subscription object
-    userAgent: v.optional(v.string()),
-    createdAt: v.number(),
-    lastUsed: v.optional(v.number()),
-  }).index("by_user", ["userId"]),
+    // Push notification subscriptions
+    pushSubscriptions: defineTable({
+      userId: v.id("users"),
+      subscription: v.string(), // JSON stringified subscription object
+      userAgent: v.optional(v.string()),
+      createdAt: v.number(),
+      lastUsed: v.optional(v.number()),
+    }).index("by_user", ["userId"]),
 });

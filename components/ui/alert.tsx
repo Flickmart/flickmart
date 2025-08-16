@@ -4,7 +4,11 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const alertVariants = cva(
+<<<<<<< HEAD
   "relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+=======
+  "relative w-full rounded-lg border px-4 py-3 text-sm [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground [&>svg~*]:pl-7",
+>>>>>>> 948505a8f8eb014f1511b0f33e3cd58f5b9ca100
   {
     variants: {
       variant: {
@@ -56,4 +60,8 @@ const AlertDescription = React.forwardRef<
 ))
 AlertDescription.displayName = "AlertDescription"
 
+<<<<<<< HEAD
 export { Alert, AlertTitle, AlertDescription }
+=======
+export { Alert, AlertTitle, AlertDescription }
+>>>>>>> 948505a8f8eb014f1511b0f33e3cd58f5b9ca100

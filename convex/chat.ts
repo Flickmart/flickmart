@@ -1,4 +1,4 @@
-import { query, mutation , QueryCtx, MutationCtx} from "./_generated/server";
+import { query, mutation, MutationCtx} from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
 import { internal } from "./_generated/api";
@@ -94,7 +94,7 @@ async function handleMessageNotification(
       content: firstMessageContent, // This will be the first unread message
       imageUrl: senderImageUrl,
       link: `/chat/${conversationId}`,
-      sendPush: true
+      sendPush: true,
     });
   }
 }
