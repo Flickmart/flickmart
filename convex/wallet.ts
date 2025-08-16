@@ -319,21 +319,23 @@ export const transferToUserWithEscrow = mutation({
         ? `${buyer.name} has sent ${args.amount} ${buyerWallet.currency} for multiple items. The funds are now held in escrow.`
         : `${buyer.name} has sent ${args.amount} ${buyerWallet.currency} for your item. The funds are now held in escrow.`;
 
-    await ctx.runMutation(internal.notifications.createNotification, {
+    await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: sellerId,
       type: "escrow_funded",
       title: "Funds Received in Escrow",
       content: notificationContentForSeller,
       relatedId: orderId,
       link: `/orders/${orderId}`,
+      sendPush: true
     });
-    await ctx.runMutation(internal.notifications.createNotification, {
+    await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: buyer._id,
       type: "escrow_funded",
       title: "Funds Sent to Escrow",
       content: `You sent ${args.amount} ${buyerWallet.currency} to ${seller.name} for your order.`,
       relatedId: orderId,
       link: `/orders/${orderId}`,
+      sendPush: true
     });
 
     return { success: true, orderId };

@@ -26,15 +26,19 @@ import RecentListings from "@/components/settings/RecentListings";
 import { useRouter } from "next/navigation";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { Id } from "@/convex/_generated/dataModel";
+import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
+import { PushNotificationTest } from "@/components/notifications/PushNotificationTest"
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
 // This would typically come from an API or database
 
 export default function PublicProfile() {
+
+  
+  const { user, isLoading } = useAuthUser();
   // const params = useParams();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
-  const { user, isLoading, isAuthenticated } = useAuthUser();
   const router = useRouter();
   const store = useQuery(api.store.getStoresByUserId);
   const hasStore = store?.error?.status;
@@ -45,10 +49,6 @@ export default function PublicProfile() {
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-flickmart"></div>
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null; // Will be redirected by useAuthUser
   }
 
   function updateUserProductsLength(length: number) {
@@ -215,6 +215,12 @@ export default function PublicProfile() {
                   <span className="text-lg font-semibold">Wallet</span>
                 </Link>
               </Card>
+              
+              {/* Push Notifications */}
+              <PushNotificationSetup />
+              
+              {/* Test Component (Development Only) */}
+              <PushNotificationTest />
             </div>
           </div>
         </div>
