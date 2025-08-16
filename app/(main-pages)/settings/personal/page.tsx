@@ -31,17 +31,11 @@ import { PushNotificationTest } from "@/components/notifications/PushNotificatio
 // This would typically come from an API or database
 
 export default function PublicProfile() {
-<<<<<<< HEAD
 
   
   const { user, isLoading } = useAuthUser();
   // const params = useParams();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
-=======
-  // const params = useParams();
-  const [userProductsLength, setUserProductsLength] = useState<number>(0);
-  const { user, isLoading, isAuthenticated } = useAuthUser();
->>>>>>> 948505a8f8eb014f1511b0f33e3cd58f5b9ca100
   const router = useRouter();
 
   if (isLoading) {
@@ -52,13 +46,6 @@ export default function PublicProfile() {
     );
   }
 
-<<<<<<< HEAD
-=======
-  if (!isAuthenticated) {
-    return null; // Will be redirected by useAuthUser
-  }
-
->>>>>>> 948505a8f8eb014f1511b0f33e3cd58f5b9ca100
   function updateUserProductsLength(length: number) {
     setUserProductsLength(length);
   }
