@@ -7,6 +7,7 @@ import {
   Search,
   X,
   ArrowLeft,
+  ChevronLeft,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,8 @@ import { api } from "@/convex/_generated/api";
 import { formatDistanceToNow } from "date-fns";
 import ProductCard from "../multipage/ProductCard";
 import Link from "next/link";
+import { Command, CommandInput } from "../ui/command";
+import { shareProduct } from "@/utils/helpers";
 
 interface UserProfileProps {
   open?: boolean;
@@ -34,14 +37,13 @@ interface ProfileContentProps {
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState("");
   const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
-  const products = useQuery(api.product.getByUserId, {
-    userId: user._id,
-  });
+  const products = useQuery(api.product.getByUserId);
+  const [isHidden, setIsHidden] = useState(false);
   const filteredProducts = products?.filter((product) =>
     product.title.toLowerCase().includes(search.toLowerCase())
   );
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+  const handleSearch = (value: string) => {
+    setSearch(value);
   };
   return (
     <>
@@ -81,16 +83,11 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
 
           {store ? (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-sm">
-                I sell quality shoes in the industry u can also get bags,
-                clothes and other accessories from my store here in flickmart.
-              </p>
+              <p className="text-sm">{store.description}</p>
             </div>
           ) : (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-sm">
-                Hey there i'm using flickmart!
-              </p>
+              <p className="text-sm">Hey there i'm using flickmart!</p>
             </div>
           )}
         </div>
@@ -105,6 +102,12 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             <span className="text-md font-medium">Message</span>
           </Button>
           <Button
+            onClick={() =>
+              shareProduct({
+                title: store.name ?? "",
+                description: store.description ?? "",
+              })
+            }
             variant="outline"
             className="flex justify-center items-center py-5 rounded-xl border-gray-200 hover:bg-orange-50 hover:border-orange-200 transition-all"
           >
@@ -121,26 +124,30 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
                 More Products
               </h2>
               <Button
+                onClick={() => setIsHidden(true)}
                 variant="ghost"
                 className="text-gray-500 flex items-center gap-1 hover:text-orange-600"
               >
-                <span>20</span>
+                <span>{products?.length}</span>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
 
             {/* Search Bar */}
             <div className="relative mb-4">
-              <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Search className="h-4 w-4 text-gray-400" />
+              <div
+                onClick={() => setIsHidden(false)}
+                className="hover:bg-flickmart/5 transition-all duration-300 ease-in-out rounded-full p-2 "
+              >
+                <ChevronLeft />
               </div>
-              <input
-                type="text"
-                value={search}
-                onChange={handleSearch}
-                placeholder={`Search in ${user.name}'s store...`}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500"
-              />
+              <Command>
+                <CommandInput
+                  onValueChange={handleSearch}
+                  value={search}
+                  placeholder={`Search in ${user.name}'s store...`}
+                />
+              </Command>
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -169,7 +176,7 @@ export default function UserProfile({
   userId,
 }: UserProfileProps) {
   const user = useQuery(api.users.getUser, { userId: userId });
-  const store = useQuery(api.store.getStoreByUserId, { userId: userId });
+  const store = useQuery(api.store.getStoreByUserId);
 
   // Always set up state and effects
   const [isMobile, setIsMobile] = useState(false);
@@ -197,7 +204,7 @@ export default function UserProfile({
       <Sheet open={open} onOpenChange={onClose}>
         <SheetTitle>Profile</SheetTitle>
         <SheetContent className="w-full overflow-y-auto p-0" side="right">
-          <ProfileContent user={user!} store={store!} />
+          <ProfileContent user={user!} store={store as Doc<"store">} />
         </SheetContent>
       </Sheet>
     );
@@ -211,7 +218,7 @@ export default function UserProfile({
           <ArrowLeft className="h-8 w-8 cursor-pointer" onClick={onClose} />
           <h2 className="text-2xl text-black font-bold ml-6">Profile</h2>
         </div>
-        <ProfileContent user={user!} store={store!} />
+        <ProfileContent user={user!} store={store as Doc<"store">} />
       </div>
     </div>
   );
