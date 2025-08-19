@@ -1,4 +1,5 @@
 "use client";
+import MobileNav from "@/components/MobileNav";
 import Loader from "@/components/multipage/Loader";
 import PostAdForm from "@/components/post-ad/PostAdForm";
 import { useAuthUser } from "@/hooks/useAuthUser";
@@ -15,6 +16,7 @@ export default function Page() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <MobileNav />
       <div className="bg-gray-100 p-3  lg:p-10 min-h-screen space-y-5 flex flex-col justify-center items-center">
         <div className="bg-white lg:w-5/6 w-full h-20 rounded-lg flex items-center justify-between">
           <span className="text-xl text-gray-700 font-semibold pl-7">

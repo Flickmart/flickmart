@@ -146,11 +146,26 @@ export const deleteStore = mutation({
 });
 
 export const getStoreByUserId = query({
-  args: { userId: v.id("users") },
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrThrow(ctx);
+
+    const errorObject = {
+      success: false,
+      data: null,
+      error: {
+        code: "USER_NOT_FOUND",
+        message: "Authentication Required",
+        status: 401,
+      },
+    };
+
+    if (!user) {
+      return errorObject;
+    }
+
     const store = await ctx.db
       .query("store")
-      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .withIndex("byUserId", (q) => q.eq("userId", user._id))
       .first();
 
     return store;

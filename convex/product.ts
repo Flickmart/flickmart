@@ -29,11 +29,11 @@ export const getById = query({
 
 // Get products by user ID
 export const getByUserId = query({
-  args: { userId: v.id("users") },
-  handler: async (ctx, args) => {
+  handler: async (ctx) => {
     try {
       // Validate that the user exists
-      const user = await ctx.db.get(args.userId);
+      const user = await getCurrentUserOrThrow(ctx);
+
       if (!user) {
         throw new ConvexError({
           message: "User not found",
@@ -44,7 +44,7 @@ export const getByUserId = query({
       // Get all products for the user
       const products = await ctx.db
         .query("product")
-        .filter((q) => q.eq(q.field("userId"), args.userId))
+        .filter((q) => q.eq(q.field("userId"), user._id))
         .collect();
 
       // Filter out any products that might be considered inactive

@@ -10,7 +10,7 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
 
   useEffect(() => {
     if (userStore?.data) {
-      router.push("/post-ad");
+      // router.push("/post-ad");
     }
   }, [userStore, router]);
 

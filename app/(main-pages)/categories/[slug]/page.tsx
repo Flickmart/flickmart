@@ -118,7 +118,9 @@ export default function DetailedCategoryPage() {
     ? filteredProds
     : products;
   useEffect(() => {
-    router.push(`/categories/${category || slug}?subcategory=${queryString}`);
+    if (queryString) {
+      router.push(`/categories/${category || slug}?subcategory=${queryString}`);
+    }
   }, [category]);
 
   const [loading, setLoading] = useState(false);

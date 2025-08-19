@@ -12,7 +12,7 @@ import { UseFormReturn } from "react-hook-form";
 interface FormType {
   businessName: string;
   location: string;
-  address: string;
+  description: string;
   phoneNumber: string & { __tag: "E164Number" };
 }
 
@@ -23,7 +23,7 @@ export default function Selector({
   form,
   className = "",
 }: {
-  name: "businessName" | "location" | "address" | "phoneNumber";
+  name: "businessName" | "location" | "description" | "phoneNumber";
   options: Array<string>;
   label?: string;
   form: UseFormReturn<FormType>;

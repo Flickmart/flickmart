@@ -17,6 +17,7 @@ import Selector from "./Selector";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
   businessName: z
@@ -30,13 +31,13 @@ const formSchema = z.object({
   location: z
     .string()
     .refine((value) => value, { message: "Please select a location" }),
-  address: z
+  description: z
     .string()
     .min(3, {
-      message: "Address must be at least 2 characters",
+      message: "Description must be at least 2 characters",
     })
-    .max(50, {
-      message: "Address must be at most 50 characters",
+    .max(250, {
+      message: "Description must be at most 250 characters",
     }),
   phoneNumber: z.string().transform((arg, ctx) => {
     const phone = parsePhoneNumberFromString(arg, {
@@ -69,7 +70,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
     defaultValues: {
       businessName: "",
       location: "",
-      address: "",
+      description: "",
       phoneNumber: "",
     },
   });
@@ -82,9 +83,9 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
     const promise = create({
       name: values.businessName,
       location: values.location,
-      description: values.address, 
+      description: values.description,
       phone: values.phoneNumber,
-       });
+    });
     toast.promise(promise, {
       loading: "Saving store details...",
       success: "Details saved  succesfully",
@@ -94,14 +95,16 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   }
 
   // Handle Error
-  function onError(error: FieldErrors<{
-    businessName: string;
-    location: string;
-    address: string;
-    phoneNumber: string & {
+  function onError(
+    error: FieldErrors<{
+      businessName: string;
+      location: string;
+      description: string;
+      phoneNumber: string & {
         __tag: "E164Number";
-    };
-}>) {
+      };
+    }>
+  ) {
     console.log(error);
   }
   const locations: string[] = ["enugu", "nsukka"];
@@ -134,25 +137,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="absolute top-[-9999px]">
-                  Address
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    className="h-[56px]"
-                    placeholder="Address*"
-                    {...field}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+
           <Selector
             name="location"
             options={locations}
@@ -179,8 +164,31 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="absolute top-[-9999px]">
+                  Description
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    rows={7}
+                    // className="h-[56px]"
+                    placeholder="Tell us about your business"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </section>
-        <button type="submit" className="submit-btn text-white rounded-lg capitalize mb-4">
+        <button
+          type="submit"
+          className="submit-btn text-white rounded-lg capitalize mb-4"
+        >
           next
         </button>
       </form>

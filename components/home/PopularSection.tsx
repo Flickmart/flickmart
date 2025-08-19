@@ -10,68 +10,48 @@ import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const testData = {
-  "recommendations": {
-    "data": [
+  recommendations: {
+    data: [
       {
-        "_id": "p1001",
-        "images": [
-          "/mobiles.png"
-        ],
-        "title": "Classic White Sneakers",
-        "price": 4500
+        _id: "p1001",
+        images: ["/mobiles.png"],
+        title: "Classic White Sneakers",
+        price: 4500,
       },
       {
-        "_id": "p1002",
-        "images": [
-          "/jacket.png"
-        ],
-        "title": "Bluetooth Wireless Earbuds",
-        "price": 7500
+        _id: "p1002",
+        images: ["/jacket.png"],
+        title: "Bluetooth Wireless Earbuds",
+        price: 7500,
       },
       {
-        "_id": "p1003",
-        "images": [
-          "/pets.png"
-        ],
-        "title": "Ergonomic Laptop Stand",
-        "price": 12000
+        _id: "p1003",
+        images: ["/pets.png"],
+        title: "Ergonomic Laptop Stand",
+        price: 12000,
       },
       {
-        "_id": "p1003",
-        "images": [
-          "/pets.png"
-        ],
-        "title": "Ergonomic Laptop Stand",
-        "price": 12000
+        _id: "p1004",
+        images: ["/pets.png"],
+        title: "Ergonomic Laptop Stand",
+        price: 12000,
       },
       {
-        "_id": "p1003",
-        "images": [
-          "/pets.png"
-        ],
-        "title": "Ergonomic Laptop Stand",
-        "price": 12000
+        _id: "p1005",
+        images: ["/pets.png"],
+        title: "Ergonomic Laptop Stand",
+        price: 12000,
       },
-        {
-          "_id": "p1003",
-          "images": [
-            "/pets.png"
-          ],
-          "title": "Ergonomic Laptop Stand",
-          "price": 12000
-        },
       {
-        "_id": "p1004",
-        "images": [
-          "/electronics.png"
-        ],
-        "title": "Smart Digital Watch",
-        "price": 18500
-      }
+        _id: "p1006",
+        images: ["/pets.png"],
+        title: "Ergonomic Laptop Stand",
+        price: 12000,
+      },
     ],
-    "error": null
-  }
-}
+    error: null,
+  },
+};
 
 type Product = {
   _id: string;
@@ -127,7 +107,6 @@ export default function PopularSection() {
                       image={product.images[0]}
                       title={product.title}
                       price={product.price}
-                      key={index}
                     />
                   </Link>
                 ))
@@ -137,7 +116,6 @@ export default function PopularSection() {
                       image={product.images[0]}
                       title={product.title}
                       price={product.price}
-                      key={index}
                     />
                   </Link>
                 ))}
