@@ -134,11 +134,15 @@ export default defineSchema({
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
     type: v.optional(
-      v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))
+      v.union(v.literal("text"), v.literal("product"), v.literal("escrow"), v.literal("transfer"))
     ),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
+    // Transfer-specific fields
+    orderId: v.optional(v.id("orders")),
+    transferAmount: v.optional(v.number()),
+    currency: v.optional(v.string()),
   }),
   notifications: defineTable({
     title: v.string(),

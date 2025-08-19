@@ -10,11 +10,16 @@ interface Message {
   images?: string[];
   role: "user" | "assistant";
   timestamp: Date;
-  type?: "text" | "product" | "image" | "escrow";
+  type?: "text" | "product" | "image" | "escrow" | "transfer";
   title?: string;
   price?: number;
   productImage?: string;
   productId?: string;
+  // Transfer-specific fields
+  orderId?: string;
+  transferAmount?: number;
+  currency?: string;
+  order?: any;
 }
 
 interface ChatMessagesProps {
@@ -161,6 +166,11 @@ export default function ChatMessages({
                 image={message.productImage}
                 type={message.type}
                 productId={message.productId}
+                // Transfer-specific props
+                orderId={message.orderId}
+                transferAmount={message.transferAmount}
+                currency={message.currency}
+                order={message.order}
               />
             ))}
           </div>
