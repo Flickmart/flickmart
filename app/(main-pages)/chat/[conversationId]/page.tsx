@@ -335,7 +335,7 @@ export default function ConversationPage() {
         orderId: message.orderId,
         transferAmount: message.transferAmount,
         currency: message.currency,
-        order: message.order,
+        // order: message.order,
       };
     });
   }, [messages, user?._id]);
