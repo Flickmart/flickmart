@@ -40,10 +40,16 @@ export default function Filters({
   isMobile,
   handleFilterState,
   category,
+  resetQuery,
 }: {
   isMobile?: boolean;
-  handleFilterState: (value: string, label: string) => void;
+  handleFilterState: (
+    value: string,
+    label: string,
+    resetQuery?: () => void
+  ) => void;
   category?: string;
+  resetQuery?: () => void;
 }) {
   return (
     <div className="lg:hidden flex text-[12px] gap-2 items-center my-2">
@@ -52,7 +58,9 @@ export default function Filters({
         return (
           <Select
             key={item.label}
-            onValueChange={(value) => handleFilterState(value, item.label)}
+            onValueChange={(value) =>
+              handleFilterState(value, item.label, resetQuery)
+            }
             value={item.label === "category" ? category : undefined} // Default to "all" if no category is selected
           >
             <SelectTrigger className="min-w-20 capitalize">

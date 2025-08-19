@@ -15,7 +15,7 @@ export const ourFileRouter = {
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
       maxFileSize: "2MB",
-      maxFileCount: 5,
+      maxFileCount: 50,
     },
   })
     // Set permissions and file types for this FileRoute
@@ -23,15 +23,15 @@ export const ourFileRouter = {
       // For now, we're allowing all uploads without authentication
       // In a real app, you would check user authentication here
       const user = auth();
-      
+
       return { userId: user.id };
     })
     .onUploadComplete(async ({ metadata, file }) => {
       // This code RUNS ON YOUR SERVER after upload
-      console.log("Upload complete for userId:", metadata.userId);
-      console.log("file url", file.url);
+      // console.log("Upload complete for userId:", metadata.userId);
+      // console.log("file url", file.ufsUrl);
 
-      return { uploadedBy: metadata.userId, url: file.url };
+      return { uploadedBy: metadata.userId, url: file.ufsUrl };
     }),
 } satisfies FileRouter;
 

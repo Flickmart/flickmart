@@ -50,11 +50,12 @@ export const getByUserId = query({
       // Filter out any products that might be considered inactive
       // Since there's no explicit status field, we'll return all products
       // but ensure they have required fields
-      const activeProducts = products.filter(product => 
-        product.title && 
-        product.price > 0 && 
-        product.images && 
-        product.images.length > 0
+      const activeProducts = products.filter(
+        (product) =>
+          product.title &&
+          product.price > 0 &&
+          product.images &&
+          product.images.length > 0
       );
 
       return activeProducts;
@@ -116,6 +117,7 @@ export const create = mutation({
     price: v.number(),
     businessId: v.id("store"),
     category: v.string(),
+    subcategory: v.string(),
     plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
     exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
@@ -141,6 +143,7 @@ export const create = mutation({
       businessId: args.businessId,
       commentsId: args.commentsId,
       category: args.category,
+      subcategory: args.subcategory,
       likes: 0,
       dislikes: 0,
       plan: args.plan,
@@ -884,7 +887,7 @@ function calculateTextSimilarity(text1: string, text2: string): number {
 
 // Get Products by category
 
-export const getProductsByCategory = query({
+export const getProductsByCategoryOrSubCategory = query({
   args: { category: v.string() },
   handler: async (ctx, args) => {
     const user = getCurrentUserOrThrow(ctx);
@@ -894,7 +897,12 @@ export const getProductsByCategory = query({
     }
     const products = await ctx.db
       .query("product")
-      .filter((q) => q.eq(q.field("category"), args.category))
+      .filter((q) =>
+        q.or(
+          q.eq(q.field("category"), args.category),
+          q.eq(q.field("subcategory"), args.category)
+        )
+      )
       .collect();
     return products;
   },
@@ -908,13 +916,19 @@ export const getProductsByFilters = query({
     max: v.number(),
     priceRange: v.string(),
     location: v.string(),
+    subcategory: v.string(),
   },
   handler: async (ctx, args) => {
     console.log(args);
 
     let query = ctx.db
       .query("product")
-      .filter((q) => q.eq(q.field("category"), args.category));
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("category"), args.category),
+          q.eq(q.field("subcategory"), args.subcategory)
+        )
+      );
 
     // Apply location filter if provided
     if (args.location) {

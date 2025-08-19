@@ -15,6 +15,7 @@ export interface FormDataType {
 
 export type NameType =
   | "category"
+  | "subcategory"
   | "location"
   | "title"
   | "negotiable"
@@ -28,6 +29,7 @@ export type NameType =
 export type FormType = UseFormReturn<{
   store: string;
   category: string;
+  subcategory: string;
   location: "enugu" | "nsukka";
   negotiable: boolean;
   condition: "brand new" | "used";

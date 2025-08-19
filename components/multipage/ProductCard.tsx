@@ -25,11 +25,11 @@ export default function ProductCard({
           alt={title || ""}
           width={500}
           height={500}
-          className="h-48 lg:h-96 object-cover object-top  p-0.5 rounded-md "
+          className="h-48 lg:h-48 object-cover object-top  p-0.5 rounded-md "
         />
       ) : null}
       <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">
-        <span className="lg:text-base text-sm">{title}</span>
+        <span className="lg:text-sm text-sm md:text-[13px]">{title}</span>
         <span className="text-flickmart lg:text-sm text-xs">
           &#8358;{price?.toLocaleString()}
         </span>

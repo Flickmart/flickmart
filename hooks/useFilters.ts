@@ -9,10 +9,11 @@ export function useFilters() {
   });
   return {
     filterState,
-    handleFilterState(val: string, label: string) {
+    handleFilterState(val: string, label: string, resetQuery?: () => void) {
       const value = val === "all" ? "" : val;
       switch (label) {
         case "category":
+          resetQuery?.();
           return setFilterState({
             ...filterState,
             category: value,

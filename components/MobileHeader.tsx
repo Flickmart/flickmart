@@ -23,8 +23,18 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
 
   if (pathname.includes("/product")) {
     title = "Products";
+  } else if (pathname.includes("/store")) {
+    title = "Store";
+  } else if (pathname.includes("/vendors")) {
+    title = "Vendor";
   }
-  const hiddenPaths = ["/notifications", "/settings", "/chat", "/search", "/wallet"];
+  const hiddenPaths = [
+    "/notifications",
+    "/settings",
+    "/chat",
+    "/search",
+    "/wallet",
+  ];
 
   const isHidden = () => {
     if (pathname === "/") {
@@ -43,8 +53,8 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
       <button
         onClick={() =>
           pathname.includes("/categories") ||
-            pathname.includes("/post-ad") ||
-            pathname.includes("/sign-in")
+          pathname.includes("/post-ad") ||
+          pathname.includes("/sign-in")
             ? router.push("/")
             : router.back()
         }

@@ -16,6 +16,7 @@ export default defineSchema({
 
     username: v.optional(v.string()),
     description: v.optional(v.string()),
+    verified: v.optional(v.boolean()),
     contact: v.optional(
       v.object({
         phone: v.optional(v.string()),
@@ -43,6 +44,7 @@ export default defineSchema({
     price: v.number(),
     businessId: v.id("store"),
     category: v.string(),
+    subcategory: v.optional(v.string()),
     likes: v.optional(v.number()),
     dislikes: v.optional(v.number()),
     views: v.optional(v.number()),
@@ -56,6 +58,18 @@ export default defineSchema({
     link: v.optional(v.string()),
     phone: v.string(),
     store: v.string(),
+  }),
+
+  // Sub Categories
+  subcategories: defineTable({
+    category: v.string(),
+    items: v.array(
+      v.object({
+        title: v.string(),
+        image: v.string(),
+        size: v.number(),
+      })
+    ),
   }),
 
   // History Search
@@ -119,7 +133,9 @@ export default defineSchema({
     conversationId: v.id("conversations"),
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
-    type: v.optional(v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))),
+    type: v.optional(
+      v.union(v.literal("text"), v.literal("product"), v.literal("escrow"))
+    ),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
@@ -137,7 +153,7 @@ export default defineSchema({
       v.literal("reminder"),
       v.literal("escrow_funded"),
       v.literal("escrow_released"),
-      v.literal("completion_confirmed"),
+      v.literal("completion_confirmed")
     ),
     relatedId: v.optional(
       v.union(

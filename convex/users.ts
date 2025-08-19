@@ -34,7 +34,7 @@ export const updateUser = mutation({
     if (!user) {
       throw Error("Please Login First...");
     }
-    args.allowNotifications &&
+    args.allowNotifications !== undefined &&
       (await ctx.db.patch(user._id, {
         allowNotifications: args.allowNotifications,
       }));
@@ -70,12 +70,13 @@ export const getMultipleUsers = query({
 export const upsertFromClerk = internalMutation({
   args: { data: v.any() as Validator<UserJSON> },
   async handler(ctx, { data }) {
+    const threeRandomNumbers = `${Math.floor(Math.random() * 10 + 1)}${Math.floor(Math.random() * 10 + 1)}${Math.floor(Math.random() * 10 + 1)}`;
     const userAttributes = {
       name: `${data.first_name} ${data.last_name}`,
       imageUrl: data.image_url,
       email: data.email_addresses?.[0]?.email_address,
       externalId: data.id,
-      username: data.username || undefined,
+      username: data.username || `${data.first_name}${threeRandomNumbers}`,
       allowNotifications: true,
     };
     const user = await userByExternalId(ctx, data.id);
@@ -160,10 +161,9 @@ export const getUserByToken = query({
   },
 });
 
-
 export const getUserById = query({
   args: {
-    userId: v.id("users")
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -171,18 +171,18 @@ export const getUserById = query({
       throw new Error("User is not authenticated");
     }
 
-    const user = await ctx.db.get(args.userId)
+    const user = await ctx.db.get(args.userId);
 
-    return user
-  }
+    return user;
+  },
 });
 
 export const getById = query({
   args: {
-    userId: v.id("users")
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
     return user;
-  }
+  },
 });

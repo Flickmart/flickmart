@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import {
   Breadcrumb,
@@ -27,6 +27,10 @@ export default function NotificationsPage() {
     user?.allowNotifications
   );
   const updateNotifications = useMutation(api.users.updateUser);
+
+  useEffect(() => {
+    console.log(user?.allowNotifications);
+  }, [user]);
 
   return (
     <div className="flex flex-col w-full">
