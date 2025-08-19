@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { Id } from "@/convex/_generated/dataModel";
 import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
-import { PushNotificationTest } from "@/components/notifications/PushNotificationTest"
+import { PushNotificationTest } from "@/components/notifications/PushNotificationTest";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import MobileNav from "@/components/MobileNav";
@@ -35,8 +35,6 @@ import MobileNav from "@/components/MobileNav";
 // This would typically come from an API or database
 
 export default function PublicProfile() {
-
-  
   const { user, isLoading } = useAuthUser();
   // const params = useParams();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
@@ -199,40 +197,41 @@ export default function PublicProfile() {
                   </div>
                 </Card>
 
-              {/* Location */}
-              <Card className="p-6">
-                <h2 className="text-lg font-semibold">Location</h2>
-                <Separator className="my-4" />
-                <div className="flex items-center gap-2 capitalize">
-                  <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
-                  <p>
-                    {user?.contact?.address || (
-                      <i className="normal-case text-gray-400 text-sm">
-                        location not provided
-                      </i>
-                    )}
-                  </p>
-                </div>
-              </Card>
-              <Card className="p-6">
-                <Link
-                  href="/wallet"
-                  className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
-                >
-                  <Wallet />
-                  <span className="text-lg font-semibold">Wallet</span>
-                </Link>
-              </Card>
-              
-              {/* Push Notifications */}
-              <PushNotificationSetup />
-              
-              {/* Test Component (Development Only) */}
-              <PushNotificationTest />
+                {/* Location */}
+                <Card className="p-6">
+                  <h2 className="text-lg font-semibold">Location</h2>
+                  <Separator className="my-4" />
+                  <div className="flex items-center gap-2 capitalize">
+                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                    <p>
+                      {user?.contact?.address || (
+                        <i className="normal-case text-gray-400 text-sm">
+                          location not provided
+                        </i>
+                      )}
+                    </p>
+                  </div>
+                </Card>
+                <Card className="p-6">
+                  <Link
+                    href="/wallet"
+                    className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
+                  >
+                    <Wallet />
+                    <span className="text-lg font-semibold">Wallet</span>
+                  </Link>
+                </Card>
+
+                {/* Push Notifications */}
+                <PushNotificationSetup />
+
+                {/* Test Component (Development Only) */}
+                <PushNotificationTest />
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
