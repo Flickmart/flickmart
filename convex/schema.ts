@@ -169,11 +169,13 @@ export default defineSchema({
     content: v.string(),
     imageUrl: v.optional(v.string()),
     isRead: v.boolean(),
+    isViewed: v.optional(v.boolean()), // For tracking if notification was viewed (affects count)
     timestamp: v.number(),
     link: v.optional(v.string()),
   })
     .index("byUserId", ["userId"])
-    .index("byUserIdAndIsRead", ["userId", "isRead"]),
+    .index("byUserIdAndIsRead", ["userId", "isRead"])
+    .index("byUserIdAndIsViewed", ["userId", "isViewed"]),
 
   presence: defineTable({
     userId: v.id("users"),
@@ -343,4 +345,13 @@ export default defineSchema({
     createdAt: v.number(),
     processedAt: v.optional(v.number()),
   }).index("by_user", ["userId"]),
+
+    // Push notification subscriptions
+    pushSubscriptions: defineTable({
+      userId: v.id("users"),
+      subscription: v.string(), // JSON stringified subscription object
+      userAgent: v.optional(v.string()),
+      createdAt: v.number(),
+      lastUsed: v.optional(v.number()),
+    }).index("by_user", ["userId"]),
 });

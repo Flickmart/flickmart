@@ -167,6 +167,8 @@ export default function ChatMessages({
         ))}
       </PhotoProvider>
       <div ref={messagesEndRef} />
+      {/* Extra spacing at bottom for better scrolling */}
+      <div className="h-16" />
     </div>
   );
 }

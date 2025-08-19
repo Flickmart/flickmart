@@ -1,39 +1,38 @@
-import { query, mutation, internalMutation } from "./_generated/server";
+import { internalMutation } from "./_generated/server";
 import { v } from "convex/values";
-import { getCurrentUser } from "./users";
 import { Resend } from "@convex-dev/resend";
 import { components } from "./_generated/api";
 
 // Internal Mutation for Email Notifications
 export const resend: Resend = new Resend(components.resend, {
-    testMode: true
+  testMode: true
 });
 
 export const sendTestEmail = internalMutation({
-    handler: async (ctx) => {
-      await resend.sendEmail(ctx, {
-        from: "Me <test@flickmart.app>",
-        to: "ebukaj665@gmail.com",
-        subject: "Hi there",
-        html: "This is a test email from flickmart",
-      });
-    },
-  });
+  handler: async (ctx) => {
+    await resend.sendEmail(ctx, {
+      from: "Me <test@flickmart.app>",
+      to: "delivered@resend.dev",
+      subject: "Hi there",
+      html: "This is a test email from flickmart",
+    });
+  },
+});
 
 export const sendEmailNotification = internalMutation({
-    args: {
-        recipient: v.string(),
-        subject: v.string(),
-        username: v.string(),
-        ctaLink: v.optional(v.string()),
-        messagePreview: v.optional(v.string()),
-    },
-    handler: async (ctx, args) => {
-        await resend.sendEmail(ctx, {
-            from: "Flickmart <support@flickmart.app>",
-            to: `ebukaj665@gmail.com`,
-            subject: args.subject,
-            html: `<!DOCTYPE html>
+  args: {
+    recipient: v.string(),
+    subject: v.string(),
+    username: v.string(),
+    ctaLink: v.optional(v.string()),
+    messagePreview: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    await resend.sendEmail(ctx, {
+      from: "Flickmart <support@flickmart.app>",
+      to: `delivered@resend.dev`,
+      subject: args.subject,
+      html: `<!DOCTYPE html>
 <html>
   <head>
     <meta charset="UTF-8" />
@@ -101,6 +100,6 @@ export const sendEmailNotification = internalMutation({
   </body>
 </html>
 `,
-        });
-    },
+    });
+  },
 });

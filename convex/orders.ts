@@ -96,22 +96,24 @@ export const confirmOrderCompletion = mutation({
         },
       });
 
-      // 4. Notify both parties
-      await ctx.runMutation(internal.notifications.createNotification, {
+      // 4. Notify both parties with push notifications
+      await ctx.runMutation(internal.notifications.createNotificationWithPush, {
         userId: updatedOrder.buyerId,
         type: "escrow_released",
         title: "Transaction Complete",
         content: `Your transaction with ${seller?.name} has been successfully completed and funds have been released to the ${seller?.name}.`,
         relatedId: updatedOrder._id,
-        link: `/orders/${updatedOrder._id}`
+        link: `/orders/${updatedOrder._id}`,
+        sendPush: true
       });
-      await ctx.runMutation(internal.notifications.createNotification, {
+      await ctx.runMutation(internal.notifications.createNotificationWithPush, {
         userId: updatedOrder.sellerId,
         type: "escrow_released",
         title: "Funds Released",
         content: `Funds for your order have been released to your wallet.`,
         relatedId: updatedOrder._id,
-        link: `/orders/${updatedOrder._id}`
+        link: `/orders/${updatedOrder._id}`,
+        sendPush: true
       });
 
       return {
@@ -124,13 +126,14 @@ export const confirmOrderCompletion = mutation({
       const otherPartyId = isBuyer
         ? updatedOrder.sellerId
         : updatedOrder.buyerId;
-      await ctx.runMutation(internal.notifications.createNotification, {
+      await ctx.runMutation(internal.notifications.createNotificationWithPush, {
         userId: otherPartyId,
         type: "completion_confirmed",
         title: "Confirmation Received",
         content: `${currentUser?.name} has confirmed the transaction. We are now waiting for your confirmation to release the funds.`,
         relatedId: updatedOrder._id,
-        link: `/orders/${updatedOrder._id}`
+        link: `/orders/${updatedOrder._id}`,
+        sendPush: true
       });
 
       return {
