@@ -65,9 +65,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
 
   // Fetch seller's products using the existing getByUserId query
   const seller = useQuery(api.users.getUserById, { userId: sellerId });
-  const sellerProductsQuery = useQuery(api.product.getByUserId, {
-    userId: sellerId as Id<"users">,
-  });
+  const sellerProductsQuery = useQuery(api.product.getByUserId);
   const isProductsLoading = sellerProductsQuery === undefined;
 
   // Check if PIN exists when component mounts
