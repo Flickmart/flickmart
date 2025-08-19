@@ -25,12 +25,17 @@ interface Message {
   _creationTime: number;
   readByUsers?: Id<"users">[];
   images?: string[];
-  type?: "text" | "product" | "image";
+  type?: "text" | "product" | "image" | "transfer";
   product?: {
     title: string;
     price: number;
     image: string;
   };
+  // Transfer-specific fields
+  orderId?: Id<"orders">;
+  transferAmount?: number;
+  currency?: string;
+  order?: any;
 }
 
 export default function ConversationPage() {
@@ -326,6 +331,11 @@ export default function ConversationPage() {
         price: message.price || 0,
         productImage: message.productImage || "",
         productId: message.productId,
+        // Transfer-specific fields
+        orderId: message.orderId,
+        transferAmount: message.transferAmount,
+        currency: message.currency,
+        order: message.order,
       };
     });
   }, [messages, user?._id]);

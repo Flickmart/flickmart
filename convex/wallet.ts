@@ -313,7 +313,72 @@ export const transferToUserWithEscrow = mutation({
       },
     });
 
-    // 7. Send notifications to both parties
+    // 7. Find or create conversation between buyer and seller
+    const existingConversation = await ctx.db
+      .query("conversations")
+      .filter((q) =>
+        q.or(
+          q.and(
+            q.eq(q.field("user1"), buyer._id),
+            q.eq(q.field("user2"), sellerId)
+          ),
+          q.and(
+            q.eq(q.field("user1"), sellerId),
+            q.eq(q.field("user2"), buyer._id)
+          )
+        )
+      )
+      .first();
+
+    let conversationId;
+    if (existingConversation) {
+      conversationId = existingConversation._id;
+    } else {
+      // Create new conversation
+      const unreadCount: Record<string, number> = {};
+      unreadCount[buyer._id] = 0;
+      unreadCount[sellerId] = 1; // Seller has 1 unread message (the transfer message)
+
+      conversationId = await ctx.db.insert("conversations", {
+        user1: buyer._id,
+        user2: sellerId,
+        lastMessageId: undefined,
+        archivedByUsers: [],
+        unreadCount,
+        updatedAt: Date.now(),
+      });
+    }
+
+    // 8. Create transfer message in chat
+    const transferMessageId = await ctx.db.insert("message", {
+      senderId: buyer._id,
+      conversationId: conversationId,
+      type: "transfer",
+      content: `Sent ${args.amount} ${buyerWallet.currency}`,
+      orderId: orderId,
+      transferAmount: amountInCents,
+      currency: buyerWallet.currency,
+      readByUsers: [buyer._id], // Sender has read their own message
+    });
+
+    // 9. Update conversation with the transfer message
+    const conversation = await ctx.db.get(conversationId);
+    if (conversation) {
+      const unreadCount: Record<string, number> = conversation.unreadCount
+        ? { ...conversation.unreadCount }
+        : {};
+      
+      // Increment unread count for seller
+      unreadCount[sellerId] = (unreadCount[sellerId] || 0) + 1;
+
+      await ctx.db.patch(conversationId, {
+        lastMessageId: transferMessageId,
+        unreadCount,
+        updatedAt: Date.now(),
+      });
+    }
+
+    // 10. Send notifications to both parties
     const notificationContentForSeller =
       productIds.length > 1
         ? `${buyer.name} has sent ${args.amount} ${buyerWallet.currency} for multiple items. The funds are now held in escrow.`

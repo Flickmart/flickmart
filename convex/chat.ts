@@ -1,4 +1,4 @@
-import { query, mutation, MutationCtx} from "./_generated/server";
+import { query, mutation, MutationCtx } from "./_generated/server";
 import { v } from "convex/values";
 import { getCurrentUser } from "./users";
 import { internal } from "./_generated/api";
@@ -52,7 +52,7 @@ async function handleMessageNotification(
     await ctx.db.patch(existingNotification._id, {
       title: titleText,
       timestamp: timestamp,
-      content: `You received ${unreadCount} new messages from ${senderName}` ,
+      content: `You received ${unreadCount} new messages from ${senderName}`,
       isViewed: false, // Reset viewed status so it shows in unread count again
     });
   } else {
@@ -162,11 +162,15 @@ export const sendMessage = mutation({
     content: v.optional(v.string()),
     conversationId: v.id("conversations"),
     images: v.optional(v.array(v.string())),
-    type: v.optional(v.union(v.literal("text"), v.literal("product"))),
+    type: v.optional(v.union(v.literal("text"), v.literal("product"), v.literal("escrow"), v.literal("transfer"))),
     productId: v.optional(v.id("product")),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
+    // Transfer-specific fields
+    orderId: v.optional(v.id("orders")),
+    transferAmount: v.optional(v.number()),
+    currency: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -196,6 +200,10 @@ export const sendMessage = mutation({
       title: args.title,
       price: args.price,
       productImage: args.productImage,
+      // Transfer-specific fields
+      orderId: args.orderId,
+      transferAmount: args.transferAmount,
+      currency: args.currency,
     });
 
     // Determine the recipient
@@ -438,6 +446,10 @@ export const getMessages = query({
           const product = await ctx.db.get(message.productId);
           return { ...message, product };
         }
+        if (message.type === "transfer" && message.orderId) {
+          const order = await ctx.db.get(message.orderId);
+          return { ...message, order };
+        }
         return message;
       })
     );
@@ -473,6 +485,10 @@ export const getAllConversationsMessages = query({
         if (message.type === "product" && message.productId) {
           const product = await ctx.db.get(message.productId);
           return { ...message, product };
+        }
+        if (message.type === "transfer" && message.orderId) {
+          const order = await ctx.db.get(message.orderId);
+          return { ...message, order };
         }
         return message;
       })
