@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { PhotoView } from "react-photo-view";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
-import { LinkIcon } from "lucide-react";
+import { LinkIcon, ArrowRight, Banknote } from "lucide-react";
 import Link from "next/link";
 
 interface MessageBubbleProps {
@@ -18,11 +18,16 @@ interface MessageBubbleProps {
   handleLongPress: (messageId: string) => void;
   toggleMessageSelection: (messageId: string) => void;
   toggleSelectionMode: () => void;
-  type?: "text" | "product" | "image" | "escrow";
+  type?: "text" | "product" | "image" | "escrow" | "transfer";
   title?: string;
   price?: number;
   image?: string;
   productId?: string;
+  // Transfer-specific props
+  orderId?: string;
+  transferAmount?: number;
+  currency?: string;
+  order?: any;
 }
 
 export default function MessageBubble({
@@ -42,6 +47,11 @@ export default function MessageBubble({
   price = 0,
   image = "", // Default to empty string
   productId = "",
+  // Transfer-specific props
+  orderId = "",
+  transferAmount = 0,
+  currency = "",
+  order,
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
@@ -95,7 +105,8 @@ export default function MessageBubble({
             : "bg-background text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
             "bg-orange-200 border-2 border-orange-400",
-          images.length > 0 && "rounded-br-lg rounded-bl-lg py-0"
+          images.length > 0 && "rounded-br-lg rounded-bl-lg py-0",
+          type === "transfer" && "bg-transparent p-0 shadow-none"
         )}
       >
         {images && images.length > 0 && (
@@ -173,25 +184,27 @@ export default function MessageBubble({
             selectedMessages.includes(id) && " text-right "
           )}
         >
-          {type !== "product" && message}
+          {type !== "product" && type !== "transfer" && message}
         </p>
 
-        <div className="flex items-center justify-end mt-1 space-x-1">
-          <span className="text-[10px] md:text-[10px] opacity-70">
-            {timestamp}
-          </span>
-          {/* {isUser && (
-            <span className="text-[10px] md:text-xs">
-              {status === "sent" && <Check className="h-4 w-4 inline" />}
-              {status === "delivered" && (
-                <CheckCheck className="h-4 w-4 inline" />
-              )}
-              {status === "read" && (
-                <CheckCheck className="h-4 w-4 inline text-blue-500" />
-              )}
+        {type !== "transfer" && (
+          <div className="flex items-center justify-end mt-1 space-x-1">
+            <span className="text-[10px] md:text-[10px] opacity-70">
+              {timestamp}
             </span>
-          )} */}
-        </div>
+            {/* {isUser && (
+              <span className="text-[10px] md:text-xs">
+                {status === "sent" && <Check className="h-4 w-4 inline" />}
+                {status === "delivered" && (
+                  <CheckCheck className="h-4 w-4 inline" />
+                )}
+                {status === "read" && (
+                  <CheckCheck className="h-4 w-4 inline text-blue-500" />
+                )}
+              </span>
+            )} */}
+          </div>
+        )}
         {type === "product" && (
           <ProductChatMessage
             productImage={image}
@@ -199,6 +212,15 @@ export default function MessageBubble({
             productPrice={price}
             message={message}
             productId={productId}
+          />
+        )}
+        {type === "transfer" && (
+          <TransferChatMessage
+            transferAmount={transferAmount}
+            currency={currency}
+            orderId={orderId}
+            order={order}
+            timestamp={timestamp}
           />
         )}
       </div>
@@ -249,5 +271,62 @@ export function ProductChatMessage({
       </div>
     </div>
      </Link>
+  );
+}
+
+interface TransferChatMessageProps {
+  transferAmount: number;
+  currency: string;
+  orderId: string;
+  order?: any;
+  timestamp?: string;
+}
+
+export function TransferChatMessage({
+  transferAmount,
+  currency,
+  orderId,
+  order,
+  timestamp,
+}: TransferChatMessageProps) {
+  const formatAmount = (amount: number) => {
+    return (amount / 100).toFixed(2);
+  };
+
+  return (
+    <Link href={`/orders/${orderId}`}>
+      <div className="w-full">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-2.5 cursor-pointer hover:from-green-100 hover:to-emerald-100 transition-all duration-200 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg flex items-center justify-center shadow-sm">
+              <Banknote className="w-4 h-4 text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-medium text-green-700 mb-0.5">
+                    Money Sent
+                  </p>
+                  <p className="text-base font-bold text-green-900 leading-none">
+                    {currency === "NGN" ? "₦" : currency}{formatAmount(transferAmount)}
+                  </p>
+                </div>
+                <ArrowRight className="w-4 h-4 text-green-500 flex-shrink-0" />
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center justify-between mt-1.5">
+            <p className="text-[10px] text-green-600 font-medium">
+              Funds held in escrow
+            </p>
+            {timestamp && (
+              <span className="text-[9px] text-green-500 opacity-70">
+                {timestamp}
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
   );
 }
