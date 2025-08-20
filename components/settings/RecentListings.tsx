@@ -12,9 +12,7 @@ export default function RecentListings({
   userId: Id<"users">;
   updateLength: (Length: number) => void;
 }) {
-  const userProducts = useQuery(api.product.getByUserId, {
-    userId,
-  });
+  const userProducts = useQuery(api.product.getByUserId);
 
   useEffect(() => {
     updateLength(userProducts?.length ?? 0);
