@@ -9,67 +9,8 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const testData = {
-  recommendations: {
-    data: [
-      {
-        _id: "p1001",
-        images: ["/mobiles.png"],
-        title: "Classic White Sneakers",
-        price: 4500,
-      },
-      {
-        _id: "p1002",
-        images: ["/jacket.png"],
-        title: "Bluetooth Wireless Earbuds",
-        price: 7500,
-      },
-      {
-        _id: "p1003",
-        images: ["/pets.png"],
-        title: "Ergonomic Laptop Stand",
-        price: 12000,
-      },
-      {
-        _id: "p1004",
-        images: ["/pets.png"],
-        title: "Ergonomic Laptop Stand",
-        price: 12000,
-      },
-      {
-        _id: "p1005",
-        images: ["/pets.png"],
-        title: "Ergonomic Laptop Stand",
-        price: 12000,
-      },
-      {
-        _id: "p1006",
-        images: ["/pets.png"],
-        title: "Ergonomic Laptop Stand",
-        price: 12000,
-      },
-    ],
-    error: null,
-  },
-};
-
-type Product = {
-  _id: string;
-  images: string[];
-  title: string;
-  price: number;
-};
-
-type RecommendationsResponse = {
-  recommendations: {
-    data: Product[];
-    error: string | null;
-  };
-};
-
 export default function PopularSection() {
-  // const recommendations = useQuery(api.product.getRecommendations, {});
-  const recommendations = testData.recommendations;
+  const recommendations = useQuery(api.product.getRecommendations, {});
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
 
