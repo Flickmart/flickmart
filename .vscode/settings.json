@@ -3,5 +3,6 @@
         "flickmart",
         "paystack"
     ],
-    "typescript.autoClosingTags": false
+    "typescript.autoClosingTags": false,
+    "kiroAgent.configureMCP": "Disabled"
 }
