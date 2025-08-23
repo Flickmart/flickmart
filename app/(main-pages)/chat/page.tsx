@@ -17,7 +17,7 @@ export default function ChatPage() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [, setSidebarOpen] = useState(false);
 
   // Get URL parameters for vendor chat initiation
   const searchParams = new URLSearchParams(
