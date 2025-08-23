@@ -986,3 +986,16 @@ export const getNewProducts = query({
     return products;
   },
 });
+
+export const getVendorProducts = query({
+  args: {
+    id: v.id("users"),
+  },
+
+  handler(ctx, args) {
+    return ctx.db
+      .query("product")
+      .filter((q) => q.eq(q.field("userId"), args.id))
+      .collect();
+  },
+});

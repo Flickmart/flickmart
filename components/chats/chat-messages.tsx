@@ -19,7 +19,6 @@ interface Message {
   orderId?: string;
   transferAmount?: number;
   currency?: string;
-  order?: any;
 }
 
 interface ChatMessagesProps {
@@ -42,6 +41,8 @@ export default function ChatMessages({
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+
 
   useEffect(() => {
     scrollToBottom();
@@ -170,7 +171,6 @@ export default function ChatMessages({
                 orderId={message.orderId}
                 transferAmount={message.transferAmount}
                 currency={message.currency}
-                order={message.order}
               />
             ))}
           </div>

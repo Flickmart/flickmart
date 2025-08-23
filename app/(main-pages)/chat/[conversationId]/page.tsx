@@ -66,15 +66,11 @@ export default function ConversationPage() {
   const updateTypingStatus = useMutation(api.presence.updateTypingStatus);
   const heartbeat = useMutation(api.presence.heartbeat);
 
-  // Start conversation mutation
-  const startConversation = useMutation(api.chat.startConversation);
+
 
   // Mark messages as read mutation
   const markMessagesAsRead = useMutation(api.chat.markMessagesAsRead);
 
-  // Archive and unarchive conversation mutations
-  const archiveConversation = useMutation(api.chat.archiveConversation);
-  const unarchiveConversation = useMutation(api.chat.unarchiveConversation);
 
   // Fetch messages for active conversation
   const messages = useQuery(
@@ -317,7 +313,8 @@ export default function ConversationPage() {
         );
         status = otherUserRead ? "read" : "delivered";
       }
-
+      
+      
       return {
         id: message._id,
         chatId: message.conversationId,
@@ -335,7 +332,7 @@ export default function ConversationPage() {
         orderId: message.orderId,
         transferAmount: message.transferAmount,
         currency: message.currency,
-        // order: message.order,
+        // order: message.order 
       };
     });
   }, [messages, user?._id]);
