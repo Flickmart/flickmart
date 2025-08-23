@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useState, type ChangeEvent } from "react";
-import { MapPin, Edit2, Check, Phone, Camera, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import imageCompression from "browser-image-compression";
-import Link from "next/link";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import Image from "next/image";
-import { toast } from "sonner";
-import { useUpload } from "@/hooks/useUpload";
-import { MoonLoader } from "react-spinners";
-import { Id } from "@/convex/_generated/dataModel";
+import imageCompression from 'browser-image-compression';
+import { useMutation, useQuery } from 'convex/react';
+import { Camera, Check, Edit2, MapPin, Phone, User } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { type ChangeEvent, useState } from 'react';
+import { MoonLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useUpload } from '@/hooks/useUpload';
 
 export default function BusinessSettings() {
   const [isEditMode, setIsEditMode] = useState(false);
@@ -38,7 +38,7 @@ export default function BusinessSettings() {
 
     // Max image size allowed
     if (file && file.size > 2 * 1024 * 1024) {
-      toast.error("Image size should be less than 2MB");
+      toast.error('Image size should be less than 2MB');
       return;
     }
 
@@ -68,7 +68,7 @@ export default function BusinessSettings() {
     setIsEditMode(false);
     // Here you would typically save the changes to your backend
     const storeId = await updateStore({
-      id: userStore?.data?._id as Id<"store">,
+      id: userStore?.data?._id as Id<'store'>,
       name: businessInfo.name,
       description: businessInfo.description,
       phone: businessInfo.phone,
@@ -77,77 +77,77 @@ export default function BusinessSettings() {
     });
 
     if (storeId) {
-      toast.success("Store updated successfully");
+      toast.success('Store updated successfully');
     }
   };
 
   return (
-    <div className="container mx-auto py-4 px-4 sm:py-8 sm:px-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold">Business Details</h1>
+    <div className="container mx-auto px-4 py-4 sm:px-6 sm:py-8">
+      <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center sm:gap-0">
+        <h1 className="font-bold text-2xl sm:text-3xl">Business Details</h1>
       </div>
 
       <Card className="p-4 sm:p-6">
         <div className="space-y-6 sm:space-y-8">
           {/* Basic Information */}
           <div>
-            <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            <h2 className="mb-4 font-semibold text-lg sm:text-xl">
               Basic Information
             </h2>
             <div className="space-y-4">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                <div className="relative w-full  sm:w-auto flex justify-center sm:justify-start">
-                  <div className="size-28 bg-gray-100  rounded-full">
+              <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+                <div className="relative flex w-full justify-center sm:w-auto sm:justify-start">
+                  <div className="size-28 rounded-full bg-gray-100">
                     {isUploading ? (
-                      <div className="size-full grid place-items-center">
+                      <div className="grid size-full place-items-center">
                         <MoonLoader size={35} />
                       </div>
-                    ) : !userStore?.data?.image && !fileURL ? (
-                      <User className="size-full p-3 text-gray-700" />
-                    ) : (
+                    ) : userStore?.data?.image || fileURL ? (
                       <Image
-                        src={fileURL || userStore?.data?.image || ""}
                         alt="Business Logo"
+                        className="size-full rounded-full object-cover"
                         height={400}
+                        src={fileURL || userStore?.data?.image || ''}
                         width={400}
-                        className="size-full object-cover rounded-full"
                       />
+                    ) : (
+                      <User className="size-full p-3 text-gray-700" />
                     )}
                   </div>
                   {isEditMode && (
                     <Label
+                      className="absolute right-1/2 bottom-0 translate-x-10 cursor-pointer rounded-full bg-primary p-2 text-primary-foreground transition-opacity hover:opacity-90 sm:right-0 sm:translate-x-0"
                       htmlFor="logo-upload"
-                      className="absolute bottom-0 right-1/2 sm:right-0 translate-x-10 sm:translate-x-0 bg-primary text-primary-foreground rounded-full p-2 cursor-pointer hover:opacity-90 transition-opacity"
                     >
                       <Camera className="h-4 w-4" />
                       <Input
-                        id="logo-upload"
-                        type="file"
                         accept="image/*"
                         className="sr-only"
+                        id="logo-upload"
                         onChange={handleLogoChange}
+                        type="file"
                       />
                     </Label>
                   )}
                 </div>
-                <div className=" w-full space-y-2">
+                <div className="w-full space-y-2">
                   <Label
+                    className="mb-1 block font-semibold"
                     htmlFor="business-name"
-                    className="block font-semibold mb-1"
                   >
                     Business Name
                   </Label>
                   {isEditMode ? (
                     <Input
+                      className="w-full"
                       id="business-name"
-                      value={businessInfo.name}
                       onChange={(e) =>
                         setBusinessInfo({
                           ...businessInfo,
                           name: e.target.value,
                         })
                       }
-                      className="w-full"
+                      value={businessInfo.name}
                     />
                   ) : (
                     <p className="font-medium">{userStore?.data?.name}</p>
@@ -156,13 +156,12 @@ export default function BusinessSettings() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="business-description" className="font-semibold">
+                <Label className="font-semibold" htmlFor="business-description">
                   Description
                 </Label>
                 {isEditMode ? (
                   <Textarea
                     id="business-description"
-                    value={businessInfo.description}
                     onChange={(e) =>
                       setBusinessInfo({
                         ...businessInfo,
@@ -170,6 +169,7 @@ export default function BusinessSettings() {
                       })
                     }
                     rows={4}
+                    value={businessInfo.description}
                   />
                 ) : (
                   <p className="leading-relaxed">
@@ -184,21 +184,21 @@ export default function BusinessSettings() {
 
           {/* Contact Information */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Contact Information</h2>
+            <h2 className="mb-4 font-semibold text-lg">Contact Information</h2>
             <div className="space-y-4">
-              <div className="flex items-center space-x-2 w-full">
-                <Phone className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+              <div className="flex w-full items-center space-x-2">
+                <Phone className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
                 {isEditMode ? (
                   <Input
-                    value={businessInfo.phone}
+                    className="w-full"
                     onChange={(e) =>
                       setBusinessInfo({
                         ...businessInfo,
                         phone: e.target.value,
                       })
                     }
-                    className="w-full"
                     placeholder="Enter phone number"
+                    value={businessInfo.phone}
                   />
                 ) : (
                   <span>{userStore?.data?.phone}</span>
@@ -211,19 +211,19 @@ export default function BusinessSettings() {
 
           {/* Location */}
           <div>
-            <h2 className="text-lg font-semibold mb-4">Location</h2>
+            <h2 className="mb-4 font-semibold text-lg">Location</h2>
             <div className="flex items-start space-x-2">
-              <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+              <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
               {isEditMode ? (
                 <Input
                   className="capitalize"
-                  value={businessInfo.address}
                   onChange={(e) =>
                     setBusinessInfo({
                       ...businessInfo,
                       address: e.target.value,
                     })
                   }
+                  value={businessInfo.address}
                 />
               ) : (
                 <p className="capitalize">{userStore?.data?.location}</p>
@@ -233,9 +233,9 @@ export default function BusinessSettings() {
 
           <Separator />
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 pt-8 pb-4 w-full sm:w-auto">
+        <div className="flex w-full flex-col gap-4 pt-8 pb-4 sm:w-auto sm:flex-row">
           <Button
-            className="w-full sm:w-auto h-10"
+            className="h-10 w-full sm:w-auto"
             onClick={() => (isEditMode ? handleSave() : setIsEditMode(true))}
           >
             {isEditMode ? (
@@ -250,7 +250,7 @@ export default function BusinessSettings() {
               </>
             )}
           </Button>
-          <Button variant="outline" asChild className="w-full sm:w-auto h-10">
+          <Button asChild className="h-10 w-full sm:w-auto" variant="outline">
             <Link href={`/business/${userStore?.data?._id}`}>
               View Public Page
             </Link>

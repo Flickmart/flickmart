@@ -1,4 +1,4 @@
-import * as React from "react";
+import * as React from 'react';
 
 const LARGE_BREAKPOINT = 640;
 
@@ -10,9 +10,9 @@ export function useIsLarge() {
     const onChange = () => {
       setIsLarge(mql.matches);
     };
-    mql.addEventListener("change", onChange);
+    mql.addEventListener('change', onChange);
     setIsLarge(mql.matches);
-    return () => mql.removeEventListener("change", onChange);
+    return () => mql.removeEventListener('change', onChange);
   }, []);
 
   return !!isLarge;

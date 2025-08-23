@@ -1,7 +1,8 @@
-"use client";
+'use client';
 
-import Footer from "@/components/Footer";
-import React from "react";
+import type React from 'react';
+import Footer from '@/components/Footer';
+
 const ContactLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="overflow-hidden">

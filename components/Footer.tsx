@@ -1,15 +1,15 @@
-"use client";
-import { ChevronDown } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+'use client';
+import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useState } from 'react';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "./ui/accordion";
+} from './ui/accordion';
 
 export default function Footer() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -17,16 +17,16 @@ export default function Footer() {
 
   // Pages where Footer should not be shown
   const hiddenPages = [
-    "/sign-in",
-    "/sign-up",
-    "/forgot-password",
-    "/notifications",
-    "/settings",
-    "post-ad",
-    "/create-store",
-    "/saved",
-    "/chat",
-    "/business",
+    '/sign-in',
+    '/sign-up',
+    '/forgot-password',
+    '/notifications',
+    '/settings',
+    'post-ad',
+    '/create-store',
+    '/saved',
+    '/chat',
+    '/business',
   ];
 
   if (hiddenPages.includes(pathname)) {
@@ -38,92 +38,92 @@ export default function Footer() {
   };
 
   return (
-    <Accordion type="single" collapsible>
-      <footer className="w-full bg-black text-white text-sm font-light">
-        <div className="w-10/12 mx-auto flex flex-col py-6 lg:py-12">
+    <Accordion collapsible type="single">
+      <footer className="w-full bg-black font-light text-sm text-white">
+        <div className="mx-auto flex w-10/12 flex-col py-6 lg:py-12">
           <AccordionItem value="footer">
-            <article className="flex flex-col lg:flex-row justify-between">
-              <article className="w-full  lg:w-6/12 mb-8">
-                <AccordionTrigger className="[&>svg]:xl:hidden hover:no-underline flex items-center ">
-                  <Link href={"/"} className="flex gap-2  items-center">
+            <article className="flex flex-col justify-between lg:flex-row">
+              <article className="mb-8 w-full lg:w-6/12">
+                <AccordionTrigger className="flex items-center hover:no-underline [&>svg]:xl:hidden">
+                  <Link className="flex items-center gap-2" href={'/'}>
                     <Image
+                      alt=""
+                      className="h-12 w-12"
+                      height={500}
                       src="/flickmart-logo.svg"
                       width={500}
-                      height={500}
-                      className="h-12 w-12"
-                      alt=""
                     />
                     <h1 className="font-bold text-2xl">
                       Flick<span className="text-flickmart">Mart</span>
                     </h1>
                   </Link>
                 </AccordionTrigger>
-                <p className=" lg:mt-6 mb-3">What you order is what you get.</p>
+                <p className="mb-3 lg:mt-6">What you order is what you get.</p>
               </article>
               <AccordionContent>
-                <article className="lg:hidden w-full lg:w-6/12 flex flex-col lg:flex-row justify-between mb-3 lg:mb-9">
-                  <div className="w-full lg:w-3/6 flex items-start border-t lg:border-none py-6">
+                <article className="mb-3 flex w-full flex-col justify-between lg:mb-9 lg:hidden lg:w-6/12 lg:flex-row">
+                  <div className="flex w-full items-start border-t py-6 lg:w-3/6 lg:border-none">
                     <div className="flex flex-col gap-5">
-                      <h1 className="text-lg mb-2">Info</h1>
-                      <Link href="#" className="">
+                      <h1 className="mb-2 text-lg">Info</h1>
+                      <Link className="" href="#">
                         Shipping Policy
                       </Link>
-                      <Link href="#" className="">
+                      <Link className="" href="#">
                         Return & Refund
                       </Link>
-                      <Link href="#" className="">
+                      <Link className="" href="#">
                         Support
                       </Link>
-                      <Link href="#" className="">
+                      <Link className="" href="#">
                         FAQs
                       </Link>
                     </div>
                   </div>
-                  <div className="w-full lg:w-3/6 flex items-start border-t lg:border-none pt-6">
+                  <div className="flex w-full items-start border-t pt-6 lg:w-3/6 lg:border-none">
                     <div className="flex flex-col gap-5">
-                      <h1 className="text-lg mb-2">Office</h1>
+                      <h1 className="mb-2 text-lg">Office</h1>
                       <span className="">University of Nigeria, Nsukka,</span>
                       <span className="">Enugu state,</span>
                       <span className="">Nigeria.</span>
-                      <Link href="mailto:support@flickmart.app" className="">
+                      <Link className="" href="mailto:support@flickmart.app">
                         support@flickmart.app
                       </Link>
                     </div>
                   </div>
-                  <div className="border-t pt-5 mt-5">
+                  <div className="mt-5 border-t pt-5">
                     <h1 className="text-lg">Connect with us</h1>
-                    <div className="flex gap-3 mt-2">
+                    <div className="mt-2 flex gap-3">
                       <Link
+                        className="group"
                         href={
-                          "https://www.instagram.com/flickmartofficial?igsh=cDQwaWk3cHVkdndl"
+                          'https://www.instagram.com/flickmartofficial?igsh=cDQwaWk3cHVkdndl'
                         }
                         target="_blank"
-                        className="group"
                       >
                         <Image
-                          src="/ig.png"
                           alt="Instagram"
-                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                          width={30}
+                          className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                           height={30}
+                          src="/ig.png"
+                          width={30}
                         />
                       </Link>
-                      <Link href={"#"} target="_blank" className="group">
+                      <Link className="group" href={'#'} target="_blank">
                         <Image
-                          src="/x.png"
                           alt="Facebook"
-                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                          width={26}
+                          className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                           height={26}
+                          src="/x.png"
+                          width={26}
                         />
                       </Link>
-                      <Link href={"#"} target="_blank" className="group">
+                      <Link className="group" href={'#'} target="_blank">
                         <Image
-                          src="/wa.png"
                           alt="Facebook"
-                          className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                          width={30}
+                          className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                           height={30}
+                          src="/wa.png"
+                          width={30}
                         />
                       </Link>
                     </div>
@@ -134,72 +134,72 @@ export default function Footer() {
           </AccordionItem>
 
           <div className="flex flex-col justify-center gap-4">
-            <div className="hidden xl:block pt-5">
+            <div className="hidden pt-5 xl:block">
               <h1 className="text-lg">Connect with us</h1>
-              <div className="flex gap-3 mt-2">
+              <div className="mt-2 flex gap-3">
                 <Link
+                  className="group"
                   href={
-                    "https://www.instagram.com/flickmartofficial?igsh=cDQwaWk3cHVkdndl"
+                    'https://www.instagram.com/flickmartofficial?igsh=cDQwaWk3cHVkdndl'
                   }
                   target="_blank"
-                  className="group"
                 >
                   <Image
-                    src="/ig.png"
                     alt="Instagram"
-                    className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                    width={30}
+                    className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                     height={30}
+                    src="/ig.png"
+                    width={30}
                   />
                 </Link>
-                <Link href={"#"} target="_blank" className="group">
+                <Link className="group" href={'#'} target="_blank">
                   <Image
-                    src="/x.png"
                     alt="Facebook"
-                    className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                    width={26}
+                    className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                     height={26}
+                    src="/x.png"
+                    width={26}
                   />
                 </Link>
-                <Link href={"#"} target="_blank" className="group">
+                <Link className="group" href={'#'} target="_blank">
                   <Image
-                    src="/wa.png"
                     alt="Facebook"
-                    className="h-6 w-6 group-hover:scale-105 transition-all duration-500"
-                    width={30}
+                    className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                     height={30}
+                    src="/wa.png"
+                    width={30}
                   />
                 </Link>
               </div>
             </div>
-            <article className="mt-3 w-full flex flex-col-reverse lg:flex-row gap-3 text-[12px] items-center pt-9 mb-2 lg:mb-0">
+            <article className="mt-3 mb-2 flex w-full flex-col-reverse items-center gap-3 pt-9 text-[12px] lg:mb-0 lg:flex-row">
               <span>
                 Copyright &copy; {new Date().getFullYear()} FlickMart. All
                 rights reserved
               </span>
               <span className="hidden lg:block">|</span>
-              <span className="flex items-center gap-3 ">
-                <Link href="/privacy-policy" className="">
+              <span className="flex items-center gap-3">
+                <Link className="" href="/privacy-policy">
                   Privacy Policy
                 </Link>
-                <Link href="/terms-of-service" className="">
+                <Link className="" href="/terms-of-service">
                   Terms & Conditions
                 </Link>
               </span>
-              <div className=" flex gap-5 justify-self-end">
+              <div className="flex gap-5 justify-self-end">
                 <Image
-                  src="/visa.png"
                   alt="visa"
-                  className=" size-7 object-cover"
-                  width={500}
+                  className="size-7 object-cover"
                   height={500}
+                  src="/visa.png"
+                  width={500}
                 />
                 <Image
-                  src="/master.png"
                   alt="master"
-                  className=" size-7 object-cover"
-                  width={500}
+                  className="size-7 object-cover"
                   height={500}
+                  src="/master.png"
+                  width={500}
                 />
               </div>
             </article>

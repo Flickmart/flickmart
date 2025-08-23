@@ -1,7 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { useSignUp } from '@clerk/nextjs';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { REGEXP_ONLY_DIGITS } from 'input-otp';
+import { type Dispatch, type SetStateAction, useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -9,22 +13,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { REGEXP_ONLY_DIGITS } from "input-otp";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
-import { useSignUp } from "@clerk/nextjs";
-import { toast } from "sonner";
-import useUserStore from "@/store/useUserStore";
+} from '@/components/ui/input-otp';
+import useUserStore from '@/store/useUserStore';
 
 const formSchema = z.object({
   otp: z
     .string()
-    .min(6, { message: "Your verification code must be 6 digits" }),
+    .min(6, { message: 'Your verification code must be 6 digits' }),
 });
 
 const StageTwo = ({
@@ -50,7 +50,7 @@ const StageTwo = ({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      otp: "",
+      otp: '',
     },
   });
 
@@ -61,12 +61,14 @@ const StageTwo = ({
       setIsLoading(true);
 
       // Attempt to verify the email with the provided code
-      const completeVerification = await signUp.attemptEmailAddressVerification({
-        code: data.otp,
-      });
+      const completeVerification = await signUp.attemptEmailAddressVerification(
+        {
+          code: data.otp,
+        }
+      );
 
-      if (completeVerification.status !== "complete") {
-        toast.error("Verification failed. Please try again.");
+      if (completeVerification.status !== 'complete') {
+        toast.error('Verification failed. Please try again.');
         return;
       }
 
@@ -76,7 +78,9 @@ const StageTwo = ({
       // Move to success page
       setStage(3);
     } catch (err: any) {
-      toast.error(err.errors?.[0]?.message || "Verification failed. Please try again.");
+      toast.error(
+        err.errors?.[0]?.message || 'Verification failed. Please try again.'
+      );
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -88,11 +92,13 @@ const StageTwo = ({
 
     try {
       setIsSending(true);
-      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setCountdown(30);
-      toast.success("A new verification code has been sent to your email");
+      toast.success('A new verification code has been sent to your email');
     } catch (err: any) {
-      toast.error(err.errors?.[0]?.message || "Failed to send verification code");
+      toast.error(
+        err.errors?.[0]?.message || 'Failed to send verification code'
+      );
       console.error(err);
     } finally {
       setIsSending(false);
@@ -103,15 +109,15 @@ const StageTwo = ({
     <main className="relative h-screen">
       <Form {...form}>
         <form
+          className="container-px lg:abs-center-x lg:abs-center-y lg:abs-center-x mx-auto max-w-[600px] text-center lg:absolute lg:w-[700px] lg:max-w-none"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="container-px text-center max-w-[600px] mx-auto lg:absolute lg:abs-center-x lg:abs-center-y lg:abs-center-x lg:max-w-none lg:w-[700px]"
         >
-          <h1 className="mb-3 text-[26px] mt-14 sm:text-4xl lg:mt-0 lg:text-[44px]">
+          <h1 className="mt-14 mb-3 text-[26px] sm:text-4xl lg:mt-0 lg:text-[44px]">
             Verify your email address
           </h1>
-          <p className="text-sm text-flickmart-gray mb-20 lg:text-base">
-            We sent a verification code to{" "}
-            <span className="text-flickmart font-medium">{email}</span>
+          <p className="mb-20 text-flickmart-gray text-sm lg:text-base">
+            We sent a verification code to{' '}
+            <span className="font-medium text-flickmart">{email}</span>
           </p>
           <FormField
             control={form.control}
@@ -130,9 +136,9 @@ const StageTwo = ({
                     <InputOTPGroup className="w-full justify-between gap-4">
                       {Array.from({ length: otpMaxLength }).map((_, index) => (
                         <InputOTPSlot
+                          className="rounded-lg"
                           index={index}
                           key={index}
-                          className="rounded-lg"
                         />
                       ))}
                     </InputOTPGroup>
@@ -143,26 +149,26 @@ const StageTwo = ({
             )}
           />
           <Button
-            className="submit-btn lg:w-4/5 lg:mt-20"
-            type="submit"
+            className="submit-btn lg:mt-20 lg:w-4/5"
             disabled={isLoading || isSending}
+            type="submit"
           >
-            {isLoading ? "Verifying..." : isSending ? "Sending..." : "Verify"}
+            {isLoading ? 'Verifying...' : isSending ? 'Sending...' : 'Verify'}
           </Button>
-          <p className="font-light mt-8">
-            Didn't receive any code?{" "}
+          <p className="mt-8 font-light">
+            Didn't receive any code?{' '}
             {countdown > 0 ? (
               <span className="text-flickmart">
                 You can resend the code in {countdown} seconds
               </span>
             ) : (
               <button
-                type="button"
-                onClick={resendCode}
+                className="font-medium text-flickmart hover:underline disabled:opacity-50"
                 disabled={isSending}
-                className="text-flickmart font-medium hover:underline disabled:opacity-50"
+                onClick={resendCode}
+                type="button"
               >
-                {isSending ? "Sending..." : "Resend code"}
+                {isSending ? 'Sending...' : 'Resend code'}
               </button>
             )}
           </p>

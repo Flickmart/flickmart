@@ -1,5 +1,5 @@
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 export const useProductsByCategoryOrSubCategory = (category: string) => {
   try {
@@ -7,7 +7,7 @@ export const useProductsByCategoryOrSubCategory = (category: string) => {
       category,
     });
   } catch (error) {
-    console.log("Error fetching products:", error);
+    console.log('Error fetching products:', error);
     return null;
   }
 };

@@ -1,26 +1,35 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import Loader from "@/components/multipage/Loader";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { useAuth } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
 import {
   ArrowDownToLine,
   ArrowUpFromLine,
+  Bell,
   Eye,
   EyeOff,
-  Bell,
-  RefreshCw,
   Headphones,
-} from "lucide-react";
+  RefreshCw,
+} from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import ClientOnly from '@/components/client-only';
+import Loader from '@/components/multipage/Loader';
 import {
-  BalanceSkeleton,
-  TransactionHistorySkeleton,
-  WalletPageSkeleton,
-} from "@/components/wallet/skeleton";
-import TransactionDetails from "@/components/wallet/transaction-details";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import {
   Dialog,
   DialogClose,
@@ -30,38 +39,27 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-
-import dynamic from "next/dynamic";
-import ClientOnly from "@/components/client-only";
-import { Doc, Id } from "@/convex/_generated/dataModel";
+  BalanceSkeleton,
+  TransactionHistorySkeleton,
+  WalletPageSkeleton,
+} from '@/components/wallet/skeleton';
+import TransactionDetails from '@/components/wallet/transaction-details';
+import { api } from '@/convex/_generated/api';
+import { type Doc, Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 const PaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
+  () => import('react-paystack').then((mod) => mod.PaystackButton),
   {
     ssr: false,
     loading: () => (
       <Button
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600"
         disabled
-        className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
       >
         Loading payment...
       </Button>
@@ -77,22 +75,22 @@ interface PaystackConfig {
 
 export default function WalletPage() {
   const [showBalance, setShowBalance] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [amount, setAmount] = useState(0);
-  const [error, setError] = useState<string | null>("");
+  const [error, setError] = useState<string | null>('');
   const [open, setOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [paystackReference, setPaystackReference] = useState<string>("");
+  const [paystackReference, setPaystackReference] = useState<string>('');
   const [isPaystackModalOpen, setIsPaystackModalOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isLoadingBanks, setIsLoadingBanks] = useState(false);
   const [banks, setBanks] = useState<any[]>([]);
-  const [selectedBank, setSelectedBank] = useState<string>("");
-  const [accountNumber, setAccountNumber] = useState<string>("");
-  const [accountName, setAccountName] = useState<string>("");
+  const [selectedBank, setSelectedBank] = useState<string>('');
+  const [accountNumber, setAccountNumber] = useState<string>('');
+  const [accountName, setAccountName] = useState<string>('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
@@ -112,11 +110,11 @@ export default function WalletPage() {
 
   const wallet = useQuery(
     api.wallet.getWalletByUserId,
-    user ? { userId: user._id } : "skip"
+    user ? { userId: user._id } : 'skip'
   );
   const transactions = useQuery(
     api.transactions.getByUserId,
-    user ? { userId: user._id } : "skip"
+    user ? { userId: user._id } : 'skip'
   );
 
   const { getToken } = useAuth();
@@ -139,12 +137,12 @@ export default function WalletPage() {
 
   const handleInitializePayment = async () => {
     if (amount <= 0) {
-      setError("Please enter a valid amount.");
-      toast.error("Amount invalid");
+      setError('Please enter a valid amount.');
+      toast.error('Amount invalid');
       return;
     }
     if (!user) {
-      setError("Log in to fund your wallet.");
+      setError('Log in to fund your wallet.');
       return;
     }
     try {
@@ -152,9 +150,9 @@ export default function WalletPage() {
       setIsInitializing(true);
       setIsPaystackModalOpen(true);
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsInitializing(false);
         return;
       }
@@ -162,9 +160,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/initialize`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ email: user.email, amount }),
@@ -174,12 +172,12 @@ export default function WalletPage() {
       if (data.status) {
         setPaystackReference(data.data.reference);
       } else {
-        setError("Failed to initialize payment.");
-        toast.error("Failed to initialize payment.");
+        setError('Failed to initialize payment.');
+        toast.error('Failed to initialize payment.');
         setIsPaystackModalOpen(false);
       }
     } catch (err) {
-      setError("Error initializing payment.");
+      setError('Error initializing payment.');
       setIsPaystackModalOpen(false);
     } finally {
       setIsInitializing(false);
@@ -190,18 +188,18 @@ export default function WalletPage() {
     console.log(response);
     try {
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("User not authenticated.");
+        setError('User not authenticated.');
         setIsPaystackModalOpen(false);
         return;
       }
       const result = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -212,26 +210,26 @@ export default function WalletPage() {
       );
       const data = await result.json();
       if (data.status) {
-        toast.success("Payment successful! Wallet updated.");
+        toast.success('Payment successful! Wallet updated.');
         setAmount(0);
-        setPaystackReference("");
+        setPaystackReference('');
         setIsPaystackModalOpen(false);
         setError(null);
       } else {
         toast.error("We coudn't verify your transaction");
-        setError("Payment verification failed.");
+        setError('Payment verification failed.');
         setIsPaystackModalOpen(false);
       }
     } catch (err) {
-      setError("Error verifying payment.");
+      setError('Error verifying payment.');
       setIsPaystackModalOpen(false);
     }
   };
 
   const handlePaystackClose = () => {
-    setError("Payment cancelled.");
-    toast.info("Paystack transaction closed");
-    setPaystackReference("");
+    setError('Payment cancelled.');
+    toast.info('Paystack transaction closed');
+    setPaystackReference('');
     setIsPaystackModalOpen(false);
   };
 
@@ -241,9 +239,9 @@ export default function WalletPage() {
       setError(null);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsLoadingBanks(false);
         return;
       }
@@ -251,9 +249,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/list-banks`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -263,20 +261,20 @@ export default function WalletPage() {
       if (data.status) {
         setBanks(data.data);
       } else {
-        setError("Failed to fetch banks.");
-        toast.error("Failed to fetch banks.");
+        setError('Failed to fetch banks.');
+        toast.error('Failed to fetch banks.');
       }
     } catch (err) {
-      setError("Error fetching banks.");
-      toast.error("Error fetching banks.");
+      setError('Error fetching banks.');
+      toast.error('Error fetching banks.');
     } finally {
       setIsLoadingBanks(false);
     }
   };
 
   const verifyAccount = async () => {
-    if (!accountNumber || !selectedBank) {
-      setError("Please enter account number and select bank");
+    if (!(accountNumber && selectedBank)) {
+      setError('Please enter account number and select bank');
       return;
     }
 
@@ -285,9 +283,9 @@ export default function WalletPage() {
       setError(null);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsVerifyingAccount(false);
         return;
       }
@@ -295,9 +293,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify-account`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -313,12 +311,12 @@ export default function WalletPage() {
         setAccountName(data.data.account_name);
         setVerifyDialogOpen(true);
       } else {
-        setError(data.message || "Failed to verify account");
-        toast.error(data.message || "Failed to verify account");
+        setError(data.message || 'Failed to verify account');
+        toast.error(data.message || 'Failed to verify account');
       }
     } catch (err) {
-      setError("Error verifying account");
-      toast.error("Error verifying account");
+      setError('Error verifying account');
+      toast.error('Error verifying account');
     } finally {
       setIsVerifyingAccount(false);
     }
@@ -326,25 +324,25 @@ export default function WalletPage() {
 
   const handleWithdraw = async () => {
     if (amount <= 0) {
-      setError("Please enter a valid amount.");
-      toast.error("Amount invalid");
+      setError('Please enter a valid amount.');
+      toast.error('Amount invalid');
       return;
     }
 
     if (!selectedBank) {
-      setError("Please select a bank.");
-      toast.error("Bank selection required");
+      setError('Please select a bank.');
+      toast.error('Bank selection required');
       return;
     }
 
     if (!accountNumber || accountNumber.length !== 10) {
-      setError("Please enter a valid 10-digit account number.");
-      toast.error("Invalid account number");
+      setError('Please enter a valid 10-digit account number.');
+      toast.error('Invalid account number');
       return;
     }
 
     if (!user) {
-      setError("Log in to withdraw from your wallet.");
+      setError('Log in to withdraw from your wallet.');
       return;
     }
 
@@ -353,9 +351,9 @@ export default function WalletPage() {
       setIsWithdrawing(true);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsWithdrawing(false);
         return;
       }
@@ -363,62 +361,62 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/withdraw`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
             amount,
             bankCode: selectedBank,
             accountNumber,
-            accountName: accountName || "Not Verified",
+            accountName: accountName || 'Not Verified',
           }),
         }
       );
 
       const data = await response.json();
       if (data.status) {
-        toast.success("Withdrawal initiated successfully!");
+        toast.success('Withdrawal initiated successfully!');
         setAmount(0);
-        setSelectedBank("");
-        setAccountNumber("");
-        setAccountName("");
+        setSelectedBank('');
+        setAccountNumber('');
+        setAccountName('');
         setWithdrawOpen(false);
       } else {
-        setError(data.message || "Failed to process withdrawal.");
-        toast.error(data.message || "Failed to process withdrawal.");
+        setError(data.message || 'Failed to process withdrawal.');
+        toast.error(data.message || 'Failed to process withdrawal.');
       }
     } catch (err) {
-      setError("Error processing withdrawal.");
-      toast.error("Error processing withdrawal.");
+      setError('Error processing withdrawal.');
+      toast.error('Error processing withdrawal.');
     } finally {
       setIsWithdrawing(false);
     }
   };
 
   const paystackConfig: PaystackConfig = {
-    email: user?.email ?? "",
+    email: user?.email ?? '',
     amount: amount * 100, // Convert to kobo
     publicKey: process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY!,
     reference: paystackReference,
   };
 
   const filteredTransactions = transactions?.filter((transaction) => {
-    if (activeTab === "all") return true;
-    if (activeTab === "deposits")
+    if (activeTab === 'all') return true;
+    if (activeTab === 'deposits')
       return (
-        transaction.type === "funding" ||
-        transaction.type === "transfer_in" ||
-        transaction.type === "escrow_refund"
+        transaction.type === 'funding' ||
+        transaction.type === 'transfer_in' ||
+        transaction.type === 'escrow_refund'
       );
-    if (activeTab === "withdrawals") return transaction.type === "withdrawal";
+    if (activeTab === 'withdrawals') return transaction.type === 'withdrawal';
     return true;
   });
 
   const isLoadingData =
     authLoading || wallet === undefined || transactions === undefined;
-  
+
   if (isLoadingData || isLoading) {
     return <WalletPageSkeleton />;
   }
@@ -436,25 +434,25 @@ export default function WalletPage() {
             <CardHeader className="bg-white p-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <Avatar className="w-12 h-12">
-                    <AvatarImage src={user?.imageUrl} alt={user?.name} />
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage alt={user?.name} src={user?.imageUrl} />
                     <AvatarFallback>
                       {user?.name
-                        .split(" ")
+                        .split(' ')
                         .map((n) => n[0])
-                        .join("")}
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h2 className="font-semibold text-lg">{user?.name}</h2>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-gray-500 text-sm">
                       Welcome, let's make payment
                     </p>
                   </div>
                 </div>
                 <div className="relative">
-                  <Headphones className="w-6 h-6 text-gray-600" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                  <Headphones className="h-6 w-6 text-gray-600" />
+                  <div className="-top-1 -right-1 absolute flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-white text-xs">
                     <span className="text-[10px]">1</span>
                   </div>
                 </div>
@@ -466,45 +464,45 @@ export default function WalletPage() {
               {isRefreshingBalance ? (
                 <BalanceSkeleton />
               ) : (
-                <div className="bg-orange-500 text-white p-6">
+                <div className="bg-orange-500 p-6 text-white">
                   <div className="text-center">
-                    <div className="flex items-center justify-center gap-2 mb-2">
+                    <div className="mb-2 flex items-center justify-center gap-2">
                       <span className="text-sm opacity-90">Wallet balance</span>
                       <Button
-                        variant="ghost"
-                        size="sm"
                         className="h-auto p-1 text-white hover:bg-orange-600"
                         onClick={() => setShowBalance(!showBalance)}
+                        size="sm"
+                        variant="ghost"
                       >
                         {showBalance ? (
-                          <Eye className="w-4 h-4" />
+                          <Eye className="h-4 w-4" />
                         ) : (
-                          <EyeOff className="w-4 h-4" />
+                          <EyeOff className="h-4 w-4" />
                         )}
                       </Button>
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto p-1 text-white hover:bg-orange-600 ml-2"
+                        className="ml-2 h-auto p-1 text-white hover:bg-orange-600"
                         onClick={handleRefreshBalance}
+                        size="sm"
+                        variant="ghost"
                       >
-                        <RefreshCw className="w-4 h-4" />
+                        <RefreshCw className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="text-3xl font-bold mb-6">
+                    <div className="mb-6 font-bold text-3xl">
                       {showBalance
                         ? `₦${balance.toLocaleString()}.00`
-                        : "₦••••••••"}
+                        : '₦••••••••'}
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="bg-white rounded-2xl p-4 mx-4">
+                    <div className="mx-4 rounded-2xl bg-white p-4">
                       <div className="grid grid-cols-2 gap-4">
-                        <Dialog open={open} onOpenChange={setOpen}>
+                        <Dialog onOpenChange={setOpen} open={open}>
                           <form>
                             <DialogTrigger asChild>
-                              <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
-                                <ArrowDownToLine className="w-5 h-5" />
+                              <Button className="flex h-12 items-center gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600">
+                                <ArrowDownToLine className="h-5 w-5" />
                                 Deposit
                               </Button>
                             </DialogTrigger>
@@ -552,7 +550,7 @@ export default function WalletPage() {
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                           onClick={() => {
-                                            setPaystackReference("");
+                                            setPaystackReference('');
                                             setIsPaystackModalOpen(false);
                                             setOpen(false);
                                           }}
@@ -568,38 +566,38 @@ export default function WalletPage() {
                                   </DialogClose>
                                 )}
                                 {error && (
-                                  <p className="text-red-500 text-sm mb-2">
+                                  <p className="mb-2 text-red-500 text-sm">
                                     {error}
                                   </p>
                                 )}
                                 {paystackReference && isPaystackModalOpen ? (
                                   <PaystackButton
                                     {...paystackConfig}
-                                    onSuccess={handlePaystackSuccess}
-                                    onClose={handlePaystackClose}
                                     className="w-full"
+                                    onClose={handlePaystackClose}
+                                    onSuccess={handlePaystackSuccess}
                                   >
                                     <Button
+                                      className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600"
                                       onClick={() => setOpen(false)}
-                                      className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
                                     >
                                       Deposit
                                     </Button>
                                   </PaystackButton>
                                 ) : (
                                   <Button
-                                    onClick={handleInitializePayment}
+                                    className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600"
                                     disabled={isInitializing}
-                                    className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center justify-center gap-2 w-full"
+                                    onClick={handleInitializePayment}
                                   >
                                     {isInitializing ? (
                                       <>
-                                        <RefreshCw className="w-5 h-5 animate-spin" />
+                                        <RefreshCw className="h-5 w-5 animate-spin" />
                                         Initializing...
                                       </>
                                     ) : (
                                       <>
-                                        <ArrowDownToLine className="w-5 h-5" />
+                                        <ArrowDownToLine className="h-5 w-5" />
                                         Deposit
                                       </>
                                     )}
@@ -611,12 +609,12 @@ export default function WalletPage() {
                         </Dialog>
 
                         <Dialog
-                          open={withdrawOpen}
                           onOpenChange={setWithdrawOpen}
+                          open={withdrawOpen}
                         >
                           <DialogTrigger asChild>
-                            <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-12 flex items-center gap-2">
-                              <ArrowUpFromLine className="w-5 h-5" />
+                            <Button className="flex h-12 items-center gap-2 rounded-full bg-orange-500 text-white hover:bg-orange-600">
+                              <ArrowUpFromLine className="h-5 w-5" />
                               Withdraw
                             </Button>
                           </DialogTrigger>
@@ -634,29 +632,29 @@ export default function WalletPage() {
                                 <Input
                                   id="withdraw-amount"
                                   name="withdraw-amount"
-                                  type="number"
                                   onChange={(e) => {
                                     setAmount(Number(e.target.value));
                                   }}
+                                  type="number"
                                 />
                               </div>
                               <div className="grid gap-3">
                                 <Label htmlFor="bank-select">Select Bank</Label>
                                 {isLoadingBanks ? (
                                   <div className="flex items-center justify-center p-2">
-                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    <RefreshCw className="h-5 w-5 animate-spin" />
                                     <span className="ml-2">
                                       Loading banks...
                                     </span>
                                   </div>
                                 ) : (
                                   <select
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                     id="bank-select"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={selectedBank}
                                     onChange={(e) =>
                                       setSelectedBank(e.target.value)
                                     }
+                                    value={selectedBank}
                                   >
                                     <option value="">Select a bank</option>
                                     {banks.map((bank) => (
@@ -676,16 +674,16 @@ export default function WalletPage() {
                                 </Label>
                                 <Input
                                   id="account-number"
-                                  name="account-number"
-                                  type="text"
                                   maxLength={10}
-                                  value={accountNumber}
+                                  name="account-number"
                                   onChange={(e) => {
                                     setAccountNumber(
-                                      e.target.value.replace(/\D/g, "")
+                                      e.target.value.replace(/\D/g, '')
                                     );
                                   }}
                                   placeholder="Enter 10-digit account number"
+                                  type="text"
+                                  value={accountNumber}
                                 />
                               </div>
                             </div>
@@ -694,23 +692,23 @@ export default function WalletPage() {
                                 <Button variant="outline">Cancel</Button>
                               </DialogClose>
                               {error && (
-                                <p className="text-red-500 text-sm mb-2">
+                                <p className="mb-2 text-red-500 text-sm">
                                   {error}
                                 </p>
                               )}
                               <Button
-                                onClick={verifyAccount}
+                                className="flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600"
                                 disabled={isVerifyingAccount}
-                                className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+                                onClick={verifyAccount}
                               >
                                 {isVerifyingAccount ? (
                                   <>
-                                    <RefreshCw className="w-5 h-5 animate-spin" />
+                                    <RefreshCw className="h-5 w-5 animate-spin" />
                                     Verifying...
                                   </>
                                 ) : (
                                   <>
-                                    <ArrowUpFromLine className="w-5 h-5" />
+                                    <ArrowUpFromLine className="h-5 w-5" />
                                     Verify Account
                                   </>
                                 )}
@@ -733,20 +731,20 @@ export default function WalletPage() {
             <div className="p-4">
               <div className="mb-4 flex items-center justify-between">
                 <div>
-                  <h3 className="text-xl font-bold mb-1">
+                  <h3 className="mb-1 font-bold text-xl">
                     Transaction History
                   </h3>
-                  <p className="text-sm text-gray-500">
+                  <p className="text-gray-500 text-sm">
                     Your recent financial activities
                   </p>
                 </div>
                 <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleRefreshTransactions}
                   className="text-gray-600 hover:text-gray-800"
+                  onClick={handleRefreshTransactions}
+                  size="sm"
+                  variant="ghost"
                 >
-                  <RefreshCw className="w-4 h-4" />
+                  <RefreshCw className="h-4 w-4" />
                 </Button>
               </div>
 
@@ -754,45 +752,45 @@ export default function WalletPage() {
               <div className="mb-4">
                 <div className="flex gap-6">
                   <button
-                    onClick={() => setActiveTab("all")}
-                    className={`relative p-2 py-[2px] text-sm font-medium transition-colors ${
-                      activeTab === "all"
-                        ? "text-orange-600"
-                        : "text-gray-500 hover:text-gray-700"
+                    className={`relative p-2 py-[2px] font-medium text-sm transition-colors ${
+                      activeTab === 'all'
+                        ? 'text-orange-600'
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
+                    onClick={() => setActiveTab('all')}
                   >
-                    {activeTab === "all" && (
-                      <div className="absolute inset-0 bg-orange-100 rounded-full -m-1" />
+                    {activeTab === 'all' && (
+                      <div className="-m-1 absolute inset-0 rounded-full bg-orange-100" />
                     )}
                     <span className="relative">All</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("deposits")}
                     className={`relative p-2 py-[2px] font-medium transition-colors ${
-                      activeTab === "deposits"
-                        ? "text-orange-600"
-                        : "text-gray-500 hover:text-gray-700"
+                      activeTab === 'deposits'
+                        ? 'text-orange-600'
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
+                    onClick={() => setActiveTab('deposits')}
                   >
-                    {activeTab === "deposits" && (
-                      <div className="absolute inset-0 bg-orange-100 rounded-full -m-1" />
+                    {activeTab === 'deposits' && (
+                      <div className="-m-1 absolute inset-0 rounded-full bg-orange-100" />
                     )}
                     <span className="relative">Deposits</span>
                   </button>
                   <button
-                    onClick={() => setActiveTab("withdrawals")}
-                    className={`relative p-2 py-[2px] text-sm font-medium transition-colors ${
-                      activeTab === "withdrawals"
-                        ? "text-orange-600"
-                        : "text-gray-500 hover:text-gray-700"
+                    className={`relative p-2 py-[2px] font-medium text-sm transition-colors ${
+                      activeTab === 'withdrawals'
+                        ? 'text-orange-600'
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
+                    onClick={() => setActiveTab('withdrawals')}
                   >
-                    {activeTab === "withdrawals" && (
-                      <div className="absolute inset-0 bg-orange-100 rounded-full -m-1" />
+                    {activeTab === 'withdrawals' && (
+                      <div className="-m-1 absolute inset-0 rounded-full bg-orange-100" />
                     )}
                     <span className="relative">Withdrawals</span>
-                    {activeTab === "withdrawals" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+                    {activeTab === 'withdrawals' && (
+                      <div className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-orange-500" />
                     )}
                   </button>
                 </div>
@@ -804,11 +802,11 @@ export default function WalletPage() {
               <div className="space-y-3">
                 {filteredTransactions?.map((transaction) => (
                   <TransactionDetails
+                    handlePaystackClose={handlePaystackClose}
+                    handlePaystackSuccess={handlePaystackSuccess}
                     key={transaction._id}
                     transaction={transaction}
-                    user={user as Doc<"users">}
-                    handlePaystackSuccess={handlePaystackSuccess}
-                    handlePaystackClose={handlePaystackClose}
+                    user={user as Doc<'users'>}
                   />
                 ))}
               </div>
@@ -821,28 +819,28 @@ export default function WalletPage() {
           <div className="">
             <Card className="overflow-hidden rounded-none">
               {/* Header */}
-              <CardHeader className="bg-white  p-6 border-b">
+              <CardHeader className="border-b bg-white p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="w-12 h-12">
-                      <AvatarImage src={user?.imageUrl} alt={user?.name} />
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage alt={user?.name} src={user?.imageUrl} />
                       <AvatarFallback>
                         {user?.name
-                          .split(" ")
+                          .split(' ')
                           .map((n) => n[0])
-                          .join("")}
+                          .join('')}
                       </AvatarFallback>
                     </Avatar>
                     <div>
                       <h2 className="font-semibold text-lg">{user?.name}</h2>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-gray-500 text-sm">
                         Welcome, let's make payment
                       </p>
                     </div>
                   </div>
                   <div className="relative">
-                    <Bell className="w-7 h-7 text-gray-600" />
-                    <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                    <Bell className="h-7 w-7 text-gray-600" />
+                    <div className="-top-1 -right-1 absolute flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
                       <span className="text-[11px]">1</span>
                     </div>
                   </div>
@@ -854,46 +852,46 @@ export default function WalletPage() {
                 {isRefreshingBalance ? (
                   <BalanceSkeleton />
                 ) : (
-                  <div className="bg-orange-500 text-white p-8">
+                  <div className="bg-orange-500 p-8 text-white">
                     <div className="text-center">
-                      <div className="flex items-center justify-center gap-3 mb-3">
+                      <div className="mb-3 flex items-center justify-center gap-3">
                         <span className="text-lg opacity-90">
                           Wallet balance
                         </span>
                         <Button
-                          variant="ghost"
-                          size="sm"
                           className="h-auto p-2 text-white hover:bg-orange-600"
                           onClick={() => setShowBalance(!showBalance)}
+                          size="sm"
+                          variant="ghost"
                         >
                           {showBalance ? (
-                            <Eye className="w-5 h-5" />
+                            <Eye className="h-5 w-5" />
                           ) : (
-                            <EyeOff className="w-5 h-5" />
+                            <EyeOff className="h-5 w-5" />
                           )}
                         </Button>
                         <Button
-                          variant="ghost"
-                          size="sm"
                           className="h-auto p-2 text-white hover:bg-orange-600"
                           onClick={handleRefreshBalance}
+                          size="sm"
+                          variant="ghost"
                         >
-                          <RefreshCw className="w-5 h-5" />
+                          <RefreshCw className="h-5 w-5" />
                         </Button>
                       </div>
-                      <div className="text-5xl font-bold mb-8">
+                      <div className="mb-8 font-bold text-5xl">
                         {showBalance
                           ? `₦${balance.toLocaleString()}.00`
-                          : "₦••••••••"}
+                          : '₦••••••••'}
                       </div>
 
                       {/* Action Buttons */}
-                      <div className="bg-white rounded-3xl p-6 mx-8">
+                      <div className="mx-8 rounded-3xl bg-white p-6">
                         <div className="grid grid-cols-2 gap-6">
-                          <Dialog open={open} onOpenChange={setOpen}>
+                          <Dialog onOpenChange={setOpen} open={open}>
                             <DialogTrigger asChild>
-                              <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
-                                <ArrowDownToLine className="w-6 h-6" />
+                              <Button className="flex h-16 items-center gap-3 rounded-full bg-orange-500 text-lg text-white hover:bg-orange-600">
+                                <ArrowDownToLine className="h-6 w-6" />
                                 Deposit
                               </Button>
                             </DialogTrigger>
@@ -911,10 +909,10 @@ export default function WalletPage() {
                                   <Input
                                     id="name-1"
                                     name="deposit-amount"
-                                    type="number"
                                     onChange={(e) => {
                                       setAmount(Number(e.target.value));
                                     }}
+                                    type="number"
                                   />
                                 </div>
                               </div>
@@ -941,7 +939,7 @@ export default function WalletPage() {
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                           onClick={() => {
-                                            setPaystackReference("");
+                                            setPaystackReference('');
                                             setIsPaystackModalOpen(false);
                                             setOpen(false);
                                           }}
@@ -957,54 +955,54 @@ export default function WalletPage() {
                                   </DialogClose>
                                 )}
                                 {error && (
-                                  <p className="text-red-500 text-sm mb-2">
+                                  <p className="mb-2 text-red-500 text-sm">
                                     {error}
                                   </p>
                                 )}
                                 {paystackReference && isPaystackModalOpen ? (
                                   <PaystackButton
                                     {...paystackConfig}
-                                    onSuccess={handlePaystackSuccess}
-                                    onClose={handlePaystackClose}
                                     className="w-full"
+                                    onClose={handlePaystackClose}
+                                    onSuccess={handlePaystackSuccess}
                                   >
                                     <Button
+                                      className="flex w-full items-center justify-center gap-2 bg-emerald-500 text-white hover:bg-emerald-600"
                                       onClick={() => setOpen(false)}
-                                      className="bg-emerald-500 hover:bg-emerald-600 text-white flex items-center justify-center gap-2 w-full"
                                     >
                                       Continue payment
                                     </Button>
                                   </PaystackButton>
                                 ) : (
                                   <Button
-                                    onClick={handleInitializePayment}
+                                    className="flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600"
                                     disabled={isInitializing}
-                                    className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2 "
+                                    onClick={handleInitializePayment}
                                   >
                                     {isInitializing ? (
                                       <>
-                                        <RefreshCw className="w-5 h-5 animate-spin" />
+                                        <RefreshCw className="h-5 w-5 animate-spin" />
                                         Initializing...
                                       </>
                                     ) : (
                                       <>
-                                        <ArrowDownToLine className="w-5 h-5" />
+                                        <ArrowDownToLine className="h-5 w-5" />
                                         Deposit
                                       </>
                                     )}
                                   </Button>
-                                )}{" "}
+                                )}{' '}
                               </DialogFooter>
                             </DialogContent>
                           </Dialog>
 
                           <Dialog
-                            open={withdrawOpen}
                             onOpenChange={setWithdrawOpen}
+                            open={withdrawOpen}
                           >
                             <DialogTrigger asChild>
-                              <Button className="bg-orange-500 hover:bg-orange-600 text-white rounded-full h-16 text-lg flex items-center gap-3">
-                                <ArrowUpFromLine className="w-6 h-6" />
+                              <Button className="flex h-16 items-center gap-3 rounded-full bg-orange-500 text-lg text-white hover:bg-orange-600">
+                                <ArrowUpFromLine className="h-6 w-6" />
                                 Withdraw
                               </Button>
                             </DialogTrigger>
@@ -1024,10 +1022,10 @@ export default function WalletPage() {
                                   <Input
                                     id="withdraw-amount-desktop"
                                     name="withdraw-amount-desktop"
-                                    type="number"
                                     onChange={(e) => {
                                       setAmount(Number(e.target.value));
                                     }}
+                                    type="number"
                                   />
                                 </div>
                                 <div className="grid gap-3">
@@ -1036,19 +1034,19 @@ export default function WalletPage() {
                                   </Label>
                                   {isLoadingBanks ? (
                                     <div className="flex items-center justify-center p-2">
-                                      <RefreshCw className="w-5 h-5 animate-spin" />
+                                      <RefreshCw className="h-5 w-5 animate-spin" />
                                       <span className="ml-2">
                                         Loading banks...
                                       </span>
                                     </div>
                                   ) : (
                                     <select
+                                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                                       id="bank-select-desktop"
-                                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                      value={selectedBank}
                                       onChange={(e) =>
                                         setSelectedBank(e.target.value)
                                       }
+                                      value={selectedBank}
                                     >
                                       <option value="">Select a bank</option>
                                       {banks.map((bank) => (
@@ -1068,16 +1066,16 @@ export default function WalletPage() {
                                   </Label>
                                   <Input
                                     id="account-number-desktop"
-                                    name="account-number-desktop"
-                                    type="text"
                                     maxLength={10}
-                                    value={accountNumber}
+                                    name="account-number-desktop"
                                     onChange={(e) => {
                                       setAccountNumber(
-                                        e.target.value.replace(/\D/g, "")
+                                        e.target.value.replace(/\D/g, '')
                                       );
                                     }}
                                     placeholder="Enter 10-digit account number"
+                                    type="text"
+                                    value={accountNumber}
                                   />
                                 </div>
                               </div>
@@ -1086,23 +1084,23 @@ export default function WalletPage() {
                                   <Button variant="outline">Cancel</Button>
                                 </DialogClose>
                                 {error && (
-                                  <p className="text-red-500 text-sm mb-2">
+                                  <p className="mb-2 text-red-500 text-sm">
                                     {error}
                                   </p>
                                 )}
                                 <Button
-                                  onClick={verifyAccount}
+                                  className="flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600"
                                   disabled={isVerifyingAccount}
-                                  className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+                                  onClick={verifyAccount}
                                 >
                                   {isVerifyingAccount ? (
                                     <>
-                                      <RefreshCw className="w-5 h-5 animate-spin" />
+                                      <RefreshCw className="h-5 w-5 animate-spin" />
                                       Verifying...
                                     </>
                                   ) : (
                                     <>
-                                      <ArrowUpFromLine className="w-5 h-5" />
+                                      <ArrowUpFromLine className="h-5 w-5" />
                                       Verify Account
                                     </>
                                   )}
@@ -1123,7 +1121,7 @@ export default function WalletPage() {
                   <div className="p-8">
                     <div className="mb-6 flex items-center justify-between">
                       <div>
-                        <h3 className="text-2xl font-bold mb-2">
+                        <h3 className="mb-2 font-bold text-2xl">
                           Transaction History
                         </h3>
                         <p className="text-gray-500">
@@ -1131,12 +1129,12 @@ export default function WalletPage() {
                         </p>
                       </div>
                       <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleRefreshTransactions}
                         className="text-gray-600 hover:text-gray-800"
+                        onClick={handleRefreshTransactions}
+                        size="sm"
+                        variant="ghost"
                       >
-                        <RefreshCw className="w-5 h-5" />
+                        <RefreshCw className="h-5 w-5" />
                       </Button>
                     </div>
 
@@ -1144,51 +1142,51 @@ export default function WalletPage() {
                     <div className="mb-6">
                       <div className="flex items-center justify-around">
                         <button
-                          onClick={() => setActiveTab("all")}
-                          className={`relative pb-3 text-base font-medium transition-colors ${
-                            activeTab === "all"
-                              ? "text-orange-600"
-                              : "text-gray-500 hover:text-gray-700"
+                          className={`relative pb-3 font-medium text-base transition-colors ${
+                            activeTab === 'all'
+                              ? 'text-orange-600'
+                              : 'text-gray-500 hover:text-gray-700'
                           }`}
+                          onClick={() => setActiveTab('all')}
                         >
-                          {activeTab === "all" && (
-                            <div className="absolute inset-0  rounded-full px-5 py-2 -m-2" />
+                          {activeTab === 'all' && (
+                            <div className="-m-2 absolute inset-0 rounded-full px-5 py-2" />
                           )}
                           <span className="relative">All</span>
-                          {activeTab === "all" && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+                          {activeTab === 'all' && (
+                            <div className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-orange-500" />
                           )}
                         </button>
                         <button
-                          onClick={() => setActiveTab("deposits")}
-                          className={`relative pb-3 text-base font-medium transition-colors ${
-                            activeTab === "deposits"
-                              ? "text-orange-600"
-                              : "text-gray-500 hover:text-gray-700"
+                          className={`relative pb-3 font-medium text-base transition-colors ${
+                            activeTab === 'deposits'
+                              ? 'text-orange-600'
+                              : 'text-gray-500 hover:text-gray-700'
                           }`}
+                          onClick={() => setActiveTab('deposits')}
                         >
-                          {activeTab === "deposits" && (
-                            <div className="absolute inset-0  rounded-full px-5 py-2 -m-2" />
+                          {activeTab === 'deposits' && (
+                            <div className="-m-2 absolute inset-0 rounded-full px-5 py-2" />
                           )}
                           <span className="relative">Deposits</span>
-                          {activeTab === "deposits" && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+                          {activeTab === 'deposits' && (
+                            <div className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-orange-500" />
                           )}
                         </button>
                         <button
-                          onClick={() => setActiveTab("withdrawals")}
-                          className={`relative pb-3 text-base font-medium transition-colors ${
-                            activeTab === "withdrawals"
-                              ? "text-orange-600"
-                              : "text-gray-500 hover:text-gray-700"
+                          className={`relative pb-3 font-medium text-base transition-colors ${
+                            activeTab === 'withdrawals'
+                              ? 'text-orange-600'
+                              : 'text-gray-500 hover:text-gray-700'
                           }`}
+                          onClick={() => setActiveTab('withdrawals')}
                         >
-                          {activeTab === "withdrawals" && (
-                            <div className="absolute inset-0  rounded-full px-5 py-2 -m-2" />
+                          {activeTab === 'withdrawals' && (
+                            <div className="-m-2 absolute inset-0 rounded-full px-5 py-2" />
                           )}
                           <span className="relative">Withdrawals</span>
-                          {activeTab === "withdrawals" && (
-                            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 rounded-full" />
+                          {activeTab === 'withdrawals' && (
+                            <div className="absolute right-0 bottom-0 left-0 h-0.5 rounded-full bg-orange-500" />
                           )}
                         </button>
                       </div>
@@ -1198,11 +1196,11 @@ export default function WalletPage() {
                     <div className="space-y-4">
                       {filteredTransactions?.map((transaction) => (
                         <TransactionDetails
+                          handlePaystackClose={handlePaystackClose}
+                          handlePaystackSuccess={handlePaystackSuccess}
                           key={transaction._id}
                           transaction={transaction}
-                          user={user as Doc<"users">}
-                          handlePaystackSuccess={handlePaystackSuccess}
-                          handlePaystackClose={handlePaystackClose}
+                          user={user as Doc<'users'>}
                         />
                       ))}
                     </div>
@@ -1214,7 +1212,7 @@ export default function WalletPage() {
         </div>
 
         {/* Add the verification dialog */}
-        <Dialog open={verifyDialogOpen} onOpenChange={setVerifyDialogOpen}>
+        <Dialog onOpenChange={setVerifyDialogOpen} open={verifyDialogOpen}>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>Confirm Recipient Details</DialogTitle>
@@ -1227,19 +1225,19 @@ export default function WalletPage() {
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <Label>Bank Name</Label>
-                  <div className="p-2 bg-gray-50 rounded-md">
+                  <div className="rounded-md bg-gray-50 p-2">
                     {banks.find((bank) => bank.code === selectedBank)?.name}
                   </div>
                 </div>
                 <div className="grid gap-2">
                   <Label>Account Name</Label>
-                  <div className="p-2 bg-gray-50 rounded-md">
+                  <div className="rounded-md bg-gray-50 p-2">
                     {recipientDetails.account_name}
                   </div>
                 </div>
                 <div className="grid gap-2">
                   <Label>Account Number</Label>
-                  <div className="p-2 bg-gray-50 rounded-md">
+                  <div className="rounded-md bg-gray-50 p-2">
                     {accountNumber}
                   </div>
                 </div>
@@ -1247,24 +1245,24 @@ export default function WalletPage() {
             )}
             <DialogFooter>
               <Button
-                variant="outline"
                 onClick={() => setVerifyDialogOpen(false)}
+                variant="outline"
               >
                 Cancel
               </Button>
               <Button
-                onClick={handleWithdraw}
+                className="flex items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600"
                 disabled={isWithdrawing}
-                className="bg-orange-500 hover:bg-orange-600 text-white flex items-center justify-center gap-2"
+                onClick={handleWithdraw}
               >
                 {isWithdrawing ? (
                   <>
-                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <RefreshCw className="h-5 w-5 animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
-                    <ArrowUpFromLine className="w-5 h-5" />
+                    <ArrowUpFromLine className="h-5 w-5" />
                     Confirm Withdrawal
                   </>
                 )}

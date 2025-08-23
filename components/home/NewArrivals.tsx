@@ -1,13 +1,13 @@
-"use client";
-import React from "react";
-import Container from "./Container";
-import NewArrivalItem from "./NewArrivalItem";
-import { ArrowRight } from "lucide-react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import Link from "next/link";
-import { Skeleton } from "../ui/skeleton";
-import { useIsMobile } from "@/hooks/use-mobile";
+'use client';
+import { useQuery } from 'convex/react';
+import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import React from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
+import NewArrivalItem from './NewArrivalItem';
 
 export default function NewArrivals() {
   const newProducts = useQuery(api.product.getNewProducts);
@@ -16,43 +16,43 @@ export default function NewArrivals() {
   const all = useQuery(api.product.getAll, { limit: 10 });
 
   return (
-    <div className="mt-0 lg:w-5/6 mx-auto !flex items-center flex-col justify-start py-5 capitalize text-gray-800 space-y-5 ">
-      <div className="lg:w-5/6 w-full flex justify-between ">
-        <h2 className=" lg:text-3xl text-2xl font-semibold">new arrivals</h2>
-        <p className=" flex  space-x-2 pt-1.5 lg:pt-2">
-          <span className=" underline underline-offset-8 lg:text-base text-xs">
+    <div className="!flex mx-auto mt-0 flex-col items-center justify-start space-y-5 py-5 text-gray-800 capitalize lg:w-5/6">
+      <div className="flex w-full justify-between lg:w-5/6">
+        <h2 className="font-semibold text-2xl lg:text-3xl">new arrivals</h2>
+        <p className="flex space-x-2 pt-1.5 lg:pt-2">
+          <span className="text-xs underline underline-offset-8 lg:text-base">
             more products
           </span>
-          <ArrowRight className="text-gray-600 text-xs " />
+          <ArrowRight className="text-gray-600 text-xs" />
         </p>
       </div>
-      <div className=" flex justify-between lg:w-5/6 gap-x-5 lg:gap-x-10 w-full overflow-x-auto ">
+      <div className="flex w-full justify-between gap-x-5 overflow-x-auto lg:w-5/6 lg:gap-x-10">
         {firstTenProducts === undefined || all === undefined
           ? Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
               <div
+                className="flex min-h-80 w-full flex-col bg-gray-100 lg:h-96"
                 key={index}
-                className="min-h-80 w-full lg:h-96 flex flex-col bg-gray-100"
               >
                 <Skeleton
+                  className="h-3/4 w-60 bg-gray-200 lg:w-full"
                   key={index}
-                  className="h-3/4 lg:w-full w-60 bg-gray-200"
                 />
-                <div className="w-full p-4 h-1/4 grid place-items-center">
-                  <Skeleton className=" w-5/6 h-10 bg-gray-200" />
+                <div className="grid h-1/4 w-full place-items-center p-4">
+                  <Skeleton className="h-10 w-5/6 bg-gray-200" />
                 </div>
-                <div className="w-full h-1/5 flex flex-col justify-center bg-white px-2 lg:px-0 space-y-2">
-                  <Skeleton className=" w-3/4 h-4 bg-gray-200" />
-                  <Skeleton className=" w-1/3 h-3 bg-gray-200" />
+                <div className="flex h-1/5 w-full flex-col justify-center space-y-2 bg-white px-2 lg:px-0">
+                  <Skeleton className="h-4 w-3/4 bg-gray-200" />
+                  <Skeleton className="h-3 w-1/3 bg-gray-200" />
                 </div>
               </div>
             ))
           : (firstTenProducts?.length ? firstTenProducts : all)?.map((item) => (
-              <Link key={item._id} href={`/product/${item._id}`}>
+              <Link href={`/product/${item._id}`} key={item._id}>
                 <NewArrivalItem
-                  productId={item._id}
                   image={item.images[0]}
                   name={item.title}
                   price={item.price}
+                  productId={item._id}
                 />
               </Link>
             ))}

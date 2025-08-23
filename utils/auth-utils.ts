@@ -2,10 +2,10 @@
  * Utility functions for authentication-related operations
  */
 
-import { Id } from "@/convex/_generated/dataModel";
+import type { Id } from '@/convex/_generated/dataModel';
 
 export interface User {
-  _id: Id<"users">;
+  _id: Id<'users'>;
   name: string;
   email: string;
   imageUrl?: string;
@@ -29,19 +29,19 @@ export function isUserLoaded(user: any): user is User {
  * Get user display name with fallback
  */
 export function getUserDisplayName(user: User | null | undefined): string {
-  if (!user) return "Unknown User";
-  return user.name || user.username || "User";
+  if (!user) return 'Unknown User';
+  return user.name || user.username || 'User';
 }
 
 /**
  * Get user initials for avatar fallback
  */
 export function getUserInitials(user: User | null | undefined): string {
-  if (!user?.name) return "U";
+  if (!user?.name) return 'U';
   return user.name
-    .split(" ")
+    .split(' ')
     .map((n) => n[0])
-    .join("")
+    .join('')
     .toUpperCase()
     .slice(0, 2);
 }
@@ -58,10 +58,10 @@ export function isProfileComplete(user: User | null | undefined): boolean {
  * Format user join date
  */
 export function formatJoinDate(user: User | null | undefined): string {
-  if (!user?._creationTime) return "";
-  return new Date(user._creationTime).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+  if (!user?._creationTime) return '';
+  return new Date(user._creationTime).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   });
 }

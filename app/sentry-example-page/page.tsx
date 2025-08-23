@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import Head from "next/head";
-import * as Sentry from "@sentry/nextjs";
-import { useState, useEffect } from "react";
+import * as Sentry from '@sentry/nextjs';
+import Head from 'next/head';
+import { useEffect, useState } from 'react';
 
 class SentryExampleFrontendError extends Error {
   constructor(message: string | undefined) {
     super(message);
-    this.name = "SentryExampleFrontendError";
+    this.name = 'SentryExampleFrontendError';
   }
 }
 
@@ -18,7 +18,7 @@ export default function Page() {
   useEffect(() => {
     async function checkConnectivity() {
       const result = await Sentry.diagnoseSdkConnectivity();
-      setIsConnected(result !== "sentry-unreachable");
+      setIsConnected(result !== 'sentry-unreachable');
     }
     checkConnectivity();
   }, []);
@@ -27,15 +27,15 @@ export default function Page() {
     <div>
       <Head>
         <title>sentry-example-page</title>
-        <meta name="description" content="Test Sentry for your Next.js app!" />
+        <meta content="Test Sentry for your Next.js app!" name="description" />
       </Head>
 
       <main>
         <div className="flex-spacer" />
         <svg
+          fill="none"
           height="40"
           width="40"
-          fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -46,17 +46,19 @@ export default function Page() {
         <h1>sentry-example-page</h1>
 
         <p className="description">
-          Click the button below, and view the sample error on the Sentry{" "}
+          Click the button below, and view the sample error on the Sentry{' '}
           <a
-            target="_blank"
             href="https://flickmart.sentry.io/issues/?project=4509559717101568"
+            rel="noopener"
+            target="_blank"
           >
             Issues Page
           </a>
-          . For more details about setting up Sentry,{" "}
+          . For more details about setting up Sentry,{' '}
           <a
-            target="_blank"
             href="https://docs.sentry.io/platforms/javascript/guides/nextjs/"
+            rel="noopener"
+            target="_blank"
           >
             read our docs
           </a>
@@ -64,46 +66,47 @@ export default function Page() {
         </p>
 
         <button
-          type="button"
           onClick={async () => {
             await Sentry.startSpan(
               {
-                name: "Example Frontend Span",
-                op: "test",
+                name: 'Example Frontend Span',
+                op: 'test',
               },
               async () => {
-                const res = await fetch("/api/sentry-example-api");
+                const res = await fetch('/api/sentry-example-api');
                 if (!res.ok) {
                   setHasSentError(true);
                   throw new SentryExampleFrontendError(
-                    "This error is raised on the frontend of the example page."
+                    'This error is raised on the frontend of the example page.'
                   );
                 }
               }
             );
           }}
+          type="button"
         >
           <span>Throw Sample Error</span>
         </button>
 
         {hasSentError ? (
           <p className="success">Sample error was sent to Sentry.</p>
-        ) : !isConnected ? (
+        ) : isConnected ? (
+          <div className="success_placeholder" />
+        ) : (
           <div className="connectivity-error">
             <p>
               The Sentry SDK is not able to reach Sentry right now - this may be
-              due to an adblocker. For more information, see{" "}
+              due to an adblocker. For more information, see{' '}
               <a
-                target="_blank"
                 href="https://docs.sentry.io/platforms/javascript/guides/nextjs/troubleshooting/#the-sdk-is-not-sending-any-data"
+                rel="noopener"
+                target="_blank"
               >
                 the troubleshooting guide
               </a>
               .
             </p>
           </div>
-        ) : (
-          <div className="success_placeholder" />
         )}
 
         <div className="flex-spacer" />

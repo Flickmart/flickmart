@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -7,33 +7,33 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "./ui/select";
-import { SidebarTrigger } from "./ui/sidebar";
+} from './ui/select';
+import { SidebarTrigger } from './ui/sidebar';
 
 const filterObject = [
   {
-    label: "category",
+    label: 'category',
     options: [
-      "all",
-      "vehicles",
-      "homes",
-      "food",
-      "mobiles",
-      "appliances",
-      "fashion",
-      "electronics",
-      "pets",
-      "beauty",
-      "services",
+      'all',
+      'vehicles',
+      'homes',
+      'food',
+      'mobiles',
+      'appliances',
+      'fashion',
+      'electronics',
+      'pets',
+      'beauty',
+      'services',
     ],
   },
   {
-    label: "location",
-    options: ["all", "nsukka", "enugu"],
+    label: 'location',
+    options: ['all', 'nsukka', 'enugu'],
   },
   {
-    label: "price",
-    options: ["all", "below 100k", "100k - 500k", "500k - 1.5m", "1.5m - 3.5m"],
+    label: 'price',
+    options: ['all', 'below 100k', '100k - 500k', '500k - 1.5m', '1.5m - 3.5m'],
   },
 ];
 export default function Filters({
@@ -52,7 +52,7 @@ export default function Filters({
   resetQuery?: () => void;
 }) {
   return (
-    <div className="lg:hidden flex text-[12px] gap-2 items-center my-2">
+    <div className="my-2 flex items-center gap-2 text-[12px] lg:hidden">
       {isMobile && <SidebarTrigger />}
       {filterObject.map((item) => {
         return (
@@ -61,7 +61,7 @@ export default function Filters({
             onValueChange={(value) =>
               handleFilterState(value, item.label, resetQuery)
             }
-            value={item.label === "category" ? category : undefined} // Default to "all" if no category is selected
+            value={item.label === 'category' ? category : undefined} // Default to "all" if no category is selected
           >
             <SelectTrigger className="min-w-20 capitalize">
               <SelectValue placeholder={item.label} />

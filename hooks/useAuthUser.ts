@@ -1,13 +1,13 @@
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
-import { toast } from "sonner";
-import { Doc } from "@/convex/_generated/dataModel";
+import { useAuth } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
+import { api } from '@/convex/_generated/api';
+import type { Doc } from '@/convex/_generated/dataModel';
 
 // Type for the user document from Convex
-type ConvexUser = Doc<"users">;
+type ConvexUser = Doc<'users'>;
 
 interface UseAuthUserReturn {
   user: ConvexUser | null | undefined;
@@ -25,10 +25,8 @@ export function useAuthUser(options?: {
   redirectOnUnauthenticated?: boolean;
   redirectTo?: string;
 }): UseAuthUserReturn {
-  const {
-    redirectOnUnauthenticated = true,
-    redirectTo = "/sign-in"
-  } = options || {};
+  const { redirectOnUnauthenticated = true, redirectTo = '/sign-in' } =
+    options || {};
 
   const { isLoaded: clerkLoaded, isSignedIn } = useAuth();
   const user = useQuery(api.users.current);
@@ -37,8 +35,10 @@ export function useAuthUser(options?: {
   const toastShown = useRef(false);
 
   // Primary focus on Clerk loading state since Convex queries depend on it
-  const isLoading = !clerkLoaded || (clerkLoaded && isSignedIn && user === undefined);
-  const isAuthenticated = clerkLoaded && isSignedIn && user !== null && user !== undefined;
+  const isLoading =
+    !clerkLoaded || (clerkLoaded && isSignedIn && user === undefined);
+  const isAuthenticated =
+    clerkLoaded && isSignedIn && user !== null && user !== undefined;
   const isError = clerkLoaded && (!isSignedIn || user === null);
 
   useEffect(() => {
@@ -54,11 +54,11 @@ export function useAuthUser(options?: {
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
-        toast("Oops! You need to be logged in to continue.", {
+        toast('Oops! You need to be logged in to continue.', {
           duration: 3000,
-          position: "top-center",
-          description: "Redirecting you to Sign In Page...",
-          icon: "🔃",
+          position: 'top-center',
+          description: 'Redirecting you to Sign In Page...',
+          icon: '🔃',
         });
       }
 
@@ -72,13 +72,20 @@ export function useAuthUser(options?: {
       hasRedirected.current = false;
       toastShown.current = false;
     }
-  }, [isLoading, isError, isAuthenticated, redirectOnUnauthenticated, redirectTo, router]);
+  }, [
+    isLoading,
+    isError,
+    isAuthenticated,
+    redirectOnUnauthenticated,
+    redirectTo,
+    router,
+  ]);
 
   return {
     user,
     isLoading,
     isAuthenticated,
-    isError
+    isError,
   };
 }
 

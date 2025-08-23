@@ -1,6 +1,6 @@
-"use client";
-import { ErrorBoundary, FallbackProps } from "react-error-boundary";
-import React, { ReactNode } from "react";
+'use client';
+import React, { type ReactNode } from 'react';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 
 export default function SilentErrorBoundary({
   children,

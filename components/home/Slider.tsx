@@ -1,25 +1,24 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef } from "react";
+// import { addCategories } from "@/utils/addCategory";
+import { useMutation } from 'convex/react';
+import React, { useEffect, useRef } from 'react';
+import { toast } from 'sonner';
 import {
   Carousel,
+  type CarouselApi,
   CarouselContent,
   CarouselItem,
-  type CarouselApi,
-} from "@/components/ui/carousel";
-
-import useSlider from "@/hooks/useSlider";
-// import { addCategories } from "@/utils/addCategory";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
+} from '@/components/ui/carousel';
+import { api } from '@/convex/_generated/api';
+import useSlider from '@/hooks/useSlider';
 
 const banners = [
-  "flick-ban-5.jpg",
-  "flick-ban-1.jpg",
-  "flick-ban-2.jpg",
-  "flick-ban-3.jpg",
-  "flick-ban-4.jpg",
+  'flick-ban-5.jpg',
+  'flick-ban-1.jpg',
+  'flick-ban-2.jpg',
+  'flick-ban-3.jpg',
+  'flick-ban-4.jpg',
 ];
 
 export default function Slider() {
@@ -53,10 +52,12 @@ export default function Slider() {
           {banners.map((img, index) => (
             <CarouselItem key={index}>
               <div
+                className={
+                  'flex h-32 items-end justify-center space-y-2.5 bg-center bg-cover bg-no-repeat p-7 pb-2 text-gray-200 capitalize lg:min-h-60 lg:space-y-7 lg:px-5 lg:py-3'
+                }
                 style={{
                   backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/${img})`,
                 }}
-                className={`lg:py-3 bg-no-repeat bg-center bg-cover text-gray-200  lg:px-5 pb-2 p-7 capitalize h-32 lg:min-h-60 flex items-end justify-center lg:space-y-7 space-y-2.5`}
               >
                 {/* <RadioGroup
                   value={current.toString()}

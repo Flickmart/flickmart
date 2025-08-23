@@ -1,5 +1,6 @@
-"use client";
-import React, { useEffect, useState } from "react";
+'use client';
+import React, { useEffect, useState } from 'react';
+import { Button } from './ui/button';
 import {
   Dialog,
   DialogContent,
@@ -7,27 +8,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
-import { Button } from "./ui/button";
+} from './ui/dialog';
 
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
+    const consent = localStorage.getItem('cookie-consent');
     if (!consent) {
       setVisible(true);
     }
   }, []);
 
-  function handleCookieConsent(choice: "accept" | "reject") {
-    localStorage.setItem("cookie-consent", choice);
+  function handleCookieConsent(choice: 'accept' | 'reject') {
+    localStorage.setItem('cookie-consent', choice);
     setVisible(false);
 
-    if (choice === "accept") {
-      console.log("Cookie accepted");
+    if (choice === 'accept') {
+      console.log('Cookie accepted');
     } else {
-      console.log("Cookie Rejected");
+      console.log('Cookie Rejected');
     }
   }
 
@@ -36,8 +36,8 @@ export default function CookieConsent() {
   }
 
   return (
-    <Dialog open={visible} onOpenChange={setVisible}>
-      <DialogContent className="fixed left-[50%] top-[85%] lg:left-[85%]">
+    <Dialog onOpenChange={setVisible} open={visible}>
+      <DialogContent className="fixed top-[85%] left-[50%] lg:left-[85%]">
         <DialogHeader>
           <DialogTitle>Cookie Consent</DialogTitle>
           <DialogDescription>
@@ -47,12 +47,12 @@ export default function CookieConsent() {
         </DialogHeader>
         <DialogFooter className="gap-3">
           <Button
+            onClick={() => handleCookieConsent('reject')}
             variant="outline"
-            onClick={() => handleCookieConsent("reject")}
           >
             Reject
           </Button>
-          <Button onClick={() => handleCookieConsent("accept")}>Accept</Button>
+          <Button onClick={() => handleCookieConsent('accept')}>Accept</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

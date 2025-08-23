@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import Loader from "@/components/multipage/Loader";
+import type { ReactNode } from 'react';
+import Loader from '@/components/multipage/Loader';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -17,7 +17,7 @@ interface ProtectedRouteProps {
  */
 export function ProtectedRoute({
   children,
-  redirectTo = "/sign-in",
+  redirectTo = '/sign-in',
   fallback,
   requireAuth = true,
 }: ProtectedRouteProps) {
@@ -31,7 +31,7 @@ export function ProtectedRoute({
       return <>{fallback}</>;
     }
     return (
-      <div className="h-screen grid place-items-center">
+      <div className="grid h-screen place-items-center">
         <Loader />
       </div>
     );

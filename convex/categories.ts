@@ -1,10 +1,10 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
 
 const errorObj = {
-  message: "Could not retrieve user, try logging in",
+  message: 'Could not retrieve user, try logging in',
   status: 401,
-  code: "USER_NOT_FOUND",
+  code: 'USER_NOT_FOUND',
 };
 
 // Create | Insert a new Category
@@ -23,8 +23,8 @@ export const insertSubCategory = mutation({
     try {
       // check if category has already been inserted
       const catExists = await ctx.db
-        .query("subcategories")
-        .filter((q) => q.eq(q.field("category"), args.category))
+        .query('subcategories')
+        .filter((q) => q.eq(q.field('category'), args.category))
         .first();
 
       // Update category if it already exists
@@ -39,7 +39,7 @@ export const insertSubCategory = mutation({
         };
       }
 
-      const data = await ctx.db.insert("subcategories", {
+      const data = await ctx.db.insert('subcategories', {
         category: args.category,
         items: args.subcategories,
       });
@@ -67,8 +67,8 @@ export const getCategory = query({
   },
   handler: async (ctx, args) => {
     const category = await ctx.db
-      .query("subcategories")
-      .filter((q) => q.eq(q.field("category"), args.category))
+      .query('subcategories')
+      .filter((q) => q.eq(q.field('category'), args.category))
       .first();
 
     return category;

@@ -1,4 +1,5 @@
-"use client";
+'use client';
+import { useMutation, useQuery } from 'convex/react';
 import {
   Bookmark,
   ChevronLeft,
@@ -8,37 +9,36 @@ import {
   ThumbsDown,
   ThumbsUp,
   X,
-} from "lucide-react";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SyncLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import Comment from '@/components/products/Comment';
+import CommentContent from '@/components/products/CommentContent';
+import ProductHeader from '@/components/products/ProductHeader';
+import SimilarAdverts from '@/components/products/SimilarAdverts';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "@/components/ui/accordion";
-import SimilarAdverts from "@/components/products/SimilarAdverts";
-import useNav from "@/hooks/useNav";
-import ProductHeader from "@/components/products/ProductHeader";
-import Comment from "@/components/products/Comment";
-import { useParams, useRouter } from "next/navigation";
-import { useIsMobile } from "@/hooks/use-mobile";
-import Link from "next/link";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import Image from "next/image";
-import useSlider from "@/hooks/useSlider";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import CommentContent from "@/components/products/CommentContent";
-import { toast } from "sonner";
-import { useEffect, useState } from "react";
-import { useIsLarge } from "@/hooks/useLarge";
-import { SyncLoader } from "react-spinners";
-import { useAuthUser } from "@/hooks/useAuthUser";
+} from '@/components/ui/accordion';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from '@/components/ui/carousel';
+import { Drawer, DrawerTrigger } from '@/components/ui/drawer';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useIsLarge } from '@/hooks/useLarge';
+import useNav from '@/hooks/useNav';
+import useSlider from '@/hooks/useSlider';
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -46,7 +46,7 @@ export default function ProductPage() {
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
   const params = useParams();
-  const productId = params.id as Id<"product">;
+  const productId = params.id as Id<'product'>;
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
@@ -56,41 +56,43 @@ export default function ProductPage() {
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: "saved",
+    type: 'saved',
   });
   const wishlist = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: "wishlist",
+    type: 'wishlist',
   });
   const view = useMutation(api.views.createView);
-  const exchangePossible = productData?.exchange === true ? "yes" : "no";
+  const exchangePossible = productData?.exchange === true ? 'yes' : 'no';
   const { setApi, setAutoScroll } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
-  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
+  const { user, isAuthenticated } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
   const router = useRouter();
 
   const productIcons = [
     {
-      label: "likes",
+      label: 'likes',
       icon: (
         <ThumbsUp
-          className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.liked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.liked ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
         />
       ),
     },
     {
-      label: "dislikes",
+      label: 'dislikes',
       icon: (
         <ThumbsDown
-          className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${like?.disliked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.disliked ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
         />
       ),
     },
     {
-      label: "wishlist",
+      label: 'wishlist',
       icon: (
         <Heart
-          className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${wishlist?.data?.added ? "fill-red-600 stroke-none" : "fill-none stroke-current"}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${wishlist?.data?.added ? 'fill-red-600 stroke-none' : 'fill-none stroke-current'}`}
         />
       ),
     },
@@ -99,21 +101,21 @@ export default function ProductPage() {
   const handleGestures = async (label: string) => {
     try {
       if (!isAuthenticated) {
-        toast.error("Please sign in to perform this action");
+        toast.error('Please sign in to perform this action');
         return;
       }
-      if (label === "likes") {
+      if (label === 'likes') {
         await likeProduct({ productId });
       }
-      if (label === "dislikes") {
+      if (label === 'dislikes') {
         await dislikeProduct({ productId });
       }
-      if (label === "wishlist" || label === "saved") {
+      if (label === 'wishlist' || label === 'saved') {
         const bookmarked = await bookmarkProduct({ productId, type: label });
 
         // bookmarked?.added
 
-        typeof bookmarked === "object" && bookmarked?.added
+        typeof bookmarked === 'object' && bookmarked?.added
           ? toast.success(`Item added to ${label}`)
           : toast.success(`Item removed from ${label}`);
       }
@@ -147,7 +149,7 @@ export default function ProductPage() {
 
   if (loading) {
     return (
-      <div className="bg-black/50 flex justify-center items-center z-50 fixed  inset-0">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <SyncLoader color="#f81" />
       </div>
     );
@@ -155,38 +157,38 @@ export default function ProductPage() {
 
   return (
     <Drawer>
-      <div className="min-h-screen lg:p-5 space-y-7 bg-slate-100  gap-x-6">
-        <div className="lg:grid lg:grid-cols-2 gap-5 space-y-3">
-          <div className="flex flex-col justify-center items-center border">
+      <div className="min-h-screen gap-x-6 space-y-7 bg-slate-100 lg:p-5">
+        <div className="gap-5 space-y-3 lg:grid lg:grid-cols-2">
+          <div className="flex flex-col items-center justify-center border">
             <div
+              className={
+                enlarge
+                  ? 'fixed top-0 right-0 z-[60] block h-screen w-screen bg-black sm:bg-black/75'
+                  : 'hidden'
+              }
               onClick={(e) => {
                 e.stopPropagation();
                 setEnlarge(false);
                 setAutoScroll(true);
               }}
-              className={
-                enlarge
-                  ? "block bg-black fixed w-screen h-screen z-[60] top-0 right-0  sm:bg-black/75"
-                  : "hidden"
-              }
             >
               <button type="button">
                 <ChevronLeft
+                  className="absolute top-6 left-2 text-white transition-colors hover:text-flickmart sm:hidden"
                   size={30}
-                  className="text-white absolute hover:text-flickmart top-6 left-2 transition-colors sm:hidden"
                 />
                 <X
+                  className="absolute top-6 left-2 hidden text-white transition-colors hover:text-flickmart sm:block"
                   size={30}
-                  className="text-white absolute hover:text-flickmart top-6 left-2 transition-colors hidden sm:block"
                 />
               </button>
             </div>
             <div
+              className={`cursor-pointer sm:cursor-default ${enlarge ? 'enlarge' : ''}`}
               onClick={() => {
                 setEnlarge(true);
                 setAutoScroll(false);
               }}
-              className={`cursor-pointer  sm:cursor-default ${enlarge ? "enlarge" : ""}`}
             >
               <Carousel setApi={setApi}>
                 <CarouselContent>
@@ -194,11 +196,11 @@ export default function ProductPage() {
                     return (
                       <CarouselItem key={index}>
                         <Image
-                          src={image}
                           alt={productData.title}
-                          width={500}
+                          className="aspect-square h-full w-full object-cover lg:h-[550px]"
                           height={500}
-                          className="w-full h-full lg:h-[550px] object-cover aspect-square"
+                          src={image}
+                          width={500}
                         />
                       </CarouselItem>
                     );
@@ -209,28 +211,28 @@ export default function ProductPage() {
 
             {isMobile ? (
               <ProductHeader
-                description={productData?.description || ""}
-                productId={productId}
-                location={productData?.location ?? ""}
+                description={productData?.description || ''}
+                location={productData?.location ?? ''}
                 price={productData?.price ?? 0}
-                title={productData?.title ?? ""}
-                timestamp={productData?.timeStamp ?? ""}
+                productId={productId}
+                timestamp={productData?.timeStamp ?? ''}
+                title={productData?.title ?? ''}
                 userId={productData?.userId!}
               />
             ) : null}
-            <div className="bg-white rounded-md flex justify-around w-full p-5">
+            <div className="flex w-full justify-around rounded-md bg-white p-5">
               {productIcons.map((item) => {
                 return (
                   <div
+                    className="cursor-pointer space-y-3 text-center capitalize"
                     key={item.label}
                     onClick={() => handleGestures(item.label)}
-                    className="capitalize space-y-3 text-center cursor-pointer"
                   >
-                    <div className={`flex justify-center`}>{item.icon}</div>{" "}
+                    <div className={'flex justify-center'}>{item.icon}</div>{' '}
                     <span className="inline-block text-sm lg:text-lg">
-                      {productData?.likes && item.label === "likes"
+                      {productData?.likes && item.label === 'likes'
                         ? productData.likes
-                        : productData?.dislikes && item.label === "dislikes"
+                        : productData?.dislikes && item.label === 'dislikes'
                           ? productData.dislikes
                           : item.label}
                     </span>
@@ -238,12 +240,12 @@ export default function ProductPage() {
                 );
               })}
               <DrawerTrigger className="">
-                <div className="capitalize space-y-3 text-center cursor-pointer">
-                  <div className={`flex justify-center`}>
+                <div className="cursor-pointer space-y-3 text-center capitalize">
+                  <div className={'flex justify-center'}>
                     <MessageCircle />
                   </div>
                   <span className="inline-block text-sm lg:text-lg">
-                    {comments?.length ? comments.length : "comment"}
+                    {comments?.length ? comments.length : 'comment'}
                   </span>
                 </div>
               </DrawerTrigger>
@@ -256,24 +258,24 @@ export default function ProductPage() {
             ) : null}
             {isMobile ? null : (
               <ProductHeader
-                description={productData?.description ?? ""}
-                productId={productId}
-                location={productData?.location ?? ""}
+                description={productData?.description ?? ''}
+                location={productData?.location ?? ''}
                 price={productData?.price ?? 0}
-                title={productData?.title ?? ""}
-                timestamp={productData?.timeStamp ?? ""}
+                productId={productId}
+                timestamp={productData?.timeStamp ?? ''}
+                title={productData?.title ?? ''}
                 userId={productData?.userId!}
               />
             )}
-            <div className="space-y-2 bg-white rounded-md p-5">
-              <h3 className="text-flickmart-chat-orange font-semibold text-lg tracking-wider">
+            <div className="space-y-2 rounded-md bg-white p-5">
+              <h3 className="font-semibold text-flickmart-chat-orange text-lg tracking-wider">
                 Description
               </h3>
-              <p className="text-justify text-sm leading-snug break-words">
+              <p className="break-words text-justify text-sm leading-snug">
                 {productData?.description}
               </p>
             </div>
-            <div className="grid-cols-2 grid grid-rows-3 capitalize bg-white rounded-md p-5 gap-5">
+            <div className="grid grid-cols-2 grid-rows-3 gap-5 rounded-md bg-white p-5 capitalize">
               <span>condition</span>
               <span className="font-semibold">{productData?.condition}</span>
               <span>category</span>
@@ -281,7 +283,7 @@ export default function ProductPage() {
               <span>exchange possible</span>
               <span className="font-semibold">{exchangePossible}</span>
             </div>
-            <div className="bg-white px-5 rounded-md">
+            <div className="rounded-md bg-white px-5">
               <Accordion type="multiple">
                 <AccordionItem value="item-1">
                   <AccordionTrigger className="!font-semibold">
@@ -311,24 +313,24 @@ export default function ProductPage() {
               </Accordion>
             </div>
             <div
-              className={` ${isVisible ? "translate-y-0" : "-translate-y-[-100%]"} lg:translate-y-0 transition  duration-300  flex space-x-5 p-3 lg:p-0 lg:relative bg-white fixed bottom-0 w-full z-30 `}
+              className={` ${isVisible ? 'translate-y-0' : '-translate-y-[-100%]'} fixed bottom-0 z-30 flex w-full space-x-5 bg-white p-3 transition duration-300 lg:relative lg:translate-y-0 lg:p-0`}
             >
               <div
-                onClick={() => handleGestures("saved")}
-                className="bg-white rounded-md shadow-md w-1/4 lg:w-1/12 flex justify-center items-center hover:scale-110 transition-all duration-300"
+                className="flex w-1/4 items-center justify-center rounded-md bg-white shadow-md transition-all duration-300 hover:scale-110 lg:w-1/12"
+                onClick={() => handleGestures('saved')}
               >
-                <button className="rounded-full text-flickmart-chat-orange p-2 shadow-lg bg-white ">
+                <button className="rounded-full bg-white p-2 text-flickmart-chat-orange shadow-lg">
                   <Bookmark
-                    className={`transition-[stroke, fill] duration-500 ease-in-out transform hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+                    className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
                   />
                 </button>
               </div>
               <Link
+                className="w-full transition-all duration-300 hover:scale-105"
                 href="/post-ad"
-                className="w-full hover:scale-105 transition-all duration-300"
               >
-                <button className="bg-flickmart-chat-orange flex text-white py-4 capitalize gap-10 font-medium items-center rounded-md w-full justify-center">
-                  <Store size={25} className="!font-thin" />
+                <button className="flex w-full items-center justify-center gap-10 rounded-md bg-flickmart-chat-orange py-4 font-medium text-white capitalize">
+                  <Store className="!font-thin" size={25} />
                   <span className="text-lg">post ads like this</span>
                 </button>
               </Link>

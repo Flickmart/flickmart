@@ -1,22 +1,22 @@
-import {
+import { useSession } from '@clerk/clerk-react';
+import type {
   EmailCodeFactor,
   SessionVerificationLevel,
   SessionVerificationResource,
-} from "@clerk/types";
-import React, { useEffect, useRef, useState } from "react";
+} from '@clerk/types';
+import React, { useEffect, useRef, useState } from 'react';
+import { MoonLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { Button } from '../ui/button';
 import {
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { useSession } from "@clerk/clerk-react";
-import { toast } from "sonner";
-import { MoonLoader } from "react-spinners";
+} from '../ui/dialog';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 interface VerificationType {
   onDialogClose: () => void;
@@ -29,10 +29,10 @@ export default function VerificationComponent({
   onDialogClose,
   onComplete,
   onCancel,
-  level = "first_factor",
+  level = 'first_factor',
 }: VerificationType) {
   const { session } = useSession();
-  const [code, setCode] = useState<string>("");
+  const [code, setCode] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [startingFirstFactor, setStartingFirstFactor] = useState<
     EmailCodeFactor | undefined
@@ -57,10 +57,10 @@ export default function VerificationComponent({
   async function sendVerificationEmail(
     verificationResource: SessionVerificationResource
   ) {
-    if (verificationResource.status === "needs_first_factor") {
+    if (verificationResource.status === 'needs_first_factor') {
       const startingFirstFactor =
         verificationResource.supportedFirstFactors?.filter(
-          (factor) => factor.strategy === "email_code"
+          (factor) => factor.strategy === 'email_code'
         )[0];
 
       if (startingFirstFactor) {
@@ -80,50 +80,50 @@ export default function VerificationComponent({
       setIsLoading(true);
       // Attempt to verify the session using the email code
       await session?.attemptFirstFactorVerification({
-        strategy: "email_code",
+        strategy: 'email_code',
         code,
       });
-      toast.success("Account verified successfully");
+      toast.success('Account verified successfully');
       onComplete();
       onDialogClose();
     } catch (err) {
       // Any error that occurs during verification
-      toast.error("Error verifying session");
+      toast.error('Error verifying session');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <DialogContent className="w-[90vw] sm:w-[400px] rounded-lg">
+    <DialogContent className="w-[90vw] rounded-lg sm:w-[400px]">
       <DialogHeader className="space-y-3">
         <DialogTitle className="font-bold text-gray-600">
           This action requires verification
         </DialogTitle>
         <DialogDescription>
-          Enter verification code sent to:{" "}
-          {startingFirstFactor?.safeIdentifier || "your email"}.
+          Enter verification code sent to:{' '}
+          {startingFirstFactor?.safeIdentifier || 'your email'}.
         </DialogDescription>
       </DialogHeader>
       <div className="flex justify-center">
         <Input
+          className="w-3/4"
           onChange={(e) => setCode(e.target.value)}
           placeholder="Verification Code"
-          className="w-3/4"
         />
       </div>
       <DialogFooter>
         <div className="flex justify-center gap-3">
-          <Button onClick={handleVerificationAttempt} className="w-1/3">
-            {isLoading ? <MoonLoader size={15} /> : "Verify"}
+          <Button className="w-1/3" onClick={handleVerificationAttempt}>
+            {isLoading ? <MoonLoader size={15} /> : 'Verify'}
           </Button>
           <Button
             className="w-1/3"
-            variant="outline"
             onClick={() => {
               onDialogClose();
               onCancel();
             }}
+            variant="outline"
           >
             Cancel
           </Button>

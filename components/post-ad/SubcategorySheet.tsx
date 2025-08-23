@@ -1,10 +1,11 @@
-import React, { useState } from "react";
-import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import CustomSheetHeader from "./CustomSheetHeader";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import SheetItems from "./SheetItems";
-import Loader from "../multipage/Loader";
+import { useQuery } from 'convex/react';
+import type React from 'react';
+import { useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import Loader from '../multipage/Loader';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
+import CustomSheetHeader from './CustomSheetHeader';
+import SheetItems from './SheetItems';
 
 export default function SubcategorySheet({
   children,
@@ -23,40 +24,40 @@ export default function SubcategorySheet({
   });
   console.log(subcategories?.items[0].image);
   return (
-    <Sheet open={open} onOpenChange={setOpen}>
+    <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger className="capitalize">{children}</SheetTrigger>
       <SheetContent
+        className="min-h-screen w-full p-0 pb-20 capitalize"
         hideCloseButton={true}
         side="left"
-        className="w-full capitalize min-h-screen p-0 pb-20 "
       >
         <CustomSheetHeader
-          text={category}
           closeSheet={() => {
             setOpen(false);
           }}
+          text={category}
         />
-        {!subcategories ? (
-          <div>
-            <Loader />
-          </div>
-        ) : (
-          <div className="h-[83vh] flex flex-col  overflow-auto">
+        {subcategories ? (
+          <div className="flex h-[83vh] flex-col overflow-auto">
             {subcategories.items.map((item) => {
               return (
                 <SheetItems
+                  categoryName={item.title}
                   closeSheet={() => {
                     setOpen(false);
                     closeSheet();
                     setSubcategory(item.title);
                   }}
-                  type="subcategories"
                   imageUrl={item.image}
                   key={item.title}
-                  categoryName={item.title}
+                  type="subcategories"
                 />
               );
             })}
+          </div>
+        ) : (
+          <div>
+            <Loader />
           </div>
         )}
       </SheetContent>

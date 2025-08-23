@@ -1,10 +1,16 @@
-"use client";
+'use client';
 
-import { usePushNotifications } from "@/hooks/usePushNotifications";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, BellOff, Smartphone, AlertCircle } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, Bell, BellOff, Smartphone } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 
 export function PushNotificationSetup() {
   const {
@@ -31,7 +37,8 @@ export function PushNotificationSetup() {
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              Push notifications are not supported in this browser. Please use a modern browser like Chrome, Firefox, or Safari.
+              Push notifications are not supported in this browser. Please use a
+              modern browser like Chrome, Firefox, or Safari.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -71,32 +78,34 @@ export function PushNotificationSetup() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className={`text-sm ${getStatusColor()}`}>
-          {getStatusText()}
-        </p>
+        <p className={`text-sm ${getStatusColor()}`}>{getStatusText()}</p>
 
         {permission === 'denied' && (
           <Alert>
             <AlertCircle className="h-4 w-4" />
             <AlertDescription>
-              To enable notifications, click the lock icon in your browser's address bar and allow notifications for FlickMart.
+              To enable notifications, click the lock icon in your browser's
+              address bar and allow notifications for FlickMart.
             </AlertDescription>
           </Alert>
         )}
 
         <div className="flex gap-2">
           {!isSubscribed && permission !== 'denied' && (
-            <Button onClick={subscribeToPush} className="flex items-center gap-2">
+            <Button
+              className="flex items-center gap-2"
+              onClick={subscribeToPush}
+            >
               <Bell className="h-4 w-4" />
               Enable Notifications
             </Button>
           )}
-          
+
           {isSubscribed && (
-            <Button 
-              variant="outline" 
-              onClick={unsubscribeFromPush}
+            <Button
               className="flex items-center gap-2"
+              onClick={unsubscribeFromPush}
+              variant="outline"
             >
               <BellOff className="h-4 w-4" />
               Disable Notifications
@@ -105,7 +114,7 @@ export function PushNotificationSetup() {
         </div>
 
         {isSubscribed && (
-          <div className="text-xs text-gray-500 space-y-1">
+          <div className="space-y-1 text-gray-500 text-xs">
             <p>✓ New messages and chat updates</p>
             <p>✓ Order status changes</p>
             <p>✓ Wallet transactions</p>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { ComponentType } from "react";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import Loader from "@/components/multipage/Loader";
+import type { ComponentType } from 'react';
+import Loader from '@/components/multipage/Loader';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 interface WithAuthOptions {
   redirectTo?: string;
@@ -17,7 +17,8 @@ export function withAuth<P extends object>(
   WrappedComponent: ComponentType<P>,
   options?: WithAuthOptions
 ) {
-  const { redirectTo = "/sign-in", loadingComponent: LoadingComponent } = options || {};
+  const { redirectTo = '/sign-in', loadingComponent: LoadingComponent } =
+    options || {};
 
   return function AuthenticatedComponent(props: P) {
     const { user, isLoading, isAuthenticated } = useAuthUser({
@@ -30,7 +31,7 @@ export function withAuth<P extends object>(
         return <LoadingComponent />;
       }
       return (
-        <div className="h-screen grid place-items-center">
+        <div className="grid h-screen place-items-center">
           <Loader />
         </div>
       );

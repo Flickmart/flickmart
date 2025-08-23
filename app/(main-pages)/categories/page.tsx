@@ -1,36 +1,36 @@
-"use client";
-import Loader from "@/components/multipage/Loader";
-import SubcategoryItem from "@/components/post-ad/SubcategoryItem";
-import { api } from "@/convex/_generated/api";
-import { useProductsByCategoryOrSubCategory } from "@/hooks/useProdByCat";
-import { useQuery } from "convex/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import React, { useState } from "react";
+'use client';
+import { useQuery } from 'convex/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
+import Loader from '@/components/multipage/Loader';
+import SubcategoryItem from '@/components/post-ad/SubcategoryItem';
+import { api } from '@/convex/_generated/api';
+import { useProductsByCategoryOrSubCategory } from '@/hooks/useProdByCat';
 
 export default function Subcategories() {
   const searchParams = useSearchParams();
-  const category = searchParams.get("category");
+  const category = searchParams.get('category');
   const subcategories = useQuery(api.categories.getCategory, {
-    category: category ?? "homes",
+    category: category ?? 'homes',
   });
 
   if (!subcategories) {
     return (
-      <div className="h-[70vh] w-full grid place-items-center">
+      <div className="grid h-[70vh] w-full place-items-center">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className=" text-gray-800  h-screen w-full">
+    <div className="h-screen w-full text-gray-800">
       {subcategories?.items.map((subcategory) => {
         return (
           <SubcategoryItem
+            category={category ?? ''}
             key={subcategory.title}
-            category={category ?? ""}
             subcategory={subcategory.title}
           />
         );

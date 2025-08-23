@@ -1,17 +1,17 @@
-"use client";
+'use client';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import React from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import React from "react";
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function page() {
   const router = useRouter();
@@ -19,12 +19,12 @@ export default function page() {
   return (
     <div className="w-full">
       {isMobile && (
-        <header className="flex shadow-md  h-20 shrink-0 items-center   px-4">
+        <header className="flex h-20 shrink-0 items-center px-4 shadow-md">
           <ChevronLeft
-            className="cursor-pointer size-7"
+            className="size-7 cursor-pointer"
             onClick={() => router.back()}
           />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          <Separator className="mr-2 h-4" orientation="vertical" />
           <Breadcrumb>
             <BreadcrumbList>
               <BreadcrumbItem>
@@ -38,7 +38,7 @@ export default function page() {
           </Breadcrumb>
         </header>
       )}
-      <div className="text-xl text-gray-600 h-[80vh] grid place-items-center font-semibold">
+      <div className="grid h-[80vh] place-items-center font-semibold text-gray-600 text-xl">
         <span>Coming Soon...</span>
       </div>
     </div>

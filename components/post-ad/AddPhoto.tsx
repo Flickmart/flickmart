@@ -1,12 +1,13 @@
-"use client";
-import { Plus, Upload, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import { useOthersStore } from "@/store/useOthersStore";
-import Image from "next/image";
-import { toast } from "sonner";
-import { MoonLoader } from "react-spinners";
-import imageCompression from "browser-image-compression";
-import { useUpload } from "@/hooks/useUpload";
+'use client';
+import imageCompression from 'browser-image-compression';
+import { Plus, Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { MoonLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { useUpload } from '@/hooks/useUpload';
+import { useOthersStore } from '@/store/useOthersStore';
 
 export default function AddPhoto({
   isSubmitted,
@@ -23,7 +24,7 @@ export default function AddPhoto({
   const [fileName, setFileName] = useState<Array<string>>([]);
   const [filePath, setFilePath] = useState<Array<string | null>>([]);
   const storeImage = useOthersStore((state) => state.storeImage);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState<string>('');
   const [imageFilesArr, setImageFilesArr] = useState<Array<File>>([]);
   const { startUpload, isUploading, isError, setIsError } = useUpload();
 
@@ -35,28 +36,25 @@ export default function AddPhoto({
     }
   };
 
-  useEffect(
-    function () {
-      if (isSubmitted || clear) {
-        setFilePath([]);
-        setFileName([]);
-        storeImage([]);
-        clear && setClear(false);
-        isSubmitted && setIsSubmitted(false);
-        return;
+  useEffect(() => {
+    if (isSubmitted || clear) {
+      setFilePath([]);
+      setFileName([]);
+      storeImage([]);
+      clear && setClear(false);
+      isSubmitted && setIsSubmitted(false);
+      return;
+    }
+    let toastId: ReturnType<typeof toast.loading>;
+    if (isUploading) {
+      toastId = toast.loading('Uploading Images...');
+    }
+    return () => {
+      if (toastId) {
+        toast.dismiss(toastId);
       }
-      let toastId: ReturnType<typeof toast.loading>;
-      if (isUploading) {
-        toastId = toast.loading("Uploading Images...");
-      }
-      return () => {
-        if (toastId) {
-          toast.dismiss(toastId);
-        }
-      };
-    },
-    [isUploading, isSubmitted, clear]
-  );
+    };
+  }, [isUploading, isSubmitted, clear]);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -67,9 +65,9 @@ export default function AddPhoto({
     };
 
     if (!files || files.length < 2 || files.length > 5) {
-      setError("*You must add between 2 and 5 images.");
+      setError('*You must add between 2 and 5 images.');
     } else {
-      setError("");
+      setError('');
 
       try {
         const imageFiles = Array.from(files);
@@ -105,29 +103,29 @@ export default function AddPhoto({
   };
 
   return (
-    <div className="bg-inherit capitalize py-5 text-xs lg:text-sm space-y-5 lg:space-y-3 text-gray-500">
-      <h3 className="text-xl font-medium">add photo</h3>
+    <div className="space-y-5 bg-inherit py-5 text-gray-500 text-xs capitalize lg:space-y-3 lg:text-sm">
+      <h3 className="font-medium text-xl">add photo</h3>
       <p>The first picture would be the face of your advert</p>
-      <div className="flex space-x-3 overflow-x-auto flex-wrap  items-center">
+      <div className="flex flex-wrap items-center space-x-3 overflow-x-auto">
         <div
+          className={`cursor-pointer ${isUploading ? 'bg-flickmart/20' : 'bg-flickmart hover:bg-flickmart/80'} flex h-14 w-20 items-center justify-center rounded-lg duration-200`}
           onClick={handleBtnClick}
-          className={`cursor-pointer ${isUploading ? "bg-flickmart/20" : "bg-flickmart hover:bg-flickmart/80"}   duration-200 rounded-lg w-20 h-14 flex justify-center items-center`}
         >
           <button
+            className="h-6 w-6 rounded-full bg-white"
             disabled={isUploading}
             type="button"
-            className="bg-white rounded-full h-6 w-6 "
           >
             <Plus
-              className={`p-1 ${isUploading ? "text-flickmart/20" : "text-flickmart"}`}
+              className={`p-1 ${isUploading ? 'text-flickmart/20' : 'text-flickmart'}`}
             />
             <input
+              accept=".jpg, .png"
+              hidden
               multiple
               onChange={handleFileChange}
               ref={fileRef}
               type="file"
-              hidden
-              accept=".jpg, .png"
             />
           </button>
         </div>
@@ -135,13 +133,13 @@ export default function AddPhoto({
           ? Array.from({ length: filePath.length }).map((_, index) => {
               return (
                 <div
+                  className="relative h-24 w-24 rounded-lg border border-gray-200 p-2"
                   key={index}
-                  className="relative p-2 rounded-lg w-24 h-24 border border-gray-200"
                 >
                   {isUploading ? (
-                    <div className="absolute inset-0 flex justify-center items-center ">
+                    <div className="absolute inset-0 flex items-center justify-center">
                       <X
-                        className="absolute right-1 top-1 cursor-pointer p-0.5"
+                        className="absolute top-1 right-1 cursor-pointer p-0.5"
                         onClick={() => handleImageRemove(index)}
                       />
                       <MoonLoader size={35} />
@@ -149,23 +147,13 @@ export default function AddPhoto({
                   ) : (
                     <>
                       <X
-                        className="absolute z-20 right-1 top-1 cursor-pointer p-0.5"
+                        className="absolute top-1 right-1 z-20 cursor-pointer p-0.5"
                         onClick={() => handleImageRemove(index)}
                       />
-                      {!isError ? (
-                        <Image
-                          id={index.toString()}
-                          src={filePath[index] || ""}
-                          alt={fileName[index]}
-                          width={300}
-                          height={300}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 flex justify-center items-center ">
+                      {isError ? (
+                        <div className="absolute inset-0 flex items-center justify-center">
                           <Upload
                             className="cursor-pointer"
-                            size={35}
                             onClick={async () => {
                               const uploadedImg =
                                 await startUpload(imageFilesArr);
@@ -175,8 +163,18 @@ export default function AddPhoto({
                                 setIsError(false);
                               }
                             }}
+                            size={35}
                           />
                         </div>
+                      ) : (
+                        <Image
+                          alt={fileName[index]}
+                          className="h-full w-full object-cover"
+                          height={300}
+                          id={index.toString()}
+                          src={filePath[index] || ''}
+                          width={300}
+                        />
                       )}
                     </>
                   )}
@@ -186,7 +184,7 @@ export default function AddPhoto({
           : null}
       </div>
       {fileName && (
-        <p className="text-black ">
+        <p className="text-black">
           {fileName.length
             ? `Uploaded: ${fileName.map((item) => ` ${item}`)}`
             : null}
@@ -196,7 +194,7 @@ export default function AddPhoto({
         <p>Supported formats are * .jpg and *.png</p>
         <p className="normal-case">Max image size allowed is 2MB</p>
       </div>
-      <p className="text-red-500 font-medium text-xs normal-case">{error}</p>
+      <p className="font-medium text-red-500 text-xs normal-case">{error}</p>
     </div>
   );
 }

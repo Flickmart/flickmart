@@ -1,10 +1,10 @@
-"use client";
-import StageOne from "@/components/auth/sign-up-stages/StageOne";
-import StageTwo from "@/components/auth/sign-up-stages/StageTwo";
-import StageThree from "@/components/auth/sign-up-stages/StageThree";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
+'use client';
+import { useUser } from '@clerk/nextjs';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import StageOne from '@/components/auth/sign-up-stages/StageOne';
+import StageThree from '@/components/auth/sign-up-stages/StageThree';
+import StageTwo from '@/components/auth/sign-up-stages/StageTwo';
 
 export default function SignUp() {
   const [stage, setStage] = useState(1);
@@ -14,7 +14,7 @@ export default function SignUp() {
   // If the user is already signed in, redirect to home
   useEffect(() => {
     if (isSignedIn) {
-      router.push("/");
+      router.push('/');
     }
   }, [isSignedIn, router]);
 

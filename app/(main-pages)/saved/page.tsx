@@ -1,32 +1,32 @@
-"use client";
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import BookedMarkedItem from "@/components/BookMarkedItem";
-import Empty from "@/components/saved/Empty";
-import { motion } from "motion/react";
-import { useRouter, useSearchParams } from "next/navigation";
-import Loader from "@/components/multipage/Loader";
-import { SyncLoader } from "react-spinners";
+'use client';
+import { useQuery } from 'convex/react';
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SyncLoader } from 'react-spinners';
+import BookedMarkedItem from '@/components/BookMarkedItem';
+import Loader from '@/components/multipage/Loader';
+import Empty from '@/components/saved/Empty';
+import { api } from '@/convex/_generated/api';
 
 export default function SavedPage() {
   const [selectedTab, setSelectedTab] = useState(false);
   const searchParams = useSearchParams();
-  const query = searchParams.get("wishlist");
+  const query = searchParams.get('wishlist');
 
   const saved = useQuery(api.product.getAllSavedOrWishlist, {
-    type: "saved",
+    type: 'saved',
   });
   const wishlist = useQuery(api.product.getAllSavedOrWishlist, {
-    type: "wishlist",
+    type: 'wishlist',
   });
 
   const savedLength = saved?.data?.length;
   const wishlistLength = wishlist?.data?.length;
 
   useEffect(() => {
-    if (query === "true") {
+    if (query === 'true') {
       setSelectedTab(true);
     }
   }, [searchParams]);
@@ -40,63 +40,41 @@ export default function SavedPage() {
   };
 
   return (
-    <main className="w-full flex flex-col h-[90vh] bg-gray-100 pb-12">
-      <div className="w-full flex shadow-lg ">
+    <main className="flex h-[90vh] w-full flex-col bg-gray-100 pb-12">
+      <div className="flex w-full shadow-lg">
         <button
-          onClick={toggleAd}
           className={
             selectedTab
-              ? `w-full py-5 text-center text-flickmart-gray font-bold`
-              : `w-full py-5 text-center text-flickmart font-bold`
+              ? 'w-full py-5 text-center font-bold text-flickmart-gray'
+              : 'w-full py-5 text-center font-bold text-flickmart'
           }
+          onClick={toggleAd}
         >
           Saved ({savedLength || 0})
         </button>
         <button
-          onClick={toggleWl}
           className={
             selectedTab
-              ? `w-full py-5 text-center text-flickmart font-bold`
-              : `w-full py-5 text-center text-flickmart-gray font-bold`
+              ? 'w-full py-5 text-center font-bold text-flickmart'
+              : 'w-full py-5 text-center font-bold text-flickmart-gray'
           }
+          onClick={toggleWl}
         >
           Wishlist ({wishlistLength || 0})
         </button>
       </div>
       {saved === undefined || wishlist === undefined ? (
-        <div className="w-full flex justify-center items-center flex-grow">
+        <div className="flex w-full flex-grow items-center justify-center">
           <SyncLoader color="#f97316" />
         </div>
       ) : (
         <>
-          {!selectedTab ? (
+          {selectedTab ? (
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-              className="w-[95%] mx-auto pb-10 flex flex-col gap-3 mt-3"
-            >
-              {savedLength === 0 ? (
-                <Empty message="You have no saved items" />
-              ) : (
-                saved?.data
-                  ?.slice()
-                  .reverse()
-                  .map((item) => {
-                    return (
-                      <Link key={item?._id} href={`/product/${item?._id}`}>
-                        <BookedMarkedItem type="saved" product={item!} />
-                      </Link>
-                    );
-                  })
-              )}
-            </motion.div>
-          ) : (
-            <motion.div
+              className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-5"
               initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, type: "tween", ease: "easeInOut" }}
-              className=" w-[95%] pb-5 mx-auto flex flex-col gap-3 mt-3"
+              transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
             >
               {wishlistLength === 0 ? (
                 <Empty message="Your wishlist is empty" />
@@ -106,8 +84,30 @@ export default function SavedPage() {
                   .reverse()
                   .map((item) => {
                     return (
-                      <Link key={item?._id} href={`/product/${item?._id}`}>
-                        <BookedMarkedItem type="wishlist" product={item!} />
+                      <Link href={`/product/${item?._id}`} key={item?._id}>
+                        <BookedMarkedItem product={item!} type="wishlist" />
+                      </Link>
+                    );
+                  })
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              animate={{ opacity: 1, x: 0 }}
+              className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-10"
+              initial={{ opacity: 0, x: 50 }}
+              transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
+            >
+              {savedLength === 0 ? (
+                <Empty message="You have no saved items" />
+              ) : (
+                saved?.data
+                  ?.slice()
+                  .reverse()
+                  .map((item) => {
+                    return (
+                      <Link href={`/product/${item?._id}`} key={item?._id}>
+                        <BookedMarkedItem product={item!} type="saved" />
                       </Link>
                     );
                   })
