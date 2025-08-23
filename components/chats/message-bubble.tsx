@@ -5,6 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { LinkIcon, ArrowRight, Banknote } from "lucide-react";
 import Link from "next/link";
+import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
 
 interface MessageBubbleProps {
   id: string;
@@ -27,7 +30,6 @@ interface MessageBubbleProps {
   orderId?: string;
   transferAmount?: number;
   currency?: string;
-  order?: any;
 }
 
 export default function MessageBubble({
@@ -51,10 +53,18 @@ export default function MessageBubble({
   orderId = "",
   transferAmount = 0,
   currency = "",
-  order,
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
   const [touchStartTime, setTouchStartTime] = useState<number>(0);
+
+  const order = useQuery(
+    api.orders.getOrderById,
+    orderId
+      ? {
+          orderId: orderId as Id<"orders">,
+        }
+      : "skip"
+  );
 
   const handleTouchStart = () => {
     setTouchStartTime(Date.now());
@@ -87,15 +97,15 @@ export default function MessageBubble({
         isUser ? "justify-end" : "justify-start",
         selectionMode && "cursor-pointer"
       )}
-    //DISABLED DELETE FEATURE 
-    // onClick={() => selectionMode && toggleMessageSelection(id)}
-    // onContextMenu={(e) => {
-    //   e.preventDefault();
-    //   handleLongPress(id);
-    // }}
-    // onTouchStart={handleTouchStart}
-    // onTouchEnd={handleTouchEnd}
-    // onTouchCancel={handleTouchEnd}
+      //DISABLED DELETE FEATURE
+      // onClick={() => selectionMode && toggleMessageSelection(id)}
+      // onContextMenu={(e) => {
+      //   e.preventDefault();
+      //   handleLongPress(id);
+      // }}
+      // onTouchStart={handleTouchStart}
+      // onTouchEnd={handleTouchEnd}
+      // onTouchCancel={handleTouchEnd}
     >
       <div
         className={cn(
@@ -104,19 +114,20 @@ export default function MessageBubble({
             ? "bg-flickmart text-white rounded-br-none"
             : "bg-background text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
-          "bg-orange-200 border-2 border-orange-400",
+            "bg-orange-200 border-2 border-orange-400",
           images.length > 0 && "rounded-br-lg rounded-bl-lg py-0",
           type === "transfer" && "bg-transparent p-0 shadow-none"
         )}
       >
         {images && images.length > 0 && (
           <div
-            className={`grid gap-1 mt-1 sm:mt-2 ${images.length === 1
+            className={`grid gap-1 mt-1 sm:mt-2 ${
+              images.length === 1
                 ? "grid-cols-1"
                 : images.length >= 2
                   ? "grid-cols-2"
                   : ""
-              }`}
+            }`}
           >
             {/* First image (always shown) */}
             {images.length >= 1 && (
@@ -263,7 +274,9 @@ export function ProductChatMessage({
                 <span className="truncate">{productTitle}</span>
                 <LinkIcon className="w-3 h-3 text-orange-200 flex-shrink-0" />
               </p>
-              <p className="text-xs font-medium text-orange-100 mt-1">₦{productPrice.toFixed(2)}</p>
+              <p className="text-xs font-medium text-orange-100 mt-1">
+                ₦{productPrice.toFixed(2)}
+              </p>
             </div>
           </div>
           {/* Message Text */}
@@ -316,7 +329,7 @@ export function TransferChatMessage({
           arrowColor: "text-green-500",
           statusColor: "text-green-600",
           timestampColor: "text-green-500",
-          description: "Transaction completed"
+          description: "Transaction completed",
         };
       case "cancelled":
         return {
@@ -330,7 +343,7 @@ export function TransferChatMessage({
           arrowColor: "text-red-500",
           statusColor: "text-red-600",
           timestampColor: "text-red-500",
-          description: "Transaction cancelled"
+          description: "Transaction cancelled",
         };
       case "disputed":
         return {
@@ -344,7 +357,7 @@ export function TransferChatMessage({
           arrowColor: "text-orange-500",
           statusColor: "text-orange-600",
           timestampColor: "text-orange-500",
-          description: "Transaction disputed"
+          description: "Transaction disputed",
         };
       case "in_escrow":
       default:
@@ -359,7 +372,7 @@ export function TransferChatMessage({
           arrowColor: "text-blue-500",
           statusColor: "text-blue-600",
           timestampColor: "text-blue-500",
-          description: "Payment on Hold"
+          description: "Payment on Hold",
         };
     }
   };
@@ -369,36 +382,53 @@ export function TransferChatMessage({
   return (
     <Link href={`/orders/${orderId}`}>
       <div className="w-full">
-        <div className={`bg-gradient-to-r ${statusConfig.bgGradient} border ${statusConfig.borderColor} rounded-xl p-2.5 cursor-pointer ${statusConfig.hoverGradient} transition-all duration-200 shadow-sm`}>
+        <div
+          className={`bg-gradient-to-r ${statusConfig.bgGradient} border ${statusConfig.borderColor} rounded-xl p-2.5 cursor-pointer ${statusConfig.hoverGradient} transition-all duration-200 shadow-sm`}
+        >
           <div className="flex items-center gap-2.5">
-            <div className={`w-8 h-8 bg-gradient-to-br ${statusConfig.iconGradient} rounded-lg flex items-center justify-center shadow-sm`}>
+            <div
+              className={`w-8 h-8 bg-gradient-to-br ${statusConfig.iconGradient} rounded-lg flex items-center justify-center shadow-sm`}
+            >
               <Banknote className="w-4 h-4 text-white" />
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between space-x-1">
                 <div>
-                  <p className={`text-xs font-medium ${statusConfig.textColor} mb-0.5`}>
+                  <p
+                    className={`text-xs font-medium ${statusConfig.textColor} mb-0.5`}
+                  >
                     {actionText}
                   </p>
-                  <p className={`text-base font-bold ${statusConfig.amountColor} leading-none`}>
-                    {currency === "NGN" ? "₦" : currency}{formatAmount(transferAmount)}
+                  <p
+                    className={`text-base font-bold ${statusConfig.amountColor} leading-none`}
+                  >
+                    {currency === "NGN" ? "₦" : currency}
+                    {formatAmount(transferAmount)}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm   bg-white/50 ${statusConfig.statusColor}`}>
+                  <span
+                    className={`text-[10px] font-semibold px-2 py-0.5 rounded-sm   bg-white/50 ${statusConfig.statusColor}`}
+                  >
                     {statusConfig.label}
                   </span>
-                  <ArrowRight className={`w-4 h-4 ${statusConfig.arrowColor} flex-shrink-0`} />
+                  <ArrowRight
+                    className={`w-4 h-4 ${statusConfig.arrowColor} flex-shrink-0`}
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div className="flex items-center justify-between mt-1.5">
-            <p className={`text-[10px] ${statusConfig.statusColor} font-medium`}>
+            <p
+              className={`text-[10px] ${statusConfig.statusColor} font-medium`}
+            >
               {statusConfig.description}
             </p>
             {timestamp && (
-              <span className={`text-[9px] ${statusConfig.timestampColor} opacity-70`}>
+              <span
+                className={`text-[9px] ${statusConfig.timestampColor} opacity-70`}
+              >
                 {timestamp}
               </span>
             )}
