@@ -232,7 +232,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
     });
   };
 
-  const handleTransfer = async () => {
+const handleTransfer = async () => {
     if (amount) {
       // Store the original amount before navigating to product selection
       setOriginalAmount(amount);
