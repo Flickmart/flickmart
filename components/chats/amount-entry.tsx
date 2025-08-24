@@ -39,18 +39,25 @@ export function AmountEntry({
       </div>
 
       {/* <SecurityHeader /> */}
-      <div className="flex-1 px-6 pb-0 overflow-y-auto md:overflow-y-hidden">
+      <div className="flex-1 overflow-y-auto px-6 pb-0 md:overflow-y-hidden">
         <div className="mx-auto max-w-lg">
-        <div className="flex max-w-lg items-center justify-start gap-2  pb-4 ">
-          <Avatar className="h-10 w-10 border border-flickmart">
-            <AvatarImage alt={seller?.name || 'User'} src={seller?.imageUrl} />
-            <AvatarFallback>
-              {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-gray-900 text-xl text-extrabold">{seller?.name}</span>
-        </div>
-          <h1 className="mb-4 font-semibold text-2xl text-gray-900 mt-5 md:mt-9">Amount</h1>
+          <div className="flex max-w-lg items-center justify-start gap-2 pb-4">
+            <Avatar className="h-10 w-10 border border-flickmart">
+              <AvatarImage
+                alt={seller?.name || 'User'}
+                src={seller?.imageUrl}
+              />
+              <AvatarFallback>
+                {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <span className="font-medium text-extrabold text-gray-900 text-xl">
+              {seller?.name}
+            </span>
+          </div>
+          <h1 className="mt-5 mb-4 font-semibold text-2xl text-gray-900 md:mt-9">
+            Amount
+          </h1>
 
           <div className="mb-8">
             <div className="mb-2 flex items-center font-light text-4xl text-gray-900">
@@ -72,7 +79,7 @@ export function AmountEntry({
         </div>
       </div>
 
-      <div className="md:h-auto h-[40vh]">
+      <div className="h-[40vh] md:h-auto">
         <NumberKeypad
           onBackspace={onBackspace}
           onClear={onClear}
