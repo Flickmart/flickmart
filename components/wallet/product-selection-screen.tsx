@@ -1,21 +1,23 @@
 "use client";
 
 import { Package, Search } from "lucide-react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
-import ProductItem from "./product-item";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { useState, useMemo } from "react";
+import ProductItem from "./product-item";
 
 // Levenshtein distance function for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
-  const matrix = Array(str2.length + 1).fill(null).map(() => Array(str1.length + 1).fill(null));
-  
+  const matrix = Array(str2.length + 1)
+    .fill(null)
+    .map(() => Array(str1.length + 1).fill(null));
+
   for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
   for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
-  
+
   for (let j = 1; j <= str2.length; j++) {
     for (let i = 1; i <= str1.length; i++) {
       const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
@@ -26,7 +28,7 @@ function levenshteinDistance(str1: string, str2: string): number {
       );
     }
   }
-  
+
   return matrix[str2.length][str1.length];
 }
 
@@ -38,13 +40,17 @@ function calculateSimilarity(str1: string, str2: string): number {
 }
 
 // Check if text contains similar words
-function hasSimilarWords(text: string, query: string, threshold: number = 0.7): boolean {
+function hasSimilarWords(
+  text: string,
+  query: string,
+  threshold = 0.7
+): boolean {
   const textWords = text.toLowerCase().split(/\s+/);
   const queryWords = query.toLowerCase().split(/\s+/);
-  
-  return queryWords.some(queryWord => 
-    textWords.some(textWord => 
-      calculateSimilarity(queryWord, textWord) >= threshold
+
+  return queryWords.some((queryWord) =>
+    textWords.some(
+      (textWord) => calculateSimilarity(queryWord, textWord) >= threshold
     )
   );
 }
@@ -82,28 +88,32 @@ export default function ProductSelectionScreen({
 
   // Filter products based on search query with fuzzy matching
   const filteredProducts = useMemo(() => {
-    if (!products || !searchQuery.trim()) {
+    if (!(products && searchQuery.trim())) {
       return products;
     }
 
     const query = searchQuery.toLowerCase().trim();
     const queryWords = query.split(/\s+/);
-    
+
     return products.filter((product) => {
-      const title = product.title?.toLowerCase() || '';
-      const description = product.description?.toLowerCase() || '';
-      const category = product.category?.toLowerCase() || '';
-      
+      const title = product.title?.toLowerCase() || "";
+      const description = product.description?.toLowerCase() || "";
+      const category = product.category?.toLowerCase() || "";
+
       // Exact match (highest priority)
-      if (title.includes(query) || description.includes(query) || category.includes(query)) {
+      if (
+        title.includes(query) ||
+        description.includes(query) ||
+        category.includes(query)
+      ) {
         return true;
       }
-      
+
       // Fuzzy matching for similar spellings
       const titleSimilarity = hasSimilarWords(title, query, 0.6);
       const descriptionSimilarity = hasSimilarWords(description, query, 0.6);
       const categorySimilarity = hasSimilarWords(category, query, 0.6);
-      
+
       return titleSimilarity || descriptionSimilarity || categorySimilarity;
     });
   }, [products, searchQuery]);
@@ -150,8 +160,8 @@ export default function ProductSelectionScreen({
   return (
     <div className="flex-1 p-6">
       <div className="mx-auto max-w-md">
-        <div className="">
-          <div className="flex max-w-lg items-center justify-start gap-2  pb-2 ">
+        <div className="mb-2">
+          <div className="flex max-w-lg items-center justify-start gap-2 pb-2">
             <Avatar className="h-14 w-14 border border-flickmart">
               <AvatarImage
                 alt={seller?.name || "User"}
@@ -162,8 +172,8 @@ export default function ProductSelectionScreen({
               </AvatarFallback>
             </Avatar>
             <p className="flex flex-col">
-              <span className=" text-xl font-bold">{seller?.name} Stores</span>
-              <span className="text-gray-500 text-sm font-light">
+              <span className="font-bold text-lg sm:text-xl">{seller?.name} Stores</span>
+              <span className="text-sm">
                 Select Products to Continue
               </span>
             </p>
@@ -172,23 +182,24 @@ export default function ProductSelectionScreen({
 
         {/* Search bar */}
         <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <div className="relative rounded-xl bg-[#E5E3E3C2]">
             <Input
-              type="text"
-              placeholder="Search products..."
-              value={searchQuery}
+              className="rounded-xl border-gray-200 py-3 pr-10 pl-4"
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-3 rounded-xl border-gray-200 focus:border-orange-500 focus:ring-orange-500"
+              placeholder="Search items to buy..."
+              type="text"
+              value={searchQuery}
             />
+            <Search className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 text-gray-400" />
           </div>
           {searchQuery && (
-            <p className="mt-2 text-sm text-gray-500">
-              {filteredProducts?.length || 0} product{(filteredProducts?.length || 0) !== 1 ? 's' : ''} found
+            <p className="mt-2 text-gray-500 text-sm">
+              {filteredProducts?.length || 0} product
+              {(filteredProducts?.length || 0) !== 1 ? "s" : ""} found
             </p>
           )}
         </div>
-        
+
         {/* Selected products total */}
         {selectedCount > 0 && (
           <Card className="mb-4 border-orange-200 bg-orange-50">
@@ -202,6 +213,13 @@ export default function ProductSelectionScreen({
             </CardContent>
           </Card>
         )}
+
+        <div className="flex items-center justify-between font-semibold text-sm">
+          <span>Selected Goods</span>
+          <span>
+            {selectedCount}/{filteredProducts?.length || 0}
+          </span>
+        </div>
 
         {/* Products list */}
         <div className="mb-6 max-h-96 space-y-3 overflow-y-auto">
@@ -217,11 +235,13 @@ export default function ProductSelectionScreen({
           ) : searchQuery ? (
             <Card className="p-6 text-center">
               <Search className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-              <p className="text-gray-600">No products found matching "{searchQuery}"</p>
+              <p className="text-gray-600">
+                No products found matching "{searchQuery}"
+              </p>
               <Button
-                variant="link"
-                onClick={() => setSearchQuery("")}
                 className="mt-2 text-orange-500 hover:text-orange-600"
+                onClick={() => setSearchQuery("")}
+                variant="link"
               >
                 Clear search
               </Button>
@@ -229,36 +249,20 @@ export default function ProductSelectionScreen({
           ) : null}
         </div>
 
-        {/* Action buttons */}
-        <div className="flex gap-3">
-          <Button
-            className="flex-1 rounded-2xl py-4 font-medium text-lg"
-            onClick={onSkip}
-            variant="outline"
-          >
-            Skip
-          </Button>
-          <Button
-            className={`flex-1 rounded-2xl py-4 font-medium text-lg ${
-              selectedCount === 0
-                ? "cursor-not-allowed bg-gray-300 text-gray-500"
-                : "bg-orange-500 text-white hover:bg-orange-600"
-            }`}
-            disabled={selectedCount === 0}
-            onClick={onContinue}
-          >
-            {selectedCount === 0
-              ? "Select Products to Continue"
-              : `Continue with ${selectedCount} Product${selectedCount !== 1 ? "s" : ""}`}
-          </Button>
-        </div>
+        <Button
+          className="w-full rounded-full"
+          // disabled={selectedCount === 0}
+          onClick={onContinue}
+        >
+          Transfer
+        </Button>
 
         {/* User guidance */}
         {selectedCount === 0 && (
           <div className="mt-3 text-center">
             <p className="text-gray-500 text-sm">
-              💡 Tap on products to select them, or skip to make a general
-              transfer
+              💡 Tap on products to select them, or move on without selecting to
+              make a general transfer
             </p>
           </div>
         )}
