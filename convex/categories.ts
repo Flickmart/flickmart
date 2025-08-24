@@ -30,12 +30,24 @@ const subcategoriesData = {
     { title: 'skin care', image: '/categories/skin care.png', size: 0 },
     { title: 'soaps', image: '/categories/soaps.png', size: 0 },
     { title: 'hair beauty', image: '/categories/hair beauty.png', size: 0 },
-    { title: 'gym equipment', image: '/categories/gym equipments.png', size: 0 },
+    {
+      title: 'gym equipment',
+      image: '/categories/gym equipments.png',
+      size: 0,
+    },
   ],
   fashion: [
     { title: 'bags', image: '/categories/bags.png', size: 0 },
-    { title: "men's clothing", image: '/categories/men\'s clothing.png', size: 0 },
-    { title: "women's clothing", image: '/categories/women\'s clothing.png', size: 0 },
+    {
+      title: "men's clothing",
+      image: "/categories/men's clothing.png",
+      size: 0,
+    },
+    {
+      title: "women's clothing",
+      image: "/categories/women's clothing.png",
+      size: 0,
+    },
     { title: "men's shoe", image: '/categories/male shoes.png', size: 0 },
     { title: "women's shoe", image: '/categories/female shoes.png', size: 0 },
     { title: 'watches', image: '/categories/watches.png', size: 0 },
@@ -49,14 +61,26 @@ const subcategoriesData = {
   ],
   mobiles: [
     { title: 'apple phones', image: '/categories/apple phones.png', size: 0 },
-    { title: 'android phones', image: '/categories/android phones.png', size: 0 },
+    {
+      title: 'android phones',
+      image: '/categories/android phones.png',
+      size: 0,
+    },
     { title: 'tablet', image: '/categories/tablet.png', size: 0 },
-    { title: 'phones & tablets accessories', image: '/categories/phones and tablets accessories.png', size: 0 },
+    {
+      title: 'phones & tablets accessories',
+      image: '/categories/phones and tablets accessories.png',
+      size: 0,
+    },
   ],
   pets: [
     { title: 'dogs', image: '/categories/dogs.png', size: 0 },
     { title: 'cats', image: '/categories/cats.png', size: 0 },
-    { title: 'pets accessories', image: '/categories/pet accessories.png', size: 0 },
+    {
+      title: 'pets accessories',
+      image: '/categories/pet accessories.png',
+      size: 0,
+    },
   ],
   food: [
     { title: 'food stuffs', image: '/categories/food stuffs.png', size: 0 },
@@ -64,18 +88,54 @@ const subcategoriesData = {
     { title: 'pastries', image: '/categories/pastries.png', size: 0 },
   ],
   appliances: [
-    { title: 'cleaning appliances', image: '/categories/cleaning appliances.png', size: 0 },
-    { title: 'kitchen appliances', image: '/categories/kitchen appliances.png', size: 0 },
-    { title: 'gaming electronics', image: '/categories/gaming electronics.png', size: 0 },
-    { title: 'speakers and audio', image: '/categories/speakers and audio.png', size: 0 },
+    {
+      title: 'cleaning appliances',
+      image: '/categories/cleaning appliances.png',
+      size: 0,
+    },
+    {
+      title: 'kitchen appliances',
+      image: '/categories/kitchen appliances.png',
+      size: 0,
+    },
+    {
+      title: 'gaming electronics',
+      image: '/categories/gaming electronics.png',
+      size: 0,
+    },
+    {
+      title: 'speakers and audio',
+      image: '/categories/speakers and audio.png',
+      size: 0,
+    },
   ],
   services: [
-    { title: 'beauty services', image: '/categories/beauty services.png', size: 0 },
-    { title: 'event services', image: '/categories/event services.png', size: 0 },
+    {
+      title: 'beauty services',
+      image: '/categories/beauty services.png',
+      size: 0,
+    },
+    {
+      title: 'event services',
+      image: '/categories/event services.png',
+      size: 0,
+    },
     { title: 'home services', image: '/categories/home services.png', size: 0 },
-    { title: 'logistics and cab services', image: '/categories/logistics and cab services.png', size: 0 },
-    { title: 'classes and courses', image: '/categories/classes and courses.png', size: 0 },
-    { title: 'programming and designs', image: '/categories/programming and designs.png', size: 0 },
+    {
+      title: 'logistics and cab services',
+      image: '/categories/logistics and cab services.png',
+      size: 0,
+    },
+    {
+      title: 'classes and courses',
+      image: '/categories/classes and courses.png',
+      size: 0,
+    },
+    {
+      title: 'programming and designs',
+      image: '/categories/programming and designs.png',
+      size: 0,
+    },
   ],
 };
 
@@ -132,8 +192,6 @@ export const insertSubCategory = mutation({
   },
 });
 
-
-
 // Query | Retrieve a particular category
 export const getCategory = query({
   args: {
@@ -147,7 +205,8 @@ export const getCategory = query({
 
     // If category doesn't exist in database, return default data
     if (!category) {
-      const defaultItems = subcategoriesData[args.category as keyof typeof subcategoriesData];
+      const defaultItems =
+        subcategoriesData[args.category as keyof typeof subcategoriesData];
       if (defaultItems) {
         return {
           category: args.category,

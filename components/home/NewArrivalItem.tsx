@@ -45,7 +45,7 @@ export default function NewArrivalItem({
           <span>&#8358;{price.toLocaleString()}</span>
         </div>
       </div>
-      <div className="flex space-y-1 pt-2 font-semibold lg:space-y-3 lg:py-4"></div>
+      <div className="flex space-y-1 pt-2 font-semibold lg:space-y-3 lg:py-4" />
     </div>
   );
 }
