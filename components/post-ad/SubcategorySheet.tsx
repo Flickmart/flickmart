@@ -23,8 +23,6 @@ export default function SubcategorySheet({
   const subcategories = useQuery(api.categories.getCategory, {
     category,
   });
-
-  console.log(subcategories?.items[0]?.image);
   
   return (
     <Sheet onOpenChange={setOpen} open={open}>
