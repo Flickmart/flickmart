@@ -1,15 +1,15 @@
-"use client";
+'use client';
 
+import { Eye, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 const CustomInput = ({
   control,
@@ -30,20 +30,20 @@ const CustomInput = ({
         <FormItem>
           <FormLabel className="auth-form-label">{placeholder}</FormLabel>
           <FormControl>
-            {name.includes("password") || name.includes("Password") ? (
+            {name.includes('password') || name.includes('Password') ? (
               <div className="flex">
                 <Input
-                  type={showPassword ? "text" : "password"}
                   className="auth-input peer !ring-0"
                   placeholder={placeholder}
+                  type={showPassword ? 'text' : 'password'}
                   {...field}
                 />
                 <button
-                  type="button"
-                  className="border-b-2 text-flickmart-gray peer-focus-visible:border-flickmart transition duration-300 hover:text-flickmart"
+                  className="border-b-2 text-flickmart-gray transition duration-300 hover:text-flickmart peer-focus-visible:border-flickmart"
                   onClick={() => {
                     setShowPassword(!showPassword);
                   }}
+                  type="button"
                 >
                   {showPassword ? <Eye /> : <EyeOff />}
                 </button>

@@ -1,20 +1,20 @@
-import { internalMutation } from "./_generated/server";
-import { v } from "convex/values";
-import { Resend } from "@convex-dev/resend";
-import { components } from "./_generated/api";
+import { Resend } from '@convex-dev/resend';
+import { v } from 'convex/values';
+import { components } from './_generated/api';
+import { internalMutation } from './_generated/server';
 
 // Internal Mutation for Email Notifications
 export const resend: Resend = new Resend(components.resend, {
-  testMode: true
+  testMode: true,
 });
 
 export const sendTestEmail = internalMutation({
   handler: async (ctx) => {
     await resend.sendEmail(ctx, {
-      from: "Me <test@flickmart.app>",
-      to: "delivered@resend.dev",
-      subject: "Hi there",
-      html: "This is a test email from flickmart",
+      from: 'Me <test@flickmart.app>',
+      to: 'delivered@resend.dev',
+      subject: 'Hi there',
+      html: 'This is a test email from flickmart',
     });
   },
 });
@@ -29,8 +29,8 @@ export const sendEmailNotification = internalMutation({
   },
   handler: async (ctx, args) => {
     await resend.sendEmail(ctx, {
-      from: "Flickmart <support@flickmart.app>",
-      to: `delivered@resend.dev`,
+      from: 'Flickmart <support@flickmart.app>',
+      to: 'delivered@resend.dev',
       subject: args.subject,
       html: `<!DOCTYPE html>
 <html>

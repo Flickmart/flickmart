@@ -1,34 +1,35 @@
-"use client";
-import * as z from "zod";
-import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+'use client';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useQuery } from 'convex/react';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import * as z from 'zod';
+import Loader from '@/components/multipage/Loader';
+import BusinessSettings from '@/components/settings/business';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
-import BusinessSettings from "@/components/settings/business";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
-import Loader from "@/components/multipage/Loader";
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { useSidebar } from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
+
 const businessFormSchema = z.object({
-  businessName: z.string().min(1, "Business name is required"),
+  businessName: z.string().min(1, 'Business name is required'),
   description: z
     .string()
-    .min(10, "You must type a minimum of 10 characters")
-    .max(250, "You can only type a maximum of 250 characters"),
-  location: z.string().min(1, "Address is required"),
-  contactNumber: z.string().min(1, "Contact number is required"),
-  businessProfile: z.string().min(1, "Add a business logo"),
+    .min(10, 'You must type a minimum of 10 characters')
+    .max(250, 'You can only type a maximum of 250 characters'),
+  location: z.string().min(1, 'Address is required'),
+  contactNumber: z.string().min(1, 'Contact number is required'),
+  businessProfile: z.string().min(1, 'Add a business logo'),
 });
 
 type BusinessFormValues = z.infer<typeof businessFormSchema>;
@@ -40,27 +41,27 @@ export default function BusinessDetailsPage() {
   useEffect(() => {
     // When User store variable becomes defined
     if (userStore?.error?.status === 404) {
-      router.push("/create-store");
+      router.push('/create-store');
     }
   }, [userStore]);
 
   if (userStore?.error?.status === 404) {
     return (
-      <div className="h-screen grid place-items-center">
+      <div className="grid h-screen place-items-center">
         <Loader />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-4 w-full ">
-      <header className=" flex shadow-md h-20 px-4 items-center">
+    <div className="flex w-full flex-col gap-4">
+      <header className="flex h-20 items-center px-4 shadow-md">
         <ChevronLeft
-          className="cursor-pointer size-7"
+          className="size-7 cursor-pointer"
           onClick={() => router.back()}
         />
 
-        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Separator className="mr-2 h-4" orientation="vertical" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>

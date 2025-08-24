@@ -1,6 +1,6 @@
-import React from "react";
-import { Button } from "@/components/ui/button";
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle } from 'lucide-react';
+import React from 'react';
+import { Button } from '@/components/ui/button';
 
 interface ErrorMessageProps {
   title: string;
@@ -17,37 +17,37 @@ const ErrorMessage = ({
 }: ErrorMessageProps) => {
   return (
     <div className="flex flex-col items-center text-center">
-      <div className="flex items-center gap-2 mb-2">
+      <div className="mb-2 flex items-center gap-2">
         <AlertTriangle className="h-6 w-6 text-red-500" />
-        <h1 className="text-2xl md:text-3xl font-bold">{title}</h1>
+        <h1 className="font-bold text-2xl md:text-3xl">{title}</h1>
       </div>
 
       {errorCode && (
         <div className="mb-4">
-          <span className="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-semibold text-gray-700">
+          <span className="inline-block rounded-full bg-gray-100 px-3 py-1 font-semibold text-gray-700 text-sm">
             Error Code: {errorCode}
           </span>
         </div>
       )}
 
-      <p className="text-gray-500 mb-8 max-w-md leading-normal">
+      <p className="mb-8 max-w-md text-gray-500 leading-normal">
         {description}
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
-        <Button onClick={() => (window.location.href = "/")}>
+      <div className="flex flex-col gap-4 sm:flex-row">
+        <Button onClick={() => (window.location.href = '/')}>
           Return to Homepage
         </Button>
         <Button
-          variant="outline"
           onClick={() => {
             /* Implement contact logic or link */
           }}
+          variant="outline"
         >
           Contact Support
         </Button>
         {onReset && (
-          <Button variant="secondary" onClick={onReset}>
+          <Button onClick={onReset} variant="secondary">
             Try Again
           </Button>
         )}

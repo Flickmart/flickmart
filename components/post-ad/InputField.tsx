@@ -1,14 +1,14 @@
-"use client";
-import React from "react";
-import { FormControl, FormField, FormItem, FormLabel } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
-import { FormType, NameType } from "@/types/form";
+'use client';
+import type React from 'react';
+import type { FormType, NameType } from '@/types/form';
+import { FormControl, FormField, FormItem, FormLabel } from '../ui/form';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 type FieldType = {
   name: NameType;
   form: FormType;
-  type?: "textField" | "textArea" | "numberField";
+  type?: 'textField' | 'textArea' | 'numberField';
 };
 
 export default function InputField({
@@ -18,7 +18,7 @@ export default function InputField({
   setTextAreaLength,
   name,
   form,
-  type = "textField",
+  type = 'textField',
 }: FieldType & {
   val?: string;
   disabled?: boolean;
@@ -34,55 +34,55 @@ export default function InputField({
       control={form.control}
       name={name}
       render={({ field }) => {
-        let value = "";
-        if (typeof field.value === "string") {
+        let value = '';
+        if (typeof field.value === 'string') {
           value = val || field.value;
         }
 
         return (
-          <div className={`${type === "textArea" && "mt-5"}`}>
-            {type === "textArea" && (
-              <span className="text-xs text-gray-500  w-full flex justify-end">
+          <div className={`${type === 'textArea' && 'mt-5'}`}>
+            {type === 'textArea' && (
+              <span className="flex w-full justify-end text-gray-500 text-xs">
                 <span
-                  className={`${(textAreaLength ?? 0) > 900 ? "text-red-500" : ""}`}
+                  className={`${(textAreaLength ?? 0) > 900 ? 'text-red-500' : ''}`}
                 >
                   {textAreaLength}
                 </span>
                 /900
               </span>
             )}
-            <FormItem className={` `}>
+            <FormItem className={' '}>
               <FormControl>
-                {type === "textField" || type === "numberField" ? (
+                {type === 'textField' || type === 'numberField' ? (
                   <div>
                     <Input
-                      type={type === "numberField" ? "number" : undefined}
+                      className="lg:!text-lg w-full rounded-lg border border-gray-300 py-7 text-lg placeholder:text-gray-500 placeholder:capitalize lg:py-9"
                       disabled={disabled}
+                      placeholder={`${name === 'phone' ? '08123456789' : `${name}*`}`}
                       required
-                      className="w-full placeholder:capitalize  border lg:!text-lg  border-gray-300 rounded-lg  py-7 lg:py-9 text-lg placeholder:text-gray-500"
-                      placeholder={`${name === "phone" ? "08123456789" : `${name}*`}`}
+                      type={type === 'numberField' ? 'number' : undefined}
                       {...field}
                       value={value}
                     />
-                    <p className="py-3 font-medium  text-red-500">
+                    <p className="py-3 font-medium text-red-500">
                       {errors[name]?.message}
                     </p>
                   </div>
                 ) : (
                   <div>
                     <Textarea
-                      rows={7}
-                      required
+                      className="lg:!text-lg placeholder:text-gray-500 placeholder:text-lg placeholder:capitalize"
                       onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
                         setTextAreaLength?.(target.value.length);
                       }}
                       placeholder={`${name}*`}
-                      className="placeholder:capitalize  placeholder:text-lg   placeholder:text-gray-500 lg:!text-lg"
+                      required
+                      rows={7}
                       {...field}
                       value={val || value}
                     />
-                    <p className=" py-3 font-medium  text-red-500">
+                    <p className="py-3 font-medium text-red-500">
                       {errors[name]?.message}
                     </p>
                   </div>

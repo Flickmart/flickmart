@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
-export default function useNav(){
-    const [isVisible, setIsVisible] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-    
+export default function useNav() {
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
   function handleScroll() {
     if (window.scrollY > lastScrollY) {
       setIsVisible(false); // Hide on scroll down
@@ -14,9 +14,9 @@ export default function useNav(){
   }
 
   useEffect(() => {
-    addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
-  
+
   return isVisible;
 }

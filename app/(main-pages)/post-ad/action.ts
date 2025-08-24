@@ -5,7 +5,7 @@
 //   if (file) {
 //     // TODO: Replace with Convex implementation
 //     console.log("Image upload will be implemented with Convex");
-    
+
 //     // Return mock data to prevent UI from breaking
 //     return {
 //       fullPath: "placeholder-path"

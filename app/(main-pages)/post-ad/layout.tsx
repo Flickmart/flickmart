@@ -1,4 +1,4 @@
-import { Toaster } from "react-hot-toast";
+import { Toaster } from 'react-hot-toast';
 
 export default function RootLayout({
   children,
@@ -11,9 +11,9 @@ export default function RootLayout({
         position="top-center"
         toastOptions={{
           style: {
-            background: "gray",
-            color: "white",
-            textTransform: "capitalize",
+            background: 'gray',
+            color: 'white',
+            textTransform: 'capitalize',
           },
         }}
       />

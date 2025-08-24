@@ -1,4 +1,4 @@
-import { SessionType, UserType } from "./user";
+import type { SessionType, UserType } from './user';
 
 export type LoginType = (credentials: {
   email: string;

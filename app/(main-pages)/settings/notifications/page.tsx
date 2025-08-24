@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Switch } from "@/components/ui/switch";
+import { useMutation, useQuery } from 'convex/react';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
+import { api } from '@/convex/_generated/api';
 
 export default function NotificationsPage() {
   const [pushNotifications, setPushNotifications] = useState(true);
@@ -33,19 +33,19 @@ export default function NotificationsPage() {
   }, [user]);
 
   return (
-    <div className="flex flex-col w-full">
-      <header className="flex shadow-md  h-20 shrink-0 items-center   px-4">
-        {!isMobile ? (
-          <SidebarTrigger className="-ml-1" />
-        ) : (
+    <div className="flex w-full flex-col">
+      <header className="flex h-20 shrink-0 items-center px-4 shadow-md">
+        {isMobile ? (
           <>
             <ChevronLeft
-              className="cursor-pointer size-7"
+              className="size-7 cursor-pointer"
               onClick={() => router.back()}
             />
           </>
+        ) : (
+          <SidebarTrigger className="-ml-1" />
         )}
-        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Separator className="mr-2 h-4" orientation="vertical" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -59,13 +59,13 @@ export default function NotificationsPage() {
         </Breadcrumb>
       </header>
       <div className="space-y-4">
-        <div className="rounded-lg border p-4 py-6 space-y-4">
-          <h2 className="text-lg font-semibold">Notifications</h2>
+        <div className="space-y-4 rounded-lg border p-4 py-6">
+          <h2 className="font-semibold text-lg">Notifications</h2>
 
           <div className="flex items-center justify-between pt-4">
             <div>
               <p className="font-medium"> Notifications</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Show notifications
               </p>
             </div>
@@ -77,7 +77,7 @@ export default function NotificationsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="font-medium">Email Notifications</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Receive marketing & transactional emails
               </p>
             </div>
@@ -93,7 +93,7 @@ export default function NotificationsPage() {
           <div className="flex items-center justify-between pt-4">
             <div>
               <p className="font-medium">Push Notifications</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-muted-foreground text-sm">
                 Receive alerts on your device
               </p>
             </div>

@@ -1,5 +1,5 @@
-"use client";
-import CategoryItem from "@/components/CategoryItem";
+'use client';
+import { useMutation, useQuery } from 'convex/react';
 import {
   ArrowLeft,
   Bookmark,
@@ -8,13 +8,38 @@ import {
   LayoutGrid,
   LayoutPanelLeft,
   SearchSlash,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useReducer, useState } from 'react';
+import { SyncLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import CategoryItem from '@/components/CategoryItem';
+import Filters from '@/components/Filters';
+import SearchInput from '@/components/SearchInput';
+import SearchOverlay from '@/components/SearchOverlay';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import {
   Sidebar,
   SidebarContent,
@@ -24,35 +49,10 @@ import {
   SidebarHeader,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "@/components/ui/dropdown-menu";
-import { useReducer, useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { SyncLoader } from "react-spinners";
-import SearchInput from "@/components/SearchInput";
-import { Doc } from "@/convex/_generated/dataModel";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import SearchOverlay from "@/components/SearchOverlay";
-import Filters from "@/components/Filters";
-import { useFilters } from "@/hooks/useFilters";
+} from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
+import type { Doc } from '@/convex/_generated/dataModel';
+import { useFilters } from '@/hooks/useFilters';
 
 interface FilterObjectType {
   min: number;
@@ -62,34 +62,34 @@ interface FilterObjectType {
 }
 
 const subCategories = {
-  vehicles: ["car", "motorcycle", "tricycle", "buses"],
+  vehicles: ['car', 'motorcycle', 'tricycle', 'buses'],
   electronics: [
-    "hp",
-    "apple",
-    "lenovo",
-    "acer",
-    "samsung",
-    "xiaomi",
-    "asus",
-    "dell",
+    'hp',
+    'apple',
+    'lenovo',
+    'acer',
+    'samsung',
+    'xiaomi',
+    'asus',
+    'dell',
   ],
-  beauty: ["make up", "skin care", "soaps", "hair beauty", "gym equipment"],
+  beauty: ['make up', 'skin care', 'soaps', 'hair beauty', 'gym equipment'],
   fashion: [
-    "bags",
+    'bags',
     "men's clothing",
     "women's clothing",
     "men's shoe",
     "women's shoe",
-    "watches",
+    'watches',
   ],
-  homes: ["single room", "self contain", "flat", "duplex", "bungalow"],
+  homes: ['single room', 'self contain', 'flat', 'duplex', 'bungalow'],
   mobiles: [
-    "apple phones",
-    "android phones",
-    "tablet",
-    "phones & tablets accessories",
+    'apple phones',
+    'android phones',
+    'tablet',
+    'phones & tablets accessories',
   ],
-  pets: ["dogs", "cats", "pets accessories"],
+  pets: ['dogs', 'cats', 'pets accessories'],
 };
 
 const brandsOrSubCat = {
@@ -101,53 +101,53 @@ const brandsOrSubCat = {
       label: "women's wear",
     },
     {
-      label: "children cloth",
+      label: 'children cloth',
     },
   ],
   homes: [
     {
-      label: "single room",
+      label: 'single room',
     },
     {
-      label: "self contain",
+      label: 'self contain',
     },
     {
-      label: "flat",
+      label: 'flat',
     },
   ],
   beauty: [
     {
-      label: "make up",
+      label: 'make up',
     },
     {
-      label: "skin care",
+      label: 'skin care',
     },
     {
-      label: "soap",
+      label: 'soap',
     },
     {
-      label: "hair beauty",
+      label: 'hair beauty',
     },
   ],
   computers: [
     {
-      label: "hp",
-      image: "",
+      label: 'hp',
+      image: '',
     },
     {
-      label: "asus",
+      label: 'asus',
     },
     {
-      label: "acer",
+      label: 'acer',
     },
     {
-      label: "dell",
+      label: 'dell',
     },
     {
-      label: "lenovo",
+      label: 'lenovo',
     },
     {
-      label: "dell",
+      label: 'dell',
     },
   ],
 };
@@ -155,8 +155,8 @@ const brandsOrSubCat = {
 const initialState: FilterObjectType = {
   min: 0,
   max: 0,
-  location: "",
-  priceRange: "",
+  location: '',
+  priceRange: '',
 };
 
 function reducer(
@@ -164,13 +164,13 @@ function reducer(
   action: { type: string; payload: string | number }
 ) {
   switch (action.type) {
-    case "min":
+    case 'min':
       return { ...state, min: Number(action.payload) };
-    case "max":
+    case 'max':
       return { ...state, max: Number(action.payload) };
-    case "location":
+    case 'location':
       return { ...state, location: action.payload.toString() };
-    case "priceRange":
+    case 'priceRange':
       return { ...state, priceRange: action.payload.toString() };
     default:
       return state;
@@ -191,12 +191,12 @@ export default function DetailedCategoryPage() {
 
   // Get the search parameter
   const searchParams = useSearchParams();
-  const query = searchParams.get("query");
+  const query = searchParams.get('query');
   const search = useQuery(api.product.search, {
     ...filterState,
-    query: query || "",
-    type: "search",
-  }) as Array<Doc<"product">>;
+    query: query || '',
+    type: 'search',
+  }) as Array<Doc<'product'>>;
 
   const router = useRouter();
 
@@ -215,24 +215,24 @@ export default function DetailedCategoryPage() {
   }
 
   return (
-    <main className=" min-h-screen flex-col lg:flex-row flex w-screen ">
+    <main className="flex min-h-screen w-screen flex-col lg:flex-row">
       {isMobile && (
-        <div className="fixed left-0 right-0 z-30 bg-white w-screen shadow-sm pb-2">
-          <div className=" mt-7 mb-3 mr-5 ml-1  rounded-lg">
+        <div className="fixed right-0 left-0 z-30 w-screen bg-white pb-2 shadow-sm">
+          <div className="mt-7 mr-5 mb-3 ml-1 rounded-lg">
             <SearchOverlay
-              openSearch={openSearch}
               open={searchOpen}
-              query={query ?? ""}
+              openSearch={openSearch}
+              query={query ?? ''}
             />
             <div className="flex items-center justify-between gap-1">
-              <div className="hover:bg-gray-200 transition-all duration-300 ease-in-out rounded-full cursor-pointer p-2 mb-1.5 text-gray-600">
-                <ArrowLeft size={29} onClick={() => router.push("/")} />
+              <div className="mb-1.5 cursor-pointer rounded-full p-2 text-gray-600 transition-all duration-300 ease-in-out hover:bg-gray-200">
+                <ArrowLeft onClick={() => router.push('/')} size={29} />
               </div>
-              <div className=" w-full">
+              <div className="w-full">
                 <SearchInput
-                  openSearch={openSearch}
                   isOverlayOpen={searchOpen}
-                  query={query ?? ""}
+                  openSearch={openSearch}
+                  query={query ?? ''}
                 />
               </div>
             </div>
@@ -240,11 +240,11 @@ export default function DetailedCategoryPage() {
         </div>
       )}
       <Sidebar
-        className={` min-w-1/5 relative h-[calc(100vh-5rem)]  overflow-y-auto`}
+        className={'relative h-[calc(100vh-5rem)] min-w-1/5 overflow-y-auto'}
       >
         <SidebarHeader>
-          <div className="flex items-center pt-5 px-2 justify-between">
-            <h2 className="font-semibold text-xl px-3 text-flickmart-chat-orange">
+          <div className="flex items-center justify-between px-2 pt-5">
+            <h2 className="px-3 font-semibold text-flickmart-chat-orange text-xl">
               Filters
             </h2>
             {isMobile && <SidebarTrigger />}
@@ -271,10 +271,10 @@ export default function DetailedCategoryPage() {
               Filters
             </SidebarGroupLabel> */}
             <DropdownMenu>
-              <DropdownMenuTrigger className="px-5 w-full shadow-md py-2 flex justify-between items-center">
+              <DropdownMenuTrigger className="flex w-full items-center justify-between px-5 py-2 shadow-md">
                 <div className="flex flex-col items-start space-y-1">
                   <h2 className="font-semibold text-sm capitalize">
-                    {location || "select location"}
+                    {location || 'select location'}
                   </h2>
                   <span className="text-[10px] text-gray-500">All Nigeria</span>
                 </div>
@@ -284,10 +284,10 @@ export default function DetailedCategoryPage() {
                 <DropdownMenuLabel>Locations</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuRadioGroup
-                  value={location}
                   onValueChange={(value) =>
-                    dispatch({ type: "location", payload: value })
+                    dispatch({ type: 'location', payload: value })
                   }
+                  value={location}
                 >
                   <DropdownMenuRadioItem value="enugu">
                     Enugu
@@ -298,61 +298,61 @@ export default function DetailedCategoryPage() {
                 </DropdownMenuRadioGroup>
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="w-full text-sm p-5">
+            <div className="w-full p-5 text-sm">
               <h2 className="font-semibold">Add Price</h2>
-              <div className="mt-2 flex justify-between items-center">
-                <div className="w-5/12 flex flex-col items-start">
+              <div className="mt-2 flex items-center justify-between">
+                <div className="flex w-5/12 flex-col items-start">
                   <Label className="text-[10px] text-gray-700">Min</Label>
                   <Input
-                    value={min}
-                    type="text"
                     className="w-full border border-flickmart-chat-orange p-2"
                     onChange={(e) =>
-                      dispatch({ type: "min", payload: +e.target.value })
+                      dispatch({ type: 'min', payload: +e.target.value })
                     }
+                    type="text"
+                    value={min}
                   />
                 </div>
-                <div className="w-5/12 flex flex-col items-start">
+                <div className="flex w-5/12 flex-col items-start">
                   <Label className="text-[10px] text-gray-700">Max</Label>
                   <Input
-                    type="text"
                     className="w-full border border-flickmart-chat-orange p-2"
-                    value={max}
                     onChange={(e) =>
-                      dispatch({ type: "max", payload: +e.target.value })
+                      dispatch({ type: 'max', payload: +e.target.value })
                     }
+                    type="text"
+                    value={max}
                   />
                 </div>
               </div>
-              <div className="flex flex-col text-sm mt-6">
+              <div className="mt-6 flex flex-col text-sm">
                 <RadioGroup
-                  value={priceRange}
                   onValueChange={(value) =>
-                    dispatch({ type: "priceRange", payload: value })
+                    dispatch({ type: 'priceRange', payload: value })
                   }
+                  value={priceRange}
                 >
-                  <div className="flex justify-between items-center border-b py-1">
+                  <div className="flex items-center justify-between border-b py-1">
                     <div>
                       <h2>Below 100k</h2>
                       <span className="text-[10px]">452 ads</span>
                     </div>
                     <RadioGroupItem value="cheap" />
                   </div>
-                  <div className="flex justify-between items-center border-b py-1">
+                  <div className="flex items-center justify-between border-b py-1">
                     <div>
                       <h2>100k - 500k</h2>
                       <span className="text-[10px]">452 ads</span>
                     </div>
                     <RadioGroupItem value="affordable" />
                   </div>
-                  <div className="flex justify-between items-center border-b py-1">
+                  <div className="flex items-center justify-between border-b py-1">
                     <div>
                       <h2>500k - 1.5m</h2>
                       <span className="text-[10px]">452 ads</span>
                     </div>
                     <RadioGroupItem value="moderate" />
                   </div>
-                  <div className="flex justify-between items-center border-b py-1">
+                  <div className="flex items-center justify-between border-b py-1">
                     <div>
                       <h2>1.5m - 3.5m</h2>
                       <span className="text-[10px]">452 ads</span>
@@ -365,33 +365,33 @@ export default function DetailedCategoryPage() {
           </SidebarGroup>
         </SidebarContent>
       </Sidebar>
-      <section className="lg:block w-[95%] flex flex-col mx-auto mt-24 lg:mt-0 lg:w-4/6 text-sm pt-3">
-        <h2 className="text-lg lg:text-2xl capitalize p-3  lg:py-5 font-semibold">
+      <section className="mx-auto mt-24 flex w-[95%] flex-col pt-3 text-sm lg:mt-0 lg:block lg:w-4/6">
+        <h2 className="p-3 font-semibold text-lg capitalize lg:py-5 lg:text-2xl">
           {query} in Nigeria
         </h2>
-        <Filters isMobile={isMobile} handleFilterState={handleFilterState} />
+        <Filters handleFilterState={handleFilterState} isMobile={isMobile} />
         <div className="mt-3 flex flex-col lg:h-[90vh]">
-          <div className="flex px-3 mt-2 lg:px-0 justify-between items-center">
+          <div className="mt-2 flex items-center justify-between px-3 lg:px-0">
             <span>Sort By:</span>
             <div className="flex gap-2">
               <button>
-                <LayoutGrid className="text-flickmart-chat-orange h-5 w-5" />
+                <LayoutGrid className="h-5 w-5 text-flickmart-chat-orange" />
               </button>
               <button>
-                <LayoutPanelLeft className="text-gray-500 h-5 w-5" />
+                <LayoutPanelLeft className="h-5 w-5 text-gray-500" />
               </button>
             </div>
           </div>
           <div
-            className={`mt-2 ${search?.length && "grid"} py-3 grid-cols-2 md:grid-cols-3  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
+            className={`mt-2 ${search?.length && 'grid'} grid-cols-2 gap-5 py-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4`}
           >
             {search === undefined ? (
-              <div className="flex justify-center h-[45vh] items-center">
-                <SyncLoader loading={true} color="#FF8100" />
+              <div className="flex h-[45vh] items-center justify-center">
+                <SyncLoader color="#FF8100" loading={true} />
               </div>
             ) : search?.length === 0 ? (
-              <div className=" px-5 h-[45vh] items-center justify-start flex flex-col">
-                <span className="font-medium text-lg text-gray-500 py-5 ">
+              <div className="flex h-[45vh] flex-col items-center justify-start px-5">
+                <span className="py-5 font-medium text-gray-500 text-lg">
                   No result for "{query}"
                 </span>
 
@@ -409,41 +409,41 @@ export default function DetailedCategoryPage() {
                   <div className="relative" key={product._id}>
                     <Link href={`/product/${product._id}`}>
                       <div className="border">
-                        <div className="h-56 w-full overflow-hidden flex justify-center items-center">
+                        <div className="flex h-56 w-full items-center justify-center overflow-hidden">
                           {product.images.length && (
                             <Image
+                              alt="category image"
+                              height={500}
                               src={product.images[0]}
                               width={500}
-                              height={500}
-                              alt="category image"
                             />
                           )}
                         </div>
-                        <div className="p-2 mt-1 tracking-tight">
+                        <div className="mt-1 p-2 tracking-tight">
                           <h2 className="font-semibold">{product.title}</h2>
-                          <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">
+                          <span className="mt-1 font-semibold text-[12px] text-flickmart-chat-orange">
                             &#8358;{product.price.toLocaleString()}
                           </span>
                         </div>
                       </div>
                     </Link>
                     <div
-                      className="w-[95%] mx-auto right-0 left-0 absolute top-2 z-20 flex justify-between items-center"
+                      className="absolute top-2 right-0 left-0 z-20 mx-auto flex w-[95%] items-center justify-between"
                       onClick={async () => {
                         const saved = await saveProduct({
                           productId: product._id,
-                          type: "saved",
+                          type: 'saved',
                         });
 
-                        typeof saved === "object" && saved?.added
-                          ? toast.success("Item added to saved")
-                          : toast.success("Item removed from saved");
+                        typeof saved === 'object' && saved?.added
+                          ? toast.success('Item added to saved')
+                          : toast.success('Item removed from saved');
                       }}
                     >
-                      <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">
+                      <span className="rounded-sm bg-white px-2 py-0.5 font-semibold text-[12px] uppercase">
                         Hot
                       </span>
-                      <button className="bg-white rounded-full flex justify-center items-center p-1.5">
+                      <button className="flex items-center justify-center rounded-full bg-white p-1.5">
                         <Bookmark className="h-4 w-4" />
                       </button>
                     </div>

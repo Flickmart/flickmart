@@ -1,10 +1,10 @@
-import { ArrowLeft, X } from "lucide-react";
-import React, { useEffect, useRef, useState } from "react";
-import SearchInput from "./SearchInput";
-import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { motion } from "motion/react";
+import { useMutation, useQuery } from 'convex/react';
+import { ArrowLeft, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import SearchInput from './SearchInput';
 
 // const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
 
@@ -18,7 +18,7 @@ export default function SearchOverlay({
   openSearch: (val: boolean) => void;
 }) {
   const [autoSuggest, setAutoSuggest] = useState<Array<string>>([]);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchValue, setSearchValue] = useState<string>('');
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const router = useRouter();
@@ -27,12 +27,9 @@ export default function SearchOverlay({
     setAutoSuggest(values);
     setSearchValue(search);
   }
-  useEffect(
-    function () {
-      focusRef.current?.focus();
-    },
-    [open]
-  );
+  useEffect(() => {
+    focusRef.current?.focus();
+  }, [open]);
   useEffect(() => {
     if (retrievePreviousInputs?.error) {
       console.log(retrievePreviousInputs.error);
@@ -42,39 +39,39 @@ export default function SearchOverlay({
     <>
       {open && (
         <motion.div
-          initial={{ y: "100%", x: "-100%" }}
           animate={{ y: 0, x: 0 }}
+          className="fixed inset-0 z-40 flex min-h-screen flex-col bg-white py-3"
+          initial={{ y: '100%', x: '-100%' }}
           transition={{
             duration: 0.2,
-            type: "tween",
-            ease: "easeInOut",
+            type: 'tween',
+            ease: 'easeInOut',
           }}
-          className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
         >
-          <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">
+          <div className="flex items-center justify-between gap-3 px-3 py-3 text-gray-600 shadow-md">
             <ArrowLeft onClick={() => openSearch(false)} />
-            <div className="bg-gray-100 rounded-lg flex-grow">
+            <div className="flex-grow rounded-lg bg-gray-100">
               <SearchInput
-                updateAutoSuggest={updateAutoSuggest}
-                openSearch={openSearch}
-                query={query ?? ""}
                 isOverlayOpen={open}
+                openSearch={openSearch}
+                query={query ?? ''}
                 ref={focusRef}
+                updateAutoSuggest={updateAutoSuggest}
               />
             </div>
           </div>
           {autoSuggest?.length === 0 || !searchValue ? (
             <div className="flex-grow pt-3">
-              <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
+              <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
                 {(retrievePreviousInputs?.data?.length ?? 0) > 0
-                  ? "recent searches"
-                  : "no recent searches"}
+                  ? 'recent searches'
+                  : 'no recent searches'}
               </p>
               {retrievePreviousInputs?.data?.map((item) => {
                 return (
                   <div
+                    className="flex cursor-pointer items-center justify-between px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                     key={item._id}
-                    className="px-4 py-4 cursor-pointer flex justify-between items-center hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
                   >
                     <p
                       className="flex-grow"
@@ -86,7 +83,7 @@ export default function SearchOverlay({
                       {item.search}
                     </p>
                     <div
-                      className="text-gray-600 p-2 transition-all duration-300 ease-out flex justify-center rounded-full hover:bg-gray-200 cursor-pointer"
+                      className="flex cursor-pointer justify-center rounded-full p-2 text-gray-600 transition-all duration-300 ease-out hover:bg-gray-200"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteSearchInput({
@@ -102,17 +99,17 @@ export default function SearchOverlay({
             </div>
           ) : (
             <div className="flex-grow pt-3">
-              <p className="px-4 py-4 text-gray-500 text-xs font-medium capitalize">
-                {autoSuggest?.length > 0 && "suggestions"}
+              <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
+                {autoSuggest?.length > 0 && 'suggestions'}
               </p>
               {autoSuggest?.map((item, index) => (
                 <p
+                  className="px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
+                  key={index}
                   onClick={() => {
                     router.push(`/search?query=${item}`);
                     openSearch(false);
                   }}
-                  className="px-4 py-4 hover:bg-gray-100 transition-all duration-700 ease-in-out font-medium text-sm capitalize"
-                  key={index}
                 >
                   {item}
                 </p>

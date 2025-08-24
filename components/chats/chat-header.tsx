@@ -1,17 +1,18 @@
-import { Dispatch, SetStateAction } from "react";
-import { ChevronLeft, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
-import Link from "next/link";
+import { useMutation } from 'convex/react';
+import { ChevronLeft, Trash2 } from 'lucide-react';
+import Link from 'next/link';
+import type { Dispatch, SetStateAction } from 'react';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+
 interface ChatHeaderProps {
   toggleSidebar: () => void;
   activeChatData: {
     name: string;
-    image:string;
+    image: string;
   } | null;
   isTyping: boolean;
   isOnline?: boolean;
@@ -21,7 +22,7 @@ interface ChatHeaderProps {
   setSelectionMode: Dispatch<SetStateAction<boolean>>;
   selectedMessages: string[];
   setSelectedMessages: Dispatch<SetStateAction<string[]>>;
-  vendorId: Id<"users">;
+  vendorId: Id<'users'>;
 }
 
 export default function ChatHeader({
@@ -35,7 +36,7 @@ export default function ChatHeader({
   setSelectionMode,
   setSelectedMessages,
   selectedMessages,
-  vendorId
+  vendorId,
 }: ChatHeaderProps) {
   const deleteMessages = useMutation(api.chat.deleteMessages);
 
@@ -49,34 +50,34 @@ export default function ChatHeader({
     }
   };
   const handleDeleteMessages = async () => {
-    const promise =  deleteMessages({
-      messageIds: selectedMessages as Id<"message">[],
+    const promise = deleteMessages({
+      messageIds: selectedMessages as Id<'message'>[],
     });
     toast.promise(promise, {
-      loading: "Deleting messages...",
-      success: "Messages deleted successfully",
-      error: "Failed to delete messages",
+      loading: 'Deleting messages...',
+      success: 'Messages deleted successfully',
+      error: 'Failed to delete messages',
     });
     setSelectedMessages([]);
     setSelectionMode(false);
   };
   if (selectionMode) {
     return (
-      <div className="bg-flickmart/70 z-50 text-white p-3 flex items-center justify-between">
+      <div className="z-50 flex items-center justify-between bg-flickmart/70 p-3 text-white">
         <>
           <Button
-            variant="ghost"
             className="text-white hover:bg-flickmart/90"
             onClick={toggleSelectionMode}
+            variant="ghost"
           >
             Cancel
           </Button>
           <span>{selectedMessages.length} selected</span>
           <Button
-            variant="ghost"
             className="text-white hover:bg-flickmart/90"
-            onClick={handleDeleteMessages}
             disabled={selectedMessages.length === 0}
+            onClick={handleDeleteMessages}
+            variant="ghost"
           >
             <Trash2 size={20} />
           </Button>
@@ -86,48 +87,48 @@ export default function ChatHeader({
   }
 
   return (
-    <div className="p-2 flex items-center shadow-md z-10">
+    <div className="z-10 flex items-center p-2 shadow-md">
       <Button
-        variant="ghost"
-        size="icon"
         className="mr-2 text-white md:hidden"
         onClick={toggleSidebar}
+        size="icon"
+        variant="ghost"
       >
         <ChevronLeft className="h-6 w-6 text-black" />
       </Button>
 
-      <Link href={"/vendors/" + vendorId}>
+      <Link href={'/vendors/' + vendorId}>
         <div
-          className="flex items-center flex-1 cursor-pointer hover:bg-gray-100 rounded-md p-2 transition-colors"
+          className="flex flex-1 cursor-pointer items-center rounded-md p-2 transition-colors hover:bg-gray-100"
           // onClick={handleProfileToggle}
         >
           <Avatar className="h-10 w-10">
             <AvatarImage
-              src={activeChatData?.image}
               alt={activeChatData?.name}
+              src={activeChatData?.image}
             />
             <AvatarFallback className="bg-flickmart text-white">
-              {activeChatData?.name?.charAt(0) || "?"}
+              {activeChatData?.name?.charAt(0) || '?'}
             </AvatarFallback>
           </Avatar>
 
           <div className="ml-3 flex-1 truncate">
-            <h4 className="text-black text-md truncate font-medium">
+            <h4 className="truncate font-medium text-black text-md">
               {activeChatData?.name}
             </h4>
             <div className="flex items-center">
               {isTyping ? (
-                <p className="text-orange-500 text-sm truncate animate-pulse">
+                <p className="animate-pulse truncate text-orange-500 text-sm">
                   typing...
                 </p>
               ) : (
                 <div className="flex items-center">
                   {isOnline ? (
-                    <p className="text-flickmart-chat-orange text-sm truncate">
+                    <p className="truncate text-flickmart-chat-orange text-sm">
                       online
                     </p>
                   ) : (
-                    <p className="text-gray-500 text-sm truncate">offline</p>
+                    <p className="truncate text-gray-500 text-sm">offline</p>
                   )}
                 </div>
               )}

@@ -1,14 +1,14 @@
-import { internalMutation } from "./_generated/server";
-import { v } from "convex/values";
+import { v } from 'convex/values';
+import { internalMutation } from './_generated/server';
 
 export const updateTransactionStatus = internalMutation({
   args: {
-    transactionId: v.id("transactions"),
+    transactionId: v.id('transactions'),
     status: v.union(
-      v.literal("pending"),
-      v.literal("success"),
-      v.literal("failed"),
-      v.literal("cancelled")
+      v.literal('pending'),
+      v.literal('success'),
+      v.literal('failed'),
+      v.literal('cancelled')
     ),
   },
   handler: async (ctx, args) => {
@@ -21,7 +21,7 @@ export const updateTransactionStatus = internalMutation({
 
 export const updateWalletBalance = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     balance: v.number(),
   },
   handler: async (ctx, args) => {

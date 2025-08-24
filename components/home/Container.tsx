@@ -1,14 +1,14 @@
-import React from "react";
+import type React from 'react';
 
 export default function Container({
   children,
   className,
 }: {
   children: React.ReactNode;
-  className?: String;
+  className?: string;
 }) {
   return (
-    <div className={`min-h-[50vh] grid place-items-center ${className}`}>
+    <div className={`grid min-h-[50vh] place-items-center ${className}`}>
       {children}
     </div>
   );

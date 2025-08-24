@@ -1,8 +1,8 @@
-import Link from "next/link";
-import { Dispatch, useEffect } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { type Dispatch, useEffect } from 'react';
+import { api } from '@/convex/_generated/api';
 
 const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const router = useRouter();
@@ -10,31 +10,31 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
 
   useEffect(() => {
     if (userStore?.data) {
-      router.push("/post-ad");
+      router.push('/post-ad');
     }
   }, [userStore, router]);
 
   return (
     <div>
-      <h2 className="capitalize font-medium text-2xl mb-3 md:text-4xl">
+      <h2 className="mb-3 font-medium text-2xl capitalize md:text-4xl">
         Create your store
       </h2>
-      <p className="text-sm font-light text-flickmart-gray md:text-base">
-        Read our{" "}
-        <Link href="/privacy-policy" className="text-flickmart font-medium">
+      <p className="font-light text-flickmart-gray text-sm md:text-base">
+        Read our{' '}
+        <Link className="font-medium text-flickmart" href="/privacy-policy">
           Privacy Policy
         </Link>
-        . Tap agree and continue to accept the{" "}
-        <Link href="/terms-of-service" className="text-flickmart font-medium">
+        . Tap agree and continue to accept the{' '}
+        <Link className="font-medium text-flickmart" href="/terms-of-service">
           Terms of Service
-        </Link>{" "}
+        </Link>{' '}
       </p>
       <button
-        type="button"
+        className="mt-11 w-full max-w-[1000px] cursor-pointer rounded-full bg-flickmart py-4 font-bold text-sm text-white transition-all duration-300 hover:shadow-black/20 hover:shadow-lg"
         onClick={() => {
           setStage(2);
         }}
-        className="bg-flickmart text-white w-full max-w-[1000px] rounded-full py-4 text-sm mt-11 font-bold transition-all duration-300 hover:shadow-lg hover:shadow-black/20 cursor-pointer"
+        type="button"
       >
         Agree and Continue
       </button>

@@ -1,7 +1,7 @@
-"use client";
-import { useIsMobile } from "@/hooks/use-mobile";
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function CategoryItem({
   categoryName,
@@ -11,24 +11,24 @@ export default function CategoryItem({
   const isMobile = useIsMobile();
   return (
     <Link
+      className="block"
       href={
         isMobile
           ? `/categories?category=${categoryName}`
           : `/categories/${categoryName}`
       }
-      className="block"
     >
-      <div className="hover:cursor-pointer flex flex-col items-center gap-[6px] h-full md:gap-2">
-        <div className="bg-[#f4f7fa] rounded-lg capitalize flex flex-col w-full h-full items-center justify-center lg:rounded-xl">
+      <div className="flex h-full flex-col items-center gap-[6px] hover:cursor-pointer md:gap-2">
+        <div className="flex h-full w-full flex-col items-center justify-center rounded-lg bg-[#f4f7fa] capitalize lg:rounded-xl">
           <Image
-            src={`/${categoryName}.png`}
             alt={categoryName}
-            width={200}
+            className="h-3/5 w-3/4 object-contain"
             height={200}
-            className="h-3/5 w-3/4 object-contain "
+            src={`/${categoryName}.png`}
+            width={200}
           />
         </div>
-        <span className="font-bold text-gray-800 text-[13px] capitalize sm:text-sm md:text-base xl:text-xl">
+        <span className="font-bold text-[13px] text-gray-800 capitalize sm:text-sm md:text-base xl:text-xl">
           {categoryName}
         </span>
       </div>

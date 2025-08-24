@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useEffect } from 'react';
 
@@ -8,8 +8,14 @@ export function ServiceWorkerRegistration() {
       // Unregister any existing service workers first to avoid conflicts
       navigator.serviceWorker.getRegistrations().then((registrations) => {
         registrations.forEach((registration) => {
-          if (registration.scope.includes('sw.js') && registration.active?.scriptURL !== `${window.location.origin}/sw.js`) {
-            console.log('Unregistering old service worker:', registration.scope);
+          if (
+            registration.scope.includes('sw.js') &&
+            registration.active?.scriptURL !== `${window.location.origin}/sw.js`
+          ) {
+            console.log(
+              'Unregistering old service worker:',
+              registration.scope
+            );
             registration.unregister();
           }
         });
@@ -23,17 +29,20 @@ export function ServiceWorkerRegistration() {
         })
         .then((registration) => {
           console.log(' Service Worker registered successfully:', registration);
-          
+
           // Force update check
           registration.update();
-          
+
           // Check for updates
           registration.addEventListener('updatefound', () => {
             const newWorker = registration.installing;
             if (newWorker) {
               console.log('🔄 New service worker installing...');
               newWorker.addEventListener('statechange', () => {
-                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                if (
+                  newWorker.state === 'installed' &&
+                  navigator.serviceWorker.controller
+                ) {
                   console.log('🆕 New service worker available');
                 }
               });

@@ -1,19 +1,32 @@
-"use client";
-import CategoryItem from "@/components/CategoryItem";
-import { useProductsByCategoryOrSubCategory } from "@/hooks/useProdByCat";
+'use client';
+import { useMutation, useQuery } from 'convex/react';
 import {
   Bookmark,
   ChevronDown,
   ChevronRight,
   LayoutGrid,
   LayoutPanelLeft,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useReducer, useState } from 'react';
+import { SyncLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import CategoryItem from '@/components/CategoryItem';
+import Filters from '@/components/Filters';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
   Sidebar,
   SidebarContent,
@@ -23,23 +36,10 @@ import {
   SidebarHeader,
   SidebarTrigger,
   useSidebar,
-} from "@/components/ui/sidebar";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-} from "@/components/ui/dropdown-menu";
-import { useEffect, useReducer, useState } from "react";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Filters from "@/components/Filters";
-import { useFilters } from "@/hooks/useFilters";
-import { SyncLoader } from "react-spinners";
+} from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
+import { useFilters } from '@/hooks/useFilters';
+import { useProductsByCategoryOrSubCategory } from '@/hooks/useProdByCat';
 
 interface FilterObjectType {
   min: number;
@@ -51,8 +51,8 @@ interface FilterObjectType {
 const initialState: FilterObjectType = {
   min: 0,
   max: 0,
-  location: "",
-  priceRange: "",
+  location: '',
+  priceRange: '',
 };
 
 function reducer(
@@ -60,13 +60,13 @@ function reducer(
   action: { type: string; payload: string | number }
 ) {
   switch (action.type) {
-    case "min":
+    case 'min':
       return { ...state, min: Number(action.payload) };
-    case "max":
+    case 'max':
       return { ...state, max: Number(action.payload) };
-    case "location":
+    case 'location':
       return { ...state, location: action.payload.toString() };
-    case "priceRange":
+    case 'priceRange':
       return { ...state, priceRange: action.payload.toString() };
     default:
       return state;
@@ -75,9 +75,9 @@ function reducer(
 
 export default function DetailedCategoryPage() {
   const params = useParams();
-  let slug = params.slug as string;
+  const slug = params.slug as string;
   const searchParams = useSearchParams();
-  const query = searchParams.get("subcategory");
+  const query = searchParams.get('subcategory');
   const router = useRouter();
   const products = useProductsByCategoryOrSubCategory(slug);
   const [queryString, setQueryString] = useState(query);
@@ -90,13 +90,15 @@ export default function DetailedCategoryPage() {
     filterState: { category, minPrice, maxPrice, location: locationFilter },
     handleFilterState,
   } = useFilters();
+  
   const subcategories = useQuery(api.categories.getCategory, {
     category: slug ?? category,
   });
+
   const filteredProds = useQuery(api.product.getProductsByFilters, {
     ...state,
     category: slug,
-    subcategory: query ?? "",
+    subcategory: query ?? '',
     min: minPrice || min,
     max: maxPrice || max,
     location: locationFilter || location,
@@ -113,7 +115,7 @@ export default function DetailedCategoryPage() {
 
   // Get the products to display based on filter state
   const displayProducts = Object.values(state).some(
-    (value) => value !== 0 && value !== ""
+    (value) => value !== 0 && value !== ''
   )
     ? filteredProds
     : products;
@@ -127,28 +129,30 @@ export default function DetailedCategoryPage() {
 
   useEffect(() => {
     setQueryString(query);
-    if (!filteredProds) {
-      setLoading(true);
-    } else {
+    if (filteredProds) {
       setLoading(false);
+    } else {
+      setLoading(true);
     }
   }, [filteredProds, query]);
 
   if (loading) {
     return (
-      <div className="bg-black/50 flex justify-center items-center z-50 fixed  inset-0">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
         <SyncLoader color="#f81" />
       </div>
     );
   }
   return (
     <>
-      <main className=" min-h-screen flex w-screen">
+      <main className="flex min-h-screen w-screen">
         <Sidebar
-          className={`w-1/5 fixed top-20 left-0 h-[calc(100vh-5rem)] bg-white overflow-y-auto`}
+          className={
+            'fixed top-20 left-0 h-[calc(100vh-5rem)] w-1/5 overflow-y-auto bg-white'
+          }
         >
           <SidebarHeader>
-            <div className="flex items-center pt-5 px-2 justify-between">
+            <div className="flex items-center justify-between px-2 pt-5">
               <h2 className="font-semibold text-flickmart-chat-orange">
                 Subcategories
               </h2>
@@ -160,13 +164,13 @@ export default function DetailedCategoryPage() {
               <SidebarGroupLabel className="font-semibold text-sm capitalize">
                 {category || slug}
               </SidebarGroupLabel>
-              <SidebarGroupContent className="flex flex-col text-sm text-gray-800">
+              <SidebarGroupContent className="flex flex-col text-gray-800 text-sm">
                 {subcategories?.items.map((item, index) => (
                   <CategoryItem
-                    key={index}
-                    item={item}
-                    toggleSidebar={toggleSidebar}
                     category={slug || category}
+                    item={item}
+                    key={index}
+                    toggleSidebar={toggleSidebar}
                   />
                 ))}
                 {/* <div className="w-full flex justify-end text-[12px]">
@@ -181,10 +185,10 @@ export default function DetailedCategoryPage() {
                 Filters
               </SidebarGroupLabel>
               <DropdownMenu>
-                <DropdownMenuTrigger className="px-5 w-full shadow-md py-2 flex justify-between items-center">
+                <DropdownMenuTrigger className="flex w-full items-center justify-between px-5 py-2 shadow-md">
                   <div className="flex flex-col items-start space-y-1">
                     <h2 className="font-semibold text-sm capitalize">
-                      {location || "select location"}
+                      {location || 'select location'}
                     </h2>
                     <span className="text-[10px] text-gray-500">
                       All Nigeria
@@ -196,10 +200,10 @@ export default function DetailedCategoryPage() {
                   <DropdownMenuLabel>Locations</DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuRadioGroup
-                    value={location}
                     onValueChange={(value) =>
-                      dispatch({ type: "location", payload: value })
+                      dispatch({ type: 'location', payload: value })
                     }
+                    value={location}
                   >
                     <DropdownMenuRadioItem value="enugu">
                       Enugu
@@ -210,61 +214,61 @@ export default function DetailedCategoryPage() {
                   </DropdownMenuRadioGroup>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <div className="w-full text-sm p-5">
+              <div className="w-full p-5 text-sm">
                 <h2 className="font-semibold">Add Price</h2>
-                <div className="mt-2 flex justify-between items-center">
-                  <div className="w-5/12 flex flex-col items-start">
+                <div className="mt-2 flex items-center justify-between">
+                  <div className="flex w-5/12 flex-col items-start">
                     <Label className="text-[10px] text-gray-700">Min</Label>
                     <Input
-                      value={min}
-                      type="text"
                       className="w-full border border-flickmart-chat-orange p-2"
                       onChange={(e) =>
-                        dispatch({ type: "min", payload: +e.target.value })
+                        dispatch({ type: 'min', payload: +e.target.value })
                       }
+                      type="text"
+                      value={min}
                     />
                   </div>
-                  <div className="w-5/12 flex flex-col items-start">
+                  <div className="flex w-5/12 flex-col items-start">
                     <Label className="text-[10px] text-gray-700">Max</Label>
                     <Input
-                      type="text"
                       className="w-full border border-flickmart-chat-orange p-2"
-                      value={max}
                       onChange={(e) =>
-                        dispatch({ type: "max", payload: +e.target.value })
+                        dispatch({ type: 'max', payload: +e.target.value })
                       }
+                      type="text"
+                      value={max}
                     />
                   </div>
                 </div>
-                <div className="flex flex-col text-sm mt-6">
+                <div className="mt-6 flex flex-col text-sm">
                   <RadioGroup
-                    value={priceRange}
                     onValueChange={(value) =>
-                      dispatch({ type: "priceRange", payload: value })
+                      dispatch({ type: 'priceRange', payload: value })
                     }
+                    value={priceRange}
                   >
-                    <div className="flex justify-between items-center border-b py-1">
+                    <div className="flex items-center justify-between border-b py-1">
                       <div>
                         <h2>Below 100k</h2>
                         <span className="text-[10px]">452 ads</span>
                       </div>
                       <RadioGroupItem value="cheap" />
                     </div>
-                    <div className="flex justify-between items-center border-b py-1">
+                    <div className="flex items-center justify-between border-b py-1">
                       <div>
                         <h2>100k - 500k</h2>
                         <span className="text-[10px]">452 ads</span>
                       </div>
                       <RadioGroupItem value="affordable" />
                     </div>
-                    <div className="flex justify-between items-center border-b py-1">
+                    <div className="flex items-center justify-between border-b py-1">
                       <div>
                         <h2>500k - 1.5m</h2>
                         <span className="text-[10px]">452 ads</span>
                       </div>
                       <RadioGroupItem value="moderate" />
                     </div>
-                    <div className="flex justify-between items-center border-b py-1">
+                    <div className="flex items-center justify-between border-b py-1">
                       <div>
                         <h2>1.5m - 3.5m</h2>
                         <span className="text-[10px]">452 ads</span>
@@ -280,18 +284,18 @@ export default function DetailedCategoryPage() {
             </SidebarGroup>
           </SidebarContent>
         </Sidebar>
-        <section className="lg:block w-[95%] space-y-7 mt-3 mx-auto lg:w-4/6 text-sm pt-3">
+        <section className="mx-auto mt-3 w-[95%] space-y-7 pt-3 text-sm lg:block lg:w-4/6">
           <Filters
-            isMobile={isMobile}
-            handleFilterState={handleFilterState}
             category={category || slug}
+            handleFilterState={handleFilterState}
+            isMobile={isMobile}
             resetQuery={() => {
-              setQueryString("");
+              setQueryString('');
             }}
           />
-          <div className="mt-3 flex flex-col h-[90vh]">
+          <div className="mt-3 flex h-[90vh] flex-col">
             {/* <div className="flex justify-between items-center px-3"> */}
-            <h3 className="capitalize text-lg text-gray-800 font-semibold">
+            <h3 className="font-semibold text-gray-800 text-lg capitalize">
               {queryString}
             </h3>
             {/* <div className="flex gap-2">
@@ -304,13 +308,13 @@ export default function DetailedCategoryPage() {
               </div> */}
             {/* </div> */}
             <div
-              className={`mt-2 ${filteredProds?.length ? "grid" : "block"} py-3 grid-cols-2 md:grid-cols-3 flex-grow  lg:grid-cols-3 xl:grid-cols-4 gap-5`}
+              className={`mt-2 ${filteredProds?.length ? 'grid' : 'block'} flex-grow grid-cols-2 gap-5 py-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4`}
             >
               {
                 typeof filteredProds === undefined ? (
                   <p>loading...</p>
                 ) : filteredProds?.length === 0 ? (
-                  <div className=" h-[50vh] lg:text-xl text-base grid place-items-center w-full text-gray-500">
+                  <div className="grid h-[50vh] w-full place-items-center text-base text-gray-500 lg:text-xl">
                     <p>No product under this category</p>
                   </div>
                 ) : (
@@ -319,40 +323,40 @@ export default function DetailedCategoryPage() {
                       <div className="relative" key={product._id}>
                         <Link href={`/product/${product._id}`}>
                           <div className="border">
-                            <div className="h-56 w-full overflow-hidden flex justify-center items-center">
+                            <div className="flex h-56 w-full items-center justify-center overflow-hidden">
                               {product.images.length && (
                                 <Image
+                                  alt="category image"
+                                  height={500}
                                   src={product.images[0]}
                                   width={500}
-                                  height={500}
-                                  alt="category image"
                                 />
                               )}
                             </div>
-                            <div className="p-2 mt-1 tracking-tight">
+                            <div className="mt-1 p-2 tracking-tight">
                               <h2 className="font-semibold">{product.title}</h2>
-                              <span className="text-flickmart-chat-orange font-semibold text-[12px] mt-1">
+                              <span className="mt-1 font-semibold text-[12px] text-flickmart-chat-orange">
                                 &#8358;{product.price.toLocaleString()}
                               </span>
                             </div>
                           </div>
                         </Link>
                         <div
-                          className="w-[95%] mx-auto right-0 left-0 absolute top-2 z-20 flex justify-between items-center"
+                          className="absolute top-2 right-0 left-0 z-20 mx-auto flex w-[95%] items-center justify-between"
                           onClick={async () => {
                             const saved = await saveProduct({
                               productId: product._id,
-                              type: "saved",
+                              type: 'saved',
                             });
-                            typeof saved === "object" && saved?.added
-                              ? toast.success("Item added to saved")
-                              : toast.success("Item removed from saved");
+                            typeof saved === 'object' && saved?.added
+                              ? toast.success('Item added to saved')
+                              : toast.success('Item removed from saved');
                           }}
                         >
-                          <span className="px-2 py-0.5 font-semibold bg-white rounded-sm text-[12px] uppercase">
+                          <span className="rounded-sm bg-white px-2 py-0.5 font-semibold text-[12px] uppercase">
                             Hot
                           </span>
-                          <button className="bg-white rounded-full flex justify-center items-center p-1.5">
+                          <button className="flex items-center justify-center rounded-full bg-white p-1.5">
                             <Bookmark className="h-4 w-4" />
                           </button>
                         </div>

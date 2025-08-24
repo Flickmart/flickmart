@@ -1,12 +1,14 @@
-"use client";
+'use client';
 
-import { useQuery, useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useAuth } from "@clerk/nextjs";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { useAuth } from '@clerk/nextjs';
+import { useMutation, useQuery } from 'convex/react';
+import { useState } from 'react';
+import { ClipLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { Button } from '../ui/button';
 import {
   Dialog,
   DialogContent,
@@ -14,17 +16,15 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { ClipLoader } from "react-spinners";
-import { Id } from "@/convex/_generated/dataModel";
+} from '../ui/dialog';
 
 interface AdChargesProps {
-  plan: "basic" | "pro" | "premium";
+  plan: 'basic' | 'pro' | 'premium';
   isPending: boolean;
   formTrigger: () => Promise<boolean>;
   formSubmit: () => Promise<void>;
   images: Array<string>;
-  adId: Id<"product"> | undefined;
+  adId: Id<'product'> | undefined;
 }
 
 const PLAN_PRICES = {
@@ -44,10 +44,12 @@ export default function AdCharges({
   const [showChargeDialog, setShowChargeDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const { getToken } = useAuth();
-  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
+  const { user, isAuthenticated } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
   const wallet = useQuery(
     api.wallet.getWalletByUserId,
-    user ? { userId: user._id } : "skip"
+    user ? { userId: user._id } : 'skip'
   );
   const updateMetadata = useMutation(api.transactions.updateMetadata);
 
@@ -56,13 +58,13 @@ export default function AdCharges({
 
   const handlePostAdClick = async () => {
     if (!images.length) {
-      toast.error("Please add at least one image");
+      toast.error('Please add at least one image');
       return;
     }
     // First validate the form
     const isValid = await formTrigger();
     if (!isValid) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -72,33 +74,33 @@ export default function AdCharges({
 
   const handleCharge = async () => {
     if (!isAuthenticated) {
-      toast.error("Please log in to post an ad");
+      toast.error('Please log in to post an ad');
       return;
     }
     if (!wallet) {
-      toast.error("Please create a wallet first");
+      toast.error('Please create a wallet first');
       return;
     }
 
     if (balance < chargeAmount) {
-      toast.error("Insufficient wallet balance");
+      toast.error('Insufficient wallet balance');
       return;
     }
 
     try {
       setIsProcessing(true);
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        toast.error("Authentication failed");
+        toast.error('Authentication failed');
         return;
       }
 
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/wallet/charge-ad`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -111,9 +113,9 @@ export default function AdCharges({
       );
 
       const data = await response.json();
-      console.log("Charge response:", data, data.data.transactionId);
+      console.log('Charge response:', data, data.data.transactionId);
       if (data.status) {
-        toast.success("Payment successful! Posting your ad...");
+        toast.success('Payment successful! Posting your ad...');
         // Only submit the form after successful payment
         await formSubmit();
 
@@ -121,16 +123,16 @@ export default function AdCharges({
           updateMetadata({
             transactionId: data.data.transactionId,
             metadata: {
-              adId: adId,
-              plan: plan,
+              adId,
+              plan,
             },
           });
         }, 4000);
       } else {
-        toast.error(data.message || "Payment failed");
+        toast.error(data.message || 'Payment failed');
       }
     } catch (error) {
-      toast.error("Error processing payment");
+      toast.error('Error processing payment');
     } finally {
       setIsProcessing(false);
       setShowChargeDialog(false);
@@ -140,31 +142,31 @@ export default function AdCharges({
   return (
     <>
       <div className="w-full space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <span className="text-gray-600">Ad Posting Fee ({plan} plan)</span>
           <span className="font-semibold">
             ₦{chargeAmount.toLocaleString()}
           </span>
         </div>
-        <div className="flex justify-between items-center">
+        <div className="flex items-center justify-between">
           <span className="text-gray-600">Your Wallet Balance</span>
           <span className="font-semibold">₦{balance.toLocaleString()}</span>
         </div>
         <Button
-          onClick={handlePostAdClick}
-          className="w-full py-7 lg:py-9 lg:rounded-none text-xl bg-flickmart hover:scale-110 transition-all duration-300"
+          className="w-full bg-flickmart py-7 text-xl transition-all duration-300 hover:scale-110 lg:rounded-none lg:py-9"
           disabled={isPending || isProcessing}
+          onClick={handlePostAdClick}
           type="button"
         >
           {isPending || isProcessing ? (
             <ClipLoader color="#ffffff" />
           ) : (
-            "Post Ad"
+            'Post Ad'
           )}
         </Button>
       </div>
 
-      <Dialog open={showChargeDialog} onOpenChange={setShowChargeDialog}>
+      <Dialog onOpenChange={setShowChargeDialog} open={showChargeDialog}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Ad Posting</DialogTitle>
@@ -175,21 +177,21 @@ export default function AdCharges({
           </DialogHeader>
           <DialogFooter>
             <Button
-              variant="outline"
-              onClick={() => setShowChargeDialog(false)}
               disabled={isProcessing}
+              onClick={() => setShowChargeDialog(false)}
+              variant="outline"
             >
               Cancel
             </Button>
             <Button
-              onClick={handleCharge}
-              disabled={isProcessing}
               className="bg-flickmart"
+              disabled={isProcessing}
+              onClick={handleCharge}
             >
               {isProcessing ? (
-                <ClipLoader size={20} color="#ffffff" />
+                <ClipLoader color="#ffffff" size={20} />
               ) : (
-                "Confirm & Post"
+                'Confirm & Post'
               )}
             </Button>
           </DialogFooter>

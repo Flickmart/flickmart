@@ -1,9 +1,9 @@
-import { createUploadthing, type FileRouter } from "uploadthing/next";
+import { createUploadthing, type FileRouter } from 'uploadthing/next';
 
 const f = createUploadthing();
 
 // Simple auth function that always allows uploads
-const auth = () => ({ id: "fakeId" });
+const auth = () => ({ id: 'fakeId' });
 
 // FileRouter for your app, can contain multiple FileRoutes
 export const ourFileRouter = {
@@ -14,7 +14,7 @@ export const ourFileRouter = {
        * For full list of options and defaults, see the File Route API reference
        * @see https://docs.uploadthing.com/file-routes#route-config
        */
-      maxFileSize: "2MB",
+      maxFileSize: '2MB',
       maxFileCount: 50,
     },
   })
