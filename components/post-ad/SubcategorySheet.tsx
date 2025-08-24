@@ -19,10 +19,13 @@ export default function SubcategorySheet({
   setSubcategory: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
+  
   const subcategories = useQuery(api.categories.getCategory, {
     category,
   });
-  console.log(subcategories?.items[0].image);
+
+  console.log(subcategories?.items[0]?.image);
+  
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger className="capitalize">{children}</SheetTrigger>
@@ -56,7 +59,7 @@ export default function SubcategorySheet({
             })}
           </div>
         ) : (
-          <div>
+          <div className="flex h-[83vh] items-center justify-center">
             <Loader />
           </div>
         )}

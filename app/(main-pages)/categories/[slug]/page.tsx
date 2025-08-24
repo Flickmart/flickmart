@@ -90,9 +90,11 @@ export default function DetailedCategoryPage() {
     filterState: { category, minPrice, maxPrice, location: locationFilter },
     handleFilterState,
   } = useFilters();
+  
   const subcategories = useQuery(api.categories.getCategory, {
     category: slug ?? category,
   });
+
   const filteredProds = useQuery(api.product.getProductsByFilters, {
     ...state,
     category: slug,

@@ -12,6 +12,7 @@ import { useProductsByCategoryOrSubCategory } from '@/hooks/useProdByCat';
 export default function Subcategories() {
   const searchParams = useSearchParams();
   const category = searchParams.get('category');
+  
   const subcategories = useQuery(api.categories.getCategory, {
     category: category ?? 'homes',
   });
