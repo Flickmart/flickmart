@@ -131,6 +131,9 @@ importers:
       embla-carousel-react:
         specifier: ^8.5.2
         version: 8.6.0(react@19.0.0)
+      flickmart:
+        specifier: 'link:'
+        version: 'link:'
       html2canvas:
         specifier: ^1.4.1
         version: 1.4.1
