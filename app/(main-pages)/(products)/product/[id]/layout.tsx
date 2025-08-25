@@ -1,11 +1,14 @@
-import React from 'react'
+import MobileHeader from "@/components/MobileHeader";
+import React from "react";
 
-export default function RootLayout({children}: Readonly<{
-    children: React.ReactNode;
-  }>) {
+export default function Layout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <>
       {children}
     </>
-  )
+  );
 }

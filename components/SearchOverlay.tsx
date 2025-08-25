@@ -49,7 +49,7 @@ export default function SearchOverlay({
             type: "tween",
             ease: "easeInOut",
           }}
-          className="py-3  flex flex-col bg-white min-h-screen fixed z-40 inset-0 "
+          className="py-3  flex flex-col bg-white fixed z-40 inset-0 "
         >
           <div className="flex shadow-md text-gray-600 py-3 px-3 justify-between items-center gap-3">
             <ArrowLeft onClick={() => openSearch(false)} />

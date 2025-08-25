@@ -226,7 +226,7 @@ export default function DetailedCategoryPage() {
             />
             <div className="flex items-center justify-between gap-1">
               <div className="hover:bg-gray-200 transition-all duration-300 ease-in-out rounded-full cursor-pointer p-2 mb-1.5 text-gray-600">
-                <ArrowLeft size={29} onClick={() => router.push("/")} />
+                <ArrowLeft size={29} onClick={() => router.back()} />
               </div>
               <div className=" w-full">
                 <SearchInput
