@@ -1,6 +1,6 @@
-import { Bookmark } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import { Bookmark } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
 
 export default function ProductCard({
   image,
@@ -12,25 +12,25 @@ export default function ProductCard({
   price?: number;
 }) {
   return (
-    <div className=" flex flex-col justify-between  min-h-56  rounded-md border border-gray-200 relative">
-      <span className="absolute bg-white uppercase px-3 py-1 top-4 lg:top-5 lg:left-5 left-3 lg:text-base text-sm font-bold text-black rounded-sm">
+    <div className="relative flex min-h-56 flex-col justify-between rounded-md border border-gray-200">
+      <span className="absolute top-4 left-3 rounded-sm bg-white px-3 py-1 font-bold text-black text-sm uppercase lg:top-5 lg:left-5 lg:text-base">
         hot
       </span>
-      <span className=" p-1  bg-white absolute top-4 lg:top-5 lg:right-5 right-3 rounded-full">
+      <span className="absolute top-4 right-3 rounded-full bg-white p-1 lg:top-5 lg:right-5">
         <Bookmark className="fill-gray-500" />
       </span>
       {image ? (
         <Image
-          src={image || ""}
-          alt={title || ""}
-          width={500}
+          alt={title || ''}
+          className="h-48 rounded-md object-cover object-top p-0.5 lg:h-48"
           height={500}
-          className="h-48 lg:h-48 object-cover object-top  p-0.5 rounded-md "
+          src={image || ''}
+          width={500}
         />
       ) : null}
-      <div className="flex flex-col p-3 space-y-2 text-left text-gray-800 font-semibold">
-        <span className="lg:text-sm text-sm md:text-[13px]">{title}</span>
-        <span className="text-flickmart lg:text-sm text-xs">
+      <div className="flex flex-col space-y-2 p-3 text-left font-semibold text-gray-800">
+        <span className="text-sm md:text-[13px] lg:text-sm">{title}</span>
+        <span className="text-flickmart text-xs lg:text-sm">
           &#8358;{price?.toLocaleString()}
         </span>
       </div>

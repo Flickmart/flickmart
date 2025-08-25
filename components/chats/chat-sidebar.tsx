@@ -1,10 +1,11 @@
-import { Menu, Search, Archive, Image } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
-import { Id } from "@/convex/_generated/dataModel";
+import { Archive, Image, Menu, Search } from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRef, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { Input } from "@/components/ui/input";
+import type { Id } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
+import MobileNav from "../MobileNav";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
@@ -72,35 +73,36 @@ export default function ChatSidebar({
   // Content of the sidebar
   const SidebarContent = () => (
     <>
+      <MobileNav />
       {/* Sidebar Header */}
-      <div className="px-3 py-2 flex items-center justify-between md:mt-1 ">
+      <div className="flex items-center justify-between px-3 py-2 md:mt-1">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-3xl md:text-xl  ">
+          <h2 className="font-bold text-3xl text-flickmart md:text-xl">
             Chats
           </h2>
         </div>
-        <Menu className="md:block hidden" />
+        <Menu className="hidden md:block" />
       </div>
 
       {/* Search */}
-      <div className="p-2 my-3 md:my-0 ">
+      <div className="my-3 p-2 md:my-0">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-gray-400" />
           <Input
-            placeholder="Search"
-            className="pl-9 py-2 bg-flickmart-chat-gray rounded-lg"
-            value={searchQuery}
+            className="rounded-lg bg-flickmart-chat-gray py-2 pl-9"
             onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search"
             ref={searchInputRef}
+            value={searchQuery}
           />
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center space-x-3 px-2 mt-1">
+      <div className="mt-1 flex items-center space-x-3 px-2">
         <button
           className={cn(
-            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
+            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "all"
               ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
@@ -111,7 +113,7 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
+            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "unread"
               ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
@@ -120,14 +122,14 @@ export default function ChatSidebar({
         >
           Unread
           {totalUnread > 0 && (
-            <span className="absolute top-0 right-2 bg-orange-500 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+            <span className="absolute top-0 right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-white text-xs">
               {totalUnread}
             </span>
           )}
         </button>
         <button
           className={cn(
-            "py-1 px-4 text-sm font-medium rounded-3xl bg-flickmart-chat-gray",
+            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "archived"
               ? "border bg-[rgba(255,136,17,0.82)]"
               : "text-gray-500 hover:text-orange-500"
@@ -136,7 +138,7 @@ export default function ChatSidebar({
         >
           Archived
           {archivedCount > 0 && (
-            <span className="absolute top-0 right-1 bg-gray-400 text-white text-xs rounded-full h-5 min-w-5 flex items-center justify-center px-1">
+            <span className="absolute top-0 right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-gray-400 px-1 text-white text-xs">
               {archivedCount}
             </span>
           )}
@@ -144,7 +146,7 @@ export default function ChatSidebar({
       </div>
 
       {/* Chat List */}
-      <div className="overflow-y-auto h-[calc(100%-150px)] mt-4">
+      <div className="mt-4 h-[calc(100%-150px)] overflow-y-auto">
         {conversations.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             No conversations found
@@ -153,40 +155,40 @@ export default function ChatSidebar({
           <div>
             {conversations.map((chat) => (
               <div
-                key={chat.id}
                 className={cn(
-                  "flex items-center p-3 pl-4 cursor-pointer hover:bg-gray-100 border-b border-gray-200 ",
+                  "flex cursor-pointer items-center border-gray-200 border-b p-3 pl-4 hover:bg-gray-100",
                   currentConversationId === chat.id && "bg-orange-50"
                 )}
+                key={chat.id}
                 onClick={() => handleChatSelect(chat.id)}
               >
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={chat.imageUrl} alt={chat.name} />
+                  <AvatarImage alt={chat.name} src={chat.imageUrl} />
                   <AvatarFallback className="bg-flickmart text-white">
                     {chat?.name?.charAt(0) || "?"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="ml-3 flex-1 overflow-hidden">
-                  <div className="flex justify-between items-center !leading-normal">
+                  <div className="!leading-normal flex items-center justify-between">
                     <h3
                       className={cn(
-                        "font-medium truncate",
+                        "truncate font-medium",
                         chat.unread > 0 && "font-semibold"
                       )}
                     >
                       {chat.name}
                       {chat.archived && (
-                        <Archive className="h-3 w-3 inline ml-1 text-gray-400" />
+                        <Archive className="ml-1 inline h-3 w-3 text-gray-400" />
                       )}
                     </h3>
-                    <span className="text-xs text-gray-500">{chat.time}</span>
+                    <span className="text-gray-500 text-xs">{chat.time}</span>
                   </div>
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <p
                       className={cn(
-                        "text-sm truncate flex items-center gap-x-1",
+                        "flex items-center gap-x-1 truncate text-sm",
                         chat.unread > 0
-                          ? "text-gray-800 font-medium"
+                          ? "font-medium text-gray-800"
                           : "text-gray-600"
                       )}
                     >
@@ -196,7 +198,7 @@ export default function ChatSidebar({
                         : chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
-                      <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs">
                         {chat.unread}
                       </span>
                     )}
@@ -204,6 +206,8 @@ export default function ChatSidebar({
                 </div>
               </div>
             ))}
+            {/* Extra spacing at bottom for better scrolling */}
+            <div className="h-16" />
           </div>
         )}
       </div>
@@ -211,7 +215,7 @@ export default function ChatSidebar({
   );
 
   return (
-    <div className="w-full h-full bg-white">
+    <div className="h-full w-full bg-white">
       <SidebarContent />
     </div>
   );

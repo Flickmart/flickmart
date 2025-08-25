@@ -1,37 +1,51 @@
-import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle, XCircle, Slash } from "lucide-react";
+import { CheckCircle, Clock, Slash, XCircle } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface TransactionStatusBadgeProps {
   status: string;
 }
 
-export function TransactionStatusBadge({ status }: TransactionStatusBadgeProps) {
+export function TransactionStatusBadge({
+  status,
+}: TransactionStatusBadgeProps) {
   switch (status) {
-    case "pending":
+    case 'pending':
       return (
-        <Badge variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-50 text-xs">
-          <Clock className="h-3 w-3 mr-1" />
+        <Badge
+          className="bg-blue-50 text-blue-700 text-xs hover:bg-blue-50"
+          variant="secondary"
+        >
+          <Clock className="mr-1 h-3 w-3" />
           Pending
         </Badge>
       );
-    case "success":
+    case 'success':
       return (
-        <Badge variant="secondary" className="bg-blue-50 text-green-700 hover:bg-blue-50 text-xs">
-          <CheckCircle className="h-3 w-3 mr-1" />
+        <Badge
+          className="bg-blue-50 text-green-700 text-xs hover:bg-blue-50"
+          variant="secondary"
+        >
+          <CheckCircle className="mr-1 h-3 w-3" />
           Success
         </Badge>
       );
-    case "failed":
+    case 'failed':
       return (
-        <Badge variant="secondary" className="bg-blue-50 text-red-700 hover:bg-blue-50 text-xs">
-          <XCircle className="h-3 w-3 mr-1" />
+        <Badge
+          className="bg-blue-50 text-red-700 text-xs hover:bg-blue-50"
+          variant="secondary"
+        >
+          <XCircle className="mr-1 h-3 w-3" />
           Failed
         </Badge>
       );
-    case "cancelled":
+    case 'cancelled':
       return (
-        <Badge variant="secondary" className="bg-blue-50 text-yellow-700 hover:bg-blue-50 text-xs">
-          <Slash className="h-3 w-3 mr-1" />
+        <Badge
+          className="bg-blue-50 text-xs text-yellow-700 hover:bg-blue-50"
+          variant="secondary"
+        >
+          <Slash className="mr-1 h-3 w-3" />
           Cancelled
         </Badge>
       );

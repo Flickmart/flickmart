@@ -1,28 +1,28 @@
-"use client"
+'use client';
 
-import * as React from "react"
-import { Check, ChevronsUpDown, GalleryVerticalEnd } from "lucide-react"
+import { Check, ChevronsUpDown, GalleryVerticalEnd } from 'lucide-react';
+import * as React from 'react';
 
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from '@/components/ui/dropdown-menu';
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from '@/components/ui/sidebar';
 
 export function ModeSwitcher({
   modes,
   defaultMode,
 }: {
-  modes: { id: string; name: string; description: string }[]
-  defaultMode: string
+  modes: { id: string; name: string; description: string }[];
+  defaultMode: string;
 }) {
-  const [selectedMode, setSelectedMode] = React.useState(defaultMode)
+  const [selectedMode, setSelectedMode] = React.useState(defaultMode);
 
   return (
     <SidebarMenu>
@@ -30,22 +30,24 @@ export function ModeSwitcher({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
-              size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              size="lg"
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <GalleryVerticalEnd className="size-4" />
               </div>
               <div className="flex flex-col gap-0.5 leading-none">
                 <span className="font-semibold">Mode</span>
-                <span className="text-xs text-muted-foreground">{selectedMode}</span>
+                <span className="text-muted-foreground text-xs">
+                  {selectedMode}
+                </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width]"
             align="start"
+            className="w-[--radix-dropdown-menu-trigger-width]"
           >
             {modes.map((mode) => (
               <DropdownMenuItem
@@ -54,7 +56,9 @@ export function ModeSwitcher({
               >
                 <div className="flex flex-col">
                   <span>{mode.name}</span>
-                  <span className="text-xs text-muted-foreground">{mode.description}</span>
+                  <span className="text-muted-foreground text-xs">
+                    {mode.description}
+                  </span>
                 </div>
                 {mode.name === selectedMode && <Check className="ml-auto" />}
               </DropdownMenuItem>
@@ -63,6 +67,5 @@ export function ModeSwitcher({
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }
-

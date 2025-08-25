@@ -1,89 +1,88 @@
-"use client";
-import * as React from "react";
-import { useRouter } from "next/navigation";
-
-import { useSidebar } from "@/components/ui/sidebar";
-import Link from "next/link";
+'use client';
+import { useQuery } from 'convex/react';
 import {
-  Store,
-  MessageSquare,
-  ChevronLeft,
-  ChartNoAxesCombined,
-  UserPen,
-  ShoppingBag,
   Bell,
-} from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SearchForm } from "@/components/settings/search-form";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+  ChartNoAxesCombined,
+  ChevronLeft,
+  MessageSquare,
+  ShoppingBag,
+  Store,
+  UserPen,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import * as React from 'react';
+import { SearchForm } from '@/components/settings/search-form';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useSidebar } from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
 
 const data = {
   navMain: [
     {
-      title: "Account Settings",
+      title: 'Account Settings',
       items: [
         {
-          title: "Profile",
+          title: 'Profile',
           icon: UserPen,
-          description: "Manage your personal details",
-          url: "/settings/personal",
+          description: 'Manage your personal details',
+          url: '/settings/personal',
         },
       ],
     },
     {
-      title: "Store Settings",
+      title: 'Store Settings',
       items: [
         {
-          title: "Products",
+          title: 'Products',
           icon: ShoppingBag,
-          description: "View and edit your products",
-          url: "/settings/products",
+          description: 'View and edit your products',
+          url: '/settings/products',
         },
       ],
     },
     {
-      title: "",
+      title: '',
       items: [
         {
-          title: "Store",
+          title: 'Store',
           icon: Store,
-          description: "Manage your store details",
-          url: "/settings/business",
+          description: 'Manage your store details',
+          url: '/settings/business',
         },
       ],
     },
     {
-      title: "Performance",
+      title: 'Performance',
       items: [
         {
-          title: "Analytics",
+          title: 'Analytics',
           icon: ChartNoAxesCombined,
-          description: "Track your store performance",
-          url: "/settings/analytics",
+          description: 'Track your store performance',
+          url: '/settings/analytics',
         },
       ],
     },
     {
-      title: "Notification Preferences",
+      title: 'Notification Preferences',
       items: [
         {
-          title: "Notifications",
+          title: 'Notifications',
           icon: Bell,
-          description: "Control alerts preferences.",
-          url: "/settings/notifications",
+          description: 'Control alerts preferences.',
+          url: '/settings/notifications',
         },
       ],
     },
     {
-      title: "Support",
-      url: "/settings/support",
+      title: 'Support',
+      url: '/settings/support',
       items: [
         {
-          title: "Contact Support",
+          title: 'Contact Support',
           icon: MessageSquare,
-          description: "Get help with your account",
-          url: "/contact",
+          description: 'Get help with your account',
+          url: '/contact',
         },
       ],
     },
@@ -91,7 +90,7 @@ const data = {
 };
 
 export default function SettingsPage() {
-  const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState('');
   const { isMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
   const user = useQuery(api.users.current);
@@ -120,53 +119,53 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen pb-16 ">
-      <div className="  bg-white">
+    <div className="flex min-h-screen w-full flex-col pb-16">
+      <div className="bg-white">
         {isMobile && (
-          <div className=" text-gray-600 flex items-center px-3 gap-2 h-[10vh] shadow-md ">
+          <div className="flex h-[10vh] items-center gap-2 px-3 text-gray-600 shadow-md">
             <div
-              onClick={() => router.push("/")}
-              className=" hover:bg-gray-100 transition-all duration-200 rounded-full  p-2"
+              className="rounded-full p-2 transition-all duration-200 hover:bg-gray-100"
+              onClick={() => router.push('/')}
             >
               <ChevronLeft size={30} />
             </div>
-            <h2 className="text-lg font-medium">Settings</h2>
+            <h2 className="font-medium text-lg">Settings</h2>
           </div>
         )}
-        <div className="flex py-5 p-3 gap-2 items-center">
-          <Link href="/settings/personal/update" className="flex gap-2 ">
+        <div className="flex items-center gap-2 p-3 py-5">
+          <Link className="flex gap-2" href="/settings/personal/update">
             <Avatar className="size-12 rounded-full">
-              <AvatarImage src={user?.imageUrl} alt={user?.name} />
+              <AvatarImage alt={user?.name} src={user?.imageUrl} />
               <AvatarFallback className="rounded-full">
-                {user?.name.split(" ").map((item) => item[0]?.toUpperCase())}
+                {user?.name.split(' ').map((item) => item[0]?.toUpperCase())}
               </AvatarFallback>
             </Avatar>
-            <div className="grid flex-1 text-left  text-sm leading-tight">
-              <span className="truncate text-lg capitalize  font-semibold">
+            <div className="grid flex-1 text-left text-sm leading-tight">
+              <span className="truncate font-semibold text-lg capitalize">
                 {user?.name}
               </span>
-              <span className="truncate text-xs font-medium text-gray-600">
-                {"@" + user?.username || "No username"}
+              <span className="truncate font-medium text-gray-600 text-xs">
+                {'@' + user?.username || 'No username'}
               </span>
             </div>
           </Link>
         </div>
         <SearchForm onSearch={handleSearch} />
       </div>
-      <div className="scrollbar-none flex flex-col  p-5 gap-7 flex-grow  ">
+      <div className="scrollbar-none flex flex-grow flex-col gap-7 p-5">
         {filteredNavMain.map((group) => (
           <div className="space-y-2" key={group.title}>
-            <h2 className="text-gray-600 text-sm font-medium">{group.title}</h2>
+            <h2 className="font-medium text-gray-600 text-sm">{group.title}</h2>
             <div>
               {group.items.map((item) => (
-                <Link key={item.title} href={item.url}>
-                  <div className="flex items-center gap-2 hover:bg-gray-100 hover:rounded-xl  hover:p-3 transition-all duration-300">
+                <Link href={item.url} key={item.title}>
+                  <div className="flex items-center gap-2 transition-all duration-300 hover:rounded-xl hover:bg-gray-100 hover:p-3">
                     <item.icon className="text-gray-800" size={30} />
-                    <div className="flex flex-col text-sm z-10 ">
-                      <span className="text-base font-medium">
+                    <div className="z-10 flex flex-col text-sm">
+                      <span className="font-medium text-base">
                         {item.title}
                       </span>
-                      <span className="text-muted-foreground leading-tight text-sm">
+                      <span className="text-muted-foreground text-sm leading-tight">
                         {item.description}
                       </span>
                     </div>

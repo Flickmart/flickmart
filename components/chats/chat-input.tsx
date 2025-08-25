@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
-import { Send, Paperclip, Camera, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
-import { Spinner } from "@/components/Spinner";
+import { Camera, Paperclip, Send, X } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { Spinner } from '@/components/Spinner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 interface ChatInputProps {
   input: string;
@@ -44,76 +44,76 @@ export default function ChatInput({
   };
 
   return (
-    <div className="fixed bottom-0 md:left-[320px] left-0 right-0 bg-background border-t z-10 md:mb-0">
+    <div className="fixed right-0 bottom-0 left-0 z-10 border-t bg-background md:left-[320px] md:mb-0">
       {isUploading && (
-        <div className="flex justify-center items-center p-2 bg-orange-50">
-          <Spinner size="sm" className="mr-2" />
-          <span className="text-sm text-orange-500">Uploading images...</span>
+        <div className="flex items-center justify-center bg-orange-50 p-2">
+          <Spinner className="mr-2" size="sm" />
+          <span className="text-orange-500 text-sm">Uploading images...</span>
         </div>
       )}
       {selectedImages && selectedImages.length > 0 && (
-        <div className="flex gap-2 p-2 overflow-x-auto">
+        <div className="flex gap-2 overflow-x-auto p-2">
           {selectedImages?.map((image, index) => (
-            <div key={index} className="relative">
-              <div className="w-20 h-20 relative">
+            <div className="relative" key={index}>
+              <div className="relative h-20 w-20">
                 <Image
-                  src={URL.createObjectURL(image)}
                   alt={`Selected image ${index + 1}`}
+                  className="rounded-md object-cover"
                   fill
-                  className="object-cover rounded-md"
+                  src={URL.createObjectURL(image)}
                 />
               </div>
               <button
+                className="-top-2 -right-2 absolute rounded-full bg-red-500 p-1 hover:bg-red-600"
                 onClick={() => removeImage(index)}
-                className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1 hover:bg-red-600"
               >
-                <X className="w-3 h-3 text-white" />
+                <X className="h-3 w-3 text-white" />
               </button>
             </div>
           ))}
         </div>
       )}
-      <form onSubmit={handleSubmit} className="flex items-center space-x-2 p-3">
+      <form className="flex items-center space-x-2 p-3" onSubmit={handleSubmit}>
         {extraIcons && (
           <>
-            <label htmlFor="open-camera" className="cursor-pointer">
+            <label className="cursor-pointer" htmlFor="open-camera">
               <Camera className="h-6 w-6 text-flickmart" />
             </label>
             <input
-              type="file"
-              id="open-camera"
-              className="hidden"
               accept="image/*"
-              capture={isMobile ? "environment" : undefined}
+              capture={isMobile ? 'environment' : undefined}
+              className="hidden"
+              id="open-camera"
               onChange={handleFileChange}
+              type="file"
             />
             <Input
-              type="file"
+              accept="image/*"
               className="hidden"
               id="file-upload"
-              accept="image/*"
               multiple
               onChange={handleFileChange}
+              type="file"
             />
-            <label htmlFor="file-upload" className="cursor-pointer">
-              <Paperclip className="text-flickmart w-6 h-6" />
+            <label className="cursor-pointer" htmlFor="file-upload">
+              <Paperclip className="h-6 w-6 text-flickmart" />
             </label>
           </>
         )}
         <Input
-          value={input}
+          className="flex-1"
+          disabled={isUploading}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message"
-          className="flex-1 rounded-full"
-          disabled={isUploading}
+          value={input}
         />
         <Button
-          type="submit"
-          size="icon"
+          className="bg-orange-500 hover:bg-orange-600"
           disabled={
             (!input.trim() && selectedImages?.length === 0) || isUploading
           }
-          className="bg-orange-500 hover:bg-orange-600"
+          size="icon"
+          type="submit"
         >
           <Send className="h-5 w-5" />
         </Button>

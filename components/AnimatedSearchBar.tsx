@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { cn } from "@/lib/utils";
-import { Input } from "./ui/input";
+import { useEffect, useState } from 'react';
+import { cn } from '@/lib/utils';
+import { Input } from './ui/input';
 
 const AnimatedSearchBar = ({
   handleSearch,
@@ -20,7 +20,7 @@ const AnimatedSearchBar = ({
   return (
     <div
       className={cn(
-        "rounded-md flex items-center origin-right sm:h-12 absolute w-full right-0 bg-gray-200 scale-x-0",
+        'absolute right-0 flex w-full origin-right scale-x-0 items-center rounded-md bg-gray-200 sm:h-12',
         {
           expand: isExpanded,
           contract: !isExpanded && userInteractionOccurred,
@@ -28,10 +28,10 @@ const AnimatedSearchBar = ({
       )}
     >
       <Input
+        className="flex h-10 w-full origin-right rounded-md bg-transparent px-3 py-2 text-sm outline-none ring-offset-background file:border-0 file:bg-transparent file:font-medium file:text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         onChange={(e) => handleSearch(e.target.value)}
-        type="text"
         placeholder={placeholder}
-        className="flex h-10 w-full rounded-md bg-transparent px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground outline-none focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 origin-right"
+        type="text"
       />
     </div>
   );

@@ -17,13 +17,15 @@ export default function ChatPage() {
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>("all");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  
+  const [, setSidebarOpen] = useState(false);
+
   // Get URL parameters for vendor chat initiation
-  const searchParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+  const searchParams = new URLSearchParams(
+    typeof window !== "undefined" ? window.location.search : ""
+  );
   const vendorId = searchParams.get("vendorId") as Id<"users"> | null;
   const productId = searchParams.get("productId") as Id<"product"> | null;
-  
+
   // Fetch user's conversations
   const conversations = useQuery(
     api.chat.getConversations,
@@ -154,7 +156,7 @@ export default function ChatPage() {
           // Validate that vendorId is different from current user
           if (vendorId === user._id) {
             toast.error("Cannot start conversation with yourself");
-            router.replace('/chat');
+            router.replace("/chat");
             return;
           }
 
@@ -172,7 +174,12 @@ export default function ChatPage() {
             console.log("Found existing conversation:", targetConversationId);
           } else {
             // Create new conversation
-            console.log("Creating new conversation between", user._id, "and", vendorId);
+            console.log(
+              "Creating new conversation between",
+              user._id,
+              "and",
+              vendorId
+            );
             targetConversationId = await startConversation({
               user1Id: user._id,
               user2Id: vendorId,
@@ -181,12 +188,14 @@ export default function ChatPage() {
           }
 
           // Navigate to the conversation with product parameters
-          router.replace(`/chat/${targetConversationId}?productId=${productId}`);
+          router.replace(
+            `/chat/${targetConversationId}?productId=${productId}`
+          );
         } catch (error) {
           console.error("Failed to start conversation with vendor:", error);
           toast.error("Failed to start conversation with vendor");
           // Remove query params and show error
-          router.replace('/chat');
+          router.replace("/chat");
         }
       }
     };
@@ -199,7 +208,12 @@ export default function ChatPage() {
 
   // On desktop, redirect to first conversation if available (only if no vendor chat)
   useEffect(() => {
-    if (!vendorId && conversations && conversations.length > 0 && window.innerWidth >= 768) {
+    if (
+      !vendorId &&
+      conversations &&
+      conversations.length > 0 &&
+      window.innerWidth >= 768
+    ) {
       router.replace(`/chat/${conversations[0]._id}`);
     }
   }, [conversations, router, vendorId]);
@@ -232,7 +246,7 @@ export default function ChatPage() {
           conversations={filteredConversations}
         />
       </div>
-      
+
       {/* Desktop welcome message */}
       <div className="hidden md:flex flex-1 items-center justify-center">
         <div className="text-center">
@@ -240,13 +254,11 @@ export default function ChatPage() {
             Welcome to Chat
           </h2>
           <p className="text-gray-500">
-            {conversations === undefined ? (
-              "Loading conversations..."
-            ) : conversations.length === 0 ? (
-              "No conversations yet. Start a new conversation!"
-            ) : (
-              "Select a conversation to start chatting"
-            )}
+            {conversations === undefined
+              ? "Loading conversations..."
+              : conversations.length === 0
+                ? "No conversations yet. Start a new conversation!"
+                : "Select a conversation to start chatting"}
           </p>
         </div>
       </div>

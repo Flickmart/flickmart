@@ -23,7 +23,8 @@
       "@/*": ["./*"],
       "@schema": ["./db/schema"],
       "@db": ["./db/index.ts"]
-    }
+    },
+    "strictNullChecks": true
   },
   "include": [
     "next-env.d.ts",

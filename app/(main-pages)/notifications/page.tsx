@@ -1,18 +1,23 @@
-"use client";
+'use client';
 
-import MobileHeader from "@/components/MobileHeader";
-import Day from "@/components/notifications/Day";
-import { useState, useEffect, JSX } from "react";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { formatDistanceToNow } from "date-fns";
-import { Spinner } from "@/components/Spinner";
-import { toast } from "sonner";
+import { useMutation, useQuery } from 'convex/react';
+import { formatDistanceToNow } from 'date-fns';
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+  AlarmClock,
+  Banknote,
+  Bell,
+  ChevronDown,
+  Megaphone,
+  MessageCircle,
+  MessageSquareText,
+  ShoppingBag,
+  ThumbsUp,
+} from 'lucide-react';
+import { type JSX, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import MobileHeader from '@/components/MobileHeader';
+import Day from '@/components/notifications/Day';
+import { Spinner } from '@/components/Spinner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,12 +28,17 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
-import { useUser } from "@clerk/nextjs";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { cn } from "@/lib/utils";
-import { AlarmClock, Bell, ChevronDown, Megaphone, MessageCircle, MessageSquareText, ShoppingBag, ThumbsUp } from "lucide-react";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { api } from '@/convex/_generated/api';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { cn } from '@/lib/utils';
+
 export interface Notification {
   icon: string;
   text: string;
@@ -42,72 +52,87 @@ export interface Notification {
 
 const getIconForType = (type: string) => {
   switch (type) {
-    case "new_message":
-      return "/image-group.png";
-    case "new_like":
-      return "/checkmark.png";
-    case "new_comment":
-      return "/image-group.png";
-    case "new_sale":
-      return "/checkmark.png";
-    case "advertisement":
-      return "/image-group.png";
-    case "reminder":
-      return "/image-group.png";
+    case 'new_message':
+      return '/image-group.png';
+    case 'new_like':
+      return '/checkmark.png';
+    case 'new_comment':
+      return '/image-group.png';
+    case 'new_sale':
+      return '/checkmark.png';
+    case 'advertisement':
+      return '/image-group.png';
+    case 'reminder':
+      return '/image-group.png';
     default:
-      return "/image-group.png";
+      return '/image-group.png';
   }
 };
 
 type NotificationType =
-  | "all"
-  | "new_message"
-  | "new_like"
-  | "new_comment"
-  | "new_sale"
-  | "advertisement"
-  | "reminder";
+  | 'all'
+  | 'new_message'
+  | 'new_like'
+  | 'new_comment'
+  | 'new_sale'
+  | 'advertisement'
+  | 'reminder'
+  | 'escrow_funded'
+  | 'escrow_released'
+  | 'completion_confirmed';
 
-  const notificationLabels: Record<NotificationType, string> = {
-    all: "All Types",
-    new_message: "Messages",
-    new_like: "Likes",
-    new_comment: "Comments",
-    new_sale: "Sales",
-    advertisement: "Ads",
-    reminder: "Reminders",
+const notificationLabels: Record<NotificationType, string> = {
+  all: 'All Types',
+  new_message: 'Messages',
+  new_like: 'Likes',
+  new_comment: 'Comments',
+  new_sale: 'Sales',
+  advertisement: 'Ads',
+  reminder: 'Reminders',
+  escrow_funded: 'Payment made',
+  escrow_released: 'Payment released',
+  completion_confirmed: 'Confirm Transaction',
 };
-  
+
 // icons for each notification type
 const notificationIcons: Record<NotificationType, JSX.Element> = {
-  all: <Bell className="w-5 h-5" />,
-  new_message: <MessageCircle className="w-5 h-5" />,
-  new_like: <ThumbsUp className="w-5 h-5" />,
-  new_comment: <MessageSquareText className="w-5 h-5" />,
-  new_sale: <ShoppingBag className="w-5 h-5" />,
-  advertisement: <Megaphone className="w-5 h-5" />,
-  reminder: <AlarmClock className="w-5 h-5" />,
+  all: <Bell className="h-5 w-5" />,
+  new_message: <MessageCircle className="h-5 w-5" />,
+  new_like: <ThumbsUp className="h-5 w-5" />,
+  new_comment: <MessageSquareText className="h-5 w-5" />,
+  new_sale: <ShoppingBag className="h-5 w-5" />,
+  advertisement: <Megaphone className="h-5 w-5" />,
+  reminder: <AlarmClock className="h-5 w-5" />,
+  escrow_funded: <Banknote className="h-5 w-5" />,
+  escrow_released: <Banknote className="h-5 w-5" />,
+  completion_confirmed: <Banknote className="h-5 w-5" />,
 };
 
 const Page = () => {
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const [activeTab, setActiveTab] = useState<"all" | "unread">("all");
-  const [selectedType, setSelectedType] = useState<NotificationType>("all");
+  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [selectedType, setSelectedType] = useState<NotificationType>('all');
   const [open, setOpen] = useState(false); // Track popover open state
 
   const options: NotificationType[] = [
-    "all",
-    "new_message",
-    "new_like",
-    "new_comment",
-    "new_sale",
-    "advertisement",
-    "reminder",
+    'all',
+    'new_message',
+    'new_like',
+    'new_comment',
+    'new_sale',
+    'advertisement',
+    'reminder',
+    'escrow_funded',
+    'escrow_released',
+    'completion_confirmed',
   ];
 
-  const user = useUser();
-  const { user: convexUser, isLoading: authLoading, isAuthenticated } = useAuthUser();
+  const {
+    user: convexUser,
+    isLoading: authLoading,
+    isAuthenticated,
+  } = useAuthUser();
   const allNotifications =
     useQuery(
       api.notifications.getNotifications,
@@ -115,44 +140,49 @@ const Page = () => {
         ? {
             userId: convexUser?._id,
           }
-        : "skip"
+        : 'skip'
     ) || [];
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
+  const unreadNotificationsByReadStatus =
+    useQuery(api.notifications.getUnreadNotificationsByReadStatus) || [];
   const markAllAsRead = useMutation(
     api.notifications.markAllNotificationsAsRead
+  );
+  const markAllAsViewed = useMutation(
+    api.notifications.markAllNotificationsAsViewed
   );
   const deleteAllNotifications = useMutation(
     api.notifications.deleteAllNotifications
   );
 
   const filteredNotifications = (
-    activeTab === "all" ? allNotifications : unreadNotifications
+    activeTab === 'all' ? allNotifications : unreadNotificationsByReadStatus
   ).filter(
     (notification) =>
-      selectedType === "all" || notification.type === selectedType
+      selectedType === 'all' || notification.type === selectedType
   );
 
-  const unreadCount = unreadNotifications.length;
+  const unreadCount = unreadNotificationsByReadStatus.length;
 
   const handleMarkAllAsRead = async (): Promise<void> => {
     // Check if there are any unread notifications
     if (unreadCount === 0) {
-      toast.info("All notifications are already read");
+      toast.info('All notifications are already read');
       return;
     }
     toast.promise(markAllAsRead(), {
-      loading: "Marking all notifications as read...",
-      success: "All notifications marked as read",
-      error: "Failed to mark notifications as read",
+      loading: 'Marking all notifications as read...',
+      success: 'All notifications marked as read',
+      error: 'Failed to mark notifications as read',
     });
   };
 
   const handleDeleteAll = async (): Promise<void> => {
     toast.promise(deleteAllNotifications(), {
-      loading: "Deleting all notifications...",
-      success: "All notifications deleted",
-      error: "Failed to delete notifications",
+      loading: 'Deleting all notifications...',
+      success: 'All notifications deleted',
+      error: 'Failed to delete notifications',
     });
   };
 
@@ -171,15 +201,17 @@ const Page = () => {
   // Remove the redirect effect since useAuthUser handles it
 
   useEffect(() => {
-    addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
 
   useEffect(() => {
-    return () => {
-      markAllAsRead();
-    };
-  }, []);
+    // Mark all notifications as viewed when the page is opened
+    // This resets the unread count but doesn't mark individual notifications as read
+    if (convexUser?._id) {
+      markAllAsViewed();
+    }
+  }, [convexUser?._id, markAllAsViewed]);
 
   // Group notifications by day (today, yesterday, older)
   const groupedNotifications = (() => {
@@ -191,7 +223,7 @@ const Page = () => {
       now.getMonth(),
       now.getDate()
     ).getTime();
-    const yesterday = today - 86400000; // 24 hours in milliseconds
+    const yesterday = today - 86_400_000; // 24 hours in milliseconds
 
     return filteredNotifications.reduce(
       (groups: Record<string, Notification[]>, notification) => {
@@ -200,11 +232,11 @@ const Page = () => {
 
         let day;
         if (notificationDate >= today) {
-          day = "Today";
+          day = 'Today';
         } else if (notificationDate >= yesterday) {
-          day = "Yesterday";
+          day = 'Yesterday';
         } else {
-          day = "Older";
+          day = 'Older';
         }
 
         if (!groups[day]) {
@@ -232,7 +264,7 @@ const Page = () => {
 
   if (authLoading || !filteredNotifications) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="flex h-screen items-center justify-center">
         <Spinner />
       </div>
     );
@@ -247,35 +279,36 @@ const Page = () => {
       <MobileHeader
         rightSlot={
           <button
-            type="button"
+            className="cursor-pointer font-medium text-flickmart text-sm hover:underline"
             onClick={handleMarkAllAsRead}
-            className="text-flickmart font-medium cursor-pointer text-sm hover:underline"
+            type="button"
           >
             Mark all as Read
           </button>
         }
       />
-      <div className="relative w-full flex items-center justify-center py-4">
-        <Popover open={open} onOpenChange={setOpen}>
+      <div className="relative flex w-full items-center justify-center py-4">
+        <Popover onOpenChange={setOpen} open={open}>
           <PopoverTrigger asChild>
             <button className="flex items-center gap-2 px-3 py-2 font-medium transition">
               {notificationLabels[selectedType]}
               <ChevronDown
-              className={cn(
-                  "w-5 h-5 transition-transform duration-200",
-                  open && "rotate-180"
+                className={cn(
+                  'h-5 w-5 transition-transform duration-200',
+                  open && 'rotate-180'
                 )}
               />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="w-screen md:w-[500px] xl:w-[500px] p-2 rounded-2xl z-50 bg-white text-gray-500 border">
+          <PopoverContent className="z-50 w-screen rounded-2xl border bg-white p-2 text-gray-500 md:w-[500px] xl:w-[500px]">
             <ul className="space-y-1">
               {options.map((type) => (
                 <li key={type}>
                   <button
                     className={cn(
-                      "w-full flex items-center gap-3 px-3 py-4 rounded-lg transition",
-                      selectedType === type && "bg-flickmart/10 font-semibold text-black"
+                      'flex w-full items-center gap-3 rounded-lg px-3 py-4 transition',
+                      selectedType === type &&
+                        'bg-flickmart/10 font-semibold text-black'
                     )}
                     onClick={() => {
                       setSelectedType(type);
@@ -292,35 +325,35 @@ const Page = () => {
         </Popover>
       </div>
       <div
-        className={`${isVisible ? "translate-y-0" : "-translate-y-full"} h-[60px] transition-all duration-300 bg-white flex items-center px-[18px] justify-between shadow-lg font-semibold sticky top-[77px] z-30 sm:h-[80px] sm:translate-y-0 sm:top-0`}
+        className={`${isVisible ? 'translate-y-0' : '-translate-y-full'} sticky top-[77px] z-30 flex h-[60px] items-center justify-between bg-white px-[18px] font-semibold shadow-lg transition-all duration-300 sm:top-0 sm:h-[80px] sm:translate-y-0`}
       >
         <div className="flex gap-2">
           <button
-            type="button"
-            onClick={() => setActiveTab("all")}
             className={
-              activeTab === "all" ? "text-flickmart" : "text-flickmart-gray"
+              activeTab === 'all' ? 'text-flickmart' : 'text-flickmart-gray'
             }
+            onClick={() => setActiveTab('all')}
+            type="button"
           >
             All
           </button>
           <button
-            type="button"
-            onClick={() => setActiveTab("unread")}
             className={
-              activeTab === "unread" ? "text-flickmart" : "text-flickmart-gray"
+              activeTab === 'unread' ? 'text-flickmart' : 'text-flickmart-gray'
             }
+            onClick={() => setActiveTab('unread')}
+            type="button"
           >
             Unread ({unreadCount})
           </button>
         </div>
       </div>
-      <div className="w-full mt-10 px-[18px] flex gap-2 justify-between items-center sm:block">
+      <div className="mt-10 flex w-full items-center justify-between gap-2 px-[18px] sm:block">
         <AlertDialog>
           <AlertDialogTrigger asChild>
             <Button
+              className="bg-red-500 text-white hover:bg-red-400 hover:text-white"
               variant="outline"
-              className="bg-red-500 text-white hover:text-white hover:bg-red-400"
             >
               Delete All
             </Button>
@@ -336,7 +369,7 @@ const Page = () => {
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction
-                className="bg-red-500 text-white hover:text-white hover:bg-red-400"
+                className="bg-red-500 text-white hover:bg-red-400 hover:text-white"
                 onClick={handleDeleteAll}
               >
                 Continue
@@ -346,19 +379,19 @@ const Page = () => {
         </AlertDialog>
 
         <Button
-          type="button"
+          className="ml-2 hidden bg-flickmart hover:bg-flickmart/80 sm:inline-block"
           onClick={handleMarkAllAsRead}
-          className="ml-2 hidden sm:inline-block bg-flickmart hover:bg-flickmart/80"
+          type="button"
         >
           Mark all as Read
         </Button>
       </div>
       {Object.entries(groupedNotifications).map(([day, dayNotifications]) => (
-        <Day key={day} notifications={dayNotifications} day={day} />
+        <Day day={day} key={day} notifications={dayNotifications} />
       ))}
       {Object.keys(groupedNotifications).length === 0 && (
-        <div className="flex flex-col items-center justify-center h-[50vh] text-center">
-          <p className="text-lg text-gray-500">No notifications to display</p>
+        <div className="flex h-[50vh] flex-col items-center justify-center text-center">
+          <p className="text-gray-500 text-lg">No notifications to display</p>
         </div>
       )}
     </main>

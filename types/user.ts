@@ -26,5 +26,3 @@ export interface UserStore {
   updateUserInfo: (user: UserType) => void;
   createSession: (sessionObj: SessionType) => void;
 }
-
-

@@ -1,21 +1,21 @@
-import { v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./users";
+import { v } from 'convex/values';
+import { mutation, query } from './_generated/server';
+import { getCurrentUserOrThrow } from './users';
 
 // Add a comment for a product
 export const addComment = mutation({
   args: {
-    productId: v.id("product"),
+    productId: v.id('product'),
     content: v.string(),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
-      throw Error("User not found");
+      throw Error('User not found');
     }
 
-    const commentId = await ctx.db.insert("comments", {
+    const commentId = await ctx.db.insert('comments', {
       productId: args.productId,
       userId: user._id,
       content: args.content,
@@ -28,12 +28,12 @@ export const addComment = mutation({
 // Get comments for a product
 export const getCommentsByProductId = query({
   args: {
-    productId: v.id("product"),
+    productId: v.id('product'),
   },
   handler: async (ctx, args) => {
     const comments = await ctx.db
-      .query("comments")
-      .filter((q) => q.eq(q.field("productId"), args.productId))
+      .query('comments')
+      .filter((q) => q.eq(q.field('productId'), args.productId))
       .collect();
     const commentsWithUser = await Promise.all(
       comments.map(async (comment) => {
@@ -57,7 +57,7 @@ export const getCommentsByProductId = query({
 // Delete a comment
 export const deleteComment = mutation({
   args: {
-    commentId: v.id("comments"),
+    commentId: v.id('comments'),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -67,18 +67,18 @@ export const deleteComment = mutation({
         success: false,
         error: {
           status: 401,
-          message: "Authentication Required",
-          code: "USER_NOT_FOUND",
+          message: 'Authentication Required',
+          code: 'USER_NOT_FOUND',
         },
         data: null,
       };
     }
 
     if (!comment) {
-      throw Error("Comment not found");
+      throw Error('Comment not found');
     }
     if (comment.userId !== user._id) {
-      throw Error("User is unauthorized to delete this comment");
+      throw Error('User is unauthorized to delete this comment');
     }
 
     await ctx.db.delete(args.commentId);

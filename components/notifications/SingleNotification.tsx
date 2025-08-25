@@ -1,18 +1,18 @@
-import Image from "next/image";
-import { EllipsisVertical, Trash, CheckCheck, Eye } from "lucide-react";
-import { Notification } from "@/app/(main-pages)/notifications/page";
-import Link from "next/link";
-import { useMutation } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
+import { useMutation } from 'convex/react';
+import { CheckCheck, EllipsisVertical, Eye, Trash } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { toast } from 'sonner';
+import type { Notification } from '@/app/(main-pages)/notifications/page';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 
 const SingleNotification = ({
   notification: { icon, text, time, id, isRead, link, imageUrl },
@@ -26,17 +26,17 @@ const SingleNotification = ({
     if (e) {
       e.stopPropagation();
     }
-    
+
     if (id && !isRead) {
       toast.promise(
         updateNotification({
-          notificationId: id as Id<"notifications">,
+          notificationId: id as Id<'notifications'>,
           isRead: true,
         }),
         {
           loading: 'Marking as read...',
           success: 'Notification marked as read',
-          error: 'Failed to mark notification as read'
+          error: 'Failed to mark notification as read',
         }
       );
     }
@@ -44,17 +44,17 @@ const SingleNotification = ({
 
   const handleMarkAsUnread = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    
+
     if (id && isRead) {
       toast.promise(
         updateNotification({
-          notificationId: id as Id<"notifications">,
+          notificationId: id as Id<'notifications'>,
           isRead: false,
         }),
         {
           loading: 'Marking as unread...',
           success: 'Notification marked as unread',
-          error: 'Failed to mark notification as unread'
+          error: 'Failed to mark notification as unread',
         }
       );
     }
@@ -62,16 +62,16 @@ const SingleNotification = ({
 
   const handleDelete = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    
+
     if (id) {
       toast.promise(
         deleteNotification({
-          notificationId: id as Id<"notifications">,
+          notificationId: id as Id<'notifications'>,
         }),
         {
           loading: 'Deleting notification...',
           success: 'Notification deleted',
-          error: 'Failed to delete notification'
+          error: 'Failed to delete notification',
         }
       );
     }
@@ -79,20 +79,20 @@ const SingleNotification = ({
 
   return (
     <li
-      className={`flex justify-between border-b items-center py-5 px-4 gap-1 sm:px-12 cursor-pointer ${!isRead ? "bg-blue-50" : ""}`}
+      className={`flex cursor-pointer items-center justify-between gap-1 border-b px-4 py-5 sm:px-12 ${isRead ? '' : 'bg-blue-50'}`}
       onClick={handleMarkAsRead}
     >
-      <div className="flex gap-4 items-center sm:gap-4">
+      <div className="flex items-center gap-4 sm:gap-4">
         <div className="relative size-16 sm:size-20">
-          <Image alt="notification icon" src={imageUrl || icon} fill />
+          <Image alt="notification icon" fill src={imageUrl || icon} />
         </div>
         <div className="w-[74%]">
-          <p className="text-sm sm:text-base sm:mb-3">
+          <p className="text-sm sm:mb-3 sm:text-base">
             {text}
             {link && (
               <Link
+                className="ml-1 text-flickmart hover:underline"
                 href={link}
-                className="text-flickmart ml-1 hover:underline"
                 onClick={(e) => {
                   e.stopPropagation();
                   handleMarkAsRead();
@@ -102,41 +102,41 @@ const SingleNotification = ({
               </Link>
             )}
           </p>
-          <span className="text-xs font-light sm:text-[13px]">{time}</span>
+          <span className="font-light text-xs sm:text-[13px]">{time}</span>
         </div>
       </div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
-            type="button"
+            className={`cursor-pointer transition-all duration-300 ${isRead ? 'text-gray-300 hover:text-gray-500' : 'hover:text-flickmart'}`}
             onClick={(e) => e.stopPropagation()}
-            className={`cursor-pointer transition-all duration-300 ${isRead ? "text-gray-300 hover:text-gray-500" : "hover:text-flickmart"}`}
+            type="button"
           >
             <EllipsisVertical />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-[180px]">
           {isRead ? (
-            <DropdownMenuItem 
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2"
               onClick={handleMarkAsUnread}
-              className="cursor-pointer flex items-center gap-2"
             >
               <Eye size={16} />
               <span>Mark as unread</span>
             </DropdownMenuItem>
           ) : (
-            <DropdownMenuItem 
+            <DropdownMenuItem
+              className="flex cursor-pointer items-center gap-2"
               onClick={handleMarkAsRead}
-              className="cursor-pointer flex items-center gap-2"
             >
               <CheckCheck size={16} />
               <span>Mark as read</span>
             </DropdownMenuItem>
           )}
           <DropdownMenuSeparator />
-          <DropdownMenuItem 
+          <DropdownMenuItem
+            className="flex cursor-pointer items-center gap-2 text-red-500"
             onClick={handleDelete}
-            className="cursor-pointer text-red-500 flex items-center gap-2"
           >
             <Trash size={16} />
             <span>Delete</span>

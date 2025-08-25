@@ -1,15 +1,15 @@
-"use client";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { ChevronRight, Mail, MapPinned } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
+'use client';
+import { ChevronRight, Mail, MapPinned } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function Contact() {
   const isMobile = useIsMobile();
   return (
     <main className="w-full text-center">
-      <div className="w-11/12 mx-auto my-6">
-        <h1 className="text-3xl lg:text-5xl font-extrabold text-gray-800 mb-3">
+      <div className="mx-auto my-6 w-11/12">
+        <h1 className="mb-3 font-extrabold text-3xl text-gray-800 lg:text-5xl">
           Contact Us
         </h1>
         <p className="leading-relaxed">
@@ -18,10 +18,10 @@ export default function Contact() {
           at Flickmart.
         </p>
       </div>
-      <section className="w-full md:w-11/12 md:mx-auto flex flex-col md:flex-row gap-6 mb-12">
-        <form className="w-11/12 lg:flex flex-col justify-center gap-7 md:w-6/12 mx-auto md:mx-0 mt-6 md:mt-0 rounded-md p-4 border border-gray-300">
+      <section className="mb-12 flex w-full flex-col gap-6 md:mx-auto md:w-11/12 md:flex-row">
+        <form className="mx-auto mt-6 w-11/12 flex-col justify-center gap-7 rounded-md border border-gray-300 p-4 md:mx-0 md:mt-0 md:w-6/12 lg:flex">
           <div className="mb-4 text-left">
-            <h1 className="text-3xl lg:text-6xl font-bold mb-2">
+            <h1 className="mb-2 font-bold text-3xl lg:text-6xl">
               <span className="text-flickmart">Get</span> in touch
             </h1>
             <p className="leading-tight md:mt-4">
@@ -31,132 +31,132 @@ export default function Contact() {
           </div>
           <div>
             <input
-              type="text"
+              className="w-full rounded-md border border-gray-300 p-2 py-3 lg:h-14"
               id="name"
               placeholder="Fullname"
-              className="border border-gray-300 rounded-md lg:h-14 py-3 p-2 w-full"
+              type="text"
             />
           </div>
           <div className="mt-4">
             <input
-              type="email"
+              className="w-full rounded-md border border-gray-300 p-2 py-3 lg:h-14"
               id="email"
               placeholder="Email"
-              className="border border-gray-300 rounded-md lg:h-14 py-3 p-2 w-full"
+              type="email"
             />
           </div>
           <div className="mt-4">
             <textarea
+              className="w-full rounded-md border border-gray-300 p-2 py-3 leading-tight"
               id="message"
-              className="leading-tight border border-gray-300 rounded-md py-3 p-2 w-full"
-              rows={isMobile ? 5 : 10}
               placeholder="Your message..."
-            ></textarea>
+              rows={isMobile ? 5 : 10}
+            />
           </div>
           <button
+            className="mt-4 w-full rounded-md bg-flickmart px-4 py-4 text-white transition-all duration-300 hover:scale-105 lg:h-14"
             type="submit"
-            className="w-full mt-4 hover:scale-105 transition-all duration-300 bg-flickmart lg:h-14 text-white py-4 px-4 rounded-md"
           >
             Send Message
           </button>
         </form>
 
-        <div className="w-full md:w-6/12 md:border md:rounded-md">
-          <div className="h-32 md:h-44 md:rounded-t-md w-full mx-auto my-4 md:mt-0">
+        <div className="w-full md:w-6/12 md:rounded-md md:border">
+          <div className="mx-auto my-4 h-32 w-full md:mt-0 md:h-44 md:rounded-t-md">
             <Image
-              src="/ct-banner.jpg"
               alt="Contact Us"
-              width={1000}
+              className="h-full w-full object-cover md:rounded-t-md"
               height={1000}
-              className="object-cover h-full w-full md:rounded-t-md"
+              src="/ct-banner.jpg"
+              width={1000}
             />
           </div>
-          <div className="w-full bg-flickmart-chat-orange text-white py-4 text-center">
-            <h1 className="text-2xl font-bold">For further inquiries</h1>
+          <div className="w-full bg-flickmart-chat-orange py-4 text-center text-white">
+            <h1 className="font-bold text-2xl">For further inquiries</h1>
           </div>
-          <div className="w-full flex flex-col">
-            <div className="w-11/12 mx-auto grid grid-cols-2 gap-4 my-4">
-              <div className="rounded-lg border shadow-sm p-3">
-                <div className="w-12 h-12 mx-auto mb-2">
+          <div className="flex w-full flex-col">
+            <div className="mx-auto my-4 grid w-11/12 grid-cols-2 gap-4">
+              <div className="rounded-lg border p-3 shadow-sm">
+                <div className="mx-auto mb-2 h-12 w-12">
                   <Image
-                    src="/whatsapp.png"
                     alt="WhatsApp Icon"
-                    width={50}
-                    height={50}
                     className="object-contain"
+                    height={50}
+                    src="/whatsapp.png"
+                    width={50}
                   />
                 </div>
-                <h1 className="text-sm font-semibold mb-2">
+                <h1 className="mb-2 font-semibold text-sm">
                   Still Have Questions?
                 </h1>
-                <p className="text-[10px] md:text-xs leading-tight">
+                <p className="text-[10px] leading-tight md:text-xs">
                   we are here to help - quick and easy. Start a Whatsapp chat
-                  with us and get instant support.{" "}
+                  with us and get instant support.{' '}
                 </p>
                 <Link
-                  href={"https://wa.me/phonenumber"}
+                  className="mt-4 inline-block w-full rounded-md bg-flickmart-chat-orange px-4 py-3 font-medium text-sm text-white"
+                  href={'https://wa.me/phonenumber'}
                   target="_blank"
-                  className="w-full mt-4 inline-block bg-flickmart-chat-orange text-white text-sm font-medium py-3 px-4 rounded-md"
                 >
                   Chat With Us
                 </Link>
               </div>
-              <div className="rounded-lg border shadow-sm p-3">
-                <div className="w-11 h-11 mx-auto mb-2">
+              <div className="rounded-lg border p-3 shadow-sm">
+                <div className="mx-auto mb-2 h-11 w-11">
                   <Image
-                    src="/call.png"
                     alt="Call Icon"
-                    width={50}
-                    height={50}
                     className="object-contain"
+                    height={50}
+                    src="/call.png"
+                    width={50}
                   />
                 </div>
-                <h1 className="text-sm font-semibold mb-2">Prefer to Talk?</h1>
-                <p className="text-[10px] md:text-xs leading-tight">
+                <h1 className="mb-2 font-semibold text-sm">Prefer to Talk?</h1>
+                <p className="text-[10px] leading-tight md:text-xs">
                   Give us a quick call. Our support team is happy to assist you
-                  with any questions you have.{" "}
+                  with any questions you have.{' '}
                 </p>
                 <Link
-                  href={"tel:phonenumber"}
+                  className="mt-5 inline-block w-full rounded-md bg-flickmart-chat-orange px-4 py-3 font-medium text-sm text-white"
+                  href={'tel:phonenumber'}
                   target="_blank"
-                  className="w-full mt-5 inline-block bg-flickmart-chat-orange text-white text-sm font-medium py-3 px-4 rounded-md"
                 >
                   Give Us a Call
                 </Link>
               </div>
             </div>
-            <div className="w-11/12 mx-auto flex flex-col gap-4 mb-8">
+            <div className="mx-auto mb-8 flex w-11/12 flex-col gap-4">
               <Link
-                href={"mailto:Flickmart2024@gmail.com"}
+                className="group flex w-full items-center justify-between rounded-lg border p-3"
+                href={'mailto:Flickmart2024@gmail.com'}
                 target="_blank"
-                className="group w-full border rounded-lg p-3 items-center flex justify-between"
               >
-                <div className="flex items-center gap-4 mb-2">
+                <div className="mb-2 flex items-center gap-4">
                   <Mail className="h-8 w-8" />
                   <span className="text-left leading-tight tracking-tight">
-                    <h1 className="text-lg font-semibold">E-mail Address</h1>
-                    <p className="text-sm leading-tight text-gray-500">
+                    <h1 className="font-semibold text-lg">E-mail Address</h1>
+                    <p className="text-gray-500 text-sm leading-tight">
                       Flickmart2024@gmail.com
                     </p>
                   </span>
                 </div>
-                <ChevronRight className="group-hover:translate-x-1 transition-transform duration-500" />
+                <ChevronRight className="transition-transform duration-500 group-hover:translate-x-1" />
               </Link>
               <Link
-                href={"#"}
+                className="group flex w-full items-center justify-between rounded-lg border p-3"
+                href={'#'}
                 target="_blank"
-                className="group w-full border rounded-lg p-3 items-center flex justify-between"
               >
-                <div className="flex items-center gap-4 mb-2">
+                <div className="mb-2 flex items-center gap-4">
                   <MapPinned className="h-8 w-8" />
                   <span className="text-left leading-tight tracking-tight">
-                    <h1 className="text-lg font-semibold">Office Address</h1>
-                    <p className="text-sm leading-tight text-gray-500">
+                    <h1 className="font-semibold text-lg">Office Address</h1>
+                    <p className="text-gray-500 text-sm leading-tight">
                       Customer service center Address
                     </p>
                   </span>
                 </div>
-                <ChevronRight className="group-hover:translate-x-1 transition-transform duration-500" />
+                <ChevronRight className="transition-transform duration-500 group-hover:translate-x-1" />
               </Link>
             </div>
           </div>

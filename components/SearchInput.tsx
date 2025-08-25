@@ -1,9 +1,13 @@
-"use client";
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useRouter } from "next/navigation";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
+'use client';
+import { useMutation, useQuery } from 'convex/react';
+import { Search, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Command,
   CommandEmpty,
@@ -11,10 +15,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
-import Link from "next/link";
-import { Search, X } from "lucide-react";
-import { motion } from "motion/react";
+} from './ui/command';
+
 const MotionCommandList = motion.create(CommandList);
 
 export default function SearchInput({
@@ -33,15 +35,15 @@ export default function SearchInput({
   ref?: React.ForwardedRef<HTMLInputElement>;
 }) {
   const isMobile = useIsMobile();
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [focus, setFocus] = useState<boolean>(false);
   const saveSearchInput = useMutation(api.search.insertSearchHistory);
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const autoSuggest = useQuery(api.product.search, {
-    query: searchInput || "",
-    type: "suggestions",
+    query: searchInput || '',
+    type: 'suggestions',
   });
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -55,37 +57,34 @@ export default function SearchInput({
   function handleKeyPress<T extends HTMLElement>(
     event: React.KeyboardEvent<T>
   ) {
-    if (event.key === "Enter") {
-      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
+    if (event.key === 'Enter') {
+      const locationQuery = !loc || loc === 'all' ? '' : `?location=${loc}`;
       router.push(`/search?query=${searchInput}${locationQuery}`);
       openSearch && openSearch(false);
       saveSearchInput({
         search: searchInput,
       });
       // Perform search action
-      !isMobile && isOverlayOpen && setSearchInput("");
+      !isMobile && isOverlayOpen && setSearchInput('');
       setIsTyping(false);
     }
   }
   function handlePrefetch() {
-    router.prefetch("/search");
+    router.prefetch('/search');
     if (searchInput) {
       setFocus(false);
       return;
     }
     if (!isMobile) setFocus(true);
   }
-  useEffect(
-    function () {
-      if (autoSuggest || searchInput) {
-        updateAutoSuggest &&
-          updateAutoSuggest(autoSuggest as Array<string>, searchInput);
-      }
-    },
-    [autoSuggest, isMobile, isOverlayOpen, searchInput]
-  );
+  useEffect(() => {
+    if (autoSuggest || searchInput) {
+      updateAutoSuggest &&
+        updateAutoSuggest(autoSuggest as Array<string>, searchInput);
+    }
+  }, [autoSuggest, isMobile, isOverlayOpen, searchInput]);
 
-  useEffect(function () {
+  useEffect(() => {
     if (query) {
       setSearchInput(query);
     }
@@ -93,27 +92,30 @@ export default function SearchInput({
 
   return (
     <Command className="bg-inherit">
-      <div className="w-full ">
+      <div className="w-full">
         {isMobile && !isOverlayOpen ? (
           <div
+            className="mb-2 flex h-full cursor-pointer items-center gap-5 bg-gray-100 p-2 px-4 text-gray-500 lg:p-2.5"
             onClick={() => openSearch && openSearch(true)}
-            className="flex cursor-pointer h-full bg-gray-100  text-gray-500 p-2 lg:p-2.5 px-4 gap-5 items-center mb-2"
           >
             <Search className="size-4" />
             <span className="text-sm lg:text-lg">
-              {searchInput || "What are you looking for?"}
+              {searchInput || 'What are you looking for?'}
             </span>
           </div>
         ) : (
           <CommandInput
+            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none"
             inputMode="search"
-            ref={ref}
+            onBlur={() => {
+              setFocus(false);
+              setIsTyping(false);
+            }}
+            onFocus={handlePrefetch}
+            onKeyDown={(e) => handleKeyPress(e)}
             onSubmit={(e) => {
               e.preventDefault();
             }}
-            onFocus={handlePrefetch}
-            value={searchInput}
-            onKeyDown={(e) => handleKeyPress(e)}
             onValueChange={(value) => {
               setSearchInput(value);
               if (!value) {
@@ -124,44 +126,41 @@ export default function SearchInput({
               setIsTyping(true);
               setFocus(false);
             }}
-            onBlur={() => {
-              setFocus(false);
-              setIsTyping(false);
-            }}
-            className="w-full outline-none ps-4 py-3 rounded-lg text-sm text-flickmart-gray"
             placeholder="What are you looking for?"
+            ref={ref}
+            value={searchInput}
           />
         )}
         {isTyping && !isOverlayOpen ? (
           <MotionCommandList
-            initial={{
-              opacity: 0,
-              y: -10,
-            }}
             animate={{
               opacity: 1,
               y: 0,
             }}
+            className="absolute z-10 mt-1.5 rounded-lg bg-white p-2 shadow-md lg:w-[40vw]"
+            initial={{
+              opacity: 0,
+              y: -10,
+            }}
             transition={{ duration: 0.2 }}
-            className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md"
           >
             <CommandGroup heading="Suggestions">
               {autoSuggest?.map((item, index) => (
                 <Link
-                  key={index}
                   href={`/search?query=${item}`}
+                  key={index}
                   onMouseDown={(e) => e.preventDefault()}
                 >
                   <CommandItem
                     className="cursor-pointer"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === 'Enter') {
                         router.push(`/search?query=${item}`);
                         setIsTyping(false);
                       }
                     }}
                   >
-                    {typeof item === "string" ? item : null}
+                    {typeof item === 'string' ? item : null}
                   </CommandItem>
                 </Link>
               ))}
@@ -176,33 +175,33 @@ export default function SearchInput({
           !isOverlayOpen &&
           retrievePreviousInputs?.data &&
           retrievePreviousInputs.data?.length > 0 ? (
-          <CommandList className="z-10 rounded-lg mt-1.5 bg-white p-2 lg:w-[40vw] absolute shadow-md">
+          <CommandList className="absolute z-10 mt-1.5 rounded-lg bg-white p-2 shadow-md lg:w-[40vw]">
             <CommandGroup heading="Recent Searches">
               {retrievePreviousInputs?.data?.map((item, index) => (
                 <div
+                  className="flex items-center justify-between rounded-lg px-1 hover:bg-gray-50"
                   key={index}
-                  onMouseDown={(e) => e.preventDefault()}
-                  className="flex justify-between items-center hover:bg-gray-50 px-1 rounded-lg"
                   onClick={() => {
                     setFocus(false);
                     searchRef.current?.blur();
                     router.push(`/search?query=${item.search}`);
                   }}
+                  onMouseDown={(e) => e.preventDefault()}
                 >
-                  <CommandItem className="cursor-pointer flex-grow !bg-inherit">
+                  <CommandItem className="!bg-inherit flex-grow cursor-pointer">
                     {/* {typeof item.search === "string" ? item.search : null} */}
                     {item.search}
                   </CommandItem>
                   <X
-                    className="text-gray-600 cursor-pointer"
-                    size={20}
+                    className="cursor-pointer text-gray-600"
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log("deleted");
+                      console.log('deleted');
                       deleteSearchInput({
                         searchId: item._id,
                       });
                     }}
+                    size={20}
                   />
                 </div>
               ))}

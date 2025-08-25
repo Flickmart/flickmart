@@ -1,11 +1,11 @@
-import { ChangeEvent, Dispatch, useRef, useState } from "react";
-import Image from "next/image";
-import { Camera, Loader2 } from "lucide-react";
-import { useUploadThing } from "@/utils/uploadthing";
-import { toast } from "sonner";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useMutation, useQuery } from 'convex/react';
+import { Camera, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { type ChangeEvent, type Dispatch, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { api } from '@/convex/_generated/api';
+import { useUploadThing } from '@/utils/uploadthing';
 
 const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const imagePickerRef = useRef<HTMLInputElement>(null);
@@ -14,9 +14,8 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const mutate = useMutation(api.store.addImage);
 
   console.log(userStore?.data?.name);
-  
 
-  const { startUpload } = useUploadThing("imageUploader");
+  const { startUpload } = useUploadThing('imageUploader');
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -31,16 +30,16 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       if (res && res.length > 0 && userStore && userStore.data) {
         // Update with the actual uploaded URL
 
-        toast.success("Image uploaded successfully");
+        toast.success('Image uploaded successfully');
         await mutate({
           storeId: userStore.data._id!,
           image: res[0].ufsUrl,
         });
       }
     } catch (error) {
-      console.error("Upload error:", error);
+      console.error('Upload error:', error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to upload image"
+        error instanceof Error ? error.message : 'Failed to upload image'
       );
     } finally {
       setIsUploading(false);
@@ -50,63 +49,63 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   return (
     <form>
       <div className="mb-[40vh] md:mb-10">
-        <h2 className="font-medium text-xl mb-3 sm:text-3xl lg:text-[40px]">
+        <h2 className="mb-3 font-medium text-xl sm:text-3xl lg:text-[40px]">
           Profile Info
         </h2>
-        <label className="text-sm font-light md:text-base" htmlFor="avatar">
+        <label className="font-light text-sm md:text-base" htmlFor="avatar">
           Add a picture that represents you or your brand
         </label>
         <div
+          className="relative mx-auto mt-10 size-24 cursor-pointer md:mb-10"
           onClick={() => {
             imagePickerRef.current?.click();
           }}
-          className="mx-auto size-24 relative cursor-pointer mt-10 md:mb-10"
         >
           <input
-            ref={imagePickerRef}
-            onChange={handleImageUpload}
-            type="file"
+            accept="image/png, image/jpeg"
+            className="invisible absolute w-0"
+            disabled={isUploading}
             id="avatar"
             name="avatar"
-            accept="image/png, image/jpeg"
-            className="absolute invisible w-0"
-            disabled={isUploading}
+            onChange={handleImageUpload}
+            ref={imagePickerRef}
+            type="file"
           />
-          <Avatar className="w-full h-full">
+          <Avatar className="h-full w-full">
             <AvatarImage
-              src={userStore?.data?.image}
-              className="w-full h-full object-cover inline-block rounded-full hover:outline hover:outline-2 hover:outline-offset-2"
-              height={60}
-              width={60}
               alt="default profile"
+              className="inline-block h-full w-full rounded-full object-cover hover:outline hover:outline-2 hover:outline-offset-2"
+              height={60}
+              src={userStore?.data?.image}
+              width={60}
             />
-            <AvatarFallback className="uppercase text-5xl font-medium bg-[#38CB89] text-white">
+            <AvatarFallback className="bg-[#38CB89] font-medium text-5xl text-white uppercase">
               {userStore && userStore?.data && userStore?.data?.name
                 ? userStore?.data?.name.charAt(0)
-                : "U"}
+                : 'U'}
             </AvatarFallback>
           </Avatar>
           {isUploading && (
-            <div className="absolute inset-0 bg-black/30 rounded-full flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/30">
               <div className="text-white text-xs">Uploading...</div>
             </div>
           )}
-          <span className="inline-block bg-flickmart p-1 rounded-full absolute bottom-0 right-0">
+          <span className="absolute right-0 bottom-0 inline-block rounded-full bg-flickmart p-1">
             <Camera color="white" size={15} />
           </span>
         </div>
         {userStore && userStore?.data && userStore?.data.image && (
           <button
+            className="mt-4 font-semibold text-flickmart text-sm hover:underline disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isUploading}
             onClick={() => {
               mutate({
                 storeId: userStore?.data._id!,
-                image: "",
+                image: '',
               });
-              toast.success("Image removed successfully");
+              toast.success('Image removed successfully');
             }}
             type="button"
-            className="mt-4 text-sm text-flickmart font-semibold hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isUploading}
           >
             Remove Avatar
           </button>
@@ -114,14 +113,14 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       </div>
 
       <button
+        className="submit-btn mb-4 flex items-center justify-center rounded-lg text-white capitalize disabled:cursor-not-allowed disabled:opacity-50"
+        disabled={isUploading}
         onClick={() => {
           setStage(4);
         }}
-        className="submit-btn flex items-center justify-center text-white rounded-lg capitalize mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
-        disabled={isUploading}
       >
-        next{" "}
-        {isUploading && <Loader2 className="animate-spin ml-2" size={20} />}
+        next{' '}
+        {isUploading && <Loader2 className="ml-2 animate-spin" size={20} />}
       </button>
     </form>
   );

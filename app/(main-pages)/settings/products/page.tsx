@@ -1,16 +1,7 @@
-"use client";
+'use client';
 
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
-import clsx from "clsx";
+import clsx from 'clsx';
+import { useMutation, useQuery } from 'convex/react';
 import {
   ArrowLeft,
   ChevronLeft,
@@ -22,23 +13,25 @@ import {
   ThumbsUp,
   Trash,
   X,
-} from "lucide-react";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import AnimatedSearchBar from "@/components/AnimatedSearchBar";
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import AnimatedSearchBar from '@/components/AnimatedSearchBar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Id } from "@/convex/_generated/dataModel";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import Link from "next/link";
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -47,23 +40,30 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { ClipLoader } from "react-spinners";
-import { motion } from "motion/react";
+} from '@/components/ui/dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { useSidebar } from '@/components/ui/sidebar';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 
 export default function ProductsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const userStore = useQuery(api.store.getStoresByUserId);
   const products = useQuery(api.product.getByBusinessId, {
-    businessId: userStore?.data?._id as Id<"store">,
+    businessId: userStore?.data?._id as Id<'store'>,
   });
   const [userProducts, setUserProducts] = useState(products);
   const deleteProduct = useMutation(api.product.remove);
   const formatDesc = (desc: string) => {
     if (desc.length > 50) {
-      return desc.slice(0, 50).trim() + "...";
+      return desc.slice(0, 50).trim() + '...';
     }
     return desc;
   };
@@ -85,17 +85,17 @@ export default function ProductsPage() {
     {
       icon: ThumbsUp,
       number: analyticsObj?.likes,
-      title: "likes",
+      title: 'likes',
     },
     {
       icon: Eye,
       number: analyticsObj?.views,
-      title: "views",
+      title: 'views',
     },
     {
       icon: ThumbsDown,
       number: analyticsObj?.dislikes,
-      title: "dislikes",
+      title: 'dislikes',
     },
   ];
   useEffect(() => {
@@ -115,14 +115,14 @@ export default function ProductsPage() {
     setUserProducts(filteredProducts);
   }
   return (
-    <div className="flex w-full flex-col ">
-      <header className="flex items-center shadow-md p-5">
+    <div className="flex w-full flex-col">
+      <header className="flex items-center p-5 shadow-md">
         <ChevronLeft
-          className="cursor-pointer size-7"
+          className="size-7 cursor-pointer"
           onClick={() => router.back()}
         />
 
-        <Separator orientation="vertical" className="mr-2 h-4" />
+        <Separator className="mr-2 h-4" orientation="vertical" />
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
@@ -138,135 +138,135 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-7 p-4 lg:px-10">
         <div
           className={clsx(
-            "flex relative items-center justify-between h-20 sm:h-32",
+            'relative flex h-20 items-center justify-between sm:h-32',
             {
-              "!justify-end": isExpanded,
+              '!justify-end': isExpanded,
             }
           )}
         >
           <div
             className={clsx(
-              "flex flex-grow items-center gap-3 transition-opacity duration-300 relative",
+              'relative flex flex-grow items-center gap-3 transition-opacity duration-300',
               {
-                "opacity-0 lg:flex": isExpanded,
+                'opacity-0 lg:flex': isExpanded,
               }
             )}
           >
             <Avatar className="size-20 sm:size-32">
               {userStore?.data?.image && (
                 <AvatarImage
-                  src={userStore?.data?.image}
                   alt="business profile image"
+                  src={userStore?.data?.image}
                 />
               )}
               <AvatarFallback>
                 {userStore?.data?.name
-                  ?.split(" ")
+                  ?.split(' ')
                   .map((item) => item[0]?.toUpperCase())
-                  .join(" ")}
+                  .join(' ')}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1 text-black/60">
               <h1 className="text-xl capitalize sm:text-2xl">
                 {userStore?.data?.name}
               </h1>
-              <span className="text-sm ">Welcome back, Flickmartan!</span>
+              <span className="text-sm">Welcome back, Flickmartan!</span>
             </div>
           </div>
           <AnimatedSearchBar
             handleSearch={handleSearch}
-            placeholder="Search for anything..."
             isExpanded={isExpanded}
+            placeholder="Search for anything..."
           />
           <button
+            className="absolute right-2 hover:text-flickmart"
             onClick={() => {
               setIsExpanded(!isExpanded);
             }}
             type="button"
-            className="absolute right-2 hover:text-flickmart"
           >
             {isExpanded ? (
-              <X className="size-6 sm:size-8 transition-all duration-300" />
+              <X className="size-6 transition-all duration-300 sm:size-8" />
             ) : (
-              <Search className="size-6 sm:size-8 transition-all duration-300" />
+              <Search className="size-6 transition-all duration-300 sm:size-8" />
             )}
           </button>
         </div>
-        <div className=" flex justify-center gap-7 items-center ">
+        <div className="flex items-center justify-center gap-7">
           {analyticsItems.map((item) => (
             <div
+              className="flex min-h-16 w-1/3 items-center justify-center gap-2 rounded-lg border border-flickmartLight py-3 text-gray-700 capitalize shadow-md"
               key={item.title}
-              className="min-h-16 text-gray-700 flex py-3 gap-2 capitalize  justify-center shadow-md items-center border border-flickmartLight  w-1/3 rounded-lg"
             >
               <item.icon size={28} />
               <div className="flex flex-col items-center">
-                <span className="text-xl font-semibold">
-                  {item.number ?? "--"}
+                <span className="font-semibold text-xl">
+                  {item.number ?? '--'}
                 </span>
                 <span className="text-xs">{item.title}</span>
               </div>
             </div>
           ))}
         </div>
-        <div className="space-y-2 ">
-          <h3 className="capitalize font-semibold text-lg">my products</h3>
+        <div className="space-y-2">
+          <h3 className="font-semibold text-lg capitalize">my products</h3>
           <ul className="flex flex-col gap-5">
             {userProducts === null ? (
-              <div className="h-96 flex justify-center items-center  flex-grow">
+              <div className="flex h-96 flex-grow items-center justify-center">
                 <span>You have not posted any product yet</span>
               </div>
             ) : userProducts?.length === 0 ? (
-              <div className="h-96  flex justify-center capitalize text-lg items-center  flex-grow">
+              <div className="flex h-96 flex-grow items-center justify-center text-lg capitalize">
                 <span>no product found</span>
               </div>
             ) : (
               userProducts?.map((product) => (
                 <motion.div
-                  initial={{
-                    opacity: 0,
-                  }}
                   animate={{
                     opacity: 1,
                   }}
+                  className="transition-all duration-300 hover:bg-gray-200"
+                  initial={{
+                    opacity: 0,
+                  }}
+                  key={product._id}
                   transition={{
                     duration: 0.5,
                   }}
-                  key={product._id}
-                  className=" hover:bg-gray-200 transition-all duration-300"
                 >
                   <Link href={`/product/${product._id}`}>
-                    <li className="flex justify-between bg-inherit p-[6px] rounded-sm items-center shadow-md relative sm:p-2">
-                      <div className="flex gap-3 items-center">
-                        <div className="size-20 sm:size-28 relative flex-shrink-0">
+                    <li className="relative flex items-center justify-between rounded-sm bg-inherit p-[6px] shadow-md sm:p-2">
+                      <div className="flex items-center gap-3">
+                        <div className="relative size-20 flex-shrink-0 sm:size-28">
                           {product.images[0] && (
                             <Image
-                              className="object-cover rounded-sm"
+                              alt={product.title}
+                              className="rounded-sm object-cover"
                               fill
                               src={product.images[0]}
-                              alt={product.title}
                             />
                           )}
                         </div>
                         <div className="flex flex-col justify-center gap-2">
-                          <h2 className="sm:text-lg font-bold">
+                          <h2 className="font-bold sm:text-lg">
                             {product.title}
                           </h2>
-                          <p className="text-xs sm:text-sm font-light">
+                          <p className="font-light text-xs sm:text-sm">
                             {formatDesc(product.description)}
                           </p>
-                          <span className="text-xs sm:text-sm font-bold text-flickmart">
+                          <span className="font-bold text-flickmart text-xs sm:text-sm">
                             &#8358;{product.price.toLocaleString()}
                           </span>
                         </div>
                       </div>
 
                       <Dialog
-                        open={deleteDialog}
                         onOpenChange={setDeleteDialog}
+                        open={deleteDialog}
                       >
                         <DropdownMenu>
                           <DropdownMenuTrigger
-                            className="rounded-full p-2 hover:bg-gray-300 transition-all duration-300"
+                            className="rounded-full p-2 transition-all duration-300 hover:bg-gray-300"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
@@ -275,11 +275,11 @@ export default function ProductsPage() {
                             <EllipsisVertical className="cursor-pointer" />
                           </DropdownMenuTrigger>
                           <DropdownMenuContent
+                            className="w-28 min-w-0"
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
                             }}
-                            className="w-28 min-w-0"
                           >
                             <DropdownMenuItem
                               onClick={() =>
@@ -317,13 +317,15 @@ export default function ProductsPage() {
                           </DialogHeader>
                           <DialogFooter className="gap-3">
                             <Button
-                              variant="outline"
-                              onClick={() => setDeleteDialog(false)}
                               disabled={isDeleting}
+                              onClick={() => setDeleteDialog(false)}
+                              variant="outline"
                             >
                               Cancel
                             </Button>
                             <Button
+                              className="bg-flickmart"
+                              disabled={isDeleting}
                               onClick={async () => {
                                 try {
                                   setIsDeleting(true);
@@ -331,7 +333,7 @@ export default function ProductsPage() {
                                     productId: product._id,
                                   });
                                   toast.success(
-                                    "Product deleted successfully..."
+                                    'Product deleted successfully...'
                                   );
                                   setDeleteDialog(false);
                                 } catch (err) {
@@ -340,13 +342,11 @@ export default function ProductsPage() {
                                   setIsDeleting(false);
                                 }
                               }}
-                              disabled={isDeleting}
-                              className="bg-flickmart"
                             >
                               {isDeleting ? (
-                                <ClipLoader size={20} color="#ffffff" />
+                                <ClipLoader color="#ffffff" size={20} />
                               ) : (
-                                "Yes, Delete"
+                                'Yes, Delete'
                               )}
                             </Button>
                           </DialogFooter>

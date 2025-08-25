@@ -1,17 +1,16 @@
-"use client";
-import { useState } from "react";
-
-import { useSidebar } from "@/components/ui/sidebar";
-import MarketplaceProfile from "@/components/settings/profile";
-import { ChevronLeft } from "lucide-react";
-import { useRouter } from "next/navigation";
+'use client';
+import { ChevronLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import MarketplaceProfile from '@/components/settings/profile';
+import { useSidebar } from '@/components/ui/sidebar';
 
 export default function PersonalDetailsPage() {
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    username: "",
-    bio: "",
+    firstName: '',
+    lastName: '',
+    username: '',
+    bio: '',
   });
   const { isMobile } = useSidebar();
   const router = useRouter();
@@ -29,7 +28,7 @@ export default function PersonalDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement update logic
-    console.log("Form submitted:", formData);
+    console.log('Form submitted:', formData);
   };
 
   return (
@@ -37,7 +36,7 @@ export default function PersonalDetailsPage() {
       <header className="text-gray-500">
         {isMobile && (
           <ChevronLeft
-            className="cursor-pointer size-7 "
+            className="size-7 cursor-pointer"
             onClick={() => router.back()}
           />
         )}

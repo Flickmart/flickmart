@@ -1,19 +1,19 @@
-import React, { useState } from "react";
+import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import React, { useState } from 'react';
+import type { FormType, NameType } from '@/types/form';
+import { categoryItems } from '@/utils/constants';
+import { FormField } from '../ui/form';
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../ui/sheet";
-import { categoryItems } from "@/utils/constants";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import Image from "next/image";
-import SubcategorySheet from "./SubcategorySheet";
-import CustomSheetHeader from "./CustomSheetHeader";
-import SheetItems from "./SheetItems";
-import { FormField } from "../ui/form";
-import { FormType, NameType } from "@/types/form";
+} from '../ui/sheet';
+import CustomSheetHeader from './CustomSheetHeader';
+import SheetItems from './SheetItems';
+import SubcategorySheet from './SubcategorySheet';
 
 export default function CategorySheet({
   name,
@@ -24,12 +24,12 @@ export default function CategorySheet({
 }) {
   const [open, setOpen] = useState(false);
   const closeSheet = (value: string) => {
-    form.setValue("category", value);
+    form.setValue('category', value);
     setOpen(false);
   };
 
   function setSubcategory(value: string) {
-    form.setValue("subcategory", value);
+    form.setValue('subcategory', value);
   }
 
   return (
@@ -38,9 +38,11 @@ export default function CategorySheet({
       name={name}
       render={({ field }) => {
         return (
-          <Sheet open={open} onOpenChange={setOpen}>
+          <Sheet onOpenChange={setOpen} open={open}>
             <SheetTrigger
-              className={`w-full flex justify-between text-gray-500 p-3.5 items-center text-lg rounded-lg    capitalize outline-none  border border-gray-300 shadow-none focus:ring-0`}
+              className={
+                'flex w-full items-center justify-between rounded-lg border border-gray-300 p-3.5 text-gray-500 text-lg capitalize shadow-none outline-none focus:ring-0'
+              }
             >
               <span>{field.value || `${name}*`}</span>
               <div className="text-gray-400">
@@ -48,26 +50,26 @@ export default function CategorySheet({
               </div>
             </SheetTrigger>
             <SheetContent
+              className="mb-20 min-h-screen w-full bg-gray-200 p-0"
               hideCloseButton={true}
               side="left"
-              className="w-full min-h-screen  bg-gray-200 p-0 mb-20 "
             >
               <CustomSheetHeader
                 closeSheet={() => setOpen(false)}
                 text="Find Category"
               />
-              <div className="h-[83vh] flex flex-col  overflow-auto">
+              <div className="flex h-[83vh] flex-col overflow-auto">
                 {categoryItems.map((item) => {
                   return (
                     <SubcategorySheet
+                      category={item.categoryName}
                       closeSheet={() => closeSheet(item.categoryName)}
                       key={item.categoryName}
-                      category={item.categoryName}
                       setSubcategory={setSubcategory}
                     >
                       <SheetItems
-                        type="categories"
                         categoryName={item.categoryName}
+                        type="categories"
                       />
                     </SubcategorySheet>
                   );
