@@ -77,7 +77,7 @@ export default function MessageBubble({
         isUser ? "justify-end" : "justify-start",
         selectionMode && "cursor-pointer"
       )}
-      //DISABLED DELETE FEATURE 
+      //DISABLED DELETE FEATURE
       // onClick={() => selectionMode && toggleMessageSelection(id)}
       // onContextMenu={(e) => {
       //   e.preventDefault();
@@ -89,10 +89,10 @@ export default function MessageBubble({
     >
       <div
         className={cn(
-          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] md:max-w-[65%] rounded-lg py-1 px-2 sm:py-2 sm:px-3 md:p-3 shadow-sm",
+          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] md:max-w-[65%] rounded-xl p-2 sm:px-3 shadow-md shadow-black/25 text-black/70",
           isUser
-            ? "bg-flickmart text-white rounded-br-none"
-            : "bg-background text-foreground rounded-bl-none",
+            ? "bg-light-orange rounded-br-none"
+            : "bg-off-white text-foreground rounded-bl-none",
           selectedMessages.includes(id) &&
             "bg-orange-200 border-2 border-orange-400",
           images.length > 0 && "rounded-br-lg rounded-bl-lg py-0"
@@ -199,6 +199,7 @@ export default function MessageBubble({
             productPrice={price}
             message={message}
             productId={productId}
+            isUser={isUser}
           />
         )}
       </div>
@@ -212,6 +213,7 @@ interface ProductChatMessageProps {
   message: string;
   productPrice: number;
   productId: string;
+  isUser: boolean;
 }
 
 export function ProductChatMessage({
@@ -220,34 +222,39 @@ export function ProductChatMessage({
   productPrice,
   message,
   productId,
+  isUser,
 }: ProductChatMessageProps) {
   return (
     <Link href={`/product/${productId}`}>
-    <div className="flex justify-end">
-      <div className="max-w-[280px] sm:max-w-xs bg-flickmart text-white">
-        {/* Product Details Section - Highlighted */}
-        <div className="bg-orange-600 rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 border border-orange-400 flex items-center gap-2 sm:gap-3">
-          <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 rounded-md overflow-hidden">
-            <Image
-              src={productImage || "/placeholder.svg"}
-              alt={productTitle}
-              layout="fill"
-              objectFit="cover"
-              className="rounded-md"
-            />
+      <div className="flex justify-end">
+        <div
+          className={`max-w-[280px] sm:max-w-xs ${isUser ? "bg-light-orange" : "bg-off-white"}`}
+        >
+          {/* Product Details Section - Highlighted */}
+          <div className="bg-[#f58225] text-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">
+            <div className="relative w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 rounded-md overflow-hidden">
+              <Image
+                src={productImage || "/placeholder.svg"}
+                alt={productTitle}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-md"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs sm:text-sm font-semibold line-clamp-2 leading-tight flex items-center gap-1">
+                <span className="truncate">{productTitle}</span>
+                <LinkIcon className="w-3 h-3 text-orange-200 flex-shrink-0" />
+              </p>
+              <p className="text-xs font-medium text-orange-100 mt-1">
+                ₦{productPrice.toFixed(2)}
+              </p>
+            </div>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs sm:text-sm font-semibold line-clamp-2 leading-tight flex items-center gap-1">
-              <span className="truncate">{productTitle}</span>
-              <LinkIcon className="w-3 h-3 text-orange-200 flex-shrink-0" />
-            </p>
-            <p className="text-xs font-medium text-orange-100 mt-1">₦{productPrice.toFixed(2)}</p>
-          </div>
+          {/* Message Text */}
+          <p className="text-xs sm:text-sm leading-relaxed">{message}</p>
         </div>
-        {/* Message Text */}
-        <p className="text-xs sm:text-sm leading-relaxed">{message}</p>
       </div>
-    </div>
-     </Link>
+    </Link>
   );
 }

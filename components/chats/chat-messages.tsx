@@ -126,7 +126,7 @@ export default function ChatMessages({
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
-    <div className="flex-1 overflow-y-auto p-2 sm:p-4 sm:pr-5 space-y-4 pb-16">
+    <div className="flex-1 overflow-y-auto p-5 space-y-8 pb-16 sm:space-y-12">
       <div className="flex flex-col items-center justify-center gap-4">
         <div className="flex items-center gap-1 sm:gap-2 rounded-full border-2 border-gray-300 p-1 px-2 sm:p-2 sm:px-3 opacity-80 text-xs text-gray-600 max-w-[95%] text-center">
           <TriangleAlert className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> 
@@ -135,8 +135,8 @@ export default function ChatMessages({
       </div>
       <PhotoProvider>
         {groupedMessages.map((group, index) => (
-          <div key={index} className="space-y-2">
-            <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit ">
+          <div key={index} className="space-y-3">
+            <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mb-4 mx-auto w-fit sm:mb-6">
               {group.date}
             </div>
             {group.messages.map((message) => (

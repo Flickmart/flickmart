@@ -1,9 +1,4 @@
-import {
-  Menu,
-  Search,
-  Archive,
-  Image,
-} from "lucide-react";
+import { Menu, Search, Archive, Image } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Id } from "@/convex/_generated/dataModel";
@@ -14,7 +9,7 @@ import { useRouter, useParams } from "next/navigation";
 interface ChatSidebarProps {
   sidebarOpen: boolean;
   searchQuery: string;
-  setSearchQuery: React.Dispatch<React.SetStateAction<string>>
+  setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
   activeFilter: "all" | "unread" | "archived";
   setActiveFilter: (filter: "all" | "unread" | "archived") => void;
   activeChat: Id<"conversations"> | null;
@@ -45,7 +40,9 @@ export default function ChatSidebar({
 }: ChatSidebarProps) {
   const router = useRouter();
   const params = useParams();
-  const currentConversationId = params?.conversationId as Id<"conversations"> | undefined;
+  const currentConversationId = params?.conversationId as
+    | Id<"conversations">
+    | undefined;
 
   // Count total unread messages
   const totalUnread = conversations.reduce((sum, chat) => sum + chat.unread, 0);
@@ -78,7 +75,9 @@ export default function ChatSidebar({
       {/* Sidebar Header */}
       <div className="px-3 py-2 flex items-center justify-between md:mt-1 ">
         <div className="flex items-center">
-          <h2 className="text-flickmart font-bold text-3xl md:text-xl  ">Chats</h2>
+          <h2 className="text-flickmart font-bold text-3xl md:text-xl  ">
+            Chats
+          </h2>
         </div>
         <Menu className="md:block hidden" />
       </div>
@@ -151,7 +150,7 @@ export default function ChatSidebar({
             No conversations found
           </div>
         ) : (
-          <div className="space-y-1">
+          <div>
             {conversations.map((chat) => (
               <div
                 key={chat.id}
@@ -192,7 +191,9 @@ export default function ChatSidebar({
                       )}
                     >
                       {chat.containsImage && <Image className="h-4 w-4" />}
-                      {chat.lastMessage.length > 20 ? chat.lastMessage.substring(0, 40) + "..." : chat.lastMessage}
+                      {chat.lastMessage.length > 20
+                        ? chat.lastMessage.substring(0, 40) + "..."
+                        : chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (
                       <span className="bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">

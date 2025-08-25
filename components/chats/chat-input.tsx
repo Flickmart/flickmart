@@ -104,7 +104,7 @@ export default function ChatInput({
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message"
-          className="flex-1"
+          className="flex-1 rounded-full"
           disabled={isUploading}
         />
         <Button

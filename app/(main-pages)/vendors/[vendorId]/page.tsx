@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { MessageSquare, Share2, ChevronRight, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import { Doc, Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
@@ -93,13 +93,13 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
           {store ? (
             <div className="mt-4 text-center max-w-md">
               <p className="text-sm">
-                I sell quality shoes in the industry u can also get bags,
-                clothes and other accessories from my store here in flickmart.
+                {store.description ||
+                  "This user hasn't added a store description yet."}
               </p>
             </div>
           ) : (
             <div className="mt-4 text-center max-w-md">
-              <p className="text-sm">Hey there i'm using flickmart!</p>
+              <p className="text-sm">Hey there. I'm using Flickmart!</p>
             </div>
           )}
         </div>

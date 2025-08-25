@@ -31,6 +31,8 @@ const config = {
         flickmartLight: "#f9b122",
         "flickmart-gray": "#6C7275",
         "flickmart-chat-gray": "#E5E3E3C2",
+        "light-orange": "#F7BD54",
+        "off-white": "#F0F0F0",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
