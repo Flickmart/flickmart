@@ -39,6 +39,7 @@ export default defineSchema({
   product: defineTable({
     userId: v.id("users"),
     title: v.string(),
+
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
