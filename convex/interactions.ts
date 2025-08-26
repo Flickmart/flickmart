@@ -30,9 +30,9 @@ export const getPersonalizedProducts = query({
   handler: async (ctx) => {
     const user = await getCurrentUserOrThrow(ctx);
 
-    if (!user) {
-      throw Error("User not found");
-    }
+    // if (!user) {
+    //   throw Error("User not found");
+    // }
     // Get the products to train the Model with
     const allProducts = await ctx.db.query("product").collect();
 
@@ -83,5 +83,40 @@ export const getPersonalizedProducts = query({
       .sort((a, b) => b.score - a.score)
       .slice(0, 10)
       .map((s) => s.product);
+  },
+});
+
+// Collaborative Filtering
+export const getPopularProducts = query({
+  handler: async (ctx) => {
+    // Get User
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      return { status: "error", code: 401, message: "Unauthorized" };
+    }
+
+    // Get all interaction data we will use
+    const likes = await ctx.db.query("likes").collect();
+    const views = await ctx.db.query("views").collect();
+    const comments = await ctx.db.query("comments").collect();
+    const bookmarks = await ctx.db.query("bookmarks").collect();
+
+    // Build a matrix where other user interactions will be kept
+    const users = [
+      ...new Set(likes.map((item) => item.userId)),
+      ...new Set(views.map((item) => item.userId)),
+      ...new Set(comments.map((item) => item.userId)),
+      ...new Set(bookmarks.map((item) => item.userId)),
+    ];
+
+    const products = [
+      ...new Set(likes.map((item) => item.productId)),
+      ...new Set(views.map((item) => item.productId)),
+      ...new Set(comments.map((item) => item.productId)),
+      ...new Set(bookmarks.map((item) => item.productId)),
+    ];
+
+    // Initialize Matrix with nulls
+    const matrix = {};
   },
 });
