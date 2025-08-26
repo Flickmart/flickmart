@@ -118,5 +118,10 @@ export const getPopularProducts = query({
 
     // Initialize Matrix with nulls
     const matrix = {};
+
+    // users.forEach((u) => {
+    //   // matrix[u]= {}
+    //   // products.forEach
+    // });
   },
 });
