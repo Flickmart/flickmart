@@ -6,6 +6,7 @@ import {
   Mail,
   MapPin,
   Phone,
+  User,
   Verified,
   Wallet,
 } from 'lucide-react';
@@ -31,6 +32,8 @@ import { Separator } from '@/components/ui/separator';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
+import Image from 'next/image';
+import MiniListings from '@/components/settings/MiniListings';
 
 // This would typically come from an API or database
 
@@ -75,14 +78,13 @@ export default function PublicProfile() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="min-h-screen bg-gray-50/50 px-4 pt-7 pb-10 lg:p-8">
-          <div className="mx-auto max-w-5xl space-y-5">
+        <div className="min-h-screen bg-gray-50/50 px-4 pt-4 pb-10 lg:p-8">
+          <div className="mx-auto max-w-5xl">
             {/* Header */}
-
-            <Card className="p-6">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-center gap-4">
-                  <Avatar className="h-24 w-24">
+            <span className='font-semibold text-lg'>{user?.username || 'lotanna567'}</span>
+            <div className='flex items-center gap-2 my-3'>
+              <div>
+                <Avatar className="h-24 w-24">
                     <AvatarImage alt="Profile picture" src={user?.imageUrl} />
                     <AvatarFallback>
                       {user?.name
@@ -91,117 +93,97 @@ export default function PublicProfile() {
                         .join('')}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col gap-2">
-                    <h1 className="min-w-10 font-semibold text-2xl">
-                      {user?.name}
-                    </h1>
-                    <p className="text-muted-foreground text-sm">
-                      @{user?.username}
-                    </p>
-                    <div className="flex items-center gap-3 text-amber-400">
-                      <span className="ml-1 text-muted-foreground text-sm">
-                        {hasStore === 404 ? 'Buyer' : 'Seller'}
-                      </span>
-                      {user?.verified ? <Verified size={23} /> : null}
-                    </div>
+              </div>
+              <div>
+                <div className='flex items-center gap-1'>
+                  <h1 className="min-w-10 font-semibold text-base capitalize">
+                    {user?.name || 'Lotanna Stores'}
+                  </h1>
+                  {user?.verified ? <Image src='/vector.png' alt='verified' className='' height={16} width={16} /> : null}
+                </div>
+                <span className="text-sm flex items-center gap-2">
+                  <User className='h-5 w-5' />{hasStore === 404 ? 'Buyer' : 'Seller'}
+                </span>
+              </div>
+            </div>
+            <div className='mb-4'>
+              <span className='text-sm'>Hey there i use Flickmart!</span>
+              <div className='mt-1.5 flex gap-2 items-center'>
+                <Button className='w-5/12'>
+                  <Link
+                    className="size-full"
+                    href={'/settings/personal/update'}
+                  >
+                    Edit Profile
+                  </Link>
+                </Button>
+                <Button className='w-5/12'>
+                    Share Profile
+                </Button>
+                <Button className='w-2/10'>
+                  <Link
+                    className="size-full"
+                    href={'/wallet'}
+                  >
+                    <Wallet />
+                  </Link>
+                </Button>
+              </div>
+              <p className="pt-1.5 text-muted-foreground text-sm">
+                Member since{' '}
+                {user?._creationTime
+                  ? new Date(user._creationTime).toLocaleDateString(
+                      'en-US',
+                      {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      }
+                    )
+                  : ''}
+              </p>
+            </div>
+            <div>
+              <MiniListings
+                updateLength={updateUserProductsLength}
+                userId={user?._id as Id<'users'>}
+              />
+            </div>
+            <div className='mt-6 mb-12'>
+              <div>
+                <h1 className='text-lg/5 font-semibold'>Contact Information</h1>
+                <p className='text-muted-foreground text-[10px]'>Your contact details right here for your easy access.</p>
+              </div>
+              <div className='rounded-lg border mt-4'>
+                <div className='py-3 border-b px-3'>
+                  <h2 className='text-sm font-medium'>Phone</h2>
+                  <div className="flex items-center gap-1">
+                    <Phone className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {user?.contact?.phone || (
+                        <i className="text-gray-400 text-sm">
+                          phone not provided
+                        </i>
+                      )}
+                    </span>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Button>
-                    <Link
-                      className="size-full"
-                      href={'/settings/personal/update'}
-                    >
-                      Edit Profile
-                    </Link>
-                  </Button>
-                  <p className="pt-1.5 text-muted-foreground text-sm">
-                    Member since{' '}
-                    {user?._creationTime
-                      ? new Date(user._creationTime).toLocaleDateString(
-                          'en-US',
-                          {
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric',
-                          }
-                        )
-                      : ''}
-                  </p>
-                </div>
-              </div>
-              <Separator className="my-4" />
-              <div className="flex flex-wrap gap-4 text-sm">
-                <div>
-                  <span className="font-medium">0</span> items sold
-                </div>
-                <div>
-                  <span className="font-medium">{userProductsLength}</span>{' '}
-                  items for sale
-                </div>
-                <div>Preferred payments: Flickpay</div>
-              </div>
-            </Card>
-
-            {/* Main Content */}
-            <div className="grid gap-6 lg:grid-cols-3">
-              {/* Left Column */}
-              <div className="space-y-6 lg:col-span-2">
-                {/* About Me */}
-                <Card className="p-6">
-                  <h2 className="font-semibold text-lg">About Me</h2>
-                  <Separator className="my-4" />
-                  <p className="!leading-normal">
-                    {user?.description || (
-                      <i className="text-gray-400 text-sm">
-                        about not provided
-                      </i>
-                    )}
-                  </p>
-                </Card>
-
-                {/* Recent Listings */}
-                <RecentListings
-                  updateLength={updateUserProductsLength}
-                  userId={user?._id as Id<'users'>}
-                />
-              </div>
-
-              {/* Right Column */}
-              <div className="space-y-6">
-                {/* Contact Information */}
-                <Card className="p-6">
-                  <h2 className="font-semibold text-lg">Contact Information</h2>
-                  <Separator className="my-4" />
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-muted-foreground" />
-                      <span>
-                        {user?.email || (
-                          <i className="text-gray-400 text-sm">
-                            email not provided
-                          </i>
-                        )}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-muted-foreground" />
-                      <span>
-                        {user?.contact?.phone || (
-                          <i className="text-gray-400 text-sm">
-                            phone not provided
-                          </i>
-                        )}
-                      </span>
-                    </div>
+                <div className='py-3 border-b px-3'>
+                  <h2 className='text-sm font-medium'>E-mail</h2>
+                  <div className="flex items-center gap-1">
+                    <Mail className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {user?.email || (
+                        <i className="text-gray-400 text-sm">
+                          email not provided
+                        </i>
+                      )}
+                    </span>
                   </div>
-                </Card>
-
-                {/* Location */}
-                <Card className="p-6">
-                  <h2 className="font-semibold text-lg">Location</h2>
-                  <Separator className="my-4" />
-                  <div className="flex items-center gap-2 capitalize">
+                </div>
+                <div className='py-3 px-3'>
+                  <h2 className='text-sm font-medium'>Location</h2>
+                  <div className="flex items-center gap-1">
                     <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
                     <p>
                       {user?.contact?.address || (
@@ -211,24 +193,14 @@ export default function PublicProfile() {
                       )}
                     </p>
                   </div>
-                </Card>
-                <Card className="p-6">
-                  <Link
-                    className="flex cursor-pointer items-center gap-6 rounded-md px-2 py-2 transition-all duration-300 hover:bg-gray-100"
-                    href="/wallet"
-                  >
-                    <Wallet />
-                    <span className="font-semibold text-lg">Wallet</span>
-                  </Link>
-                </Card>
-
-                {/* Push Notifications */}
-                <PushNotificationSetup />
-
-                {/* Test Component (Development Only) */}
-                <PushNotificationTest />
+                </div>
               </div>
             </div>
+            {/* Push Notifications */}
+            <PushNotificationSetup />
+
+            {/* Test Component (Development Only) */}
+            <PushNotificationTest />
           </div>
         </div>
       </div>
