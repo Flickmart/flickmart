@@ -1,8 +1,8 @@
-import { getMarkdownData } from "@/lib/markdown";
+import { getMarkdownData } from '@/lib/markdown';
 
 const TermsOfService = async () => {
   const contentHtml = await getMarkdownData(
-    "public/markdown/terms-of-service.md"
+    'public/markdown/terms-of-service.md'
   );
 
   return (
@@ -10,7 +10,7 @@ const TermsOfService = async () => {
       <div
         className="prose-lg max-[767px]:prose"
         dangerouslySetInnerHTML={{ __html: contentHtml }}
-      ></div>
+      />
     </main>
   );
 };

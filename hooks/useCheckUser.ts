@@ -1,8 +1,8 @@
-import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
-import { toast } from "sonner";
+import { useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { toast } from 'sonner';
+import { api } from '@/convex/_generated/api';
 
 interface UseCheckUserReturn {
   user: any;
@@ -27,20 +27,20 @@ export default function useCheckUser(): UseCheckUserReturn {
     // User is not authenticated and we haven't redirected yet
     if (user === null && !hasRedirected.current) {
       hasRedirected.current = true;
-      
+
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
-        toast("Oops! You need to be logged in to continue.", {
+        toast('Oops! You need to be logged in to continue.', {
           duration: 3000,
-          position: "top-center",
-          description: "Redirecting you to Sign In Page...",
-          icon: "🔃",
+          position: 'top-center',
+          description: 'Redirecting you to Sign In Page...',
+          icon: '🔃',
         });
       }
-      
+
       // Use replace instead of push to prevent back button issues
-      router.replace("/sign-in");
+      router.replace('/sign-in');
       return;
     }
 
@@ -55,6 +55,6 @@ export default function useCheckUser(): UseCheckUserReturn {
   return {
     user,
     loading,
-    isAuthenticated: user !== null && user !== undefined
+    isAuthenticated: user !== null && user !== undefined,
   };
 }

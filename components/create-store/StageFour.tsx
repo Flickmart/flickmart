@@ -1,38 +1,39 @@
-import Image from "next/image";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useRouter } from "next/navigation";
-import { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from 'convex/react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
+
 const StageFour = () => {
   const router = useRouter();
   const userStore = useQuery(api.store.getStoresByUserId);
   return (
-    <div className="fixed w-5/6 abs-center-x abs-center-y md:static md:translate-x-0 md:translate-y-0">
-      <div className="mx-auto size-32 relative cursor-pointer mb-7 md:mb-10">
+    <div className="abs-center-x abs-center-y fixed w-5/6 md:static md:translate-x-0 md:translate-y-0">
+      <div className="relative mx-auto mb-7 size-32 cursor-pointer md:mb-10">
         <Image
-          src={userStore?.data?.image || "/default-profile.png"}
-          className="w-full h-full object-cover inline-block rounded-full hover:outline hover:outline-2 hover:outline-offset-2"
-          height={60}
-          width={60}
           alt="default profile"
+          className="inline-block h-full w-full rounded-full object-cover hover:outline hover:outline-2 hover:outline-offset-2"
+          height={60}
+          src={userStore?.data?.image || '/default-profile.png'}
+          width={60}
         />
         <Image
-          className="w-7 absolute right-1 bottom-1"
+          alt="check"
+          className="absolute right-1 bottom-1 w-7"
+          height={15}
           src="/check.svg"
           width={15}
-          height={15}
-          alt="check"
         />
       </div>
-      <p className="text-sm mb-16 md:text-base md:mb-0">
+      <p className="mb-16 text-sm md:mb-0 md:text-base">
         Welcome to Flickmart {userStore?.data?.image}, your biggest business
         platform yet
       </p>
       <button
+        className="submit-btn rounded-full text-white capitalize"
         onClick={() => {
-          router.push(`/post-ad`);
+          router.push('/post-ad');
         }}
-        className="submit-btn text-white rounded-full capitalize"
       >
         Sell
       </button>

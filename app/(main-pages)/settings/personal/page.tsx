@@ -1,17 +1,22 @@
-"use client";
+'use client';
+import { useQuery } from 'convex/react';
 import {
+  ArrowLeft,
+  ChevronLeft,
   Mail,
   MapPin,
-  ArrowLeft,
   Phone,
-  Wallet,
-  ChevronLeft,
   Verified,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Separator } from "@/components/ui/separator";
+  Wallet,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import MobileNav from '@/components/MobileNav';
+import { PushNotificationSetup } from '@/components/notifications/PushNotificationSetup';
+import { PushNotificationTest } from '@/components/notifications/PushNotificationTest';
+import RecentListings from '@/components/settings/RecentListings';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,18 +24,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import Link from "next/link";
-import { useState } from "react";
-import RecentListings from "@/components/settings/RecentListings";
-import { useRouter } from "next/navigation";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { Id } from "@/convex/_generated/dataModel";
-import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
-import { PushNotificationTest } from "@/components/notifications/PushNotificationTest";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import MobileNav from "@/components/MobileNav";
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 // This would typically come from an API or database
 
@@ -44,8 +44,8 @@ export default function PublicProfile() {
 
   if (isLoading) {
     return (
-      <div className="h-screen grid place-items-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-flickmart"></div>
+      <div className="grid h-screen place-items-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-flickmart border-b-2" />
       </div>
     );
   }
@@ -58,9 +58,9 @@ export default function PublicProfile() {
     <>
       <MobileNav />
       <div className="w-full">
-        <div className="flex items-center shadow-md px-4 gap-2 text-gray-600">
+        <div className="flex items-center gap-2 px-4 text-gray-600 shadow-md">
           <ChevronLeft
-            className="cursor-pointer size-7  rounded-full transition-all duration-300 hover:bg-gray-200 "
+            className="size-7 cursor-pointer rounded-full transition-all duration-300 hover:bg-gray-200"
             onClick={() => router.back()}
           />
           <Breadcrumb className="bg-white py-7 pl-2">
@@ -75,7 +75,7 @@ export default function PublicProfile() {
             </BreadcrumbList>
           </Breadcrumb>
         </div>
-        <div className="min-h-screen bg-gray-50/50 px-4 pb-10 pt-7 lg:p-8">
+        <div className="min-h-screen bg-gray-50/50 px-4 pt-7 pb-10 lg:p-8">
           <div className="mx-auto max-w-5xl space-y-5">
             {/* Header */}
 
@@ -83,50 +83,50 @@ export default function PublicProfile() {
               <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-4">
                   <Avatar className="h-24 w-24">
-                    <AvatarImage src={user?.imageUrl} alt="Profile picture" />
+                    <AvatarImage alt="Profile picture" src={user?.imageUrl} />
                     <AvatarFallback>
                       {user?.name
-                        .split(" ")
+                        .split(' ')
                         .map((n: string) => n[0])
-                        .join("")}
+                        .join('')}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex flex-col  gap-2">
-                    <h1 className="text-2xl min-w-10 font-semibold">
+                  <div className="flex flex-col gap-2">
+                    <h1 className="min-w-10 font-semibold text-2xl">
                       {user?.name}
                     </h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       @{user?.username}
                     </p>
                     <div className="flex items-center gap-3 text-amber-400">
-                      <span className="ml-1 text-sm text-muted-foreground">
-                        {hasStore === 404 ? "Buyer" : "Seller"}
+                      <span className="ml-1 text-muted-foreground text-sm">
+                        {hasStore === 404 ? 'Buyer' : 'Seller'}
                       </span>
                       {user?.verified ? <Verified size={23} /> : null}
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col gap-2 ">
+                <div className="flex flex-col gap-2">
                   <Button>
                     <Link
-                      href={`/settings/personal/update`}
                       className="size-full"
+                      href={'/settings/personal/update'}
                     >
                       Edit Profile
                     </Link>
                   </Button>
-                  <p className="text-sm pt-1.5 text-muted-foreground">
-                    Member since{" "}
+                  <p className="pt-1.5 text-muted-foreground text-sm">
+                    Member since{' '}
                     {user?._creationTime
                       ? new Date(user._creationTime).toLocaleDateString(
-                          "en-US",
+                          'en-US',
                           {
-                            year: "numeric",
-                            month: "long",
-                            day: "numeric",
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
                           }
                         )
-                      : ""}
+                      : ''}
                   </p>
                 </div>
               </div>
@@ -136,7 +136,7 @@ export default function PublicProfile() {
                   <span className="font-medium">0</span> items sold
                 </div>
                 <div>
-                  <span className="font-medium">{userProductsLength}</span>{" "}
+                  <span className="font-medium">{userProductsLength}</span>{' '}
                   items for sale
                 </div>
                 <div>Preferred payments: Flickpay</div>
@@ -149,7 +149,7 @@ export default function PublicProfile() {
               <div className="space-y-6 lg:col-span-2">
                 {/* About Me */}
                 <Card className="p-6">
-                  <h2 className="text-lg font-semibold">About Me</h2>
+                  <h2 className="font-semibold text-lg">About Me</h2>
                   <Separator className="my-4" />
                   <p className="!leading-normal">
                     {user?.description || (
@@ -162,8 +162,8 @@ export default function PublicProfile() {
 
                 {/* Recent Listings */}
                 <RecentListings
-                  userId={user?._id as Id<"users">}
                   updateLength={updateUserProductsLength}
+                  userId={user?._id as Id<'users'>}
                 />
               </div>
 
@@ -171,7 +171,7 @@ export default function PublicProfile() {
               <div className="space-y-6">
                 {/* Contact Information */}
                 <Card className="p-6">
-                  <h2 className="text-lg font-semibold">Contact Information</h2>
+                  <h2 className="font-semibold text-lg">Contact Information</h2>
                   <Separator className="my-4" />
                   <div className="space-y-4">
                     <div className="flex items-center gap-2">
@@ -199,13 +199,13 @@ export default function PublicProfile() {
 
                 {/* Location */}
                 <Card className="p-6">
-                  <h2 className="text-lg font-semibold">Location</h2>
+                  <h2 className="font-semibold text-lg">Location</h2>
                   <Separator className="my-4" />
                   <div className="flex items-center gap-2 capitalize">
-                    <MapPin className="h-4 w-4 text-muted-foreground mt-1" />
+                    <MapPin className="mt-1 h-4 w-4 text-muted-foreground" />
                     <p>
                       {user?.contact?.address || (
-                        <i className="normal-case text-gray-400 text-sm">
+                        <i className="text-gray-400 text-sm normal-case">
                           location not provided
                         </i>
                       )}
@@ -214,11 +214,11 @@ export default function PublicProfile() {
                 </Card>
                 <Card className="p-6">
                   <Link
+                    className="flex cursor-pointer items-center gap-6 rounded-md px-2 py-2 transition-all duration-300 hover:bg-gray-100"
                     href="/wallet"
-                    className="flex items-center gap-6 transition-all duration-300 py-2 px-2 rounded-md cursor-pointer hover:bg-gray-100"
                   >
                     <Wallet />
-                    <span className="text-lg font-semibold">Wallet</span>
+                    <span className="font-semibold text-lg">Wallet</span>
                   </Link>
                 </Card>
 

@@ -1,6 +1,6 @@
-import { ChevronRight } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import { ChevronRight } from 'lucide-react';
+import Image from 'next/image';
+import React from 'react';
 
 export default function SheetItems({
   categoryName,
@@ -13,39 +13,39 @@ export default function SheetItems({
   imageUrl?: string;
   type: string;
 }) {
-  const imgSrc = categoryName.includes("-")
-    ? categoryName.split(" ").slice(0, 2).join(" ")
+  const imgSrc = categoryName.includes('-')
+    ? categoryName.split(' ').slice(0, 2).join(' ')
     : categoryName;
   return (
     <div
+      className={`flex cursor-pointer items-center justify-between border-t py-2 pr-5 ${type === 'categories' ? 'border-gray-300' : 'border-gray-200'} `}
       onClick={() => {
-        if (type === "subcategories" && closeSheet) {
+        if (type === 'subcategories' && closeSheet) {
           closeSheet();
           return;
         }
         return;
       }}
-      className={`cursor-pointer flex items-center justify-between py-2 pr-5 border-t  ${type === "categories" ? "border-gray-300" : "border-gray-200"} `}
     >
-      <div className="flex items-center pl-4 gap-5">
+      <div className="flex items-center gap-5 pl-4">
         <div className="size-14">
           <Image
+            alt={categoryName}
+            className="size-full object-contain"
             height={300}
-            width={300}
+            // src={imageUrl}
             src={
-              type === "categories"
+              type === 'categories'
                 ? `/${categoryName}.png`
                 : `/categories/${imgSrc}.png`
             }
-            // src={imageUrl}
-            alt={categoryName}
-            className="size-full object-contain"
+            width={300}
           />
         </div>
-        <span className="text-gray-800 font-semibold">{categoryName}</span>
+        <span className="font-semibold text-gray-800">{categoryName}</span>
       </div>
       <div className="text-gray-600">
-        {type === "categories" ? <ChevronRight /> : null}
+        {type === 'categories' ? <ChevronRight /> : null}
       </div>
     </div>
   );

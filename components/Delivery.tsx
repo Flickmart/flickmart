@@ -1,47 +1,47 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import React from "react";
-import { Button } from "./ui/button";
-import { usePathname } from "next/navigation";
-import { toast } from "sonner";
+import Image from 'next/image';
+import { usePathname } from 'next/navigation';
+import React from 'react';
+import { toast } from 'sonner';
+import { Button } from './ui/button';
 
 export default function Delivery() {
   const pathname = usePathname();
 
   // Pages where SearchBox should not be shown
   const hiddenPages = [
-    "/sign-in",
-    "/sign-up",
-    "/forgot-password",
-    "/notifications",
-    "/settings",
-    "post-ad",
-    "/create-store",
-    "/saved",
-    "/chat",
+    '/sign-in',
+    '/sign-up',
+    '/forgot-password',
+    '/notifications',
+    '/settings',
+    'post-ad',
+    '/create-store',
+    '/saved',
+    '/chat',
   ];
 
   if (hiddenPages.includes(pathname)) {
     return null; // Don't render any component
   }
   return (
-    <div className="lg:h-96 bg-flickmartLight lg:flex gap-8 justify-between">
+    <div className="justify-between gap-8 bg-flickmartLight lg:flex lg:h-96">
       <Image
+        alt="delivery"
+        className="h-full w-full object-cover lg:w-5/12"
+        height={500}
         priority
         src="/delivery.png"
         width={500}
-        height={500}
-        alt="delivery"
-        className="lg:w-5/12 w-full h-full object-cover"
       />
-      <div className="flex-grow flex items-center capitalize ">
-        <div className="lg:p-5 p-7 flex flex-col justify-center lg:space-y-7 space-y-4">
-          <h2 className="uppercase font-bold text-2xl lg:text-3xl text-red-950">
+      <div className="flex flex-grow items-center capitalize">
+        <div className="flex flex-col justify-center space-y-4 p-7 lg:space-y-7 lg:p-5">
+          <h2 className="font-bold text-2xl text-red-950 uppercase lg:text-3xl">
             delivery services
           </h2>
           <div className="flex flex-col space-y-2">
-            <h3 className=" lg:text-2xl text-xl normal-case">
+            <h3 className="text-xl normal-case lg:text-2xl">
               Become a delivery partner with us.
             </h3>
             <p className="">bringing your orders right to your doorstep</p>
@@ -49,8 +49,8 @@ export default function Delivery() {
           </div>
 
           <Button
-            onClick={() => toast.success("Coming Soon...")}
-            className="w-2/4 py-5 capitalize bg-black"
+            className="w-2/4 bg-black py-5 capitalize"
+            onClick={() => toast.success('Coming Soon...')}
           >
             apply now
           </Button>

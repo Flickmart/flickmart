@@ -170,9 +170,7 @@ export default function ChatLayout({
       </div>
 
       {/* Main content area */}
-      <div className="flex-1">
-        {children}
-      </div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }

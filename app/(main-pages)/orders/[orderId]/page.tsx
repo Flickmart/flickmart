@@ -1,66 +1,67 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import { useQuery } from "convex/react";
-import { useAuth, useUser } from "@clerk/nextjs";
-import { useAuthUser } from "@/hooks/useAuthUser";
+import { useAuth, useUser } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
 import {
+  AlertCircle,
+  ArrowLeft,
   CheckCircle,
   Clock,
   CreditCard,
-  User,
-  Package,
-  AlertCircle,
   Loader2,
+  Package,
   ShieldCheck,
-  ArrowLeft
-} from "lucide-react";
-import Link from "next/link";
-
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+  User,
+} from 'lucide-react';
+import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useState } from 'react';
+import { ProductsList } from '@/components/orders';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Separator } from "@/components/ui/separator";
-import { ProductsList } from "@/components/orders";
-import { Skeleton } from "@/components/ui/skeleton";
-
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 // Error component for invalid order IDs
 const OrderNotFound = () => (
-  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+  <div className="flex min-h-screen items-center justify-center bg-gray-50">
     <div className="text-center">
-      <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+      <div className="mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
         <svg
-          className="w-12 h-12 text-gray-400"
+          className="h-12 w-12 text-gray-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
           <path
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
       </div>
-      <h1 className="text-2xl font-semibold text-gray-900 mb-2">Order Not Found</h1>
-      <p className="text-gray-500 mb-6">
-        The order you're looking for doesn't exist or you don't have permission to view it.
+      <h1 className="mb-2 font-semibold text-2xl text-gray-900">
+        Order Not Found
+      </h1>
+      <p className="mb-6 text-gray-500">
+        The order you're looking for doesn't exist or you don't have permission
+        to view it.
       </p>
       <Link href="/orders">
         <Button className="bg-flickmart hover:bg-flickmart/90">
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Orders
         </Button>
       </Link>
@@ -70,7 +71,7 @@ const OrderNotFound = () => (
 
 export default function OrderDetailsPage() {
   const params = useParams();
-  const orderId = params.orderId as Id<"orders">;
+  const orderId = params.orderId as Id<'orders'>;
 
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
   const { getToken } = useAuth();
@@ -82,24 +83,24 @@ export default function OrderDetailsPage() {
 
   const products = useQuery(
     api.orders.getProductsByIds,
-    order ? { productIds: order.productIds } : "skip"
+    order ? { productIds: order.productIds } : 'skip'
   );
   if (order === undefined) {
     return (
-      <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+      <div className="mx-auto max-w-4xl space-y-4 p-4 sm:space-y-6 sm:p-6">
         <div className="space-y-2">
-          <Skeleton className="h-6 sm:h-8 w-48 sm:w-64" />
-          <Skeleton className="h-3 sm:h-4 w-64 sm:w-96" />
+          <Skeleton className="h-6 w-48 sm:h-8 sm:w-64" />
+          <Skeleton className="h-3 w-64 sm:h-4 sm:w-96" />
         </div>
         <Card>
-          <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
-            <Skeleton className="h-5 sm:h-6 w-24 sm:w-32" />
-            <Skeleton className="h-3 sm:h-4 w-36 sm:w-48" />
+          <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
+            <Skeleton className="h-5 w-24 sm:h-6 sm:w-32" />
+            <Skeleton className="h-3 w-36 sm:h-4 sm:w-48" />
           </CardHeader>
-          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-3 sm:space-y-4">
-            <Skeleton className="h-3 sm:h-4 w-full" />
-            <Skeleton className="h-3 sm:h-4 w-3/4" />
-            <Skeleton className="h-3 sm:h-4 w-1/2" />
+          <CardContent className="space-y-3 px-4 pb-4 sm:space-y-4 sm:px-6 sm:pb-6">
+            <Skeleton className="h-3 w-full sm:h-4" />
+            <Skeleton className="h-3 w-3/4 sm:h-4" />
+            <Skeleton className="h-3 w-1/2 sm:h-4" />
           </CardContent>
         </Card>
       </div>
@@ -113,9 +114,9 @@ export default function OrderDetailsPage() {
 
   if (authLoading) {
     return (
-      <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="mx-auto max-w-4xl p-4 sm:p-6">
         <Card>
-          <CardContent className="flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6">
+          <CardContent className="flex items-center justify-center px-4 py-8 sm:px-6 sm:py-12">
             <div className="flex items-center space-x-2">
               <Loader2 className="h-4 w-4 animate-spin" />
               <span className="text-sm sm:text-base">Authenticating...</span>
@@ -140,28 +141,28 @@ export default function OrderDetailsPage() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "in_escrow":
+      case 'in_escrow':
         return (
           <Badge
+            className="border-yellow-200 bg-yellow-100 text-yellow-800"
             variant="secondary"
-            className="bg-yellow-100 text-yellow-800 border-yellow-200"
           >
-            <Clock className="w-3 h-3 mr-1" />
+            <Clock className="mr-1 h-3 w-3" />
             In Escrow
           </Badge>
         );
-      case "completed":
+      case 'completed':
         return (
           <Badge
+            className="border-green-200 bg-green-100 text-green-800"
             variant="secondary"
-            className="bg-green-100 text-green-800 border-green-200"
           >
-            <CheckCircle className="w-3 h-3 mr-1" />
+            <CheckCircle className="mr-1 h-3 w-3" />
             Completed
           </Badge>
         );
       default:
-        return <Badge variant="outline">{status.replace("_", " ")}</Badge>;
+        return <Badge variant="outline">{status.replace('_', ' ')}</Badge>;
     }
   };
 
@@ -170,17 +171,17 @@ export default function OrderDetailsPage() {
     setError(null);
 
     try {
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Authentication failed. Please log in again.");
+        setError('Authentication failed. Please log in again.');
         return;
       }
       const result = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/orders/confirm-completion`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -188,7 +189,7 @@ export default function OrderDetailsPage() {
           }),
         }
       );
-      console.log("Confirmation result:", result);
+      console.log('Confirmation result:', result);
       // The useQuery will automatically update the UI with the new state!
     } catch (err: any) {
       setError(err.message);
@@ -198,25 +199,29 @@ export default function OrderDetailsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
+    <div className="mx-auto max-w-4xl space-y-4 p-4 sm:space-y-6 sm:p-6">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Order Details</h1>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <h1 className="font-bold text-2xl tracking-tight sm:text-3xl">
+          Order Details
+        </h1>
+        <p className="text-muted-foreground text-sm sm:text-base">
           Track your transaction and manage completion confirmations
         </p>
       </div>
 
       {/* Order Information Card */}
       <Card>
-        <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-1">
               <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                <Package className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
-                <span className="truncate">Order #{order._id.slice(-8).toUpperCase()}</span>
+                <Package className="h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
+                <span className="truncate">
+                  Order #{order._id.slice(-8).toUpperCase()}
+                </span>
               </CardTitle>
-              <CardDescription className="text-sm sm:text-base mt-1">
+              <CardDescription className="mt-1 text-sm sm:text-base">
                 Transaction details and current status
               </CardDescription>
             </div>
@@ -225,15 +230,15 @@ export default function OrderDetailsPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        <CardContent className="space-y-4 px-4 pb-4 sm:space-y-6 sm:px-6 sm:pb-6">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
             {/* Transaction Amount */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+              <div className="flex items-center gap-2 font-medium text-muted-foreground text-xs sm:text-sm">
                 <CreditCard className="h-3 w-3 sm:h-4 sm:w-4" />
                 Transaction Amount
               </div>
-              <div className="text-xl sm:text-2xl font-bold">
+              <div className="font-bold text-xl sm:text-2xl">
                 ₦{(order.amount / 100).toFixed(2)}
               </div>
             </div>
@@ -241,19 +246,23 @@ export default function OrderDetailsPage() {
             {/* Parties Involved */}
             <div className="space-y-3 sm:space-y-4">
               <div className="space-y-1 sm:space-y-2">
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+                <div className="flex items-center gap-2 font-medium text-muted-foreground text-xs sm:text-sm">
                   <User className="h-3 w-3 sm:h-4 sm:w-4" />
                   Buyer
                 </div>
-                <div className="font-medium text-sm sm:text-base truncate">{order.buyerName}</div>
+                <div className="truncate font-medium text-sm sm:text-base">
+                  {order.buyerName}
+                </div>
               </div>
 
               <div className="space-y-1 sm:space-y-2">
-                <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+                <div className="flex items-center gap-2 font-medium text-muted-foreground text-xs sm:text-sm">
                   <User className="h-3 w-3 sm:h-4 sm:w-4" />
                   Seller
                 </div>
-                <div className="font-medium text-sm sm:text-base truncate">{order.sellerName}</div>
+                <div className="truncate font-medium text-sm sm:text-base">
+                  {order.sellerName}
+                </div>
               </div>
             </div>
           </div>
@@ -261,39 +270,41 @@ export default function OrderDetailsPage() {
       </Card>
 
       {/* Status-specific content */}
-      {order.status === "in_escrow" && (
+      {order.status === 'in_escrow' && (
         <Card className="border-yellow-200 bg-yellow-50/50">
-          <CardHeader className="px-4 sm:px-6 py-4 sm:py-6">
-            <CardTitle className="flex items-center gap-2 text-yellow-800 text-base sm:text-lg">
-              <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+          <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
+            <CardTitle className="flex items-center gap-2 text-base text-yellow-800 sm:text-lg">
+              <ShieldCheck className="h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
               Escrow Protection Active
             </CardTitle>
-            <CardDescription className="text-yellow-700 text-sm sm:text-base">
+            <CardDescription className="text-sm text-yellow-700 sm:text-base">
               Funds are securely held until both parties confirm completion
             </CardDescription>
           </CardHeader>
-          <CardContent className="px-4 sm:px-6 pb-4 sm:pb-6 space-y-4 sm:space-y-6">
+          <CardContent className="space-y-4 px-4 pb-4 sm:space-y-6 sm:px-6 sm:pb-6">
             {/* Confirmation Status */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg border bg-background gap-2 sm:gap-0">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+              <div className="flex flex-col gap-2 rounded-lg border bg-background p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:p-4">
                 <div className="space-y-1">
-                  <div className="font-medium text-sm sm:text-base">Your Confirmation</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">
-                    {isBuyer ? "As the buyer" : "As the seller"}
+                  <div className="font-medium text-sm sm:text-base">
+                    Your Confirmation
+                  </div>
+                  <div className="text-muted-foreground text-xs sm:text-sm">
+                    {isBuyer ? 'As the buyer' : 'As the seller'}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 self-start sm:self-center">
                   {hasUserConfirmed ? (
                     <>
-                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-green-600 font-medium text-sm sm:text-base">
+                      <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-600 sm:h-5 sm:w-5" />
+                      <span className="font-medium text-green-600 text-sm sm:text-base">
                         Confirmed
                       </span>
                     </>
                   ) : (
                     <>
-                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 flex-shrink-0" />
-                      <span className="text-yellow-600 font-medium text-sm sm:text-base">
+                      <Clock className="h-4 w-4 flex-shrink-0 text-yellow-600 sm:h-5 sm:w-5" />
+                      <span className="font-medium text-sm text-yellow-600 sm:text-base">
                         Pending
                       </span>
                     </>
@@ -301,25 +312,27 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-3 sm:p-4 rounded-lg border bg-background gap-2 sm:gap-0">
+              <div className="flex flex-col gap-2 rounded-lg border bg-background p-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0 sm:p-4">
                 <div className="space-y-1">
-                  <div className="font-medium text-sm sm:text-base">Other Party</div>
-                  <div className="text-xs sm:text-sm text-muted-foreground">
-                    {isBuyer ? "Seller confirmation" : "Buyer confirmation"}
+                  <div className="font-medium text-sm sm:text-base">
+                    Other Party
+                  </div>
+                  <div className="text-muted-foreground text-xs sm:text-sm">
+                    {isBuyer ? 'Seller confirmation' : 'Buyer confirmation'}
                   </div>
                 </div>
                 <div className="flex items-center gap-2 self-start sm:self-center">
                   {otherPartyConfirmed ? (
                     <>
-                      <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-600 flex-shrink-0" />
-                      <span className="text-green-600 font-medium text-sm sm:text-base">
+                      <CheckCircle className="h-4 w-4 flex-shrink-0 text-green-600 sm:h-5 sm:w-5" />
+                      <span className="font-medium text-green-600 text-sm sm:text-base">
                         Confirmed
                       </span>
                     </>
                   ) : (
                     <>
-                      <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-600 flex-shrink-0" />
-                      <span className="text-yellow-600 font-medium text-sm sm:text-base">
+                      <Clock className="h-4 w-4 flex-shrink-0 text-yellow-600 sm:h-5 sm:w-5" />
+                      <span className="font-medium text-sm text-yellow-600 sm:text-base">
                         Pending
                       </span>
                     </>
@@ -343,21 +356,25 @@ export default function OrderDetailsPage() {
                 </Alert>
 
                 <Button
-                  onClick={handleConfirm}
+                  className="w-full bg-green-600 text-sm hover:bg-green-700 sm:text-base"
                   disabled={isConfirming}
+                  onClick={handleConfirm}
                   size="lg"
-                  className="w-full bg-green-600 hover:bg-green-700  text-sm sm:text-base"
                 >
                   {isConfirming ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      <span className="truncate">Confirming Transaction...</span>
+                      <span className="truncate">
+                        Confirming Transaction...
+                      </span>
                     </>
                   ) : (
                     <>
                       <CheckCircle className="mr-2 h-4 w-4 flex-shrink-0" />
                       <span className="truncate">
-                        {isBuyer ? "I have received the product" : "I have delivered the products "}
+                        {isBuyer
+                          ? 'I have received the product'
+                          : 'I have delivered the products '}
                       </span>
                     </>
                   )}
@@ -378,26 +395,28 @@ export default function OrderDetailsPage() {
             {error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
-                <AlertDescription className="text-sm sm:text-base">{error}</AlertDescription>
+                <AlertDescription className="text-sm sm:text-base">
+                  {error}
+                </AlertDescription>
               </Alert>
             )}
           </CardContent>
         </Card>
       )}
 
-      {order.status === "completed" && (
+      {order.status === 'completed' && (
         <Card className="border-green-200 bg-green-50/50">
-          <CardContent className="px-4 sm:px-6 py-4 sm:py-6">
-            <div className="text-center space-y-3 sm:space-y-4">
-              <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-green-100 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-600" />
+          <CardContent className="px-4 py-4 sm:px-6 sm:py-6">
+            <div className="space-y-3 text-center sm:space-y-4">
+              <div className="mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-green-100 sm:h-12 sm:w-12">
+                <CheckCircle className="h-5 w-5 text-green-600 sm:h-6 sm:w-6" />
               </div>
               <div className="space-y-1 sm:space-y-2">
-                <h2 className="text-lg sm:text-xl font-bold text-green-800">
+                <h2 className="font-bold text-green-800 text-lg sm:text-xl">
                   Transaction Complete!
                 </h2>
-                <p className="text-green-700 text-sm sm:text-base px-2">
-                  This transaction was successfully completed on{" "}
+                <p className="px-2 text-green-700 text-sm sm:text-base">
+                  This transaction was successfully completed on{' '}
                   <span className="font-medium">
                     {new Date(order.completedAt!).toLocaleString()}
                   </span>
@@ -408,9 +427,9 @@ export default function OrderDetailsPage() {
         </Card>
       )}
       <ProductsList
-        products={products}
+        error={products === null ? 'Failed to load products' : undefined}
         isLoading={products === undefined}
-        error={products === null ? "Failed to load products" : undefined}
+        products={products}
       />
     </div>
   );

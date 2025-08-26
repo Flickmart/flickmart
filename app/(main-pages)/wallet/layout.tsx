@@ -1,11 +1,9 @@
-"use client";
+'use client';
 
-import { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { type ReactNode, useEffect, useState } from 'react';
 
 const layout = ({ children }: { children: ReactNode }) => {
   const [mounted, setMounted] = useState(false);
- 
 
   useEffect(() => {
     setMounted(true);
@@ -15,7 +13,7 @@ const layout = ({ children }: { children: ReactNode }) => {
     return null;
   }
 
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     return <>{children}</>;
   }
 };

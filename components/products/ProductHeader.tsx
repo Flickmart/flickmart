@@ -1,13 +1,13 @@
-import { Copy, MapPin, MessageCircle, Check, ExternalLink } from "lucide-react";
-import React, { useState } from "react";
-import { Button } from "../ui/button";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Id } from "@/convex/_generated/dataModel";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { initialChat, shareProduct } from "@/utils/helpers";
-import { useAuthUser } from "@/hooks/useAuthUser";
+import { Check, Copy, ExternalLink, MapPin, MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
+import { toast } from 'sonner';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { initialChat, shareProduct } from '@/utils/helpers';
+import { Button } from '../ui/button';
+import { Input } from '../ui/input';
+import { Label } from '../ui/label';
 
 export default function ProductHeader({
   location,
@@ -22,15 +22,17 @@ export default function ProductHeader({
   title: string;
   price: number;
   timestamp: string;
-  userId: Id<"users">;
-  productId: Id<"product">;
+  userId: Id<'users'>;
+  productId: Id<'product'>;
   description: string;
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
   const dateDiff = dateNow.getTime() - date.getTime();
   const router = useRouter();
-  const { user, isAuthenticated } = useAuthUser({ redirectOnUnauthenticated: false });
+  const { user, isAuthenticated } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
@@ -40,34 +42,34 @@ export default function ProductHeader({
 
   const timeSince = () => {
     let value = 0;
-    let timeSpan = "";
+    let timeSpan = '';
     if (monthsAgo) {
       value = monthsAgo;
-      timeSpan = "month";
+      timeSpan = 'month';
     } else if (weeksAgo) {
       value = weeksAgo;
-      timeSpan = "week";
+      timeSpan = 'week';
     } else if (daysAgo) {
       value = daysAgo;
-      timeSpan = "day";
+      timeSpan = 'day';
     } else if (hoursAgo) {
       value = hoursAgo;
-      timeSpan = "hour";
+      timeSpan = 'hour';
     } else if (minsAgo) {
       value = minsAgo;
-      timeSpan = "min";
+      timeSpan = 'min';
     }
     if (value > 1) {
-      timeSpan += "s";
+      timeSpan += 's';
     }
     return value && timeSpan
       ? `${value} ${timeSpan} ago`
-      : "less than a minute ago";
+      : 'less than a minute ago';
   };
 
   const handleChat = () => {
     if (!isAuthenticated) {
-      toast.error("Please sign in to perform this action");
+      toast.error('Please sign in to perform this action');
       return;
     }
     initialChat({
@@ -83,35 +85,35 @@ export default function ProductHeader({
   }
 
   return (
-    <div className="lg:space-y-3 w-full space-y-4 bg-white rounded-md p-5">
-      <div className="flex text-xs font-light items-center gap-2 text-gray-500">
+    <div className="w-full space-y-4 rounded-md bg-white p-5 lg:space-y-3">
+      <div className="flex items-center gap-2 font-light text-gray-500 text-xs">
         <MapPin size={17} />
         <span className="capitalize">
           {location}, <span className="normal-case">{timeSince()}</span>
         </span>
       </div>
-      <h2 className="text-xl font-bold capitalize text-gray-800">{title}</h2>
-      <div className="space-x-3 flex items-center">
-        <span className="inline-block text-flickmart-chat-orange text-lg font-extrabold  tracking-wider">
+      <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>
+      <div className="flex items-center space-x-3">
+        <span className="inline-block font-extrabold text-flickmart-chat-orange text-lg tracking-wider">
           &#8358;{price.toLocaleString()}
         </span>
         {/* <span className="bg-green-500/80 tracking-widest p-1 rounded-md text-white font-semibold text-xs">Negotiable</span> */}
       </div>
-      <div className=" flex  gap-3 text-white">
+      <div className="flex gap-3 text-white">
         <button
-          className="p-2 px-3 w-2/4 lg:w-1/4 font-medium bg-flickmart-chat-orange rounded-md flex items-center justify-center gap-2"
+          className="flex w-2/4 items-center justify-center gap-2 rounded-md bg-flickmart-chat-orange p-2 px-3 font-medium lg:w-1/4"
           onClick={handleChat}
         >
-          {" "}
+          {' '}
           <MessageCircle /> Chat vendor
         </button>
         {/* <Dialog> */}
         {/* <DialogTrigger asChild> */}
         <button
+          className="flex w-2/4 items-center justify-center gap-2 rounded-md border border-flickmart-chat-orange p-2 px-3 font-medium text-flickmart-chat-orange lg:w-1/4"
           onClick={handleShare}
-          className="p-2 px-3 w-2/4 lg:w-1/4 font-medium border border-flickmart-chat-orange text-flickmart-chat-orange rounded-md flex items-center justify-center gap-2"
         >
-          {" "}
+          {' '}
           <ExternalLink /> Share
         </button>
       </div>

@@ -1,19 +1,19 @@
-"use client";
-import useNav from "@/hooks/useNav";
+'use client';
+import { useQuery } from 'convex/react';
 import {
   Bookmark,
   House,
   MessageSquareText,
   Store,
   UserRound,
-} from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { FadeLoader } from "react-spinners";
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { FadeLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { api } from '@/convex/_generated/api';
+import useNav from '@/hooks/useNav';
 
 export default function MobileNav() {
   const pathname = usePathname();
@@ -25,11 +25,11 @@ export default function MobileNav() {
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const unreadCount = unreadNotifications.filter(
-    (notification) => notification.type === "new_message"
+    (notification) => notification.type === 'new_message'
   ).length;
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chat"];
+  const hiddenPages = ['/sign-in', '/sign-up', '/forgot-password', '/chat'];
   const userStore = useQuery(api.store.getStoresByUserId);
   const firstUserStore = userStore?.data;
 
@@ -37,103 +37,103 @@ export default function MobileNav() {
     return null; // Don't render any component
   }
   useEffect(() => {
-    router.prefetch("/post-ad");
+    router.prefetch('/post-ad');
     if (firstUserStore && isLoadingAd) {
       setIsLoadingAd(false);
-      router.push("/post-ad");
+      router.push('/post-ad');
     }
   }, [pathname, firstUserStore]);
 
   return (
     <header
-      className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} transition duration-300 z-40 bg-white lg:hidden w-full fixed bottom-0 text-[12px]`}
+      className={`${isVisible ? 'translate-y-0' : 'translate-y-[160%]'} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden`}
     >
-      <div className="relative w-[94%] mx-auto flex justify-between py-3">
+      <div className="relative mx-auto flex w-[94%] justify-between py-3">
         <Link
+          className="group flex flex-col items-center justify-center gap-1.5"
           href="/"
-          className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <House
-            className={`${pathname === "/" ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
+            className={`${pathname === '/' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === "/" ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
+            className={`${pathname === '/' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
           >
             Home
           </span>
         </Link>
         <Link
+          className="group flex flex-col items-center justify-center gap-1.5"
           href="/saved"
-          className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <Bookmark
-            className={`${pathname === "/saved" ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
+            className={`${pathname === '/saved' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === "/saved" ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
+            className={`${pathname === '/saved' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
           >
             Saved
           </span>
         </Link>
         <Link
+          className="group mx-6 flex flex-col items-center justify-center gap-1.5"
+          href={
+            userStore === undefined
+              ? '#'
+              : userStore?.data
+                ? '/post-ad'
+                : '/create-store'
+          }
           onClick={(e) => {
             if (userStore === undefined) {
-              toast("Retrieving your store, please wait...", {
-                description: "This may take a few seconds.",
+              toast('Retrieving your store, please wait...', {
+                description: 'This may take a few seconds.',
                 duration: 3000,
-                position: "top-center",
-                style: { background: "#fff", color: "#000" },
+                position: 'top-center',
+                style: { background: '#fff', color: '#000' },
               });
               setIsLoadingAd(true);
             }
           }}
-          href={
-            userStore === undefined
-              ? "#"
-              : userStore?.data
-                ? "/post-ad"
-                : "/create-store"
-          }
-          className="mx-6 flex flex-col items-center justify-center gap-1.5 group"
         >
-          <div className=" mx-6 absolute -top-10 flex flex-col gap-1.5 items-center bg-white rounded-full p-3">
-            <div className="bg-flickmart p-5 rounded-full flex justify-center items-center text-white shadow-lg shadow-black/20">
-              <Store className=" h-5 w-5" />
+          <div className="-top-10 absolute mx-6 flex flex-col items-center gap-1.5 rounded-full bg-white p-3">
+            <div className="flex items-center justify-center rounded-full bg-flickmart p-5 text-white shadow-black/20 shadow-lg">
+              <Store className="h-5 w-5" />
             </div>
-            <span className="group-hover:text-flickmart duration-500">
+            <span className="duration-500 group-hover:text-flickmart">
               Sell
             </span>
           </div>
         </Link>
         <Link
-          href={"/chat"}
-          className="flex flex-col items-center justify-center gap-1.5 group relative"
+          className="group relative flex flex-col items-center justify-center gap-1.5"
+          href={'/chat'}
         >
           <div className="relative">
             <MessageSquareText
-              className={`${pathname.startsWith("/chat") ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
+              className={`${pathname.startsWith('/chat') ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
             />
             {unreadCount > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full min-w-4 h-4 flex items-center justify-center px-1">
-                {unreadCount > 99 ? "99+" : unreadCount}
+              <span className="-top-2 -right-2 absolute flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-white text-xs">
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </div>
           <span
-            className={`${pathname.startsWith("/chat") ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
+            className={`${pathname.startsWith('/chat') ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
           >
             Chats
           </span>
         </Link>
         <Link
+          className="group flex flex-col items-center justify-center gap-1.5"
           href="settings/personal"
-          className="flex flex-col items-center justify-center gap-1.5 group"
         >
           <UserRound
-            className={`${pathname === "/profile" ? "text-flickmart" : "text-flickmart-gray"} group-hover:text-flickmart duration-500 h-5 w-5`}
+            className={`${pathname === '/profile' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === "/profile" ? "text-flickmart" : ""} group-hover:text-flickmart duration-500`}
+            className={`${pathname === '/profile' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
           >
             Profile
           </span>

@@ -1,6 +1,7 @@
-"use client";
-import { useOthersStore } from "@/store/useOthersStore";
-import React, { useEffect } from "react";
+'use client';
+import type React from 'react';
+import { useEffect } from 'react';
+import { useOthersStore } from '@/store/useOthersStore';
 
 export default function Authenticator({
   children,

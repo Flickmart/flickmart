@@ -1,16 +1,16 @@
-import { Doc, Id } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
+import { toast } from 'sonner';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
 
 interface ChatParams {
-  user: Doc<"users"> | null;
-  userId: Id<"users">;
+  user: Doc<'users'> | null;
+  userId: Id<'users'>;
   onNavigate: (path: string) => void;
-  productId?: Id<"product">;
+  productId?: Id<'product'>;
 }
 interface ShareParams {
   title: string;
   description: string;
-  productId?: Id<"product">;
+  productId?: Id<'product'>;
   url?: string;
 }
 
@@ -21,15 +21,15 @@ export const initialChat = async ({
   productId,
 }: ChatParams) => {
   if (!user) {
-    toast.error("Please login to chat with vendor");
+    toast.error('Please login to chat with vendor');
     return;
   }
-  console.log("chat vendor clicked");
+  console.log('chat vendor clicked');
 
   // Navigate to chat page with vendor ID as query parameter
   onNavigate(`/chat?vendorId=${userId}&productId=${productId}`);
 
-  toast.success("Starting chat with vendor");
+  toast.success('Starting chat with vendor');
 };
 
 export async function shareProduct({
@@ -39,10 +39,10 @@ export async function shareProduct({
   url,
 }: ShareParams) {
   const shareData = {
-    title: title || "Check out this product",
+    title: title || 'Check out this product',
     text:
-      description?.substring(0, 100) + "..." ||
-      "Check out this product on Flickmart",
+      description?.substring(0, 100) + '...' ||
+      'Check out this product on Flickmart',
     url: url || `https://flickmart.app/product/${productId}`,
   };
   try {

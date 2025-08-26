@@ -1,23 +1,24 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+
 interface WelcomeScreenProps {
   onOpenSidebar: () => void;
 }
 
 export default function WelcomeScreen({ onOpenSidebar }: WelcomeScreenProps) {
   return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-50 p-4">
+    <div className="flex h-full flex-col items-center justify-center bg-gray-50 p-4">
       <Image
-        src="/chat-avatars/Character.svg"
         alt="logo"
-        width={400}
         height={400}
+        src="/chat-avatars/Character.svg"
+        width={400}
       />
       <Button
+        className="bg-flickmart text-white hover:bg-flickmart-chat-orange md:hidden"
         onClick={onOpenSidebar}
-        className="bg-flickmart hover:bg-flickmart-chat-orange text-white md:hidden"
       >
         Start a conversation
       </Button>

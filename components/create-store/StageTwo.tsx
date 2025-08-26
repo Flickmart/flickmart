@@ -1,9 +1,10 @@
-import { Dispatch } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { FieldErrors, useForm } from "react-hook-form";
-import parsePhoneNumberFromString from "libphonenumber-js";
-
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from 'convex/react';
+import parsePhoneNumberFromString from 'libphonenumber-js';
+import type { Dispatch } from 'react';
+import { type FieldErrors, useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import {
   Form,
   FormControl,
@@ -11,38 +12,36 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "../ui/input";
-import Selector from "./Selector";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { toast } from "sonner";
-import { Textarea } from "../ui/textarea";
+} from '@/components/ui/form';
+import { api } from '@/convex/_generated/api';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
+import Selector from './Selector';
 
 const formSchema = z.object({
   businessName: z
     .string()
     .min(2, {
-      message: "Business name must be at least 2 characters",
+      message: 'Business name must be at least 2 characters',
     })
     .max(50, {
-      message: "Business name must be at most 50 characters.",
+      message: 'Business name must be at most 50 characters.',
     }),
   location: z
     .string()
-    .refine((value) => value, { message: "Please select a location" }),
+    .refine((value) => value, { message: 'Please select a location' }),
   description: z
     .string()
     .min(3, {
-      message: "Description must be at least 2 characters",
+      message: 'Description must be at least 2 characters',
     })
     .max(250, {
-      message: "Description must be at most 250 characters",
+      message: 'Description must be at most 250 characters',
     }),
   phoneNumber: z.string().transform((arg, ctx) => {
     const phone = parsePhoneNumberFromString(arg, {
       // set this to use a default country when the phone number omits country code
-      defaultCountry: "NG",
+      defaultCountry: 'NG',
 
       // set to false to require that the whole string is exactly a phone number,
       // otherwise, it will search for a phone number anywhere within the string
@@ -57,7 +56,7 @@ const formSchema = z.object({
     // when it's not
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
-      message: "Invalid phone number",
+      message: 'Invalid phone number',
     });
     return z.NEVER;
   }),
@@ -68,10 +67,10 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      businessName: "",
-      location: "",
-      description: "",
-      phoneNumber: "",
+      businessName: '',
+      location: '',
+      description: '',
+      phoneNumber: '',
     },
   });
 
@@ -87,9 +86,9 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       phone: values.phoneNumber,
     });
     toast.promise(promise, {
-      loading: "Saving store details...",
-      success: "Details saved  succesfully",
-      error: "Failed to create store",
+      loading: 'Saving store details...',
+      success: 'Details saved  succesfully',
+      error: 'Failed to create store',
     });
     setStage(3);
   }
@@ -101,20 +100,20 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       location: string;
       description: string;
       phoneNumber: string & {
-        __tag: "E164Number";
+        __tag: 'E164Number';
       };
     }>
   ) {
     console.log(error);
   }
-  const locations: string[] = ["enugu", "nsukka"];
+  const locations: string[] = ['enugu', 'nsukka'];
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit, onError)}>
-        <h2 className="capitalize font-medium text-3xl mb-1 md:text-4xl">
+        <h2 className="mb-1 font-medium text-3xl capitalize md:text-4xl">
           Create store
         </h2>
-        <p className="text-sm font-light text-flickmart-gray mb-8 md:text-base">
+        <p className="mb-8 font-light text-flickmart-gray text-sm md:text-base">
           Fill in the form to create your store
         </p>
         <section className="space-y-2 text-left">
@@ -139,11 +138,11 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
           />
 
           <Selector
+            className="text-sm"
+            form={form}
+            label="location"
             name="location"
             options={locations}
-            label="location"
-            form={form}
-            className="text-sm"
           />
           <FormField
             control={form.control}
@@ -174,9 +173,9 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
                 </FormLabel>
                 <FormControl>
                   <Textarea
-                    rows={7}
-                    // className="h-[56px]"
                     placeholder="Tell us about your business"
+                    // className="h-[56px]"
+                    rows={7}
                     {...field}
                   />
                 </FormControl>
@@ -186,8 +185,8 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
           />
         </section>
         <button
+          className="submit-btn mb-4 rounded-lg text-white capitalize"
           type="submit"
-          className="submit-btn text-white rounded-lg capitalize mb-4"
         >
           next
         </button>

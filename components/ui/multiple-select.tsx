@@ -1,16 +1,16 @@
 'use client';
 
+import { X } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import * as React from 'react';
 import {
-  HTMLAttributes,
-  PropsWithChildren,
-  ReactNode,
+  type HTMLAttributes,
+  type PropsWithChildren,
+  type ReactNode,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import { X } from 'lucide-react';
-import * as React from 'react';
 
 export type TTag = {
   key: string;
@@ -60,19 +60,19 @@ export const MultipleSelect = ({
       <div className={'flex w-[450px] flex-col gap-2'}>
         <strong>TAGS</strong>
         <motion.div
+          className="selected flex min-h-[3rem] w-full flex-wrap items-center gap-2 rounded-md border border-gray-200 border-solid bg-gray-50 p-2"
           layout
           ref={containerRef}
-          className='selected flex min-h-[3rem] w-full flex-wrap items-center gap-2 rounded-md border border-solid border-gray-200 bg-gray-50 p-2'
         >
-          <motion.div layout className='flex flex-wrap items-center gap-2'>
+          <motion.div className="flex flex-wrap items-center gap-2" layout>
             {selected?.map((item) => (
               <Tag
-                name={item?.key}
-                key={item?.key}
                 className={'bg-white shadow'}
+                key={item?.key}
+                name={item?.key}
               >
-                <div className='flex items-center gap-2'>
-                  <motion.span layout className={'text-nowrap'}>
+                <div className="flex items-center gap-2">
+                  <motion.span className={'text-nowrap'} layout>
                     {item?.name}
                   </motion.span>
                   <button className={''} onClick={() => onDeselect(item)}>
@@ -84,19 +84,19 @@ export const MultipleSelect = ({
           </motion.div>
         </motion.div>
         {tags?.length > selected?.length && (
-          <div className='flex w-full flex-wrap gap-2 rounded-md border border-solid border-gray-200 p-2'>
+          <div className="flex w-full flex-wrap gap-2 rounded-md border border-gray-200 border-solid p-2">
             {tags
               ?.filter((item) => !selected?.some((i) => i.key === item.key))
               .map((item) => (
                 <Tag
+                  key={item?.key}
                   name={item?.key}
                   onClick={() => onSelect(item)}
-                  key={item?.key}
                 >
                   {customTag ? (
                     customTag(item)
                   ) : (
-                    <motion.span layout className={'text-nowrap'}>
+                    <motion.span className={'text-nowrap'} layout>
                       {item?.name}
                     </motion.span>
                   )}
@@ -118,12 +118,10 @@ type TagProps = PropsWithChildren &
 export const Tag = ({ children, className, name, onClick }: TagProps) => {
   return (
     <motion.div
+      className={`cursor-pointer rounded-md bg-gray-200 px-2 py-1 text-sm ${className}`}
       layout
       layoutId={name}
       onClick={onClick}
-      className={(
-        `cursor-pointer rounded-md bg-gray-200 px-2 py-1 text-sm ${className}`
-      )}
     >
       {children}
     </motion.div>

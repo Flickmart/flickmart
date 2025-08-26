@@ -1,16 +1,22 @@
-import { useRef, useEffect, useState, Dispatch, SetStateAction } from "react";
-import MessageBubble from "./message-bubble";
-import { TriangleAlert } from "lucide-react";
-import { PhotoProvider } from "react-photo-view";
+import { TriangleAlert } from 'lucide-react';
+import {
+  type Dispatch,
+  type SetStateAction,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { PhotoProvider } from 'react-photo-view';
+import MessageBubble from './message-bubble';
 
 interface Message {
   id: string;
   chatId: string;
   content: string;
   images?: string[];
-  role: "user" | "assistant";
+  role: 'user' | 'assistant';
   timestamp: Date;
-  type?: "text" | "product" | "image" | "escrow" | "transfer";
+  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer';
   title?: string;
   price?: number;
   productImage?: string;
@@ -19,7 +25,6 @@ interface Message {
   orderId?: string;
   transferAmount?: number;
   currency?: string;
-  order?: any;
 }
 
 interface ChatMessagesProps {
@@ -40,7 +45,7 @@ export default function ChatMessages({
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
   useEffect(() => {
@@ -58,7 +63,7 @@ export default function ChatMessages({
   // Toggle message selection
   const toggleMessageSelection = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== "user") return;
+    if (!message || message.role !== 'user') return;
 
     if (selectedMessages.includes(messageId)) {
       const newSelectedMessages = selectedMessages.filter(
@@ -76,7 +81,7 @@ export default function ChatMessages({
   // Handle long press to enter selection mode
   const handleLongPress = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== "user") return;
+    if (!message || message.role !== 'user') return;
 
     if (!selectionMode) {
       setSelectionMode(true);
@@ -104,15 +109,15 @@ export default function ChatMessages({
 
       // Determine date label
       if (msgDate.toDateString() === today.toDateString()) {
-        dateLabel = "Today";
+        dateLabel = 'Today';
       } else if (msgDate.toDateString() === yesterday.toDateString()) {
-        dateLabel = "Yesterday";
+        dateLabel = 'Yesterday';
       } else {
-        dateLabel = msgDate.toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
+        dateLabel = msgDate.toLocaleDateString('en-US', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
         });
       }
 
@@ -131,46 +136,47 @@ export default function ChatMessages({
   const groupedMessages = groupMessagesByDate(messages);
 
   return (
-    <div className="flex-1 overflow-y-auto p-2 sm:p-4 sm:pr-5 space-y-4 pb-16">
+    <div className="flex-1 space-y-4 overflow-y-auto p-2 pb-16 sm:p-4 sm:pr-5">
       <div className="flex flex-col items-center justify-center gap-4">
-        <div className="flex items-center gap-1 sm:gap-2 rounded-full border-2 border-gray-300 p-1 px-2 sm:p-2 sm:px-3 opacity-80 text-xs text-gray-600 max-w-[95%] text-center">
-          <TriangleAlert className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" /> 
-          <span className="truncate">Do not send money to vendors outside the platform.</span>
+        <div className="flex max-w-[95%] items-center gap-1 rounded-full border-2 border-gray-300 p-1 px-2 text-center text-gray-600 text-xs opacity-80 sm:gap-2 sm:p-2 sm:px-3">
+          <TriangleAlert className="h-4 w-4 flex-shrink-0 sm:h-5 sm:w-5" />
+          <span className="truncate">
+            Do not send money to vendors outside the platform.
+          </span>
         </div>
       </div>
       <PhotoProvider>
         {groupedMessages.map((group, index) => (
-          <div key={index} className="space-y-2">
-            <div className="text-center bg-gray-200 text-gray-600 text-xs py-1 px-3 rounded-full mx-auto w-fit ">
+          <div className="space-y-2" key={index}>
+            <div className="mx-auto w-fit rounded-full bg-gray-200 px-3 py-1 text-center text-gray-600 text-xs">
               {group.date}
             </div>
             {group.messages.map((message) => (
               <MessageBubble
-                key={message.id}
-                id={message.id}
-                message={message.content}
-                images={message.images}
-                isUser={message.role === "user"}
-                timestamp={message.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-                status={message.role === "user" ? "sent" : undefined}
-                selectionMode={selectionMode}
-                toggleMessageSelection={toggleMessageSelection}
-                toggleSelectionMode={toggleSelectionMode}
-                handleLongPress={handleLongPress}
-                selectedMessages={selectedMessages}
-                title={message.title}
-                price={message.price}
-                image={message.productImage}
-                type={message.type}
-                productId={message.productId}
-                // Transfer-specific props
-                orderId={message.orderId}
-                transferAmount={message.transferAmount}
                 currency={message.currency}
-                order={message.order}
+                handleLongPress={handleLongPress}
+                id={message.id}
+                image={message.productImage}
+                images={message.images}
+                isUser={message.role === 'user'}
+                key={message.id}
+                message={message.content}
+                orderId={message.orderId}
+                price={message.price}
+                productId={message.productId}
+                selectedMessages={selectedMessages}
+                selectionMode={selectionMode}
+                status={message.role === 'user' ? 'sent' : undefined}
+                timestamp={message.timestamp.toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })}
+                title={message.title}
+                toggleMessageSelection={toggleMessageSelection}
+                // Transfer-specific props
+                toggleSelectionMode={toggleSelectionMode}
+                transferAmount={message.transferAmount}
+                type={message.type}
               />
             ))}
           </div>

@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { SecurityHeader } from "./security-header";
-import { NumberKeypad } from "./number-keypad";
-import { PresetAmounts } from "./preset-amounts";
-import { Doc } from "@/convex/_generated/dataModel";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Shield } from "lucide-react";
+import { Shield } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import type { Doc } from '@/convex/_generated/dataModel';
+import { NumberKeypad } from './number-keypad';
+import { PresetAmounts } from './preset-amounts';
+import { SecurityHeader } from './security-header';
 
 interface AmountEntryProps {
   amount: string;
   displayAmount: string;
-  seller?: Doc<"users">;
+  seller?: Doc<'users'>;
   onNumberClick: (number: string) => void;
   onPresetClick: (value: string) => void;
   onClear: () => void;
@@ -30,46 +30,42 @@ export function AmountEntry({
   onTransfer,
 }: AmountEntryProps) {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="flex min-h-screen flex-col bg-white">
       <div className="flex items-center justify-between p-2 pb-4">
-        <div className="flex items-center justify-center gap-2 px-6 py-1 max-w-md">
-          <Avatar className="w-10 h-10 border border-flickmart">
-            <AvatarImage src={seller?.imageUrl} alt={seller?.name || "User"} />
+        <div className="flex max-w-md items-center justify-center gap-2 px-6 py-1">
+          <Avatar className="h-10 w-10 border border-flickmart">
+            <AvatarImage alt={seller?.name || 'User'} src={seller?.imageUrl} />
             <AvatarFallback>
-              {seller?.name?.charAt(0)?.toUpperCase() || "U"}
+              {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
-          <span className="text-gray-900 font-medium">{seller?.name}</span>
+          <span className="font-medium text-gray-900">{seller?.name}</span>
         </div>
-        <div className="flex items-center gap-2 ml-auto">
-          <Shield className="w-5 h-5 text-green-600" />
-          <span className="text-sm text-green-600 font-medium">Secure</span>
+        <div className="ml-auto flex items-center gap-2">
+          <Shield className="h-5 w-5 text-green-600" />
+          <span className="font-medium text-green-600 text-sm">Secure</span>
         </div>
       </div>
 
       {/* <SecurityHeader /> */}
       <div className="flex-1 px-6 pb-0">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-8">
-            Amount
-          </h1>
+        <div className="mx-auto max-w-md">
+          <h1 className="mb-8 font-semibold text-2xl text-gray-900">Amount</h1>
 
           <div className="mb-8">
-            <div className="flex items-center text-4xl font-light text-gray-900 mb-2">
+            <div className="mb-2 flex items-center font-light text-4xl text-gray-900">
               <span className="mr-2">₦</span>
-              <span className="min-w-0 flex-1">
-                {displayAmount || "0.00"}
-              </span>
+              <span className="min-w-0 flex-1">{displayAmount || '0.00'}</span>
             </div>
-            <div className="h-px bg-gray-200"></div>
+            <div className="h-px bg-gray-200" />
           </div>
 
           <PresetAmounts onPresetClick={onPresetClick} />
 
           <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-4 rounded-2xl text-lg mb-6"
-            onClick={onTransfer}
+            className="mb-6 w-full rounded-2xl bg-orange-500 py-4 font-medium text-lg text-white hover:bg-orange-600"
             disabled={!amount}
+            onClick={onTransfer}
           >
             Transfer
           </Button>
@@ -77,9 +73,9 @@ export function AmountEntry({
       </div>
 
       <NumberKeypad
-        onNumberClick={onNumberClick}
-        onClear={onClear}
         onBackspace={onBackspace}
+        onClear={onClear}
+        onNumberClick={onNumberClick}
       />
     </div>
   );

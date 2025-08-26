@@ -1,8 +1,8 @@
-"use node";
+'use node';
 
-import { action } from "./_generated/server";
-import { v } from "convex/values";
-import { api, internal } from "./_generated/api";
+import { v } from 'convex/values';
+import { api, internal } from './_generated/api';
+import { action } from './_generated/server';
 
 export const verifyPaystackWebhook = action({
   args: {
@@ -10,11 +10,11 @@ export const verifyPaystackWebhook = action({
     signature: v.string(),
   },
   handler: async (_ctx, args) => {
-    const crypto = require("crypto");
+    const crypto = require('crypto');
     const hash = crypto
-      .createHmac("sha512", process.env.PAYSTACK_SECRET_KEY!)
+      .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY!)
       .update(args.payload)
-      .digest("hex");
+      .digest('hex');
     return hash === args.signature;
   },
 });

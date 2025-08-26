@@ -1,7 +1,7 @@
-import Navbar from "@/components/Navbar";
-import SearchInput from "@/components/SearchInput";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { Suspense } from "react";
+import { Suspense } from 'react';
+import Navbar from '@/components/Navbar';
+import SearchInput from '@/components/SearchInput';
+import { SidebarProvider } from '@/components/ui/sidebar';
 
 export default async function Layout({
   children,
@@ -11,7 +11,7 @@ export default async function Layout({
   return (
     <>
       <Navbar>
-        <div className="w-[40vw] bg-gray-100 rounded-lg">
+        <div className="w-[40vw] rounded-lg bg-gray-100">
           <SearchInput />
         </div>
       </Navbar>
