@@ -10,15 +10,16 @@ import { Skeleton } from "../ui/skeleton";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function BestSellers() {
-  const recommendations = useQuery(api.product.getRecommendations, {});
+  const recommendation = useQuery(api.product.getRecommendations, {});
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
+  const personalized = useQuery(api.interactions.getPersonalizedProducts);
 
-  useEffect(() => {
-    if (recommendations?.error) {
-      console.log("there was an error getting recommendations");
-    }
-  }, [recommendations]);
+  // useEffect(() => {
+  //   if (personalized?.error) {
+  //     console.log("there was an error getting personalized");
+  //   }
+  // }, [personalized]);
 
   return (
     <div className="text-center capitalize lg:space-y-10 space-y-5">
@@ -27,7 +28,7 @@ export default function BestSellers() {
       </h2>
       <Container className="!min-h-[40vh]">
         <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
-          {recommendations === undefined || all === undefined
+          {personalized === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div
@@ -41,7 +42,7 @@ export default function BestSellers() {
                   </div>
                 </div>
               ))
-            : !recommendations?.data?.length
+            : !personalized?.length
               ? all?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
@@ -52,7 +53,7 @@ export default function BestSellers() {
                     />
                   </Link>
                 ))
-              : recommendations?.data.map((product, index) => (
+              : personalized?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}

@@ -60,6 +60,20 @@ export default defineSchema({
     store: v.string(),
   }),
 
+  // Interactions
+  interactions: defineTable({
+    productId: v.id("product"),
+    userId: v.id("users"),
+    timeStamp: v.number(),
+    type: v.string(),
+    value: v.number(),
+
+    // interaction: v.union(
+    //   v.literal("like"),
+    //   v.literal("dislike"),
+    //   v.literal("comment")
+    // ),
+  }),
   // Sub Categories
   subcategories: defineTable({
     category: v.string(),
@@ -134,7 +148,12 @@ export default defineSchema({
     file: v.optional(v.array(v.string())),
     images: v.optional(v.array(v.string())),
     type: v.optional(
-      v.union(v.literal("text"), v.literal("product"), v.literal("escrow"), v.literal("transfer"))
+      v.union(
+        v.literal("text"),
+        v.literal("product"),
+        v.literal("escrow"),
+        v.literal("transfer")
+      )
     ),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
@@ -350,12 +369,12 @@ export default defineSchema({
     processedAt: v.optional(v.number()),
   }).index("by_user", ["userId"]),
 
-    // Push notification subscriptions
-    pushSubscriptions: defineTable({
-      userId: v.id("users"),
-      subscription: v.string(), // JSON stringified subscription object
-      userAgent: v.optional(v.string()),
-      createdAt: v.number(),
-      lastUsed: v.optional(v.number()),
-    }).index("by_user", ["userId"]),
+  // Push notification subscriptions
+  pushSubscriptions: defineTable({
+    userId: v.id("users"),
+    subscription: v.string(), // JSON stringified subscription object
+    userAgent: v.optional(v.string()),
+    createdAt: v.number(),
+    lastUsed: v.optional(v.number()),
+  }).index("by_user", ["userId"]),
 });
