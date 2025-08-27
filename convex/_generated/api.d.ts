@@ -8,6 +8,7 @@
  * @module
  */
 
+
 import type * as actions from '../actions.js';
 import type * as categories from '../categories.js';
 import type * as chat from '../chat.js';
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   email: typeof email;
   http: typeof http;
+  interactions: typeof interactions;
   internal: typeof internal_;
   notifications: typeof notifications;
   orders: typeof orders;

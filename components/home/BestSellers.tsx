@@ -1,23 +1,24 @@
-'use client';
-import { useQuery } from 'convex/react';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { api } from '@/convex/_generated/api';
-import { useIsMobile } from '@/hooks/use-mobile';
-import ProductCard from '../multipage/ProductCard';
-import { Skeleton } from '../ui/skeleton';
-import Container from './Container';
+"use client";
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ProductCard from "../multipage/ProductCard";
+import { Skeleton } from "../ui/skeleton";
+import Container from "./Container";
 
 export default function BestSellers() {
-  const recommendations = useQuery(api.product.getRecommendations, {});
+  const recommendation = useQuery(api.product.getRecommendations, {});
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
+  const personalized = useQuery(api.interactions.getPersonalizedProducts);
 
-  useEffect(() => {
-    if (recommendations?.error) {
-      console.log('there was an error getting recommendations');
-    }
-  }, [recommendations]);
+  // useEffect(() => {
+  //   if (personalized?.error) {
+  //     console.log("there was an error getting personalized");
+  //   }
+  // }, [personalized]);
 
   return (
     <div className="space-y-5 text-center capitalize lg:space-y-10">
@@ -25,8 +26,8 @@ export default function BestSellers() {
         best sellers
       </h2>
       <Container className="!min-h-[40vh]">
-        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
-          {recommendations === undefined || all === undefined
+        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
+          {personalized === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div
@@ -40,8 +41,8 @@ export default function BestSellers() {
                   </div>
                 </div>
               ))
-            : recommendations?.data?.length
-              ? recommendations?.data.map((product, index) => (
+            : !personalized?.length
+              ? all?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}
@@ -51,7 +52,7 @@ export default function BestSellers() {
                     />
                   </Link>
                 ))
-              : all?.map((product, index) => (
+              : personalized?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}

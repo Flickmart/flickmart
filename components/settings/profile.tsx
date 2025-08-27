@@ -184,13 +184,13 @@ export default function MarketplaceProfile() {
           onDialogClose={() => setOpen(false)}
         />
       )}
-      <section className="min-h-screen bg-white p-4 lg:p-8">
-        <div className="max-w-2xl space-y-6">
+      <section className="min-h-screen p-4 lg:p-8">
+        <div className="space-y-6">
           <Card className="border-none shadow-none sm:p-6">
             <div className="mb-8 sm:flex sm:items-center sm:justify-between">
               <div className="flex items-center justify-center gap-4">
                 <div className="relative">
-                  <Avatar className="size-36 sm:size-20">
+                  <Avatar className="size-36 sm:size-20 border">
                     {isLoading ? (
                       <div className="grid h-full w-full place-items-center rounded-full bg-gray-100">
                         <MoonLoader className="text-primary" size={40} />
