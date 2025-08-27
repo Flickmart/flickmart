@@ -1,39 +1,60 @@
-'use client';
+"use client";
 
 import {
   SignedIn,
   SignedOut,
   SignInButton,
   SignOutButton,
-  UserButton,
   useUser,
-} from '@clerk/nextjs';
-import { useQuery } from 'convex/react';
-import { Bell, Loader2, Menu, MessageSquareText } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import type React from 'react';
-import { useState } from 'react';
+} from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import {
+  Bell,
+  Loader2,
+  Menu,
+  MessageSquareText,
+  User,
+  ChevronDown,
+  Settings,
+  Wallet,
+  LogOut,
+  Heart,
+  ShoppingBag,
+  Store,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { api } from '@/convex/_generated/api';
-import { cn } from '@/lib/utils';
-import { Button } from './ui/button';
+} from "@/components/ui/sheet";
+import { api } from "@/convex/_generated/api";
+import { cn } from "@/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 
 export default function Navbar({ children }: { children?: React.ReactNode }) {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
   const [open, setOpen] = useState(false);
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const wishlistLength =
     useQuery(api.product.getAllSavedOrWishlist, {
-      type: 'wishlist',
+      type: "wishlist",
     })?.data?.length || 0;
 
   const userStore = useQuery(api.store.getStoresByUserId);
@@ -43,17 +64,17 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 w-full shadow-black/20 shadow-sm',
-        { 'lg:py-2': pathname !== '/' },
+        "sticky top-0 z-30 w-full shadow-black/20 shadow-sm",
+        { "lg:py-2": pathname !== "/" },
         {
-          'hidden bg-white sm:block': pathname !== '/',
-          'bg-flickmartLight': pathname === '/',
+          "hidden bg-white sm:block": pathname !== "/",
+          "bg-flickmartLight": pathname === "/",
         }
       )}
     >
       <div className="mx-auto w-[95%] py-1">
         <div className="flex w-full items-center justify-between">
-          <Link className="flex items-center gap-1" href={'/'}>
+          <Link className="flex items-center gap-1" href={"/"}>
             <Image
               alt=""
               className="h-12 w-12"
@@ -73,22 +94,22 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             >
               <Link
                 className={cn({
-                  'rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                    pathname !== '/',
+                  "rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]":
+                    pathname !== "/",
                 })}
                 href="/chat"
               >
                 <MessageSquareText
                   className={cn({
-                    'size-[30px] stroke-[1.5]': pathname === '/',
-                    'size-[25px] stroke-[1.5]': pathname !== '/',
+                    "size-[30px] stroke-[1.5]": pathname === "/",
+                    "size-[25px] stroke-[1.5]": pathname !== "/",
                   })}
                 />
               </Link>
               <Link
                 className={cn({
-                  'rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                    pathname !== '/',
+                  "rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]":
+                    pathname !== "/",
                 })}
                 href="/notifications"
               >
@@ -100,21 +121,90 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                   )}
                   <Bell
                     className={cn({
-                      'size-[30px] stroke-[1.5]': pathname === '/',
-                      'size-[25px] stroke-[1.5]': pathname !== '/',
+                      "size-[30px] stroke-[1.5]": pathname === "/",
+                      "size-[25px] stroke-[1.5]": pathname !== "/",
                     })}
                   />
                 </div>
               </Link>
               {isSignedIn && (
-                <div
-                  className={cn({
-                    'flex size-[45px] items-center justify-center rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                      pathname !== '/',
-                  })}
-                >
-                  <UserButton />
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="cursor-pointer size-10">
+                      <AvatarImage
+                        src={user.imageUrl}
+                        alt={`${user.firstName} ${user.lastName}`}
+                      />
+                      <AvatarFallback>
+                        <User className="size-[25px] stroke-[1.5]" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">
+                          {user?.firstName} {user?.lastName}
+                        </p>
+                        <p className="text-xs leading-none text-muted-foreground">
+                          {user?.emailAddresses[0]?.emailAddress}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/wallet" className="flex items-center">
+                        <Wallet className="mr-2 size-4" />
+                        Wallet
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings" className="flex items-center">
+                        <Settings className="mr-2 size-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/saved?wishlist=true"
+                        className="flex items-center"
+                      >
+                        <Heart className="mr-2 size-4" />
+                        Wishlist
+                        {wishlistLength > 0 && (
+                          <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white">
+                            {wishlistLength}
+                          </span>
+                        )}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" className="flex items-center">
+                        <ShoppingBag className="mr-2 size-4" />
+                        Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    {userStore?.data && (
+                      <DropdownMenuItem asChild>
+                        <Link href="/post-ad" className="flex items-center">
+                          <Store className="mr-2 size-4" />
+                          Post Ad
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem className="w-full" asChild>
+                      <SignOutButton
+                        signOutOptions={{ redirectUrl: "/sign-in" }}
+                      >
+                        <Button variant="ghost">
+                          <LogOut className="size-4" />
+                          Sign out
+                        </Button>
+                      </SignOutButton>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               {!isLoaded && <Loader2 className="h-8 w-8 animate-spin" />}
               {isLoaded && !isSignedIn && (
@@ -129,7 +219,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             <button className="rounded-md bg-flickmart font-bold text-sm text-white">
               <Link
                 className="inline-block px-8 py-2"
-                href={userStore?.data ? '/post-ad' : '/create-store'}
+                href={userStore?.data ? "/post-ad" : "/create-store"}
               >
                 SELL
               </Link>
@@ -172,7 +262,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                     <div className="flex w-full flex-col font-medium">
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'/wallet'}
+                        href={"/wallet"}
                         onClick={() => setOpen(false)}
                       >
                         Wallet
@@ -186,14 +276,14 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       </Link>
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'#'}
+                        href={"#"}
                         onClick={() => setOpen(false)}
                       >
                         <span>About Us</span>
                       </Link>
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'/contact'}
+                        href={"/contact"}
                         onClick={() => setOpen(false)}
                       >
                         Contact Us
@@ -225,7 +315,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       <div className="pt-5">
                         <SignedIn>
                           <SignOutButton
-                            signOutOptions={{ redirectUrl: '/sign-in' }}
+                            signOutOptions={{ redirectUrl: "/sign-in" }}
                           >
                             <button
                               className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
