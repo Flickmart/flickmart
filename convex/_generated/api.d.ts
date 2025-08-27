@@ -14,6 +14,7 @@ import type * as chat from "../chat.js";
 import type * as comments from "../comments.js";
 import type * as email from "../email.js";
 import type * as http from "../http.js";
+import type * as interactions from "../interactions.js";
 import type * as internal_ from "../internal.js";
 import type * as notifications from "../notifications.js";
 import type * as orders from "../orders.js";
@@ -48,6 +49,7 @@ declare const fullApi: ApiFromModules<{
   comments: typeof comments;
   email: typeof email;
   http: typeof http;
+  interactions: typeof interactions;
   internal: typeof internal_;
   notifications: typeof notifications;
   orders: typeof orders;

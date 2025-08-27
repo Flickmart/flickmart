@@ -50,6 +50,7 @@
     "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "embla-carousel-react": "^8.5.2",
+    "flickmart": "link:",
     "html2canvas": "^1.4.1",
     "input-otp": "^1.4.2",
     "libphonenumber-js": "^1.12.6",

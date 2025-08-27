@@ -18,9 +18,9 @@ export default function DashboardLayout({
     );
   }
 
-  if (!isAuthenticated) {
-    return null; // Will be redirected by useAuthUser
-  }
+  // if (!isAuthenticated) {
+  //   return null; // Will be redirected by useAuthUser
+  // }
 
   return <SidebarProvider>{children}</SidebarProvider>;
 }
