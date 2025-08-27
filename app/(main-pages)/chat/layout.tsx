@@ -96,7 +96,7 @@ export default function ChatLayout({
         : '';
 
       // Check if conversation is archived by this user
-      const isArchived = conversation.archivedByUsers?.includes(user._id);
+      const isArchived = conversation.archivedByUsers?.includes(user._id) ?? false;
 
       // Get unread count for current user
       const userUnreadCount =

@@ -217,26 +217,6 @@ http.route({
   }),
 });
 
-// Debug endpoint to check environment variables
-http.route({
-  path: '/paystack/debug',
-  method: 'GET',
-  handler: httpAction(async (_, request) => {
-    const origin = request.headers.get('Origin');
-    
-    return new Response(
-      JSON.stringify({
-        hasPaystackKey: !!process.env.PAYSTACK_SECRET_KEY,
-        keyLength: process.env.PAYSTACK_SECRET_KEY?.length || 0,
-        keyPrefix: process.env.PAYSTACK_SECRET_KEY?.substring(0, 10) || 'N/A',
-      }),
-      {
-        status: 200,
-        headers: getJsonHeaders(origin),
-      }
-    );
-  }),
-});
 
 http.route({
   path: '/paystack/verify',
