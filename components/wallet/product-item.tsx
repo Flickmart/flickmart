@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
 
 interface ProductItemProps {
   product: Doc<'product'>;
@@ -52,12 +53,14 @@ export default function ProductItem({
 
   return (
     <Card
-      className={`relative cursor-pointer transition-all duration-200 hover:shadow-md ${
-        isSelected ? 'bg-orange-50 ring-2 ring-orange-500' : 'hover:bg-gray-50'
-      } ${isToggling ? 'scale-98 opacity-90' : ''}`}
+      className={cn(
+        'relative cursor-pointer transition-all duration-200 hover:shadow-md',
+        isSelected ? 'bg-orange-50 ring-2 ring-orange-500' : 'hover:bg-gray-50',
+        isToggling && 'scale-98 opacity-90'
+      )}
       onClick={handleToggle}
     >
-      <CardContent className="p-4">
+      <CardContent className="p-4 pl-2">
         <div className="flex items-start space-x-3">
           {/* Product Image */}
           <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-gray-100">
@@ -86,51 +89,33 @@ export default function ProductItem({
 
           {/* Product Details */}
           <div className="min-w-0 flex-1">
-            <h3 className="truncate font-medium text-gray-900 text-sm capitalize">
+            <h3 className="truncate font-bold text-gray-900 text-sm capitalize">
               {product.title}
             </h3>
-            <p className="mt-1 font-semibold text-lg text-orange-600">
+            <p className="font-bold text-lg text-orange-600">
               ₦{formatPrice(product.price)}
             </p>
             {product.condition && (
-              <p className="mt-1 text-gray-500 text-xs capitalize">
-                {product.condition}
-              </p>
-            )}
-
-            {/* Selection feedback */}
-            {showFeedback && isSelected && (
-              <div className="mt-1 flex animate-fade-in items-center text-green-600 text-xs">
-                <CheckCircle className="mr-1 h-3 w-3" />
-                <span>Added to selection</span>
-              </div>
-            )}
-
-            {showFeedback && !isSelected && (
-              <div className="mt-1 flex animate-fade-in items-center text-gray-500 text-xs">
-                <span>Removed from selection</span>
-              </div>
+              <p className="text-xs capitalize">{product.condition}</p>
             )}
           </div>
 
-          {/* Enhanced Checkbox with loading state */}
-          <div className="relative flex-shrink-0">
-            <Checkbox
-              aria-label={`Select ${product.title}`}
-              checked={isSelected}
-              className={`h-5 w-5 transition-all duration-200 ${
-                isToggling ? 'opacity-50' : ''
-              }`}
-              disabled={isToggling}
-              onCheckedChange={handleToggle}
-            />
-
-            {/* Success indicator */}
-            {isSelected && !isToggling && (
-              <div className="-top-1 -right-1 absolute flex h-3 w-3 items-center justify-center rounded-full bg-green-500">
-                <CheckCircle className="h-2 w-2 text-white" />
-              </div>
-            )}
+          {/* Checkbox vertically centered */}
+          <div className="relative flex h-16 flex-shrink-0 items-center">
+            <div className="relative flex items-center">
+              <Checkbox
+                aria-label={`Select ${product.title}`}
+                checked={isSelected}
+                className={cn(
+                  'h-5 w-5 rounded-none border-2 transition-all duration-200',
+                  { 'opacity-50': isToggling }
+                )}
+                disabled={isToggling}
+                onCheckedChange={handleToggle}
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              />
+            </div>
           </div>
         </div>
       </CardContent>

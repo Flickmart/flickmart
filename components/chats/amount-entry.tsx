@@ -1,6 +1,6 @@
 'use client';
 
-import { Shield } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import type { Doc } from '@/convex/_generated/dataModel';
@@ -30,27 +30,34 @@ export function AmountEntry({
   onTransfer,
 }: AmountEntryProps) {
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-screen flex-col bg-white">
       <div className="flex items-center justify-between p-2 pb-4">
-        <div className="flex max-w-md items-center justify-center gap-2 px-6 py-1">
-          <Avatar className="h-10 w-10 border border-flickmart">
-            <AvatarImage alt={seller?.name || 'User'} src={seller?.imageUrl} />
-            <AvatarFallback>
-              {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
-            </AvatarFallback>
-          </Avatar>
-          <span className="font-medium text-gray-900">{seller?.name}</span>
-        </div>
         <div className="ml-auto flex items-center gap-2">
-          <Shield className="h-5 w-5 text-green-600" />
+          <ShieldCheck className="h-5 w-5 text-green-600" />
           <span className="font-medium text-green-600 text-sm">Secure</span>
         </div>
       </div>
 
       {/* <SecurityHeader /> */}
-      <div className="flex-1 px-6 pb-0">
-        <div className="mx-auto max-w-md">
-          <h1 className="mb-8 font-semibold text-2xl text-gray-900">Amount</h1>
+      <div className="flex-1 overflow-y-auto px-6 pb-0 md:overflow-y-hidden">
+        <div className="mx-auto max-w-lg">
+          <div className="flex max-w-lg items-center justify-start gap-2 pb-4">
+            <Avatar className="h-10 w-10 border border-flickmart">
+              <AvatarImage
+                alt={seller?.name || 'User'}
+                src={seller?.imageUrl}
+              />
+              <AvatarFallback>
+                {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <span className="font-medium text-extrabold text-gray-900 text-xl">
+              {seller?.name}
+            </span>
+          </div>
+          <h1 className="mt-5 mb-4 font-semibold text-2xl text-gray-900 md:mt-9">
+            Amount
+          </h1>
 
           <div className="mb-8">
             <div className="mb-2 flex items-center font-light text-4xl text-gray-900">
@@ -63,7 +70,7 @@ export function AmountEntry({
           <PresetAmounts onPresetClick={onPresetClick} />
 
           <Button
-            className="mb-6 w-full rounded-2xl bg-orange-500 py-4 font-medium text-lg text-white hover:bg-orange-600"
+            className="mb-6 w-full rounded-full bg-orange-500 py-5 font-medium text-lg text-white hover:bg-orange-600"
             disabled={!amount}
             onClick={onTransfer}
           >
@@ -72,11 +79,13 @@ export function AmountEntry({
         </div>
       </div>
 
-      <NumberKeypad
-        onBackspace={onBackspace}
-        onClear={onClear}
-        onNumberClick={onNumberClick}
-      />
+      <div className="h-[40vh] md:h-auto">
+        <NumberKeypad
+          onBackspace={onBackspace}
+          onClear={onClear}
+          onNumberClick={onNumberClick}
+        />
+      </div>
     </div>
   );
 }

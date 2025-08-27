@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 
 interface PinInputProps {
   onPinComplete: (pin: string) => void;
@@ -18,7 +18,7 @@ export function PinInput({
   isError = false,
   disabled = false,
 }: PinInputProps) {
-  const [pin, setPin] = useState('');
+  const [pin, setPin] = useState("");
 
   const handleNumberClick = (number: string) => {
     if (disabled || pin.length >= maxLength) return;
@@ -41,16 +41,16 @@ export function PinInput({
 
   const handleClear = () => {
     if (disabled) return;
-    setPin('');
-    onPinChange('');
+    setPin("");
+    onPinChange("");
   };
 
   // Reset pin on error
   useEffect(() => {
     if (isError) {
       const timer = setTimeout(() => {
-        setPin('');
-        onPinChange('');
+        setPin("");
+        onPinChange("");
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -66,10 +66,10 @@ export function PinInput({
               className={`h-4 w-4 rounded-full border-2 transition-all duration-200 ${
                 index < pin.length
                   ? isError
-                    ? 'border-red-500 bg-red-500'
-                    : 'border-blue-500 bg-blue-500'
-                  : 'border-gray-300'
-              } ${isError ? 'animate-pulse' : ''}`}
+                    ? "border-red-500 bg-red-500"
+                    : "border-blue-500 bg-blue-500"
+                  : "border-gray-300"
+              } ${isError ? "animate-pulse" : ""}`}
               key={index}
             />
           ))}
@@ -77,11 +77,14 @@ export function PinInput({
       </div>
 
       {/* Numeric Keypad */}
-      <div className="w-full bg-gray-200 p-2">
-        <div className="mx-auto grid max-w-md grid-cols-3 gap-4">
+      <div className="w-full bg-[#F5F5F5] p-2">
+        <span className="text-center w-full inline-block">
+          Flickmart Secure numeric keypad
+        </span>
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-1">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <Button
-              className="h-16 rounded-2xl border-0 bg-white font-medium text-2xl text-gray-900 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+              className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
               disabled={disabled}
               key={number}
               onClick={() => handleNumberClick(number.toString())}
@@ -92,7 +95,7 @@ export function PinInput({
           ))}
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-gray-900 text-lg shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
             onClick={handleClear}
             variant="secondary"
@@ -101,16 +104,16 @@ export function PinInput({
           </Button>
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-2xl text-gray-900 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
-            onClick={() => handleNumberClick('0')}
+            onClick={() => handleNumberClick("0")}
             variant="secondary"
           >
             0
           </Button>
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-gray-900 text-lg shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
             onClick={handleBackspace}
             variant="secondary"
