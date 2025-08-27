@@ -1,10 +1,10 @@
 'use client';
 
-import { cn } from "@/lib/utils";
-import { ChevronLeft, Search } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
-import SearchOverlay from "./SearchOverlay";
+import { ChevronLeft, Search } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
+import { type ReactNode, useState } from 'react';
+import { cn } from '@/lib/utils';
+import SearchOverlay from './SearchOverlay';
 
 interface MobileHeaderProps {
   rightSlot?: ReactNode;
@@ -72,17 +72,17 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
 
       {/* Add a component at the right side of the header */}
       {rightSlot && <div>{rightSlot}</div>}
-      {pathname.includes("/product") && (
+      {pathname.includes('/product') && (
         <button
-          type="button"
           onClick={() => {
             setSearchOpen(true);
           }}
+          type="button"
         >
-          <Search className="hover:text-flickmart transition-colors" />
+          <Search className="transition-colors hover:text-flickmart" />
         </button>
       )}
-      <SearchOverlay openSearch={openSearch} open={searchOpen} />
+      <SearchOverlay open={searchOpen} openSearch={openSearch} />
     </header>
   );
 };

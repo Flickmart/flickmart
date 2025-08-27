@@ -1,23 +1,23 @@
-import { Archive, Image, Menu, Search } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef } from "react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import type { Id } from "@/convex/_generated/dataModel";
-import { cn } from "@/lib/utils";
-import MobileNav from "../MobileNav";
+import { Archive, Image, Menu, Search } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import type { Id } from '@/convex/_generated/dataModel';
+import { cn } from '@/lib/utils';
+import MobileNav from '../MobileNav';
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
   searchQuery: string;
   setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
-  activeFilter: "all" | "unread" | "archived";
-  setActiveFilter: (filter: "all" | "unread" | "archived") => void;
-  activeChat: Id<"conversations"> | null;
-  setActiveChat: (chatId: Id<"conversations">) => void;
+  activeFilter: 'all' | 'unread' | 'archived';
+  setActiveFilter: (filter: 'all' | 'unread' | 'archived') => void;
+  activeChat: Id<'conversations'> | null;
+  setActiveChat: (chatId: Id<'conversations'>) => void;
   setSidebarOpen: (open: boolean) => void;
   conversations: Array<{
-    id: Id<"conversations">;
+    id: Id<'conversations'>;
     name: string;
     imageUrl: string;
     lastMessage: string;
@@ -42,7 +42,7 @@ export default function ChatSidebar({
   const router = useRouter();
   const params = useParams();
   const currentConversationId = params?.conversationId as
-    | Id<"conversations">
+    | Id<'conversations'>
     | undefined;
 
   // Count total unread messages
@@ -63,7 +63,7 @@ export default function ChatSidebar({
   }, [searchQuery]);
 
   // Handle chat selection
-  const handleChatSelect = (chatId: Id<"conversations">) => {
+  const handleChatSelect = (chatId: Id<'conversations'>) => {
     router.push(`/chat/${chatId}`);
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
@@ -102,23 +102,23 @@ export default function ChatSidebar({
       <div className="mt-1 flex items-center space-x-3 px-2">
         <button
           className={cn(
-            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
-            activeFilter === "all"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+            'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+            activeFilter === 'all'
+              ? 'border bg-[rgba(255,136,17,0.82)]'
+              : 'text-gray-500 hover:text-orange-500'
           )}
-          onClick={() => setActiveFilter("all")}
+          onClick={() => setActiveFilter('all')}
         >
           All
         </button>
         <button
           className={cn(
-            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
-            activeFilter === "unread"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+            'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+            activeFilter === 'unread'
+              ? 'border bg-[rgba(255,136,17,0.82)]'
+              : 'text-gray-500 hover:text-orange-500'
           )}
-          onClick={() => setActiveFilter("unread")}
+          onClick={() => setActiveFilter('unread')}
         >
           Unread
           {totalUnread > 0 && (
@@ -129,12 +129,12 @@ export default function ChatSidebar({
         </button>
         <button
           className={cn(
-            "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
-            activeFilter === "archived"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+            'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+            activeFilter === 'archived'
+              ? 'border bg-[rgba(255,136,17,0.82)]'
+              : 'text-gray-500 hover:text-orange-500'
           )}
-          onClick={() => setActiveFilter("archived")}
+          onClick={() => setActiveFilter('archived')}
         >
           Archived
           {archivedCount > 0 && (
@@ -156,8 +156,8 @@ export default function ChatSidebar({
             {conversations.map((chat) => (
               <div
                 className={cn(
-                  "flex cursor-pointer items-center border-gray-200 border-b p-3 pl-4 hover:bg-gray-100",
-                  currentConversationId === chat.id && "bg-orange-50"
+                  'flex cursor-pointer items-center border-gray-200 border-b p-3 pl-4 hover:bg-gray-100',
+                  currentConversationId === chat.id && 'bg-orange-50'
                 )}
                 key={chat.id}
                 onClick={() => handleChatSelect(chat.id)}
@@ -165,15 +165,15 @@ export default function ChatSidebar({
                 <Avatar className="h-10 w-10">
                   <AvatarImage alt={chat.name} src={chat.imageUrl} />
                   <AvatarFallback className="bg-flickmart text-white">
-                    {chat?.name?.charAt(0) || "?"}
+                    {chat?.name?.charAt(0) || '?'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="ml-3 flex-1 overflow-hidden">
                   <div className="!leading-normal flex items-center justify-between">
                     <h3
                       className={cn(
-                        "truncate font-medium",
-                        chat.unread > 0 && "font-semibold"
+                        'truncate font-medium',
+                        chat.unread > 0 && 'font-semibold'
                       )}
                     >
                       {chat.name}
@@ -186,15 +186,15 @@ export default function ChatSidebar({
                   <div className="flex items-center justify-between">
                     <p
                       className={cn(
-                        "flex items-center gap-x-1 truncate text-sm",
+                        'flex items-center gap-x-1 truncate text-sm',
                         chat.unread > 0
-                          ? "font-medium text-gray-800"
-                          : "text-gray-600"
+                          ? 'font-medium text-gray-800'
+                          : 'text-gray-600'
                       )}
                     >
                       {chat.containsImage && <Image className="h-4 w-4" />}
                       {chat.lastMessage.length > 20
-                        ? chat.lastMessage.substring(0, 40) + "..."
+                        ? chat.lastMessage.substring(0, 40) + '...'
                         : chat.lastMessage}
                     </p>
                     {chat.unread > 0 && (

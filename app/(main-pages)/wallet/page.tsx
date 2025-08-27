@@ -210,11 +210,11 @@ export default function WalletPage() {
       );
       const data = await result.json();
       console.log('Verification response:', data);
-      
+
       if (data.status) {
         // Check the actual transaction status
         const transactionStatus = data.data?.status;
-        
+
         if (transactionStatus === 'success') {
           toast.success('Payment successful! Wallet updated.');
           setAmount(0);
@@ -223,7 +223,9 @@ export default function WalletPage() {
           setError(null);
         } else if (transactionStatus === 'abandoned') {
           toast.error('Payment was not completed. Please try again.');
-          setError('Payment was abandoned. Please complete the payment process.');
+          setError(
+            'Payment was abandoned. Please complete the payment process.'
+          );
           setIsPaystackModalOpen(false);
         } else if (transactionStatus === 'failed') {
           toast.error('Payment failed. Please try again.');
@@ -235,7 +237,9 @@ export default function WalletPage() {
           setIsPaystackModalOpen(false);
         } else {
           // Handle other statuses
-          const userMessage = data.userMessage || 'Payment status unclear. Please contact support.';
+          const userMessage =
+            data.userMessage ||
+            'Payment status unclear. Please contact support.';
           toast.error(userMessage);
           setError(userMessage);
           setIsPaystackModalOpen(false);
