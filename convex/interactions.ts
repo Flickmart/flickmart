@@ -65,7 +65,7 @@ export const getPersonalizedProducts = query({
           p.subcategory ?? "",
           p.condition,
           p.location,
-          p.plan,
+          p.plan, 
           p.category,
         ]);
         return {
