@@ -217,13 +217,12 @@ http.route({
   }),
 });
 
-
 http.route({
   path: '/paystack/verify',
   method: 'POST',
   handler: httpAction(async (ctx, request) => {
     const origin = request.headers.get('Origin');
-    
+
     try {
       // Parse request body with error handling
       let requestBody;
@@ -231,21 +230,20 @@ http.route({
         requestBody = await request.json();
       } catch (error) {
         console.error('Failed to parse request body:', error);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request body' }),
-          {
-            status: 400,
-            headers: getJsonHeaders(origin),
-          }
-        );
+        return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+          status: 400,
+          headers: getJsonHeaders(origin),
+        });
       }
 
       const { reference, userId } = requestBody;
-      
+
       // Validate reference
       if (!reference || typeof reference !== 'string') {
         return new Response(
-          JSON.stringify({ error: 'Reference is required and must be a string' }),
+          JSON.stringify({
+            error: 'Reference is required and must be a string',
+          }),
           {
             status: 400,
             headers: getJsonHeaders(origin),
@@ -255,7 +253,10 @@ http.route({
 
       // Log the request for debugging
       console.log('Paystack verify request:', { reference, userId });
-      console.log('Paystack secret key configured:', !!process.env.PAYSTACK_SECRET_KEY);
+      console.log(
+        'Paystack secret key configured:',
+        !!process.env.PAYSTACK_SECRET_KEY
+      );
 
       // Check if PAYSTACK_SECRET_KEY is configured
       if (!process.env.PAYSTACK_SECRET_KEY) {
@@ -273,23 +274,27 @@ http.route({
       console.log('Calling Paystack API with reference:', reference);
       const paystackUrl = `https://api.paystack.co/transaction/verify/${reference}`;
       console.log('Paystack URL:', paystackUrl);
-      
+
       const response = await fetch(paystackUrl, {
         method: 'GET',
         headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
       });
-      
+
       console.log('Paystack response status:', response.status);
       // console.log('Paystack response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
-        console.error('Paystack API error:', response.status, response.statusText);
+        console.error(
+          'Paystack API error:',
+          response.status,
+          response.statusText
+        );
         const errorData = await response.json().catch(() => ({}));
         return new Response(
-          JSON.stringify({ 
-            error: 'Paystack API error', 
+          JSON.stringify({
+            error: 'Paystack API error',
             details: errorData,
-            status: response.status 
+            status: response.status,
           }),
           {
             status: response.status,
@@ -304,9 +309,9 @@ http.route({
       // Check if Paystack API call was successful
       if (!data.status) {
         return new Response(
-          JSON.stringify({ 
-            error: 'Paystack API error', 
-            details: data 
+          JSON.stringify({
+            error: 'Paystack API error',
+            details: data,
           }),
           {
             status: 400,
@@ -326,7 +331,7 @@ http.route({
             reference,
           }
         );
-        
+
         if (!transaction) {
           return new Response(
             JSON.stringify({ error: 'Transaction not found in database' }),
@@ -348,11 +353,11 @@ http.route({
             currency: data.data.currency,
             paystackFees: data.data.fees,
           });
-          
+
           const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
             walletId: transaction.walletId,
           });
-          
+
           if (wallet) {
             await ctx.runMutation(internal.wallet.updateBalance, {
               walletId: wallet._id,
@@ -360,61 +365,20 @@ http.route({
             });
           }
         }
-        
+
         return new Response(JSON.stringify(data), {
           status: 200,
           headers: getJsonHeaders(origin),
         });
-      } else if (transactionStatus === 'abandoned') {
+      }
+      if (transactionStatus === 'abandoned') {
         // Handle abandoned transactions
         console.log('Transaction was abandoned by user');
         return new Response(
           JSON.stringify({
             ...data,
             message: 'Transaction was abandoned by user',
-            userMessage: 'Payment was not completed. Please try again.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else if (transactionStatus === 'failed') {
-        // Handle failed transactions
-        console.log('Transaction failed');
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: 'Transaction failed',
-            userMessage: 'Payment failed. Please try again.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else if (transactionStatus === 'pending') {
-        // Handle pending transactions
-        console.log('Transaction is still pending');
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: 'Transaction is pending',
-            userMessage: 'Payment is still being processed. Please wait.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else {
-        // Handle other statuses
-        console.log('Transaction has unknown status:', transactionStatus);
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: `Transaction status: ${transactionStatus}`,
-            userMessage: 'Payment status unclear. Please contact support.'
+            userMessage: 'Payment was not completed. Please try again.',
           }),
           {
             status: 200, // Return 200 but with clear message
@@ -422,13 +386,55 @@ http.route({
           }
         );
       }
-      
+      if (transactionStatus === 'failed') {
+        // Handle failed transactions
+        console.log('Transaction failed');
+        return new Response(
+          JSON.stringify({
+            ...data,
+            message: 'Transaction failed',
+            userMessage: 'Payment failed. Please try again.',
+          }),
+          {
+            status: 200, // Return 200 but with clear message
+            headers: getJsonHeaders(origin),
+          }
+        );
+      }
+      if (transactionStatus === 'pending') {
+        // Handle pending transactions
+        console.log('Transaction is still pending');
+        return new Response(
+          JSON.stringify({
+            ...data,
+            message: 'Transaction is pending',
+            userMessage: 'Payment is still being processed. Please wait.',
+          }),
+          {
+            status: 200, // Return 200 but with clear message
+            headers: getJsonHeaders(origin),
+          }
+        );
+      }
+      // Handle other statuses
+      console.log('Transaction has unknown status:', transactionStatus);
+      return new Response(
+        JSON.stringify({
+          ...data,
+          message: `Transaction status: ${transactionStatus}`,
+          userMessage: 'Payment status unclear. Please contact support.',
+        }),
+        {
+          status: 200, // Return 200 but with clear message
+          headers: getJsonHeaders(origin),
+        }
+      );
     } catch (error) {
       console.error('Error in paystack verify:', error);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Internal server error',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         }),
         {
           status: 500,

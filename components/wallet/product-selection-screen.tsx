@@ -174,7 +174,9 @@ export default function ProductSelectionScreen({
               <span className="font-semibold text-md sm:text-xl">
                 {seller?.name} Stores
               </span>
-              <span className="text-xs md:text-sm">Select Products to Continue</span>
+              <span className="text-xs md:text-sm">
+                Select Products to Continue
+              </span>
             </p>
           </div>
         </div>

@@ -237,9 +237,9 @@ export default function ChatPage() {
         <ChatSidebar
           activeChat={null}
           activeFilter={activeFilter}
-          conversations={filteredConversations.map(convo => ({
+          conversations={filteredConversations.map((convo) => ({
             ...convo,
-            archived: convo.archived ?? false
+            archived: convo.archived ?? false,
           }))}
           searchQuery={searchQuery}
           setActiveChat={() => {}}

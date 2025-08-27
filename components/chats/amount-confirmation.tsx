@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { SecurityHeader } from "./security-header";
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { SecurityHeader } from './security-header';
 
 interface AmountConfirmationProps {
   initialAmount: string;
@@ -24,9 +24,9 @@ export function AmountConfirmation({
   sellerName,
 }: AmountConfirmationProps) {
   const formatAmount = (value: string | number) => {
-    const num = typeof value === "string" ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return "0.00";
-    return num.toLocaleString("en-NG", {
+    const num = typeof value === 'string' ? Number.parseFloat(value) : value;
+    if (isNaN(num)) return '0.00';
+    return num.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -42,9 +42,9 @@ export function AmountConfirmation({
           <h1 className="mb-2 font-semibold text-2xl text-gray-900 md:text-4xl">
             Choose Transfer Amount
           </h1>
-          <p className="text-gray-600 text-xs md:text-md px-3">
+          <p className="px-3 text-gray-600 text-xs md:text-md">
             You've selected {selectedProductsCount} product
-            {selectedProductsCount !== 1 ? "s" : ""}. How much would you like to
+            {selectedProductsCount !== 1 ? 's' : ''}. How much would you like to
             transfer?
           </p>
         </div>
@@ -56,7 +56,7 @@ export function AmountConfirmation({
             <div className="flex items-center justify-between">
               <span className="text-gray-600">Name</span>
               <span className="font-medium text-gray-900">
-                {sellerName || "—"}
+                {sellerName || '—'}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -69,10 +69,10 @@ export function AmountConfirmation({
               <span className="text-gray-600">Amount Difference</span>
               <span className="font-semibold text-gray-900">
                 {difference > 0
-                  ? "₦" + formatAmount(Math.abs(difference))
+                  ? '₦' + formatAmount(Math.abs(difference))
                   : difference < 0
-                    ? "-₦" + formatAmount(Math.abs(difference))
-                    : "₦0.00"}
+                    ? '-₦' + formatAmount(Math.abs(difference))
+                    : '₦0.00'}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -102,7 +102,7 @@ export function AmountConfirmation({
         </div>
 
         <div className="mt-4 text-center">
-          <p className="text-gray-500 text-xs px-3">
+          <p className="px-3 text-gray-500 text-xs">
             You can change this selection by going back to product selection
           </p>
         </div>
