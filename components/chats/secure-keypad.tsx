@@ -650,6 +650,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
             }
           }}
           selectedProductsCount={selectedProducts.length}
+          sellerName={seller?.name || undefined}
         />
       </div>
     );
