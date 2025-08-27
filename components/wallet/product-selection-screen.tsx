@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Package, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import ProductItem from "./product-item";
+import { Package, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import ProductItem from './product-item';
 
 // Levenshtein distance function for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
@@ -56,13 +56,13 @@ function hasSimilarWords(
 }
 
 interface ProductSelectionScreenProps {
-  products: Doc<"product">[] | null;
-  selectedProducts: Id<"product">[];
-  onProductToggle: (productId: Id<"product">) => void;
+  products: Doc<'product'>[] | null;
+  selectedProducts: Id<'product'>[];
+  onProductToggle: (productId: Id<'product'>) => void;
   onSkip: () => void;
   onContinue: () => void;
   calculatedTotal: number;
-  seller: Doc<"users"> | null;
+  seller: Doc<'users'> | null;
 }
 
 export default function ProductSelectionScreen({
@@ -74,10 +74,10 @@ export default function ProductSelectionScreen({
   calculatedTotal,
   seller,
 }: ProductSelectionScreenProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const formatAmount = (amount: number) => {
-    return amount.toLocaleString("en-NG", {
+    return amount.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -93,12 +93,11 @@ export default function ProductSelectionScreen({
     }
 
     const query = searchQuery.toLowerCase().trim();
-    const queryWords = query.split(/\s+/);
 
     return products.filter((product) => {
-      const title = product.title?.toLowerCase() || "";
-      const description = product.description?.toLowerCase() || "";
-      const category = product.category?.toLowerCase() || "";
+      const title = product.title?.toLowerCase() || '';
+      const description = product.description?.toLowerCase() || '';
+      const category = product.category?.toLowerCase() || '';
 
       // Exact match (highest priority)
       if (
@@ -158,50 +157,50 @@ export default function ProductSelectionScreen({
 
   // Products available state
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-3 md:p-6">
       <div className="mx-auto max-w-md">
         <div className="mb-2">
           <div className="flex max-w-lg items-center justify-start gap-2 pb-2">
-            <Avatar className="h-14 w-14 border border-flickmart">
+            <Avatar className="size-12 border border-flickmart shadow-md md:h-16 md:w-16">
               <AvatarImage
-                alt={seller?.name || "User"}
+                alt={seller?.name || 'User'}
                 src={seller?.imageUrl}
               />
               <AvatarFallback>
-                {seller?.name?.charAt(0)?.toUpperCase() || "U"}
+                {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <p className="flex flex-col">
-              <span className="font-bold text-lg sm:text-xl">{seller?.name} Stores</span>
-              <span className="text-sm">
-                Select Products to Continue
+              <span className="font-semibold text-md sm:text-xl">
+                {seller?.name} Stores
               </span>
+              <span className="text-xs md:text-sm">Select Products to Continue</span>
             </p>
           </div>
         </div>
 
         {/* Search bar */}
-        <div className="mb-4">
+        <div className="mt-4 mb-6">
           <div className="relative rounded-xl bg-[#E5E3E3C2]">
             <Input
-              className="rounded-xl border-gray-200 py-3 pr-10 pl-4"
+              className="rounded-lg border-gray-200 py-5 pr-10 pl-5 text-xs italic"
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search items to buy..."
               type="text"
               value={searchQuery}
             />
-            <Search className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 text-gray-400" />
+            <Search className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 font-bold text-gray-400" />
           </div>
           {searchQuery && (
             <p className="mt-2 text-gray-500 text-sm">
               {filteredProducts?.length || 0} product
-              {(filteredProducts?.length || 0) !== 1 ? "s" : ""} found
+              {(filteredProducts?.length || 0) !== 1 ? 's' : ''} found
             </p>
           )}
         </div>
 
         {/* Selected products total */}
-        {selectedCount > 0 && (
+        {/* {selectedCount > 0 && (
           <Card className="mb-4 border-orange-200 bg-orange-50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -212,9 +211,9 @@ export default function ProductSelectionScreen({
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
 
-        <div className="flex items-center justify-between font-semibold text-sm">
+        <div className="m-1 flex items-center justify-between font-medium text-sm">
           <span>Selected Goods</span>
           <span>
             {selectedCount}/{filteredProducts?.length || 0}
@@ -240,7 +239,7 @@ export default function ProductSelectionScreen({
               </p>
               <Button
                 className="mt-2 text-orange-500 hover:text-orange-600"
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 variant="link"
               >
                 Clear search
@@ -254,7 +253,7 @@ export default function ProductSelectionScreen({
           // disabled={selectedCount === 0}
           onClick={onContinue}
         >
-          Transfer
+          Next
         </Button>
 
         {/* User guidance */}

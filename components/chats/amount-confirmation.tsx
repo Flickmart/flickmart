@@ -35,9 +35,6 @@ export function AmountConfirmation({
   const isDifferent = Math.abs(difference) > 0.01; // Account for floating point precision
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
-      <SecurityHeader onBack={onBack} showBackButton />
-
       <div className="flex flex-1 flex-col justify-center p-6">
         <div className="mx-auto w-full max-w-md">
           <div className="mb-6 text-center">
@@ -152,6 +149,5 @@ export function AmountConfirmation({
           </div>
         </div>
       </div>
-    </div>
   );
 }
