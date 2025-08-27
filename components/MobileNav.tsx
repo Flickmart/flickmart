@@ -33,9 +33,9 @@ export default function MobileNav() {
   const userStore = useQuery(api.store.getStoresByUserId);
   const firstUserStore = userStore?.data;
 
-  if (hiddenPages.includes(pathname)) {
-    return null; // Don't render any component
-  }
+  // if (hiddenPages.includes(pathname)) {
+  //   return null; // Don't render any component
+  // }
   useEffect(() => {
     router.prefetch('/post-ad');
     if (firstUserStore && isLoadingAd) {
