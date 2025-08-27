@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { PinInput } from './pin-input';
-import { SecurityHeader } from './security-header';
+import { PinInput } from "./pin-input";
+import { SecurityHeader } from "./security-header";
 
 interface SecurityState {
   pinAttempts: number;
@@ -38,9 +38,9 @@ export function PinVerification({
   onPinComplete,
 }: PinVerificationProps) {
   const formatAmount = (value: string | number) => {
-    const num = typeof value === 'string' ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return '0.00';
-    return num.toLocaleString('en-NG', {
+    const num = typeof value === "string" ? Number.parseFloat(value) : value;
+    if (isNaN(num)) return "0.00";
+    return num.toLocaleString("en-NG", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -108,7 +108,7 @@ export function PinVerification({
           )}
           {securityState.pinAttempts > 0 && !securityState.isLocked && (
             <div className="mb-4 text-center text-orange-600 text-sm">
-              {securityState.maxPinAttempts - securityState.pinAttempts}{' '}
+              {securityState.maxPinAttempts - securityState.pinAttempts}{" "}
               attempts remaining
             </div>
           )}
@@ -138,7 +138,7 @@ export function PinVerification({
                       strokeLinecap="round"
                       strokeWidth="4"
                       style={{
-                        animation: 'orange-progress 2.5s ease-in-out infinite',
+                        animation: "orange-progress 2.5s ease-in-out infinite",
                       }}
                     />
                   </svg>
@@ -185,7 +185,7 @@ export function PinVerification({
                   <div className="flex flex-col items-center space-y-2">
                     <div
                       className="h-3 w-3 animate-pulse rounded-full bg-orange-300"
-                      style={{ animationDelay: '0.7s' }}
+                      style={{ animationDelay: "0.7s" }}
                     />
                     <span className="font-medium text-orange-500 text-xs">
                       Processing
@@ -193,12 +193,12 @@ export function PinVerification({
                   </div>
                   <div
                     className="h-px w-12 animate-pulse bg-orange-200"
-                    style={{ animationDelay: '0.7s' }}
+                    style={{ animationDelay: "0.7s" }}
                   />
                   <div className="flex flex-col items-center space-y-2">
                     <div
                       className="h-3 w-3 animate-pulse rounded-full bg-orange-200"
-                      style={{ animationDelay: '1.4s' }}
+                      style={{ animationDelay: "1.4s" }}
                     />
                     <span className="font-medium text-orange-400 text-xs">
                       Completing
@@ -216,29 +216,29 @@ export function PinVerification({
               </div>
 
               <style jsx>{`
-                                @keyframes orange-progress {
-                                    0% {
-                                        stroke-dashoffset: 276;
-                                        opacity: 0.8;
-                                    }
-                                    25% {
-                                        stroke-dashoffset: 207;
-                                        opacity: 1;
-                                    }
-                                    50% {
-                                        stroke-dashoffset: 138;
-                                        opacity: 1;
-                                    }
-                                    75% {
-                                        stroke-dashoffset: 69;
-                                        opacity: 1;
-                                    }
-                                    100% {
-                                        stroke-dashoffset: 0;
-                                        opacity: 0.9;
-                                    }
-                                }
-                            `}</style>
+                @keyframes orange-progress {
+                  0% {
+                    stroke-dashoffset: 276;
+                    opacity: 0.8;
+                  }
+                  25% {
+                    stroke-dashoffset: 207;
+                    opacity: 1;
+                  }
+                  50% {
+                    stroke-dashoffset: 138;
+                    opacity: 1;
+                  }
+                  75% {
+                    stroke-dashoffset: 69;
+                    opacity: 1;
+                  }
+                  100% {
+                    stroke-dashoffset: 0;
+                    opacity: 0.9;
+                  }
+                }
+              `}</style>
             </div>
           )}
         </div>

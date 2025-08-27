@@ -85,7 +85,7 @@ export function AmountConfirmation({
         </div>
 
         {/* Action Buttons */}
-        <div className="space-y-3">
+        <div className="space-y-3 p-3">
           <Button
             className="w-full rounded-2xl bg-orange-500 py-4 font-medium text-lg text-white hover:bg-orange-600"
             onClick={onSelectInitialAmount}
