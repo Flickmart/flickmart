@@ -1,12 +1,12 @@
-import { v } from 'convex/values';
-import type { Id } from './_generated/dataModel';
-import { mutation, query } from './_generated/server';
-import { getCurrentUserOrThrow } from './users';
+import { v } from "convex/values";
+import type { Id } from "./_generated/dataModel";
+import { mutation, query } from "./_generated/server";
+import { getCurrentUserOrThrow } from "./users";
 
 // Gather and store User Interaction Data
 const storeUsageData = mutation({
   args: {
-    productId: v.id('product'),
+    productId: v.id("product"),
     type: v.string(),
     value: v.number(),
   },
@@ -14,9 +14,9 @@ const storeUsageData = mutation({
     const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
-      throw Error('User not found');
+      throw Error("User not found");
     }
-    await ctx.db.insert('interactions', {
+    await ctx.db.insert("interactions", {
       productId: args.productId,
       type: args.type,
       value: args.value,
@@ -35,12 +35,12 @@ export const getPersonalizedProducts = query({
     //   throw Error("User not found");
     // }
     // Get the products to train the Model with
-    const allProducts = await ctx.db.query('product').collect();
+    const allProducts = await ctx.db.query("product").collect();
 
     // Build User profile
     const likedProducts = await ctx.db
-      .query('likes')
-      .filter((q) => q.eq(q.field('userId'), user?._id))
+      .query("likes")
+      .filter((q) => q.eq(q.field("userId"), user?._id))
       .collect();
 
     //   Set of all product liked by a user
@@ -49,7 +49,7 @@ export const getPersonalizedProducts = query({
     const liked = allProducts.filter((p) => likedSet.has(p._id));
     const userProfile = new Set(
       liked.flatMap((p) => [
-        p.subcategory ?? '',
+        p.subcategory ?? "",
         p.condition,
         p.location,
         p.plan,
@@ -62,7 +62,7 @@ export const getPersonalizedProducts = query({
       .filter((p) => !likedSet.has(p._id))
       .map((p) => {
         const itemProfile = new Set([
-          p.subcategory ?? '',
+          p.subcategory ?? "",
           p.condition,
           p.location,
           p.plan,
@@ -95,18 +95,18 @@ export const getPopularProducts = query({
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
       return {
-        status: 'error',
+        status: "error",
         code: 401,
-        message: 'Unauthorized',
+        message: "Unauthorized",
         data: null,
       };
     }
 
     // Get all interaction data we will use
-    const likes = await ctx.db.query('likes').collect();
-    const views = await ctx.db.query('views').collect();
-    const comments = await ctx.db.query('comments').collect();
-    const bookmarks = await ctx.db.query('bookmarks').collect();
+    const likes = await ctx.db.query("likes").collect();
+    const views = await ctx.db.query("views").collect();
+    const comments = await ctx.db.query("comments").collect();
+    const bookmarks = await ctx.db.query("bookmarks").collect();
 
     // Build a matrix where other user interactions will be kept
     const users = [
@@ -124,8 +124,8 @@ export const getPopularProducts = query({
     ];
 
     // Initialize Matrix with nulls
-    const matrix: Record<Id<'users'>, Record<Id<'product'>, number>> = {};
-    const itemScores: Record<Id<'product'>, number> = {};
+    const matrix: Record<Id<"users">, Record<Id<"product">, number>> = {};
+    const itemScores: Record<Id<"product">, number> = {};
 
     users.forEach((u) => {
       matrix[u] = {};
@@ -133,18 +133,18 @@ export const getPopularProducts = query({
     });
 
     likes.forEach(({ userId, productId }) => {
-      matrix[userId][productId] += weights['likes'];
-      itemScores[productId] = (itemScores[productId] || 0) + weights['likes'];
+      matrix[userId][productId] += weights["likes"];
+      itemScores[productId] = (itemScores[productId] || 0) + weights["likes"];
     });
 
     views.forEach(({ userId, productId }) => {
-      matrix[userId][productId] += weights['view'];
-      itemScores[productId] = (itemScores[productId] || 0) + weights['view'];
+      matrix[userId][productId] += weights["view"];
+      itemScores[productId] = (itemScores[productId] || 0) + weights["view"];
     });
 
     comments.forEach(({ userId, productId }) => {
-      matrix[userId][productId] += weights['comment'];
-      itemScores[productId] = (itemScores[productId] || 0) + weights['comment'];
+      matrix[userId][productId] += weights["comment"];
+      itemScores[productId] = (itemScores[productId] || 0) + weights["comment"];
     });
 
     bookmarks.forEach(({ userId, type, productId }) => {
@@ -158,8 +158,8 @@ export const getPopularProducts = query({
     const productIds = popularProductsId.map((p) => p.itemId);
 
     const productsList = await ctx.db
-      .query('product')
-      .filter((q) => q.or(...productIds.map((id) => q.eq(q.field('_id'), id))))
+      .query("product")
+      .filter((q) => q.or(...productIds.map((id) => q.eq(q.field("_id"), id))))
       .collect();
 
     // reorder according to ranking
@@ -170,10 +170,10 @@ export const getPopularProducts = query({
     );
 
     return {
-      status: 'success',
+      status: "success",
       code: 200,
       message: null,
-      data: popularProducts,
+      data: popularProducts.slice(0, 20),
     };
   },
 });

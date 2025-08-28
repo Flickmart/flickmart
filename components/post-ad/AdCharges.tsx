@@ -17,6 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
+import { useRouter } from "next/navigation";
 
 interface AdChargesProps {
   plan: "free" | "basic" | "pro" | "premium";
@@ -59,6 +60,7 @@ export default function AdCharges({
 
   const balance = wallet?.balance ? wallet?.balance / 100 : 0;
   const chargeAmount = PLAN_PRICES[plan];
+  const router = useRouter();
 
   const handlePostAdClick = async () => {
     if (!images.length) {
@@ -81,13 +83,15 @@ export default function AdCharges({
       toast.error("Please log in to post an ad");
       return;
     }
-    if (!wallet && plan !== "free") {
-      toast.error("Please create a wallet first");
+    if (action === "edit" || plan === "free") {
+      await formSubmit();
+      setShowChargeDialog(false);
+      router.push("/settings/products");
       return;
     }
 
-    if (plan === "free") {
-      await formSubmit();
+    if (!wallet) {
+      toast.error("Please create a wallet first");
       return;
     }
 
@@ -186,13 +190,16 @@ export default function AdCharges({
       <Dialog onOpenChange={setShowChargeDialog} open={showChargeDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Ad Posting</DialogTitle>
+            <DialogTitle>
+              {action === "edit" ? "Confirm Update" : "Confirm Ad Posting"}
+            </DialogTitle>
             <DialogDescription>
-              You are about to post an ad with {plan} plan. ₦{chargeAmount} will
-              be deducted from your wallet.
+              {action === "edit"
+                ? "You are about to update this ad, are you sure you want to proceed with this action?"
+                : "You are about to post an ad with {plan} plan. ₦{chargeAmount} will be deducted from your wallet."}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="gap-3">
             <Button
               disabled={isProcessing}
               onClick={() => setShowChargeDialog(false)}
@@ -207,6 +214,8 @@ export default function AdCharges({
             >
               {isProcessing ? (
                 <ClipLoader color="#ffffff" size={20} />
+              ) : action === "edit" ? (
+                "Update Ad"
               ) : (
                 "Confirm & Post"
               )}

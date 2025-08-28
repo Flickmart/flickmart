@@ -135,6 +135,7 @@ export default function PostAdForm({
     },
   });
   const { images } = useOthersStore((state) => state);
+  const storeImage = useOthersStore((state) => state.storeImage);
   const router = useRouter();
   const createNewAd = useMutationConvex(api.product.create);
   const updateProduct = useMutationConvex(api.product.update);
@@ -156,10 +157,10 @@ export default function PostAdForm({
       form.setValue("title", product.title);
       form.setValue("description", product.description);
       form.setValue("price", product.price);
-
       form.setValue("store", product.store);
       form.setValue("phone", product.phone);
       form.setValue("plan", product.plan);
+      storeImage(product.images);
 
       setQuery(null);
     }
@@ -208,9 +209,18 @@ export default function PostAdForm({
         images,
         price: +formData.price,
       };
+
       action === "edit"
         ? updateProduct({
-            ...modifiedObj,
+            condition: modifiedObj.condition,
+            description: modifiedObj.description,
+            images: modifiedObj.images,
+            location: modifiedObj.location,
+            negotiable: modifiedObj.negotiable,
+            price: modifiedObj.price,
+            subcategory: modifiedObj.subcategory,
+            category: modifiedObj.category,
+            title: modifiedObj.title,
             productId: productId as Id<"product">,
           })
         : adPostMutate(modifiedObj);
