@@ -36,7 +36,7 @@ export default function MiniListings({
     );
   }
 
-  // No display 
+  // Dont display 
   if (userProducts.length === 0) {
     return null;
   }
