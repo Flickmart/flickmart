@@ -84,7 +84,7 @@ const formSchema = z.object({
     .min(30, { message: "Description is too short" })
     .max(900, { message: "Description cannot exceed 900 characters" }),
   price: z.union([
-    z.string().refine((val) => +val === 0, {
+    z.string().refine((val) => +val !== 0, {
       message: "Price must be a valid number, price cannot be zero",
     }),
 
