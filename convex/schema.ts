@@ -51,7 +51,12 @@ export default defineSchema({
     views: v.optional(v.number()),
     negotiable: v.optional(v.boolean()),
     commentsId: v.optional(v.id("comments")),
-    plan: v.union(v.literal("basic"), v.literal("pro"), v.literal("premium")),
+    plan: v.union(
+      v.literal("free"),
+      v.literal("basic"),
+      v.literal("pro"),
+      v.literal("premium")
+    ),
     exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
     timeStamp: v.string(),
@@ -275,7 +280,12 @@ export default defineSchema({
         adId: v.optional(v.id("product")), // Reference to the ad being posted/promoted
         productIds: v.optional(v.array(v.id("product"))),
         plan: v.optional(
-          v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
+          v.union(
+            v.literal("free"),
+            v.literal("basic"),
+            v.literal("pro"),
+            v.literal("premium")
+          )
         ), // Ad plan type
       })
     ),
