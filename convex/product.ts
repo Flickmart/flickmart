@@ -1013,3 +1013,18 @@ export const getVendorProducts = query({
       .collect();
   },
 });
+
+export const getBySellerId = query({
+  args: {
+    sellerId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Fetch all products where userId matches the given sellerId
+    const products = await ctx.db
+      .query("product")
+      .withIndex("by_userId", (q) => q.eq("userId", args.sellerId))
+      .collect();
+
+    return products;
+  },
+});
