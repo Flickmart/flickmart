@@ -1,13 +1,14 @@
-'use client';
-import imageCompression from 'browser-image-compression';
-import { Plus, Upload, X } from 'lucide-react';
-import Image from 'next/image';
-import type React from 'react';
-import { useEffect, useRef, useState } from 'react';
-import { MoonLoader } from 'react-spinners';
-import { toast } from 'sonner';
-import { useUpload } from '@/hooks/useUpload';
-import { useOthersStore } from '@/store/useOthersStore';
+"use client";
+import imageCompression from "browser-image-compression";
+import { Plus, Upload, X } from "lucide-react";
+import Image from "next/image";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
+import { MoonLoader } from "react-spinners";
+import { toast } from "sonner";
+import { useUpload } from "@/hooks/useUpload";
+import { useOthersStore } from "@/store/useOthersStore";
+import { deleteUploadThing } from "@/app/action/delete-uploadthing";
 
 export default function AddPhoto({
   isSubmitted,
@@ -24,7 +25,8 @@ export default function AddPhoto({
   const [fileName, setFileName] = useState<Array<string>>([]);
   const [filePath, setFilePath] = useState<Array<string | null>>([]);
   const storeImage = useOthersStore((state) => state.storeImage);
-  const [error, setError] = useState<string>('');
+  const imagesKey = useOthersStore((state) => state.images);
+  const [error, setError] = useState<string>("");
   const [imageFilesArr, setImageFilesArr] = useState<Array<File>>([]);
   const { startUpload, isUploading, isError, setIsError } = useUpload();
 
@@ -47,7 +49,7 @@ export default function AddPhoto({
     }
     let toastId: ReturnType<typeof toast.loading>;
     if (isUploading) {
-      toastId = toast.loading('Uploading Images...');
+      toastId = toast.loading("Uploading Images...");
     }
     return () => {
       if (toastId) {
@@ -64,15 +66,21 @@ export default function AddPhoto({
       useWebWorker: true,
     };
 
-    if (!files || files.length < 2 || files.length > 5) {
-      setError('*You must add between 2 and 5 images.');
+    if (
+      !files ||
+      files.length + imagesKey.length < 2 ||
+      files.length + imagesKey.length > 5
+    ) {
+      setError("*You must add between 2 and 5 images.");
     } else {
-      setError('');
+      setError("");
 
       try {
+        // Convert FileList to File array
         const imageFiles = Array.from(files);
-        setImageFilesArr(imageFiles);
+        setImageFilesArr((prev) => [...prev, ...imageFiles]);
 
+        // Compress files
         const compressedPromises = imageFiles.map(async (file) => {
           const compressedFile = await imageCompression(file, options);
           setFilePath((prev) => [...prev, URL.createObjectURL(file)]);
@@ -81,10 +89,19 @@ export default function AddPhoto({
         });
 
         const compressedFiles = await Promise.all(compressedPromises);
-        setImageFilesArr(compressedFiles);
+
+        setImageFilesArr((prev) => [...prev, ...compressedFiles]);
 
         const uploadedImg = await startUpload(compressedFiles);
-        const images = uploadedImg?.map((item) => item.ufsUrl);
+        const images = [
+          ...imagesKey,
+          ...(uploadedImg?.map((item) => item.ufsUrl) || []),
+        ];
+
+        if (images.length > 5) {
+          toast.error("Image length exceeded, You can only upload 5 images");
+          return;
+        }
         if (images) {
           storeImage(images);
         }
@@ -93,13 +110,22 @@ export default function AddPhoto({
       }
     }
   };
-  const handleImageRemove = (index: number) => {
+  const handleImageRemove = async (index: number) => {
     const newFilePath = filePath.filter((_, i) => i !== index);
     const newFileName = fileName.filter((_, i) => i !== index);
+    const loadingId = toast.loading("Deleting Image...");
+
+    const u = new URL(imagesKey[index]);
+    const key = u.pathname.split("/").pop()!; // e.g. "abc123_image.jpg"
+    const response = await deleteUploadThing(key);
+    if (response.ok) {
+      toast.dismiss(loadingId);
+      toast.success("Image deleted successfully");
+    }
 
     setFilePath(newFilePath);
     setFileName(newFileName);
-    storeImage([]);
+    storeImage([...imagesKey.filter((_, i) => i !== index)]);
   };
 
   return (
@@ -108,7 +134,7 @@ export default function AddPhoto({
       <p>The first picture would be the face of your advert</p>
       <div className="flex flex-wrap items-center space-x-3 overflow-x-auto">
         <div
-          className={`cursor-pointer ${isUploading ? 'bg-flickmart/20' : 'bg-flickmart hover:bg-flickmart/80'} flex h-14 w-20 items-center justify-center rounded-lg duration-200`}
+          className={`cursor-pointer ${isUploading ? "bg-flickmart/20" : "bg-flickmart hover:bg-flickmart/80"} flex h-14 w-20 items-center justify-center rounded-lg duration-200`}
           onClick={handleBtnClick}
         >
           <button
@@ -117,7 +143,7 @@ export default function AddPhoto({
             type="button"
           >
             <Plus
-              className={`p-1 ${isUploading ? 'text-flickmart/20' : 'text-flickmart'}`}
+              className={`p-1 ${isUploading ? "text-flickmart/20" : "text-flickmart"}`}
             />
             <input
               accept=".jpg, .png"
@@ -129,8 +155,8 @@ export default function AddPhoto({
             />
           </button>
         </div>
-        {filePath && fileName
-          ? Array.from({ length: filePath.length }).map((_, index) => {
+        {imagesKey.length
+          ? Array.from({ length: imagesKey.length }).map((_, index) => {
               return (
                 <div
                   className="relative h-24 w-24 rounded-lg border border-gray-200 p-2"
@@ -147,7 +173,7 @@ export default function AddPhoto({
                   ) : (
                     <>
                       <X
-                        className="absolute top-1 right-1 z-20 cursor-pointer p-0.5"
+                        className="absolute top-1 transition-all duration-300 hover:text-white hover:bg-orange-400 rounded-full right-1 z-20 cursor-pointer p-0.5"
                         onClick={() => handleImageRemove(index)}
                       />
                       {isError ? (
@@ -157,6 +183,7 @@ export default function AddPhoto({
                             onClick={async () => {
                               const uploadedImg =
                                 await startUpload(imageFilesArr);
+
                               if (
                                 uploadedImg?.length === imageFilesArr.length
                               ) {
@@ -168,11 +195,11 @@ export default function AddPhoto({
                         </div>
                       ) : (
                         <Image
-                          alt={fileName[index]}
+                          alt={fileName[index] || imagesKey[index]}
                           className="h-full w-full object-cover"
                           height={300}
                           id={index.toString()}
-                          src={filePath[index] || ''}
+                          src={imagesKey[index]}
                           width={300}
                         />
                       )}

@@ -176,20 +176,18 @@ export const update = mutation({
     images: v.optional(v.array(v.string())),
     price: v.optional(v.number()),
     category: v.optional(v.string()),
-    plan: v.optional(
-      v.union(
-        v.literal("free"),
-        v.literal("basic"),
-        v.literal("pro"),
-        v.literal("premium")
-      )
-    ),
-    exchange: v.optional(v.boolean()),
+    subcategory: v.optional(v.string()),
+    // plan: v.optional(
+    //   v.union(
+    //     v.literal("free"),
+    //     v.literal("basic"),
+    //     v.literal("pro"),
+    //     v.literal("premium")
+    //   )
+    // ),
     condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
     location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
     negotiable: v.optional(v.boolean()),
-
-    link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -216,11 +214,11 @@ export const update = mutation({
       "images",
       "price",
       "category",
-      "plan",
-      "exchange",
+      "subcategory",
+      // "plan",
       "condition",
       "location",
-      "link",
+      "negotiable",
     ] as const;
 
     // Type-safe way to build the updates object

@@ -153,7 +153,7 @@ export default function PublicProfile() {
               />
             </div>
             <div className="mt-6 mb-12">
-              <div>
+              <div className="flex flex-col gap-2">
                 <h1 className="font-semibold text-lg/5">Contact Information</h1>
                 <p className="text-xs text-muted-foreground">
                   Your contact details right here for your easy access.
