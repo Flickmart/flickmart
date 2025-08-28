@@ -1,5 +1,5 @@
-'use client';
-import { useQuery } from 'convex/react';
+"use client";
+import { useQuery } from "convex/react";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -9,17 +9,17 @@ import {
   User,
   Verified,
   Wallet,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import MobileNav from '@/components/MobileNav';
-import { PushNotificationSetup } from '@/components/notifications/PushNotificationSetup';
-import { PushNotificationTest } from '@/components/notifications/PushNotificationTest';
-import MiniListings from '@/components/settings/MiniListings';
-import RecentListings from '@/components/settings/RecentListings';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import MobileNav from "@/components/MobileNav";
+import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
+import { PushNotificationTest } from "@/components/notifications/PushNotificationTest";
+import MiniListings from "@/components/settings/MiniListings";
+import RecentListings from "@/components/settings/RecentListings";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,13 +27,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useAuthUser } from '@/hooks/useAuthUser';
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 // This would typically come from an API or database
 
@@ -82,7 +82,7 @@ export default function PublicProfile() {
           <div className="mx-auto max-w-5xl">
             {/* Header */}
             <span className="font-semibold text-lg">
-              {user?.username || 'lotanna567'}
+              {user?.username || "lotanna567"}
             </span>
             <div className="my-3 flex items-center gap-2">
               <div>
@@ -90,16 +90,16 @@ export default function PublicProfile() {
                   <AvatarImage alt="Profile picture" src={user?.imageUrl} />
                   <AvatarFallback>
                     {user?.name
-                      .split(' ')
+                      .split(" ")
                       .map((n: string) => n[0])
-                      .join('')}
+                      .join("")}
                   </AvatarFallback>
                 </Avatar>
               </div>
               <div>
                 <div className="flex items-center gap-1">
                   <h1 className="min-w-10 font-semibold text-base capitalize">
-                    {user?.name || 'Lotanna Stores'}
+                    {user?.name || "Lotanna Stores"}
                   </h1>
                   {user?.verified ? (
                     <Image
@@ -113,49 +113,49 @@ export default function PublicProfile() {
                 </div>
                 <span className="flex items-center gap-2 text-sm">
                   <User className="h-5 w-5" />
-                  {hasStore === 404 ? 'Buyer' : 'Seller'}
+                  {hasStore === 404 ? "Buyer" : "Seller"}
                 </span>
               </div>
             </div>
-            <div className="mb-4">
+            <div className="my-4 flex flex-col gap-2">
               <span className="text-sm">Hey there i use Flickmart!</span>
               <div className="mt-1.5 flex items-center gap-2">
                 <Button className="w-5/12">
                   <Link
                     className="size-full"
-                    href={'/settings/personal/update'}
+                    href={"/settings/personal/update"}
                   >
                     Edit Profile
                   </Link>
                 </Button>
                 <Button className="w-5/12">Share Profile</Button>
                 <Button className="w-2/10">
-                  <Link className="size-full" href={'/wallet'}>
+                  <Link className="size-full" href={"/wallet"}>
                     <Wallet />
                   </Link>
                 </Button>
               </div>
               <p className="pt-1.5 text-muted-foreground text-sm">
-                Member since{' '}
+                Member since{" "}
                 {user?._creationTime
-                  ? new Date(user._creationTime).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
+                  ? new Date(user._creationTime).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
                     })
-                  : ''}
+                  : ""}
               </p>
             </div>
             <div>
               <MiniListings
                 updateLength={updateUserProductsLength}
-                userId={user?._id as Id<'users'>}
+                userId={user?._id as Id<"users">}
               />
             </div>
             <div className="mt-6 mb-12">
               <div>
                 <h1 className="font-semibold text-lg/5">Contact Information</h1>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Your contact details right here for your easy access.
                 </p>
               </div>
