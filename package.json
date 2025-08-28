@@ -112,6 +112,7 @@
     "onlyBuiltDependencies": [
       "@clerk/shared",
       "@sentry/cli",
+      "core-js",
       "sharp"
     ]
   }

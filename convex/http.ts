@@ -145,6 +145,46 @@ http.route({
       );
     }
 
+    // Check if user already has a Paystack customer ID
+    let customerId = user.paystackCustomerId;
+    
+    // If no customer ID exists, create a customer first
+    if (!customerId) {
+      const customerResponse = await fetch(
+        'https://api.paystack.co/customer',
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            first_name: user.name.split(' ')[0] || user.name,
+            last_name: user.name.split(' ').slice(1).join(' ') || '',
+            phone: user.contact?.phone || '',
+          }),
+        }
+      );
+      
+      const customerData = await customerResponse.json();
+      if (customerData.status && customerData.data && customerData.data.customer_code) {
+        const newCustomerId = customerData.data.customer_code;
+        customerId = newCustomerId;
+        
+        // Save customer ID to user and wallet
+        await ctx.runMutation(internal.users.updatePaystackCustomerId, {
+          userId: user._id,
+          customerId: newCustomerId,
+        });
+        
+        await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
+          walletId: wallet._id,
+          customerId: newCustomerId,
+        });
+      }
+    }
+
     const response = await fetch(
       'https://api.paystack.co/transaction/initialize',
       {
@@ -153,7 +193,11 @@ http.route({
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, amount: amount * 100 }), // Convert to kobo
+        body: JSON.stringify({ 
+          email, 
+          amount: amount * 100,
+          customer: customerId // Include customer ID if available
+        }), // Convert to kobo
       }
     );
     const data = await response.json();
@@ -217,13 +261,12 @@ http.route({
   }),
 });
 
-
 http.route({
   path: '/paystack/verify',
   method: 'POST',
   handler: httpAction(async (ctx, request) => {
     const origin = request.headers.get('Origin');
-    
+
     try {
       // Parse request body with error handling
       let requestBody;
@@ -231,21 +274,20 @@ http.route({
         requestBody = await request.json();
       } catch (error) {
         console.error('Failed to parse request body:', error);
-        return new Response(
-          JSON.stringify({ error: 'Invalid request body' }),
-          {
-            status: 400,
-            headers: getJsonHeaders(origin),
-          }
-        );
+        return new Response(JSON.stringify({ error: 'Invalid request body' }), {
+          status: 400,
+          headers: getJsonHeaders(origin),
+        });
       }
 
       const { reference, userId } = requestBody;
-      
+
       // Validate reference
       if (!reference || typeof reference !== 'string') {
         return new Response(
-          JSON.stringify({ error: 'Reference is required and must be a string' }),
+          JSON.stringify({
+            error: 'Reference is required and must be a string',
+          }),
           {
             status: 400,
             headers: getJsonHeaders(origin),
@@ -255,7 +297,10 @@ http.route({
 
       // Log the request for debugging
       console.log('Paystack verify request:', { reference, userId });
-      console.log('Paystack secret key configured:', !!process.env.PAYSTACK_SECRET_KEY);
+      console.log(
+        'Paystack secret key configured:',
+        !!process.env.PAYSTACK_SECRET_KEY
+      );
 
       // Check if PAYSTACK_SECRET_KEY is configured
       if (!process.env.PAYSTACK_SECRET_KEY) {
@@ -273,23 +318,27 @@ http.route({
       console.log('Calling Paystack API with reference:', reference);
       const paystackUrl = `https://api.paystack.co/transaction/verify/${reference}`;
       console.log('Paystack URL:', paystackUrl);
-      
+
       const response = await fetch(paystackUrl, {
         method: 'GET',
         headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
       });
-      
+
       console.log('Paystack response status:', response.status);
       // console.log('Paystack response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
-        console.error('Paystack API error:', response.status, response.statusText);
+        console.error(
+          'Paystack API error:',
+          response.status,
+          response.statusText
+        );
         const errorData = await response.json().catch(() => ({}));
         return new Response(
-          JSON.stringify({ 
-            error: 'Paystack API error', 
+          JSON.stringify({
+            error: 'Paystack API error',
             details: errorData,
-            status: response.status 
+            status: response.status,
           }),
           {
             status: response.status,
@@ -304,9 +353,9 @@ http.route({
       // Check if Paystack API call was successful
       if (!data.status) {
         return new Response(
-          JSON.stringify({ 
-            error: 'Paystack API error', 
-            details: data 
+          JSON.stringify({
+            error: 'Paystack API error',
+            details: data,
           }),
           {
             status: 400,
@@ -326,7 +375,7 @@ http.route({
             reference,
           }
         );
-        
+
         if (!transaction) {
           return new Response(
             JSON.stringify({ error: 'Transaction not found in database' }),
@@ -348,11 +397,11 @@ http.route({
             currency: data.data.currency,
             paystackFees: data.data.fees,
           });
-          
+
           const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
             walletId: transaction.walletId,
           });
-          
+
           if (wallet) {
             await ctx.runMutation(internal.wallet.updateBalance, {
               walletId: wallet._id,
@@ -360,61 +409,20 @@ http.route({
             });
           }
         }
-        
+
         return new Response(JSON.stringify(data), {
           status: 200,
           headers: getJsonHeaders(origin),
         });
-      } else if (transactionStatus === 'abandoned') {
+      }
+      if (transactionStatus === 'abandoned') {
         // Handle abandoned transactions
         console.log('Transaction was abandoned by user');
         return new Response(
           JSON.stringify({
             ...data,
             message: 'Transaction was abandoned by user',
-            userMessage: 'Payment was not completed. Please try again.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else if (transactionStatus === 'failed') {
-        // Handle failed transactions
-        console.log('Transaction failed');
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: 'Transaction failed',
-            userMessage: 'Payment failed. Please try again.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else if (transactionStatus === 'pending') {
-        // Handle pending transactions
-        console.log('Transaction is still pending');
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: 'Transaction is pending',
-            userMessage: 'Payment is still being processed. Please wait.'
-          }),
-          {
-            status: 200, // Return 200 but with clear message
-            headers: getJsonHeaders(origin),
-          }
-        );
-      } else {
-        // Handle other statuses
-        console.log('Transaction has unknown status:', transactionStatus);
-        return new Response(
-          JSON.stringify({
-            ...data,
-            message: `Transaction status: ${transactionStatus}`,
-            userMessage: 'Payment status unclear. Please contact support.'
+            userMessage: 'Payment was not completed. Please try again.',
           }),
           {
             status: 200, // Return 200 but with clear message
@@ -422,13 +430,55 @@ http.route({
           }
         );
       }
-      
+      if (transactionStatus === 'failed') {
+        // Handle failed transactions
+        console.log('Transaction failed');
+        return new Response(
+          JSON.stringify({
+            ...data,
+            message: 'Transaction failed',
+            userMessage: 'Payment failed. Please try again.',
+          }),
+          {
+            status: 200, // Return 200 but with clear message
+            headers: getJsonHeaders(origin),
+          }
+        );
+      }
+      if (transactionStatus === 'pending') {
+        // Handle pending transactions
+        console.log('Transaction is still pending');
+        return new Response(
+          JSON.stringify({
+            ...data,
+            message: 'Transaction is pending',
+            userMessage: 'Payment is still being processed. Please wait.',
+          }),
+          {
+            status: 200, // Return 200 but with clear message
+            headers: getJsonHeaders(origin),
+          }
+        );
+      }
+      // Handle other statuses
+      console.log('Transaction has unknown status:', transactionStatus);
+      return new Response(
+        JSON.stringify({
+          ...data,
+          message: `Transaction status: ${transactionStatus}`,
+          userMessage: 'Payment status unclear. Please contact support.',
+        }),
+        {
+          status: 200, // Return 200 but with clear message
+          headers: getJsonHeaders(origin),
+        }
+      );
     } catch (error) {
       console.error('Error in paystack verify:', error);
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Internal server error',
-          message: error instanceof Error ? error.message : 'Unknown error'
+          message: error instanceof Error ? error.message : 'Unknown error',
         }),
         {
           status: 500,
@@ -474,13 +524,21 @@ http.route({
       });
     }
 
-    const { account_number, bank_code, amount, name } = await request.json();
+    const { accountNumber, bankCode, amount, accountName } = await request.json();
 
-    if (!(account_number && bank_code && amount && name)) {
-      return new Response(JSON.stringify({ error: 'Missing fields' }), {
-        status: 400,
-        headers,
-      });
+    const missingFields = [];
+    if (!accountNumber) missingFields.push('accountNumber');
+    if (!bankCode) missingFields.push('bankCode');
+    if (!amount) missingFields.push('amount');
+    if (!accountName) missingFields.push('accountName');
+    if (missingFields.length > 0) {
+      return new Response(
+        JSON.stringify({ error: `Missing fields: ${missingFields.join(', ')}` }),
+        {
+          status: 400,
+          headers,
+        }
+      );
     }
 
     const user = await ctx.runQuery(api.users.current);
@@ -504,6 +562,19 @@ http.route({
     let recipientCode = wallet.recipientCode;
     if (!recipientCode) {
       // If recipient code does not exist, create a new recipient
+      const recipientBody: any = {
+        type: 'nuban',
+        name: accountName,
+        account_number: accountNumber,
+        bank_code: bankCode,
+        currency: 'NGN',
+      };
+
+      // Add customer ID if available
+      if (wallet.paystackCustomerId) {
+        recipientBody.customer = wallet.paystackCustomerId;
+      }
+
       const recipientRes = await fetch(
         'https://api.paystack.co/transferrecipient',
         {
@@ -512,13 +583,7 @@ http.route({
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            type: 'nuban',
-            name,
-            account_number,
-            bank_code,
-            currency: 'NGN',
-          }),
+          body: JSON.stringify(recipientBody),
         }
       );
 
@@ -534,6 +599,14 @@ http.route({
         );
       }
       recipientCode = recipientData.data.recipient_code;
+      
+      // Save the recipient code to the wallet for future use
+      if (recipientCode) {
+        await ctx.runMutation(internal.wallet.updateRecipientCode, {
+          walletId: wallet._id,
+          recipientCode,
+        });
+      }
     }
 
     // Initiate transfer
@@ -707,7 +780,7 @@ http.route({
       if (event.event === 'charge.success') {
         console.log(event);
         console.log('Processing charge.success event');
-        const { reference, amount } = event.data;
+        const { reference, amount, customer } = event.data;
 
         // Find the transaction
         const transaction = await ctx.runQuery(
@@ -730,6 +803,73 @@ http.route({
           });
 
           // Get and update wallet
+          const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
+            walletId: transaction.walletId,
+          });
+
+          if (wallet) {
+            await ctx.runMutation(internal.wallet.updateBalance, {
+              walletId: wallet._id,
+              balance: wallet.balance + transaction.amount,
+            });
+
+            // Save Paystack customer ID if available
+            if (customer && customer.id) {
+              await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
+                walletId: wallet._id,
+                customerId: customer.id.toString(),
+              });
+
+              await ctx.runMutation(internal.users.updatePaystackCustomerId, {
+                userId: transaction.userId,
+                customerId: customer.id.toString(),
+              });
+            }
+          }
+        }
+      } else if (event.event === 'transfer.success') {
+        console.log(event);
+        console.log('Processing transfer.success event');
+        const { reference, amount } = event.data;
+
+        // Find the withdrawal transaction
+        const transaction = await ctx.runQuery(
+          api.transactions.getByPaystackReference,
+          {
+            reference,
+          }
+        );
+
+        if (transaction && transaction.status !== 'success') {
+          await ctx.runMutation(internal.transactions.updateTransaction, {
+            transactionId: transaction._id,
+            status: 'success',
+            currency: event.data.currency,
+            paystackFees: event.data.fees,
+          });
+        }
+      } else if (event.event === 'transfer.failed') {
+        console.log(event);
+        console.log('Processing transfer.failed event');
+        const { reference, amount } = event.data;
+
+        // Find the withdrawal transaction
+        const transaction = await ctx.runQuery(
+          api.transactions.getByPaystackReference,
+          {
+            reference,
+          }
+        );
+
+        if (transaction && transaction.status !== 'failed') {
+          await ctx.runMutation(internal.transactions.updateTransaction, {
+            transactionId: transaction._id,
+            status: 'failed',
+            currency: event.data.currency,
+            paystackFees: event.data.fees,
+          });
+
+          // Refund the wallet balance since transfer failed
           const wallet = await ctx.runQuery(api.wallet.getWalletByWalletId, {
             walletId: transaction.walletId,
           });
@@ -1432,7 +1572,11 @@ http.route({
   path: '/resend-webhook',
   method: 'POST',
   handler: httpAction(async (ctx, req) => {
-    return await resend.handleResendEventWebhook(ctx, req);
+    const resendClient = resend;
+    if (!resendClient) {
+      return new Response(null, { status: 200 });
+    }
+    return await resendClient.handleResendEventWebhook(ctx, req);
   }),
 });
 

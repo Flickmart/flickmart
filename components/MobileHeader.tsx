@@ -1,9 +1,9 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { ChevronLeft, Search } from "lucide-react";
-import { useRouter, usePathname } from "next/navigation";
-import { ReactNode, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { type ReactNode, useState } from "react";
+import { cn } from "@/lib/utils";
 import SearchOverlay from "./SearchOverlay";
 
 interface MobileHeaderProps {
@@ -13,6 +13,8 @@ interface MobileHeaderProps {
 const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const queryString = useSearchParams();
+  const action = queryString.get("action");
 
   // If the pathname is one where a custom MobileHeader is rendered, return null
   const overrideRoutes = ["/notifications"];
@@ -28,6 +30,9 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
     title = "Store";
   } else if (pathname.includes("/vendors")) {
     title = "Vendor";
+
+  } else if (action === "edit") {
+    title = "Edit Ad";
   }
   const hiddenPaths = [
     "/notifications",
@@ -74,15 +79,20 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
       {rightSlot && <div>{rightSlot}</div>}
       {pathname.includes("/product") && (
         <button
-          type="button"
           onClick={() => {
             setSearchOpen(true);
           }}
+          type="button"
+          className="font-bold pr-2"
         >
-          <Search className="hover:text-flickmart transition-colors" />
+          <Search
+            size={23}
+            strokeWidth={2.5}
+            className=" text-gray-500 mt-1 transition-all duration-300  hover:text-flickmart"
+          />
         </button>
       )}
-      <SearchOverlay openSearch={openSearch} open={searchOpen} />
+      <SearchOverlay open={searchOpen} openSearch={openSearch} />
     </header>
   );
 };

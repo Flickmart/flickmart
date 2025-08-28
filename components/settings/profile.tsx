@@ -190,7 +190,7 @@ export default function MarketplaceProfile() {
             <div className="mb-8 sm:flex sm:items-center sm:justify-between">
               <div className="flex items-center justify-center gap-4">
                 <div className="relative">
-                  <Avatar className="size-36 sm:size-20 border">
+                  <Avatar className="size-36 border sm:size-20">
                     {isLoading ? (
                       <div className="grid h-full w-full place-items-center rounded-full bg-gray-100">
                         <MoonLoader className="text-primary" size={40} />

@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
 
 interface NumberKeypadProps {
   onNumberClick: (number: string) => void;
@@ -14,8 +14,8 @@ export function NumberKeypad({
   onBackspace,
 }: NumberKeypadProps) {
   return (
-    <div className="flex h-full flex-col justify-center p-1 bg-[#F5F5F5] md:h-auto md:p-6 md:pt-8">
-      <div className="mx-auto w-full h-auto max-w-lg">
+    <div className="flex h-full flex-col justify-center bg-[#F5F5F5] p-1 md:h-auto md:p-6 md:pt-8">
+      <div className="mx-auto h-auto w-full max-w-lg">
         <div className="grid grid-cols-3 gap-2 md:gap-4">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <Button
@@ -38,7 +38,7 @@ export function NumberKeypad({
 
           <Button
             className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
-            onClick={() => onNumberClick("0")}
+            onClick={() => onNumberClick('0')}
             variant="secondary"
           >
             0

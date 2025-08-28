@@ -309,7 +309,7 @@ export const transferToUserWithEscrow = mutation({
       amount: amountInCents,
       status: 'success',
       reference,
-      description: `Payment sent to escrow for order ${orderId}`,
+      description: `Payment made to ${seller.name}`,
       metadata: {
         orderId,
         recipientUserId: sellerId,
@@ -409,5 +409,31 @@ export const transferToUserWithEscrow = mutation({
     });
 
     return { success: true, orderId };
+  },
+});
+
+export const updateRecipientCode = internalMutation({
+  args: {
+    walletId: v.id('wallets'),
+    recipientCode: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const wallet = await ctx.db.patch(args.walletId, {
+      recipientCode: args.recipientCode,
+    });
+    return wallet;
+  },
+});
+
+export const updatePaystackCustomerId = internalMutation({
+  args: {
+    walletId: v.id('wallets'),
+    customerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const wallet = await ctx.db.patch(args.walletId, {
+      paystackCustomerId: args.customerId,
+    });
+    return wallet;
   },
 });
