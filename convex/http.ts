@@ -147,37 +147,38 @@ http.route({
 
     // Check if user already has a Paystack customer ID
     let customerId = user.paystackCustomerId;
-    
+
     // If no customer ID exists, create a customer first
     if (!customerId) {
-      const customerResponse = await fetch(
-        'https://api.paystack.co/customer',
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            first_name: user.name.split(' ')[0] || user.name,
-            last_name: user.name.split(' ').slice(1).join(' ') || '',
-            phone: user.contact?.phone || '',
-          }),
-        }
-      );
-      
+      const customerResponse = await fetch('https://api.paystack.co/customer', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          first_name: user.name.split(' ')[0] || user.name,
+          last_name: user.name.split(' ').slice(1).join(' ') || '',
+          phone: user.contact?.phone || '',
+        }),
+      });
+
       const customerData = await customerResponse.json();
-      if (customerData.status && customerData.data && customerData.data.customer_code) {
+      if (
+        customerData.status &&
+        customerData.data &&
+        customerData.data.customer_code
+      ) {
         const newCustomerId = customerData.data.customer_code;
         customerId = newCustomerId;
-        
+
         // Save customer ID to user and wallet
         await ctx.runMutation(internal.users.updatePaystackCustomerId, {
           userId: user._id,
           customerId: newCustomerId,
         });
-        
+
         await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
           walletId: wallet._id,
           customerId: newCustomerId,
@@ -193,10 +194,10 @@ http.route({
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
-          email, 
+        body: JSON.stringify({
+          email,
           amount: amount * 100,
-          customer: customerId // Include customer ID if available
+          customer: customerId, // Include customer ID if available
         }), // Convert to kobo
       }
     );
@@ -268,7 +269,7 @@ http.route({
     const origin = request.headers.get('Origin');
 
     try {
-      // Parse request body with error handling
+      // Parse request body draw error handling
       let requestBody;
       try {
         requestBody = await request.json();
@@ -524,7 +525,8 @@ http.route({
       });
     }
 
-    const { accountNumber, bankCode, amount, accountName } = await request.json();
+    const { accountNumber, bankCode, amount, accountName } =
+      await request.json();
 
     const missingFields = [];
     if (!accountNumber) missingFields.push('accountNumber');
@@ -533,7 +535,9 @@ http.route({
     if (!accountName) missingFields.push('accountName');
     if (missingFields.length > 0) {
       return new Response(
-        JSON.stringify({ error: `Missing fields: ${missingFields.join(', ')}` }),
+        JSON.stringify({
+          error: `Missing fields: ${missingFields.join(', ')}`,
+        }),
         {
           status: 400,
           headers,
@@ -599,7 +603,7 @@ http.route({
         );
       }
       recipientCode = recipientData.data.recipient_code;
-      
+
       // Save the recipient code to the wallet for future use
       if (recipientCode) {
         await ctx.runMutation(internal.wallet.updateRecipientCode, {
@@ -626,6 +630,20 @@ http.route({
 
     const transferData = await transferRes.json();
     console.log(transferData);
+    
+    if (!transferData.status || !transferData.data) {
+      return new Response(
+        JSON.stringify({ 
+          error: transferData.message || 'Transfer failed',
+          details: transferData
+        }),
+        {
+          status: 400,
+          headers,
+        }
+      );
+    }
+
     // Save withdrawal transaction
     const reference = await ctx.runAction(
       api.actions.generateTransactionReference,
@@ -641,16 +659,6 @@ http.route({
       type: 'withdrawal',
       description: 'User withdrawal to bank account',
     });
-
-    if (!transferData.status) {
-      return new Response(
-        JSON.stringify({ error: transferData.message || 'Transfer failed' }),
-        {
-          status: 400,
-          headers,
-        }
-      );
-    }
 
     // Update wallet balance
     await ctx.runMutation(internal.wallet.updateBalance, {

@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import { Package, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import ProductItem from "./product-item";
+import { Package, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import ProductItem from './product-item';
 
 // Levenshtein distance function for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
@@ -56,13 +56,13 @@ function hasSimilarWords(
 }
 
 interface ProductSelectionScreenProps {
-  products: Doc<"product">[] | null;
-  selectedProducts: Id<"product">[];
-  onProductToggle: (productId: Id<"product">) => void;
+  products: Doc<'product'>[] | null;
+  selectedProducts: Id<'product'>[];
+  onProductToggle: (productId: Id<'product'>) => void;
   onSkip: () => void;
   onContinue: () => void;
   calculatedTotal: number;
-  seller: Doc<"users"> | null;
+  seller: Doc<'users'> | null;
 }
 
 export default function ProductSelectionScreen({
@@ -74,10 +74,10 @@ export default function ProductSelectionScreen({
   calculatedTotal,
   seller,
 }: ProductSelectionScreenProps) {
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const formatAmount = (amount: number) => {
-    return amount.toLocaleString("en-NG", {
+    return amount.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
@@ -95,9 +95,9 @@ export default function ProductSelectionScreen({
     const query = searchQuery.toLowerCase().trim();
 
     return products.filter((product) => {
-      const title = product.title?.toLowerCase() || "";
-      const description = product.description?.toLowerCase() || "";
-      const category = product.category?.toLowerCase() || "";
+      const title = product.title?.toLowerCase() || '';
+      const description = product.description?.toLowerCase() || '';
+      const category = product.category?.toLowerCase() || '';
 
       // Exact match (highest priority)
       if (
@@ -163,11 +163,11 @@ export default function ProductSelectionScreen({
           <div className="flex max-w-lg items-center justify-start gap-2 pb-2">
             <Avatar className="size-12 border border-flickmart shadow-md md:h-16 md:w-16">
               <AvatarImage
-                alt={seller?.name || "User"}
+                alt={seller?.name || 'User'}
                 src={seller?.imageUrl}
               />
               <AvatarFallback>
-                {seller?.name?.charAt(0)?.toUpperCase() || "U"}
+                {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
               </AvatarFallback>
             </Avatar>
             <p className="flex flex-col">
@@ -196,7 +196,7 @@ export default function ProductSelectionScreen({
           {searchQuery && (
             <p className="mt-2 text-gray-500 text-sm">
               {filteredProducts?.length || 0} product
-              {(filteredProducts?.length || 0) !== 1 ? "s" : ""} found
+              {(filteredProducts?.length || 0) !== 1 ? 's' : ''} found
             </p>
           )}
         </div>
@@ -241,7 +241,7 @@ export default function ProductSelectionScreen({
               </p>
               <Button
                 className="mt-2 text-orange-500 hover:text-orange-600"
-                onClick={() => setSearchQuery("")}
+                onClick={() => setSearchQuery('')}
                 variant="link"
               >
                 Clear search
