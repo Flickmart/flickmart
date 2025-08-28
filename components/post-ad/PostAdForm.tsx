@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@radix-ui/react-select";
 import { useMutation } from "@tanstack/react-query";
 import { useMutation as useMutationConvex, useQuery } from "convex/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import {
@@ -84,7 +84,10 @@ const formSchema = z.object({
     .min(30, { message: "Description is too short" })
     .max(900, { message: "Description cannot exceed 900 characters" }),
   price: z.union([
-    z.string(),
+    z.string().refine((val) => +val === 0, {
+      message: "Price must be a valid number, price cannot be zero",
+    }),
+
     z.number({
       required_error: "Price is required",
     }),
@@ -107,6 +110,12 @@ export default function PostAdForm({
   setClear: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [basicDuration, setBasicDuration] = useState<number>(0);
+  const searchParams = useSearchParams();
+  const query = searchParams.get("action");
+  const productId = searchParams.get("product-id");
+  const product = useQuery(api.product.getById, {
+    productId: productId as Id<"product">,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -133,6 +142,22 @@ export default function PostAdForm({
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
   const [adId, setAdId] = useState<Id<"product"> | undefined>();
+
+  useEffect(() => {
+    if (query && product) {
+      form.setValue("category", product.category);
+      form.setValue("subcategory", product.subcategory || "");
+      form.setValue("location", product.location);
+      form.setValue("negotiable", product.negotiable ?? false);
+      form.setValue("condition", product.condition);
+      form.setValue("title", product.title);
+      form.setValue("description", product.description);
+      form.setValue("price", product.price);
+      form.setValue("store", product.store);
+      form.setValue("phone", product.phone);
+      form.setValue("plan", product.plan);
+    }
+  }, []);
 
   // Clear Form
   useEffect(() => {
