@@ -197,6 +197,11 @@
     @apply bg-background text-foreground;
   }
 }
+@layer utilities{
+  .error-check{
+    @apply border border-red-500
+  }
+}
 
 /* body {
   line-height: 0.5 !important;
