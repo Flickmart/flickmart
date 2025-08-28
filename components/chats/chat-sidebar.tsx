@@ -206,60 +206,6 @@ export default function ChatSidebar({
                 </div>
               </div>
             ))}
-
-            {conversations.map((chat) => (
-              <div
-                className={cn(
-                  "flex cursor-pointer items-center border-gray-200 border-b p-3 pl-4 hover:bg-gray-100",
-                  currentConversationId === chat.id && "bg-orange-50"
-                )}
-                key={chat.id}
-                onClick={() => handleChatSelect(chat.id)}
-              >
-                <Avatar className="h-10 w-10">
-                  <AvatarImage alt={chat.name} src={chat.imageUrl} />
-                  <AvatarFallback className="bg-flickmart text-white">
-                    {chat?.name?.charAt(0) || "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="ml-3 flex-1 overflow-hidden">
-                  <div className="!leading-normal flex items-center justify-between">
-                    <h3
-                      className={cn(
-                        "truncate font-medium",
-                        chat.unread > 0 && "font-semibold"
-                      )}
-                    >
-                      {chat.name}
-                      {chat.archived && (
-                        <Archive className="ml-1 inline h-3 w-3 text-gray-400" />
-                      )}
-                    </h3>
-                    <span className="text-gray-500 text-xs">{chat.time}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={cn(
-                        "flex items-center gap-x-1 truncate text-sm",
-                        chat.unread > 0
-                          ? "font-medium text-gray-800"
-                          : "text-gray-600"
-                      )}
-                    >
-                      {chat.containsImage && <Image className="h-4 w-4" />}
-                      {chat.lastMessage.length > 20
-                        ? chat.lastMessage.substring(0, 40) + "..."
-                        : chat.lastMessage}
-                    </p>
-                    {chat.unread > 0 && (
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs">
-                        {chat.unread}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))}
             <div className="text-xs text-center text-gray-700 mt-2">
               Your dms on flickmart are personal
             </div>
