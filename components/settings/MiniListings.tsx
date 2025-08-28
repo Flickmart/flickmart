@@ -6,33 +6,6 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { Card } from '../ui/card';
 
-const mockUserProducts = [
-  {
-    _id: 'prod_1' as any, // normally Id<'products'> type
-    title: 'iPhone 14 Pro',
-    price: 850_000,
-    images: ['/beauty.png'],
-  },
-  {
-    _id: 'prod_2' as any,
-    title: 'MacBook Air M2',
-    price: 1_200_000,
-    images: ['/airpods-demo.png'],
-  },
-  {
-    _id: 'prod_3' as any,
-    title: 'Beats Studio Buds',
-    price: 120_000,
-    images: ['/appliances.png'],
-  },
-  {
-    _id: 'prod_4' as any,
-    title: 'Samsung Galaxy S23',
-    price: 780_000,
-    images: ['/electronics.png'],
-  },
-];
-
 export default function MiniListings({
   userId,
   updateLength,
@@ -40,8 +13,7 @@ export default function MiniListings({
   userId: Id<'users'>;
   updateLength: (Length: number) => void;
 }) {
-  // const userProducts = useQuery(api.product.getByUserId);
-  const userProducts = mockUserProducts;
+  const userProducts = useQuery(api.product.getByUserId);
 
   useEffect(() => {
     updateLength(userProducts?.length ?? 0);
