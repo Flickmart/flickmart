@@ -4,12 +4,17 @@ import { components } from './_generated/api';
 import { internalMutation } from './_generated/server';
 
 // Internal Mutation for Email Notifications
-export const resend: Resend = new Resend(components.resend, {
-  testMode: true,
-});
+// Only initialize Resend when API key is configured; keep testMode for safety
+const hasResendKey = !!process.env.RESEND_API_KEY;
+export const resend: Resend | null = hasResendKey
+  ? new Resend(components.resend, { testMode: false })
+  : null;
 
 export const sendTestEmail = internalMutation({
   handler: async (ctx) => {
+    if (!resend) {
+      return; // Silently skip when not configured
+    }
     await resend.sendEmail(ctx, {
       from: 'Me <test@flickmart.app>',
       to: 'delivered@resend.dev',
@@ -28,6 +33,9 @@ export const sendEmailNotification = internalMutation({
     messagePreview: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
+    if (!resend) {
+      return; // Not configured; don't block the mutation
+    }
     await resend.sendEmail(ctx, {
       from: 'Flickmart <support@flickmart.app>',
       to: 'delivered@resend.dev',

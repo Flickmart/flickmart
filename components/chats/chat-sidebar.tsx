@@ -207,7 +207,7 @@ export default function ChatSidebar({
               </div>
             ))}
             {/* Extra spacing at bottom for better scrolling */}
-            <div className="h-24" />
+            <div className="h-28" />
           </div>
         )}
       </div>
