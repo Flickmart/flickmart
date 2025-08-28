@@ -219,7 +219,9 @@ export default function PostAdForm({
       setIsSubmitted(true);
       setTextAreaLength(0);
       form.reset();
-      toast.success("Ad posted successfully!");
+      toast.success(
+        `Ad ${action === "edit" ? "updated" : "posted"} successfully!`
+      );
     } catch (error) {
       toast.error("Failed to post ad");
     }
