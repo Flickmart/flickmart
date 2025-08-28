@@ -64,7 +64,9 @@ export default defineSchema({
     link: v.optional(v.string()),
     phone: v.string(),
     store: v.string(),
-  }),
+  }).index("by_userId", ["userId"])
+  
+  ,
 
   // Interactions
   interactions: defineTable({
