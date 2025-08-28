@@ -484,9 +484,12 @@ export default function ConversationPage() {
       </div>
 
       {/* Wallet transfer button */}
-      <div className="fixed right-6 bottom-[120px] z-20 flex flex-col gap-2">
+      <div className="fixed right-2 bottom-[120px] z-20 flex flex-col gap-2">
         <Link href={`/wallet/transfer?vendorId=${otherUserId}`}>
-          <Button className="rounded-full bg-[#FF8100] shadow-md shadow-black/25 !size-12" size="icon">
+          <Button
+            className="rounded-full bg-[#FF8100] shadow-md shadow-black/25 !size-12"
+            size="icon"
+          >
             <Wallet className="!size-[22px]" />
           </Button>
         </Link>

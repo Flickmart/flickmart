@@ -64,7 +64,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full shadow-black/20 shadow-sm",
+        "sticky !hidden top-0 z-30 w-full shadow-black/20 shadow-sm",
         { "lg:py-2": pathname !== "/" },
         {
           "hidden bg-white sm:block": pathname !== "/",

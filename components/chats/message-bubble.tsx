@@ -109,10 +109,10 @@ export default function MessageBubble({
     >
       <div
         className={cn(
-          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] lg:max-w-[65%] rounded-xl p-2 sm:px-3 text-black/70",
+          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] lg:max-w-[65%] rounded-xl p-2 sm:px-3",
           isUser
-            ? "bg-light-orange rounded-br-none"
-            : "bg-off-white text-foreground rounded-bl-none",
+            ? "bg-light-orange rounded-br-none text-black/80"
+            : "bg-gray-300/80 text-foreground rounded-bl-none text-black",
           selectedMessages.includes(id) &&
             "border-2 border-orange-400 bg-orange-200",
           images.length > 0 && "rounded-br-lg rounded-bl-lg py-0",
@@ -261,7 +261,7 @@ export function ProductChatMessage({
     <Link href={`/product/${productId}`}>
       <div className="flex justify-end">
         <div
-          className={`max-w-[280px] sm:max-w-xs ${isUser ? "bg-light-orange" : "bg-off-white"}`}
+          className={`max-w-[280px] sm:max-w-xs ${isUser ? "bg-light-orange" : "bg-gray-300/80"}`}
         >
           {/* Product Details Section - Highlighted */}
           <div className="bg-[#f58225] text-white rounded-lg p-2 sm:p-3 mb-2 sm:mb-3 flex items-center gap-2 sm:gap-3">

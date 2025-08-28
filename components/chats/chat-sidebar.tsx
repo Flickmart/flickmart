@@ -162,7 +162,7 @@ export default function ChatSidebar({
                 key={chat.id}
                 onClick={() => handleChatSelect(chat.id)}
               >
-                <Avatar className="size-14">
+                <Avatar className="size-12">
                   <AvatarImage alt={chat.name} src={chat.imageUrl} />
                   <AvatarFallback className="bg-flickmart text-white">
                     {chat?.name?.charAt(0) || "?"}
@@ -207,13 +207,13 @@ export default function ChatSidebar({
               </div>
             ))}
             {/* Extra spacing at bottom for better scrolling */}
-            <div className="h-16" />
+            {/* <div className="h-16" /> */}
           </div>
         )}
       </div>
     </section>
   );
-
+  
   return (
     <div className="h-full w-full bg-white">
       <SidebarContent />
