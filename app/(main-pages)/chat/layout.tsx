@@ -71,7 +71,7 @@ export default function ChatLayout({
           : conversation.user1;
 
       // Find user in our pre-fetched users
-      const otherUser = allUsers.find((u) => u._id === otherUserId);
+      const otherUser = allUsers.find((u) => u?._id === otherUserId);
 
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
@@ -153,9 +153,9 @@ export default function ChatLayout({
   }
 
   return (
-    <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
+    <div className="flex h-[calc(100vh-69px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar - always visible on desktop */}
-      <div className="hidden w-[320px] border-gray-200 border-r bg-white md:block">
+      <div className="hidden w-[360px] border-gray-200 border-r bg-white md:block">
         <ChatSidebar
           activeChat={null}
           activeFilter={activeFilter}

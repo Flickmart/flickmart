@@ -147,7 +147,7 @@ export default function ChatMessages({
       </div>
       <PhotoProvider>
         {groupedMessages.map((group, index) => (
-          <div className="space-y-2" key={index}>
+          <div className="space-y-3" key={index}>
             <div className="mx-auto w-fit rounded-full bg-gray-200 px-3 py-1 text-center text-gray-600 text-xs">
               {group.date}
             </div>
