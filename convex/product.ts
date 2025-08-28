@@ -898,7 +898,7 @@ function calculateTextSimilarity(text1: string, text2: string): number {
 export const getProductsByCategoryOrSubCategory = query({
   args: { category: v.string() },
   handler: async (ctx, args) => {
-    const user = getCurrentUserOrThrow(ctx);
+    const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
       throw Error('User is not logged in');
