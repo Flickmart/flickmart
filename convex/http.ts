@@ -1572,7 +1572,11 @@ http.route({
   path: '/resend-webhook',
   method: 'POST',
   handler: httpAction(async (ctx, req) => {
-    return await resend.handleResendEventWebhook(ctx, req);
+    const resendClient = resend;
+    if (!resendClient) {
+      return new Response(null, { status: 200 });
+    }
+    return await resendClient.handleResendEventWebhook(ctx, req);
   }),
 });
 
