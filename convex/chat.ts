@@ -256,15 +256,23 @@ export const sendMessage = mutation({
       timestamp: now,
     });
 
-    // Send Notification Email to Recipient if recipient has email notifications enabled
+    // Send Notification Email (non-blocking). Guarded in email module for API key.
     if (receiver?.allowNotifications) {
-      await ctx.runMutation(internal.email.sendEmailNotification, {
-        username: sender?.name ?? 'A customer',
-        subject: 'You have a new chat message',
-        recipient: receiver?.email as string,
-        ctaLink: `https://flickmart.app/chat/${args.conversationId}`,
-        messagePreview: args.content || '',
-      });
+      try {
+        // Fire-and-forget: do not block message sending on email issues
+        // No await on purpose; Convex mutations can't spawn background tasks,
+        // so we catch and ignore errors if the call fails quickly.
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        ctx.runMutation(internal.email.sendEmailNotification, {
+          username: sender?.name ?? 'A customer',
+          subject: 'You have a new chat message',
+          recipient: receiver?.email as string,
+          ctaLink: `https://flickmart.app/chat/${args.conversationId}`,
+          messagePreview: args.content || '',
+        });
+      } catch (_) {
+        // Ignore email errors; chat message already persisted
+      }
     }
 
     return messageId;

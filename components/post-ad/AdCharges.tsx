@@ -79,8 +79,13 @@ export default function AdCharges({
       toast.error("Please log in to post an ad");
       return;
     }
-    if (!wallet) {
+    if (!wallet && plan !== "free") {
       toast.error("Please create a wallet first");
+      return;
+    }
+
+    if (plan === "free") {
+      await formSubmit();
       return;
     }
 
@@ -109,7 +114,7 @@ export default function AdCharges({
             amount: chargeAmount,
             plan,
             userId: user?._id,
-            walletId: wallet._id,
+            walletId: wallet?._id,
           }),
         }
       );
