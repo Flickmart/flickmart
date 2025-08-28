@@ -72,7 +72,7 @@ export default function ChatSidebar({
 
   // Content of the sidebar
   const SidebarContent = () => (
-    <>
+    <section className="bg-[#F9F9F9] min-h-screen">
       <MobileNav />
       {/* Sidebar Header */}
       <div className="flex items-center justify-between px-3 py-2 md:mt-1">
@@ -99,13 +99,13 @@ export default function ChatSidebar({
       </div>
 
       {/* Filter Tabs */}
-      <div className="mt-1 flex items-center space-x-3 px-2">
+      <div className="mt-1 flex items-center space-x-3 px-3">
         <button
           className={cn(
             "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "all"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+              ? "border bg-[#FF810054] text-[#FF8100]"
+              : "text-gray-500 hover:text-[#FF8100]"
           )}
           onClick={() => setActiveFilter("all")}
         >
@@ -115,8 +115,8 @@ export default function ChatSidebar({
           className={cn(
             "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "unread"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+              ? "border bg-[#FF810054] text-[#FF8100]"
+              : "text-gray-500 hover:text-[#FF8100]"
           )}
           onClick={() => setActiveFilter("unread")}
         >
@@ -131,8 +131,8 @@ export default function ChatSidebar({
           className={cn(
             "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
             activeFilter === "archived"
-              ? "border bg-[rgba(255,136,17,0.82)]"
-              : "text-gray-500 hover:text-orange-500"
+              ? "border bg-[#FF810054] text-[#FF8100]"
+              : "text-gray-500 hover:text-[#FF8100]"
           )}
           onClick={() => setActiveFilter("archived")}
         >
@@ -148,7 +148,7 @@ export default function ChatSidebar({
       {/* Chat List */}
       <div className="mt-4 h-[calc(100%-150px)] overflow-y-auto">
         {conversations.length === 0 ? (
-          <div className="p-4 text-center text-gray-500">
+          <div className="py-4 px-3 text-center text-gray-500">
             No conversations found
           </div>
         ) : (
@@ -156,23 +156,23 @@ export default function ChatSidebar({
             {conversations.map((chat) => (
               <div
                 className={cn(
-                  "flex cursor-pointer items-center border-gray-200 border-b p-3 pl-4 hover:bg-gray-100",
+                  "flex cursor-pointer items-center border-gray-200 border-b py-3 px-3 hover:bg-gray-100",
                   currentConversationId === chat.id && "bg-orange-50"
                 )}
                 key={chat.id}
                 onClick={() => handleChatSelect(chat.id)}
               >
-                <Avatar className="h-10 w-10">
+                <Avatar className="size-14">
                   <AvatarImage alt={chat.name} src={chat.imageUrl} />
                   <AvatarFallback className="bg-flickmart text-white">
                     {chat?.name?.charAt(0) || "?"}
                   </AvatarFallback>
                 </Avatar>
-                <div className="ml-3 flex-1 overflow-hidden">
+                <div className="ml-3 flex-1 overflow">
                   <div className="!leading-normal flex items-center justify-between">
                     <h3
                       className={cn(
-                        "truncate font-medium",
+                        "truncate font-medium mb-[3px]",
                         chat.unread > 0 && "font-semibold"
                       )}
                     >
@@ -214,7 +214,7 @@ export default function ChatSidebar({
           </div>
         )}
       </div>
-    </>
+    </section>
   );
 
   return (

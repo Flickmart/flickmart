@@ -44,7 +44,7 @@ export default function ChatInput({
   };
 
   return (
-    <div className="fixed right-0 bottom-0 left-0 z-10 border-t bg-background md:left-[320px] md:mb-0">
+    <div className="fixed right-0 bottom-0 left-0 z-10 border-t bg-background md:left-[360px] md:mb-0">
       {isUploading && (
         <div className="flex items-center justify-center bg-orange-50 p-2">
           <Spinner className="mr-2" size="sm" />
@@ -64,7 +64,7 @@ export default function ChatInput({
                 />
               </div>
               <button
-                className="-top-2 -right-2 absolute rounded-full bg-red-500 p-1 hover:bg-red-600"
+                className="-top-2 -right-2 absolute rounded-full"
                 onClick={() => removeImage(index)}
               >
                 <X className="h-3 w-3 text-white" />
