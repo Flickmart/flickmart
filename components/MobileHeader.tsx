@@ -30,6 +30,7 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
     title = "Store";
   } else if (pathname.includes("/vendors")) {
     title = "Vendor";
+
   } else if (action === "edit") {
     title = "Edit Ad";
   }

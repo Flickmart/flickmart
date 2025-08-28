@@ -109,6 +109,7 @@ export default function MessageBubble({
     >
       <div
         className={cn(
+
           'max-w-[85%] xs:max-w-[80%] rounded-xl p-2 text-black/70 shadow-black/25 shadow-md sm:max-w-[75%] sm:px-3 md:max-w-[65%]',
           isUser
             ? 'rounded-br-none bg-light-orange'

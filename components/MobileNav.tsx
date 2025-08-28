@@ -1,19 +1,19 @@
-'use client';
-import { useQuery } from 'convex/react';
+"use client";
+import { useQuery } from "convex/react";
 import {
   Bookmark,
   House,
   MessageSquareText,
   Store,
   UserRound,
-} from 'lucide-react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { FadeLoader } from 'react-spinners';
-import { toast } from 'sonner';
-import { api } from '@/convex/_generated/api';
-import useNav from '@/hooks/useNav';
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FadeLoader } from "react-spinners";
+import { toast } from "sonner";
+import { api } from "@/convex/_generated/api";
+import useNav from "@/hooks/useNav";
 
 export default function MobileNav() {
   const pathname = usePathname();
@@ -25,11 +25,11 @@ export default function MobileNav() {
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const unreadCount = unreadNotifications.filter(
-    (notification) => notification.type === 'new_message'
+    (notification) => notification.type === "new_message"
   ).length;
 
   // Pages where SearchBox should not be shown
-  const hiddenPages = ['/sign-in', '/sign-up', '/forgot-password', '/chat'];
+  const hiddenPages = ["/sign-in", "/sign-up", "/forgot-password", "/chat"];
   const userStore = useQuery(api.store.getStoresByUserId);
   const firstUserStore = userStore?.data;
 
@@ -37,16 +37,16 @@ export default function MobileNav() {
   //   return null; // Don't render any component
   // }
   useEffect(() => {
-    router.prefetch('/post-ad');
+    router.prefetch("/post-ad");
     if (firstUserStore && isLoadingAd) {
       setIsLoadingAd(false);
-      router.push('/post-ad');
+      router.push("/post-ad");
     }
   }, [pathname, firstUserStore]);
 
   return (
     <header
-      className={`${isVisible ? 'translate-y-0' : 'translate-y-[160%]'} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden`}
+      className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden ${pathname.includes("/chat") ? "md:hidden" : ""}`}
     >
       <div className="relative mx-auto flex w-[94%] justify-between py-3">
         <Link
@@ -54,10 +54,10 @@ export default function MobileNav() {
           href="/"
         >
           <House
-            className={`${pathname === '/' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/" ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === '/' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
           >
             Home
           </span>
@@ -67,10 +67,10 @@ export default function MobileNav() {
           href="/saved"
         >
           <Bookmark
-            className={`${pathname === '/saved' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/saved" ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === '/saved' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/saved" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
           >
             Saved
           </span>
@@ -79,18 +79,18 @@ export default function MobileNav() {
           className="group mx-6 flex flex-col items-center justify-center gap-1.5"
           href={
             userStore === undefined
-              ? '#'
+              ? "#"
               : userStore?.data
-                ? '/post-ad'
-                : '/create-store'
+                ? "/post-ad"
+                : "/create-store"
           }
           onClick={(e) => {
             if (userStore === undefined) {
-              toast('Retrieving your store, please wait...', {
-                description: 'This may take a few seconds.',
+              toast("Retrieving your store, please wait...", {
+                description: "This may take a few seconds.",
                 duration: 3000,
-                position: 'top-center',
-                style: { background: '#fff', color: '#000' },
+                position: "top-center",
+                style: { background: "#fff", color: "#000" },
               });
               setIsLoadingAd(true);
             }
@@ -107,20 +107,20 @@ export default function MobileNav() {
         </Link>
         <Link
           className="group relative flex flex-col items-center justify-center gap-1.5"
-          href={'/chat'}
+          href={"/chat"}
         >
           <div className="relative">
             <MessageSquareText
-              className={`${pathname.startsWith('/chat') ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+              className={`${pathname.startsWith("/chat") ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
             />
             {unreadCount > 0 && (
               <span className="-top-2 -right-2 absolute flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-white text-xs">
-                {unreadCount > 99 ? '99+' : unreadCount}
+                {unreadCount > 99 ? "99+" : unreadCount}
               </span>
             )}
           </div>
           <span
-            className={`${pathname.startsWith('/chat') ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
+            className={`${pathname.startsWith("/chat") ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
           >
             Chats
           </span>
@@ -130,10 +130,10 @@ export default function MobileNav() {
           href="settings/personal"
         >
           <UserRound
-            className={`${pathname === '/profile' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/profile" ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === '/profile' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/profile" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
           >
             Profile
           </span>
