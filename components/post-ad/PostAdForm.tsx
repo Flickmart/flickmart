@@ -111,7 +111,8 @@ export default function PostAdForm({
 }) {
   const [basicDuration, setBasicDuration] = useState<number>(0);
   const searchParams = useSearchParams();
-  const query = searchParams.get("action");
+  const action = searchParams.get("action");
+  const [query, setQuery] = useState(action);
   const productId = searchParams.get("product-id");
   const product = useQuery(api.product.getById, {
     productId: productId as Id<"product">,
@@ -136,6 +137,7 @@ export default function PostAdForm({
   const { images } = useOthersStore((state) => state);
   const router = useRouter();
   const createNewAd = useMutationConvex(api.product.create);
+  const updateProduct = useMutationConvex(api.product.update);
   let postToastId: ReturnType<typeof toast.loading>;
   const userStore = useQuery(api.store.getStoresByUserId)?.data;
   const businessId = userStore?._id as Id<"store">;
@@ -144,6 +146,7 @@ export default function PostAdForm({
   const [adId, setAdId] = useState<Id<"product"> | undefined>();
 
   useEffect(() => {
+    product?.images;
     if (query && product) {
       form.setValue("category", product.category);
       form.setValue("subcategory", product.subcategory || "");
@@ -153,11 +156,14 @@ export default function PostAdForm({
       form.setValue("title", product.title);
       form.setValue("description", product.description);
       form.setValue("price", product.price);
+
       form.setValue("store", product.store);
       form.setValue("phone", product.phone);
       form.setValue("plan", product.plan);
+
+      setQuery(null);
     }
-  }, []);
+  }, [product]);
 
   // Clear Form
   useEffect(() => {
@@ -202,7 +208,12 @@ export default function PostAdForm({
         images,
         price: +formData.price,
       };
-      adPostMutate(modifiedObj);
+      action === "edit"
+        ? updateProduct({
+            ...modifiedObj,
+            productId: productId as Id<"product">,
+          })
+        : adPostMutate(modifiedObj);
 
       // Only reset if everything was successful
       setIsSubmitted(true);
@@ -285,18 +296,23 @@ export default function PostAdForm({
         <Separator className="h-5 w-full bg-gray-100" />
 
         <div className="flex w-full flex-col items-center justify-between space-y-5 p-5 lg:p-10 lg:pt-0">
-          <div className="w-full space-y-2 capitalize">
-            <h2 className="lg:text-xl font-bold">promote your ad</h2>
-            <p className="font-light text-gray-400 text-sm">
-              select a visibility rate and promote your ad
-            </p>
-          </div>
-          <AdPromotion
-            form={form}
-            basicDuration={basicDuration}
-            onBasicChange={(days: number) => setBasicDuration(days)}
-          />
+          {action === "edit" ? null : (
+            <>
+              <div className="w-full space-y-2 capitalize">
+                <h2 className="lg:text-xl font-bold">promote your ad</h2>
+                <p className="font-light text-gray-400 text-sm">
+                  select a visibility rate and promote your ad
+                </p>
+              </div>
+              <AdPromotion
+                form={form}
+                basicDuration={basicDuration}
+                onBasicChange={(days: number) => setBasicDuration(days)}
+              />
+            </>
+          )}
           <AdCharges
+            action={action as string}
             basicDuration={basicDuration}
             adId={adId}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
@@ -305,12 +321,16 @@ export default function PostAdForm({
             isPending={isPending}
             plan={form.watch("plan") || "basic"}
           />
-          <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
-            By clicking on Post Ad you accepted the{" "}
-            <span className="cursor-pointer text-flickmart">Sell Policy </span>
-            confirm that you will abide by the safety tips and other terms and
-            conditions
-          </p>
+          {action === "edit" ? null : (
+            <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
+              By clicking on Post Ad you accepted the{" "}
+              <span className="cursor-pointer text-flickmart">
+                Sell Policy{" "}
+              </span>
+              confirm that you will abide by the safety tips and other terms and
+              conditions
+            </p>
+          )}
         </div>
       </form>
     </Form>

@@ -177,11 +177,18 @@ export const update = mutation({
     price: v.optional(v.number()),
     category: v.optional(v.string()),
     plan: v.optional(
-      v.union(v.literal("basic"), v.literal("pro"), v.literal("premium"))
+      v.union(
+        v.literal("free"),
+        v.literal("basic"),
+        v.literal("pro"),
+        v.literal("premium")
+      )
     ),
     exchange: v.optional(v.boolean()),
-    condition: v.optional(v.boolean()),
-    location: v.optional(v.union(v.literal("Enugu"), v.literal("Nsuka"))),
+    condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
+    location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
+    negotiable: v.optional(v.boolean()),
+
     link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {

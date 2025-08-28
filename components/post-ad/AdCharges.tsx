@@ -26,6 +26,7 @@ interface AdChargesProps {
   images: Array<string>;
   adId: Id<"product"> | undefined;
   basicDuration: number;
+  action?: string;
 }
 
 export default function AdCharges({
@@ -36,6 +37,7 @@ export default function AdCharges({
   images,
   adId,
   basicDuration,
+  action,
 }: AdChargesProps) {
   const PLAN_PRICES = {
     basic: basicDuration === 7 ? 300 : 200,
@@ -149,16 +151,22 @@ export default function AdCharges({
   return (
     <>
       <div className="w-full space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Ad Posting Fee ({plan} plan)</span>
-          <span className="font-semibold">
-            ₦{chargeAmount.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Your Wallet Balance</span>
-          <span className="font-semibold">₦{balance.toLocaleString()}</span>
-        </div>
+        {action === "edit" ? null : (
+          <>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">
+                Ad Posting Fee ({plan} plan)
+              </span>
+              <span className="font-semibold">
+                ₦{chargeAmount.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Your Wallet Balance</span>
+              <span className="font-semibold">₦{balance.toLocaleString()}</span>
+            </div>
+          </>
+        )}
         <Button
           className="w-full bg-flickmart py-7 text-xl transition-all duration-300 hover:scale-110 lg:rounded-none lg:py-9"
           disabled={isPending || isProcessing}
@@ -167,6 +175,8 @@ export default function AdCharges({
         >
           {isPending || isProcessing ? (
             <ClipLoader color="#ffffff" />
+          ) : action === "edit" ? (
+            "Update Ad"
           ) : (
             "Post Ad"
           )}
