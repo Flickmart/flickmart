@@ -1,97 +1,105 @@
-'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Separator } from '@radix-ui/react-select';
-import { useMutation } from '@tanstack/react-query';
-import { useMutation as useMutationConvex, useQuery } from 'convex/react';
-import { useRouter } from 'next/navigation';
-import type React from 'react';
-import { useEffect, useState } from 'react';
+"use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Separator } from "@radix-ui/react-select";
+import { useMutation } from "@tanstack/react-query";
+import { useMutation as useMutationConvex, useQuery } from "convex/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import type React from "react";
+import { useEffect, useState } from "react";
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
-} from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useOthersStore } from '@/store/useOthersStore';
-import { Button } from '../ui/button';
-import { Form } from '../ui/form';
-import AdCharges from './AdCharges';
-import AddPhoto from './AddPhoto';
-import AdPromotion from './AdPromotion';
-import CategorySheet from './CategorySheet';
-import InputField from './InputField';
-import Selector from './Selector';
+} from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useOthersStore } from "@/store/useOthersStore";
+import { Button } from "../ui/button";
+import { Form } from "../ui/form";
+import AdCharges from "./AdCharges";
+import AddPhoto from "./AddPhoto";
+import AdPromotion from "./AdPromotion";
+import CategorySheet from "./CategorySheet";
+import InputField from "./InputField";
+import Selector from "./Selector";
 
 type SubmitType = SubmitHandler<{
   category: string;
   subcategory: string;
-  location: 'enugu' | 'nsukka';
+  location: "enugu" | "nsukka";
   negotiable: boolean;
-  condition: 'brand new' | 'used';
+  condition: "brand new" | "used";
   title: string;
   description: string;
   price: number | string;
   store: string;
   phone: string;
-  plan: 'basic' | 'pro' | 'premium';
+  plan: "free" | "basic" | "pro" | "premium";
 }>;
 
 type ErrorType = SubmitErrorHandler<{
   category: string;
   subcategory: string;
-  location: 'enugu' | 'nsukka';
+  location: "enugu" | "nsukka";
   exchange: boolean;
-  condition: 'brand new' | 'used';
+  condition: "brand new" | "used";
   title: string;
   description: string;
   price: number | string;
   store: string;
   phone: string;
-  plan: 'basic' | 'pro' | 'premium';
+  plan: "free" | "basic" | "pro" | "premium";
 }>;
 
 const categories = [
-  'vehicles',
-  'homes',
-  'food',
-  'mobiles',
-  'appliances',
-  'fashion',
-  'electronics',
-  'pets',
-  'beauty',
-  'services',
+  "vehicles",
+  "homes",
+  "food",
+  "mobiles",
+  "appliances",
+  "fashion",
+  "electronics",
+  "pets",
+  "beauty",
+  "services",
 ];
-const location = ['enugu', 'nsukka'];
-const returnable = ['yes', 'no'];
-const condition = ['brand new', 'used'];
+const location = ["enugu", "nsukka"];
+const returnable = ["yes", "no"];
+const condition = ["brand new", "used"];
 
 const formSchema = z.object({
   category: z.string(),
   subcategory: z.string(),
-  location: z.union([z.literal('enugu'), z.literal('nsukka')]),
+  location: z.union([z.literal("enugu"), z.literal("nsukka")]),
   negotiable: z.boolean(),
-  condition: z.union([z.literal('brand new'), z.literal('used')]),
+  condition: z.union([z.literal("brand new"), z.literal("used")]),
   title: z
     .string()
-    .min(5, { message: 'Title length is too short' })
-    .max(100, { message: 'Maximum character length reached' }),
+    .min(5, { message: "Title length is too short" })
+    .max(100, { message: "Maximum character length reached" }),
   description: z
     .string()
-    .min(30, { message: 'Description is too short' })
-    .max(900, { message: 'Description cannot exceed 900 characters' }),
+    .min(30, { message: "Description is too short" })
+    .max(900, { message: "Description cannot exceed 900 characters" }),
   price: z.union([
-    z.string(),
+    z.string().refine((val) => +val === 0, {
+      message: "Price must be a valid number, price cannot be zero",
+    }),
+
     z.number({
-      required_error: 'Price is required',
+      required_error: "Price is required",
     }),
   ]),
   store: z.string(),
   phone: z.string(),
-  plan: z.union([z.literal('basic'), z.literal('pro'), z.literal('premium')]),
+  plan: z.union([
+    z.literal("free"),
+    z.literal("basic"),
+    z.literal("pro"),
+    z.literal("premium"),
+  ]),
 });
 
 export default function PostAdForm({
@@ -101,36 +109,66 @@ export default function PostAdForm({
   clear: boolean;
   setClear: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+  const [basicDuration, setBasicDuration] = useState<number>(0);
+  const searchParams = useSearchParams();
+  const action = searchParams.get("action");
+  const [query, setQuery] = useState(action);
+  const productId = searchParams.get("product-id");
+  const product = useQuery(api.product.getById, {
+    productId: productId as Id<"product">,
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      category: '',
-      subcategory: '',
+      category: "",
+      subcategory: "",
       location: undefined,
-      title: '',
+      title: "",
       negotiable: undefined,
       condition: undefined,
-      description: '',
+      description: "",
       price: 0,
-      store: '',
-      phone: '',
-      plan: 'premium',
+      store: "",
+      phone: "",
+      plan: "pro",
     },
   });
   const { images } = useOthersStore((state) => state);
   const router = useRouter();
   const createNewAd = useMutationConvex(api.product.create);
+  const updateProduct = useMutationConvex(api.product.update);
   let postToastId: ReturnType<typeof toast.loading>;
   const userStore = useQuery(api.store.getStoresByUserId)?.data;
-  const businessId = userStore?._id as Id<'store'>;
+  const businessId = userStore?._id as Id<"store">;
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
-  const [adId, setAdId] = useState<Id<'product'> | undefined>();
+  const [adId, setAdId] = useState<Id<"product"> | undefined>();
+
+  useEffect(() => {
+    product?.images;
+    if (query && product) {
+      form.setValue("category", product.category);
+      form.setValue("subcategory", product.subcategory || "");
+      form.setValue("location", product.location);
+      form.setValue("negotiable", product.negotiable ?? false);
+      form.setValue("condition", product.condition);
+      form.setValue("title", product.title);
+      form.setValue("description", product.description);
+      form.setValue("price", product.price);
+
+      form.setValue("store", product.store);
+      form.setValue("phone", product.phone);
+      form.setValue("plan", product.plan);
+
+      setQuery(null);
+    }
+  }, [product]);
 
   // Clear Form
   useEffect(() => {
-    userStore?.name && form.setValue('store', userStore.name);
-    userStore?.phone && form.setValue('phone', userStore.phone);
+    userStore?.name && form.setValue("store", userStore.name);
+    userStore?.phone && form.setValue("phone", userStore.phone);
     // clear form
     if (clear) {
       setTextAreaLength(0);
@@ -146,8 +184,8 @@ export default function PostAdForm({
       setAdId(data);
 
       // Show a loading toast for redirection
-      toast.info('Redirecting to product page...');
-      console.log('Ad ID:', data);
+      toast.info("Redirecting to product page...");
+      console.log("Ad ID:", data);
       router.push(`/product/${data}`);
     },
     onError: (err) => {
@@ -159,26 +197,33 @@ export default function PostAdForm({
   const onSubmit: SubmitType = async (formData) => {
     try {
       if (!userStore?._id) {
-        toast.error('Please create a store first');
+        toast.error("Please create a store first");
         return;
       }
 
-      postToastId = toast.info('Posting Ad...');
+      postToastId = toast.info("Posting Ad...");
       const modifiedObj = {
         ...formData,
         businessId,
         images,
         price: +formData.price,
       };
-      adPostMutate(modifiedObj);
+      action === "edit"
+        ? updateProduct({
+            ...modifiedObj,
+            productId: productId as Id<"product">,
+          })
+        : adPostMutate(modifiedObj);
 
       // Only reset if everything was successful
       setIsSubmitted(true);
       setTextAreaLength(0);
       form.reset();
-      toast.success('Ad posted successfully!');
+      toast.success(
+        `Ad ${action === "edit" ? "updated" : "posted"} successfully!`
+      );
     } catch (error) {
-      toast.error('Failed to post ad');
+      toast.error("Failed to post ad");
     }
   };
 
@@ -188,7 +233,7 @@ export default function PostAdForm({
 
   // Prevent Default KeyPress Behavior
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
     }
   };
@@ -253,27 +298,41 @@ export default function PostAdForm({
         <Separator className="h-5 w-full bg-gray-100" />
 
         <div className="flex w-full flex-col items-center justify-between space-y-5 p-5 lg:p-10 lg:pt-0">
-          <div className="w-full space-y-2 capitalize">
-            <h2 className="lg:text-xl">promote your ad</h2>
-            <p className="font-light text-gray-400 text-sm">
-              select a visibility rate and promote your ad
-            </p>
-          </div>
-          <AdPromotion form={form} />
+          {action === "edit" ? null : (
+            <>
+              <div className="w-full space-y-2 capitalize">
+                <h2 className="lg:text-xl font-bold">promote your ad</h2>
+                <p className="font-light text-gray-400 text-sm">
+                  select a visibility rate and promote your ad
+                </p>
+              </div>
+              <AdPromotion
+                form={form}
+                basicDuration={basicDuration}
+                onBasicChange={(days: number) => setBasicDuration(days)}
+              />
+            </>
+          )}
           <AdCharges
+            action={action as string}
+            basicDuration={basicDuration}
             adId={adId}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
             formTrigger={form.trigger}
             images={images}
             isPending={isPending}
-            plan={form.watch('plan') || 'basic'}
+            plan={form.watch("plan") || "basic"}
           />
-          <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
-            By clicking on Post Ad you accepted the{' '}
-            <span className="cursor-pointer text-flickmart">Sell Policy </span>
-            confirm that you will abide by the safety tips and other terms and
-            conditions
-          </p>
+          {action === "edit" ? null : (
+            <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
+              By clicking on Post Ad you accepted the{" "}
+              <span className="cursor-pointer text-flickmart">
+                Sell Policy{" "}
+              </span>
+              confirm that you will abide by the safety tips and other terms and
+              conditions
+            </p>
+          )}
         </div>
       </form>
     </Form>

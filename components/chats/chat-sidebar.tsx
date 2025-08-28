@@ -206,8 +206,11 @@ export default function ChatSidebar({
                 </div>
               </div>
             ))}
+            <div className="text-xs text-center text-gray-700 mt-2">
+              Your dms on flickmart are personal
+            </div>
             {/* Extra spacing at bottom for better scrolling */}
-            {/* <div className="h-16" /> */}
+            <div className="h-32" />
           </div>
         )}
       </div>

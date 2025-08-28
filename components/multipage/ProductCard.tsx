@@ -1,6 +1,6 @@
-import { Bookmark } from 'lucide-react';
-import Image from 'next/image';
-import React from 'react';
+import { Bookmark } from "lucide-react";
+import Image from "next/image";
+import React from "react";
 
 export default function ProductCard({
   image,
@@ -16,15 +16,15 @@ export default function ProductCard({
       <span className="absolute top-4 left-3 rounded-sm bg-white px-3 py-1 font-bold text-black text-sm uppercase lg:top-5 lg:left-5 lg:text-base">
         hot
       </span>
-      <span className="absolute top-4 right-3 rounded-full bg-white p-1 lg:top-5 lg:right-5">
+      {/* <span className="absolute top-4 right-3 rounded-full bg-white p-1 lg:top-5 lg:right-5">
         <Bookmark className="fill-gray-500" />
-      </span>
+      </span> */}
       {image ? (
         <Image
-          alt={title || ''}
+          alt={title || ""}
           className="h-48 rounded-md object-cover object-top p-0.5 lg:h-48"
           height={500}
-          src={image || ''}
+          src={image || ""}
           width={500}
         />
       ) : null}

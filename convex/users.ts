@@ -102,14 +102,22 @@ export const deleteFromClerk = internalMutation({
   args: { clerkUserId: v.string() },
   async handler(ctx, { clerkUserId }) {
     const user = await userByExternalId(ctx, clerkUserId);
-
-    if (user !== null) {
+    if (user) {
       await ctx.db.delete(user._id);
-    } else {
-      console.warn(
-        `Can't delete user, there is none for Clerk user ID: ${clerkUserId}`
-      );
     }
+  },
+});
+
+export const updatePaystackCustomerId = internalMutation({
+  args: {
+    userId: v.id('users'),
+    customerId: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.patch(args.userId, {
+      paystackCustomerId: args.customerId,
+    });
+    return user;
   },
 });
 
