@@ -16,10 +16,10 @@ import useSlider from "@/hooks/useSlider";
 export default function Slider() {
   const banners = [
     "flick-ban-5.jpg",
-    "flick-ban-1.jpg",
-    "flick-ban-2.jpg",
-    "flick-ban-3.jpg",
-    "flick-ban-4.jpg",
+    // "flick-ban-1.jpg",
+    // "flick-ban-2.jpg",
+    // "flick-ban-3.jpg",
+    // "flick-ban-4.jpg",
   ];
   const { setApi } = useSlider();
   const catRef = useRef<HTMLDivElement>(null);
