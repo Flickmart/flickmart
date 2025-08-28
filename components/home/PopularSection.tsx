@@ -1,12 +1,12 @@
-"use client";
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
-import ProductCard from "../multipage/ProductCard";
-import { Skeleton } from "../ui/skeleton";
-import Container from "./Container";
+'use client';
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ProductCard from '../multipage/ProductCard';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
 
 export default function PopularSection() {
   const recommendations = useQuery(api.product.getRecommendations, {});
@@ -16,7 +16,7 @@ export default function PopularSection() {
 
   useEffect(() => {
     if (recommendations?.error) {
-      console.log("there was an error getting recommendations");
+      console.log('there was an error getting recommendations');
     }
   }, [recommendations]);
 

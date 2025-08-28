@@ -209,14 +209,43 @@ export default function WalletPage() {
         }
       );
       const data = await result.json();
+      console.log('Verification response:', data);
+
       if (data.status) {
-        toast.success('Payment successful! Wallet updated.');
-        setAmount(0);
-        setPaystackReference('');
-        setIsPaystackModalOpen(false);
-        setError(null);
+        // Check the actual transaction status
+        const transactionStatus = data.data?.status;
+
+        if (transactionStatus === 'success') {
+          toast.success('Payment successful! Wallet updated.');
+          setAmount(0);
+          setPaystackReference('');
+          setIsPaystackModalOpen(false);
+          setError(null);
+        } else if (transactionStatus === 'abandoned') {
+          toast.error('Payment was not completed. Please try again.');
+          setError(
+            'Payment was abandoned. Please complete the payment process.'
+          );
+          setIsPaystackModalOpen(false);
+        } else if (transactionStatus === 'failed') {
+          toast.error('Payment failed. Please try again.');
+          setError('Payment failed. Please try a different payment method.');
+          setIsPaystackModalOpen(false);
+        } else if (transactionStatus === 'pending') {
+          toast.info('Payment is still being processed. Please wait.');
+          setError('Payment is pending. Please wait for confirmation.');
+          setIsPaystackModalOpen(false);
+        } else {
+          // Handle other statuses
+          const userMessage =
+            data.userMessage ||
+            'Payment status unclear. Please contact support.';
+          toast.error(userMessage);
+          setError(userMessage);
+          setIsPaystackModalOpen(false);
+        }
       } else {
-        toast.error("We coudn't verify your transaction");
+        toast.error("We couldn't verify your transaction");
         setError('Payment verification failed.');
         setIsPaystackModalOpen(false);
       }

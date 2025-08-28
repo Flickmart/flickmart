@@ -5,16 +5,36 @@ import {
   SignedOut,
   SignInButton,
   SignOutButton,
-  UserButton,
   useUser,
 } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { Bell, Loader2, Menu, MessageSquareText } from 'lucide-react';
+import {
+  Bell,
+  ChevronDown,
+  Heart,
+  Loader2,
+  LogOut,
+  Menu,
+  MessageSquareText,
+  Settings,
+  ShoppingBag,
+  Store,
+  User,
+  Wallet,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type React from 'react';
 import { useState } from 'react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetContent,
@@ -24,10 +44,11 @@ import {
 } from '@/components/ui/sheet';
 import { api } from '@/convex/_generated/api';
 import { cn } from '@/lib/utils';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 
 export default function Navbar({ children }: { children?: React.ReactNode }) {
-  const { isSignedIn, isLoaded } = useUser();
+  const { isSignedIn, isLoaded, user } = useUser();
   const [open, setOpen] = useState(false);
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
@@ -107,14 +128,83 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                 </div>
               </Link>
               {isSignedIn && (
-                <div
-                  className={cn({
-                    'flex size-[45px] items-center justify-center rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                      pathname !== '/',
-                  })}
-                >
-                  <UserButton />
-                </div>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Avatar className="size-10 cursor-pointer">
+                      <AvatarImage
+                        alt={`${user.firstName} ${user.lastName}`}
+                        src={user.imageUrl}
+                      />
+                      <AvatarFallback>
+                        <User className="size-[25px] stroke-[1.5]" />
+                      </AvatarFallback>
+                    </Avatar>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel>
+                      <div className="flex flex-col space-y-1">
+                        <p className="font-medium text-sm leading-none">
+                          {user?.firstName} {user?.lastName}
+                        </p>
+                        <p className="text-muted-foreground text-xs leading-none">
+                          {user?.emailAddresses[0]?.emailAddress}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link className="flex items-center" href="/wallet">
+                        <Wallet className="mr-2 size-4" />
+                        Wallet
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="flex items-center" href="/settings">
+                        <Settings className="mr-2 size-4" />
+                        Settings
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link
+                        className="flex items-center"
+                        href="/saved?wishlist=true"
+                      >
+                        <Heart className="mr-2 size-4" />
+                        Wishlist
+                        {wishlistLength > 0 && (
+                          <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                            {wishlistLength}
+                          </span>
+                        )}
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link className="flex items-center" href="/orders">
+                        <ShoppingBag className="mr-2 size-4" />
+                        Orders
+                      </Link>
+                    </DropdownMenuItem>
+                    {userStore?.data && (
+                      <DropdownMenuItem asChild>
+                        <Link className="flex items-center" href="/post-ad">
+                          <Store className="mr-2 size-4" />
+                          Post Ad
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild className="w-full">
+                      <SignOutButton
+                        signOutOptions={{ redirectUrl: '/sign-in' }}
+                      >
+                        <Button variant="ghost">
+                          <LogOut className="size-4" />
+                          Sign out
+                        </Button>
+                      </SignOutButton>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               )}
               {!isLoaded && <Loader2 className="h-8 w-8 animate-spin" />}
               {isLoaded && !isSignedIn && (

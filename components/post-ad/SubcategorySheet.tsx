@@ -19,11 +19,11 @@ export default function SubcategorySheet({
   setSubcategory: (value: string) => void;
 }) {
   const [open, setOpen] = useState(false);
-  
+
   const subcategories = useQuery(api.categories.getCategory, {
     category,
   });
-  
+
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger className="capitalize">{children}</SheetTrigger>

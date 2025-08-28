@@ -1,22 +1,22 @@
-"use client";
+'use client';
 
-import { useState, useMemo } from "react";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import ChatSidebar from "@/components/chats/chat-sidebar";
-import { Id } from "@/convex/_generated/dataModel";
-import Loader from "@/components/multipage/Loader";
+import { useQuery } from 'convex/react';
+import { useMemo, useState } from 'react';
+import ChatSidebar from '@/components/chats/chat-sidebar';
+import Loader from '@/components/multipage/Loader';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
-type FilterType = "all" | "unread" | "archived";
+type FilterType = 'all' | 'unread' | 'archived';
 
 export default function ChatLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [activeFilter, setActiveFilter] = useState<FilterType>("all");
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
@@ -24,12 +24,12 @@ export default function ChatLayout({
   // Fetch user's conversations
   const conversations = useQuery(
     api.chat.getConversations,
-    user?._id ? { userId: user._id } : "skip"
+    user?._id ? { userId: user._id } : 'skip'
   );
 
   // Fetch all users we need information about
   const allUserIds = useMemo(() => {
-    const ids = new Set<Id<"users">>();
+    const ids = new Set<Id<'users'>>();
 
     // Add other users from conversations
     conversations?.forEach((conversation) => {
@@ -43,7 +43,7 @@ export default function ChatLayout({
   // Get all users' data in a single query
   const allUsers = useQuery(
     api.users.getMultipleUsers,
-    allUserIds.length > 0 ? { userIds: allUserIds } : "skip"
+    allUserIds.length > 0 ? { userIds: allUserIds } : 'skip'
   );
 
   // Get all conversations' last messages
@@ -55,12 +55,12 @@ export default function ChatLayout({
   // Get messages for all conversations
   const allConversationMessages = useQuery(
     api.chat.getAllConversationsMessages,
-    conversationIds.length > 0 ? { conversationIds } : "skip"
+    conversationIds.length > 0 ? { conversationIds } : 'skip'
   );
 
   // Transform conversations data to match UI requirements
   const formattedConversations = useMemo(() => {
-    if (!conversations || !allUsers || !allConversationMessages || !user?._id)
+    if (!(conversations && allUsers && allConversationMessages && user?._id))
       return [];
 
     return conversations.map((conversation) => {
@@ -90,14 +90,14 @@ export default function ChatLayout({
       // Format timestamp from the last message
       const lastMessageTime = lastMessage
         ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
-            hour: "numeric",
-            minute: "2-digit",
+            hour: 'numeric',
+            minute: '2-digit',
           })
-        : "";
+        : '';
 
       // Check if conversation is archived by this user
       const isArchived =
-        conversation.archivedByUsers?.includes(user._id) || false;
+        conversation.archivedByUsers?.includes(user._id) ?? false;
 
       // Get unread count for current user
       const userUnreadCount =
@@ -106,14 +106,14 @@ export default function ChatLayout({
           : 0;
 
       const name =
-        otherUser?._id === user?._id ? "Me" : otherUser?.name || "Unknown user";
+        otherUser?._id === user?._id ? 'Me' : otherUser?.name || 'Unknown user';
 
       return {
         id: conversation._id,
-        name: name,
-        imageUrl: otherUser?.imageUrl || "",
-        lastMessage: lastMessage?.content ?? "No messages yet",
-        containsImage: containsImage,
+        name,
+        imageUrl: otherUser?.imageUrl || '',
+        lastMessage: lastMessage?.content ?? 'No messages yet',
+        containsImage,
         time: lastMessageTime,
         unread: userUnreadCount,
         archived: isArchived,
@@ -130,9 +130,10 @@ export default function ChatLayout({
         chat.lastMessage?.toLowerCase().includes(searchQuery.toLowerCase());
 
       // Apply tab filter
-      if (activeFilter === "unread") {
+      if (activeFilter === 'unread') {
         return matchesSearch && chat.unread > 0;
-      } else if (activeFilter === "archived") {
+      }
+      if (activeFilter === 'archived') {
         return matchesSearch && chat.archived;
       }
 
@@ -142,7 +143,7 @@ export default function ChatLayout({
 
   if (authLoading) {
     return (
-      <div className="h-screen grid place-items-center">
+      <div className="grid h-screen place-items-center">
         <Loader />
       </div>
     );
@@ -155,17 +156,17 @@ export default function ChatLayout({
   return (
     <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar - always visible on desktop */}
-      <div className="hidden md:block w-[320px] border-r border-gray-200 bg-white">
+      <div className="hidden w-[320px] border-gray-200 border-r bg-white md:block">
         <ChatSidebar
-          sidebarOpen={false}
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-          activeFilter={activeFilter}
-          setActiveFilter={setActiveFilter}
           activeChat={null}
-          setActiveChat={() => {}}
-          setSidebarOpen={setSidebarOpen}
+          activeFilter={activeFilter}
           conversations={filteredConversations}
+          searchQuery={searchQuery}
+          setActiveChat={() => {}}
+          setActiveFilter={setActiveFilter}
+          setSearchQuery={setSearchQuery}
+          setSidebarOpen={setSidebarOpen}
+          sidebarOpen={false}
         />
       </div>
 

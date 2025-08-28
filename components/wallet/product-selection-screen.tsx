@@ -1,11 +1,59 @@
 'use client';
 
-import { AlertCircle, Package, RefreshCw } from 'lucide-react';
+import { Package, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Input } from '@/components/ui/input';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import ProductItem from './product-item';
+
+// Levenshtein distance function for fuzzy matching
+function levenshteinDistance(str1: string, str2: string): number {
+  const matrix = Array(str2.length + 1)
+    .fill(null)
+    .map(() => Array(str1.length + 1).fill(null));
+
+  for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
+  for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+
+  for (let j = 1; j <= str2.length; j++) {
+    for (let i = 1; i <= str1.length; i++) {
+      const indicator = str1[i - 1] === str2[j - 1] ? 0 : 1;
+      matrix[j][i] = Math.min(
+        matrix[j][i - 1] + 1, // deletion
+        matrix[j - 1][i] + 1, // insertion
+        matrix[j - 1][i - 1] + indicator // substitution
+      );
+    }
+  }
+
+  return matrix[str2.length][str1.length];
+}
+
+// Calculate similarity percentage
+function calculateSimilarity(str1: string, str2: string): number {
+  const distance = levenshteinDistance(str1.toLowerCase(), str2.toLowerCase());
+  const maxLength = Math.max(str1.length, str2.length);
+  return maxLength === 0 ? 1 : (maxLength - distance) / maxLength;
+}
+
+// Check if text contains similar words
+function hasSimilarWords(
+  text: string,
+  query: string,
+  threshold = 0.7
+): boolean {
+  const textWords = text.toLowerCase().split(/\s+/);
+  const queryWords = query.toLowerCase().split(/\s+/);
+
+  return queryWords.some((queryWord) =>
+    textWords.some(
+      (textWord) => calculateSimilarity(queryWord, textWord) >= threshold
+    )
+  );
+}
 
 interface ProductSelectionScreenProps {
   products: Doc<'product'>[] | null;
@@ -14,12 +62,7 @@ interface ProductSelectionScreenProps {
   onSkip: () => void;
   onContinue: () => void;
   calculatedTotal: number;
-  isLoading: boolean;
-  error?: string;
-  onRetry?: () => void;
-  loadingMessage?: string;
-  errorType?: 'network' | 'server' | 'auth' | 'generic';
-  isValidating?: boolean;
+  seller: Doc<'users'> | null;
 }
 
 export default function ProductSelectionScreen({
@@ -29,13 +72,10 @@ export default function ProductSelectionScreen({
   onSkip,
   onContinue,
   calculatedTotal,
-  isLoading,
-  error,
-  onRetry,
-  loadingMessage = "Loading seller's products...",
-  errorType = 'generic',
-  isValidating = false,
+  seller,
 }: ProductSelectionScreenProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const formatAmount = (amount: number) => {
     return amount.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
@@ -46,174 +86,36 @@ export default function ProductSelectionScreen({
   const selectedCount = selectedProducts.length;
   const hasProducts = products && products.length > 0;
 
-  // Enhanced loading state with better indicators and user feedback
-  if (isLoading) {
-    return (
-      <div className="flex-1 p-6">
-        <div className="mx-auto max-w-md">
-          <div className="mb-6 text-center">
-            <h1 className="mb-2 font-semibold text-2xl text-gray-900">
-              Select Products
-            </h1>
-            <div className="mb-2 flex items-center justify-center gap-2 text-gray-600">
-              <div className="h-4 w-4 animate-spin rounded-full border-orange-500 border-b-2" />
-              <p>{loadingMessage}</p>
-            </div>
-            <p className="text-gray-500 text-sm">
-              This may take a few moments...
-            </p>
-          </div>
+  // Filter products based on search query with fuzzy matching
+  const filteredProducts = useMemo(() => {
+    if (!(products && searchQuery.trim())) {
+      return products;
+    }
 
-          {/* Enhanced loading skeleton with animation */}
-          <div className="mb-6 space-y-3">
-            {[1, 2, 3].map((i) => (
-              <Card className="animate-pulse" key={i}>
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <Skeleton className="h-16 w-16 rounded-lg bg-gradient-to-r from-gray-200 to-gray-300" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-3/4 bg-gradient-to-r from-gray-200 to-gray-300" />
-                      <Skeleton className="h-5 w-1/2 bg-gradient-to-r from-gray-200 to-gray-300" />
-                      <Skeleton className="h-3 w-1/3 bg-gradient-to-r from-gray-200 to-gray-300" />
-                    </div>
-                    <Skeleton className="h-5 w-5 rounded bg-gradient-to-r from-gray-200 to-gray-300" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+    const query = searchQuery.toLowerCase().trim();
 
-          {/* Loading state for action buttons */}
-          <div className="flex gap-3">
-            <Skeleton className="h-12 flex-1 rounded-2xl bg-gradient-to-r from-gray-200 to-gray-300" />
-            <Skeleton className="h-12 flex-1 rounded-2xl bg-gradient-to-r from-gray-200 to-gray-300" />
-          </div>
+    return products.filter((product) => {
+      const title = product.title?.toLowerCase() || '';
+      const description = product.description?.toLowerCase() || '';
+      const category = product.category?.toLowerCase() || '';
 
-          {/* Progress indicator */}
-          <div className="mt-4 text-center">
-            <div className="inline-flex items-center rounded-full bg-orange-100 px-3 py-1 font-medium text-orange-800 text-xs">
-              <div className="mr-2 h-2 w-2 animate-pulse rounded-full bg-orange-500" />
-              Fetching products...
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Enhanced error state with specific error handling
-  if (error) {
-    const getErrorIcon = () => {
-      switch (errorType) {
-        case 'network':
-          return (
-            <div className="mx-auto mb-4 h-12 w-12 text-orange-500">📶</div>
-          );
-        case 'server':
-          return <div className="mx-auto mb-4 h-12 w-12 text-red-500">🔧</div>;
-        case 'auth':
-          return (
-            <div className="mx-auto mb-4 h-12 w-12 text-yellow-500">🔒</div>
-          );
-        default:
-          return (
-            <AlertCircle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          );
+      // Exact match (highest priority)
+      if (
+        title.includes(query) ||
+        description.includes(query) ||
+        category.includes(query)
+      ) {
+        return true;
       }
-    };
 
-    const getErrorTitle = () => {
-      switch (errorType) {
-        case 'network':
-          return 'Connection Issue';
-        case 'server':
-          return 'Server Temporarily Unavailable';
-        case 'auth':
-          return 'Access Restricted';
-        default:
-          return 'Unable to Load Products';
-      }
-    };
+      // Fuzzy matching for similar spellings
+      const titleSimilarity = hasSimilarWords(title, query, 0.6);
+      const descriptionSimilarity = hasSimilarWords(description, query, 0.6);
+      const categorySimilarity = hasSimilarWords(category, query, 0.6);
 
-    const getErrorActions = () => {
-      const canRetry = errorType !== 'auth';
-
-      return (
-        <div className="space-y-3">
-          {canRetry && onRetry && (
-            <Button className="w-full" onClick={onRetry} variant="outline">
-              <RefreshCw className="mr-2 h-4 w-4" />
-              {errorType === 'network'
-                ? 'Check Connection & Retry'
-                : 'Try Again'}
-            </Button>
-          )}
-
-          <div className="flex gap-3">
-            <Button
-              className="flex-1 rounded-2xl py-4 font-medium text-lg"
-              onClick={onSkip}
-              variant="outline"
-            >
-              {errorType === 'auth' ? 'Continue Anyway' : 'Skip & Continue'}
-            </Button>
-          </div>
-        </div>
-      );
-    };
-
-    return (
-      <div className="flex-1 p-6">
-        <div className="mx-auto max-w-md">
-          <div className="mb-6 text-center">
-            <h1 className="mb-2 font-semibold text-2xl text-gray-900">
-              Select Products
-            </h1>
-          </div>
-
-          <Card className="mb-6 border-l-4 border-l-red-500">
-            <CardContent className="p-6 text-center">
-              {getErrorIcon()}
-              <h3 className="mb-2 font-medium text-gray-900 text-lg">
-                {getErrorTitle()}
-              </h3>
-              <p className="mb-4 text-gray-600">{error}</p>
-
-              {/* Additional helpful information based on error type */}
-              {errorType === 'network' && (
-                <div className="mb-4 rounded-lg border border-orange-200 bg-orange-50 p-3">
-                  <p className="text-orange-800 text-sm">
-                    💡 <strong>Tip:</strong> Check your internet connection and
-                    try again. You can also continue with a general transfer.
-                  </p>
-                </div>
-              )}
-
-              {errorType === 'server' && (
-                <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-                  <p className="text-blue-800 text-sm">
-                    ⏱️ <strong>Note:</strong> This is usually temporary. Please
-                    try again in a few moments.
-                  </p>
-                </div>
-              )}
-
-              {errorType === 'auth' && (
-                <div className="mb-4 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
-                  <p className="text-sm text-yellow-800">
-                    🔐 <strong>Info:</strong> You can still proceed with a
-                    general transfer to this seller.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {getErrorActions()}
-        </div>
-      </div>
-    );
-  }
+      return titleSimilarity || descriptionSimilarity || categorySimilarity;
+    });
+  }, [products, searchQuery]);
 
   // No products state
   if (!hasProducts) {
@@ -255,22 +157,52 @@ export default function ProductSelectionScreen({
 
   // Products available state
   return (
-    <div className="flex-1 p-6">
+    <div className="flex-1 p-3 md:p-6">
       <div className="mx-auto max-w-md">
-        <div className="mb-6 text-center">
-          <h1 className="mb-2 font-semibold text-2xl text-gray-900">
-            Select Products
-          </h1>
-          <p className="text-gray-600">Choose products to pay for</p>
-          {selectedCount > 0 && (
-            <div className="mt-2 inline-flex items-center rounded-full bg-orange-100 px-3 py-1 font-medium text-orange-800 text-sm">
-              {selectedCount} product{selectedCount !== 1 ? 's' : ''} selected
-            </div>
+        <div className="mb-2">
+          <div className="flex max-w-lg items-center justify-start gap-2 pb-2">
+            <Avatar className="size-12 border border-flickmart shadow-md md:h-16 md:w-16">
+              <AvatarImage
+                alt={seller?.name || 'User'}
+                src={seller?.imageUrl}
+              />
+              <AvatarFallback>
+                {seller?.name?.charAt(0)?.toUpperCase() || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <p className="flex flex-col">
+              <span className="font-semibold text-md sm:text-xl">
+                {seller?.name} Stores
+              </span>
+              <span className="text-xs md:text-sm">
+                Select Products to Continue
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* Search bar */}
+        <div className="mt-4 mb-6">
+          <div className="relative rounded-xl bg-[#E5E3E3C2]">
+            <Input
+              className="rounded-lg border-gray-200 py-5 pr-10 pl-5 text-xs italic"
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search items to buy..."
+              type="text"
+              value={searchQuery}
+            />
+            <Search className="-translate-y-1/2 absolute top-1/2 right-3 h-4 w-4 font-bold text-gray-400" />
+          </div>
+          {searchQuery && (
+            <p className="mt-2 text-gray-500 text-sm">
+              {filteredProducts?.length || 0} product
+              {(filteredProducts?.length || 0) !== 1 ? 's' : ''} found
+            </p>
           )}
         </div>
 
         {/* Selected products total */}
-        {selectedCount > 0 && (
+        {/* {selectedCount > 0 && (
           <Card className="mb-4 border-orange-200 bg-orange-50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -281,71 +213,57 @@ export default function ProductSelectionScreen({
               </div>
             </CardContent>
           </Card>
-        )}
+        )} */}
+
+        <div className="m-1 flex items-center justify-between font-medium text-sm">
+          <span>Selected Goods</span>
+          <span>
+            {selectedCount}/{filteredProducts?.length || 0}
+          </span>
+        </div>
 
         {/* Products list */}
         <div className="mb-6 max-h-96 space-y-3 overflow-y-auto">
-          {products.map((product) => (
-            <ProductItem
-              isSelected={selectedProducts.includes(product._id)}
-              key={product._id}
-              onToggle={onProductToggle}
-              product={product}
-            />
-          ))}
+          {filteredProducts && filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductItem
+                isSelected={selectedProducts.includes(product._id)}
+                key={product._id}
+                onToggle={onProductToggle}
+                product={product}
+              />
+            ))
+          ) : searchQuery ? (
+            <Card className="p-6 text-center">
+              <Search className="mx-auto mb-2 h-8 w-8 text-gray-400" />
+              <p className="text-gray-600">
+                No products found matching "{searchQuery}"
+              </p>
+              <Button
+                className="mt-2 text-orange-500 hover:text-orange-600"
+                onClick={() => setSearchQuery('')}
+                variant="link"
+              >
+                Clear search
+              </Button>
+            </Card>
+          ) : null}
         </div>
 
-        {/* Action buttons with enhanced feedback */}
-        <div className="flex gap-3">
-          <Button
-            className="flex-1 rounded-2xl py-4 font-medium text-lg transition-all duration-200 hover:bg-gray-50"
-            onClick={onSkip}
-            variant="outline"
-          >
-            Skip
-          </Button>
-          <Button
-            className={`flex-1 rounded-2xl py-4 font-medium text-lg transition-all duration-200 ${
-              selectedCount === 0 || isValidating
-                ? 'cursor-not-allowed bg-gray-300 text-gray-500'
-                : 'transform bg-orange-500 text-white hover:scale-105 hover:bg-orange-600 hover:shadow-lg'
-            }`}
-            disabled={selectedCount === 0 || isValidating}
-            onClick={onContinue}
-          >
-            {isValidating ? (
-              <div className="flex items-center justify-center">
-                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-gray-400 border-b-2" />
-                Validating Products...
-              </div>
-            ) : selectedCount === 0 ? (
-              'Select Products to Continue'
-            ) : (
-              <>
-                Continue with {selectedCount} Product
-                {selectedCount !== 1 ? 's' : ''}
-                <span className="ml-2 animate-pulse rounded-full bg-orange-600 px-2 py-1 text-white text-xs">
-                  {selectedCount}
-                </span>
-              </>
-            )}
-          </Button>
-        </div>
+        <Button
+          className="w-full rounded-full"
+          // disabled={selectedCount === 0}
+          onClick={onContinue}
+        >
+          Next
+        </Button>
 
-        {/* Additional user guidance */}
+        {/* User guidance */}
         {selectedCount === 0 && (
           <div className="mt-3 text-center">
             <p className="text-gray-500 text-sm">
-              💡 Tap on products to select them, or skip to make a general
-              transfer
-            </p>
-          </div>
-        )}
-
-        {selectedCount > 0 && (
-          <div className="mt-3 text-center">
-            <p className="font-medium text-green-600 text-sm">
-              ✓ Ready to proceed with selected products
+              💡 Tap on products to select them, or move on without selecting to
+              make a general transfer
             </p>
           </div>
         )}

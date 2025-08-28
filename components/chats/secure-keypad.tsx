@@ -2,7 +2,7 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
-import { ArrowLeft, Shield } from 'lucide-react';
+import { ChevronLeft, ShieldCheck } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import { AmountConfirmation } from './amount-confirmation';
 import { AmountEntry } from './amount-entry';
 import { PinSetup } from './pin-setup';
 import { PinVerification } from './pin-verification';
-import { SecurityHeader } from './security-header';
 import { TransferComplete } from './transfer-complete';
 
 type AuthStep =
@@ -55,11 +54,8 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   // Product selection state
   const [selectedProducts, setSelectedProducts] = useState<Id<'product'>[]>([]);
   const [sellerProducts, setSellerProducts] = useState<Doc<'product'>[]>([]);
-  const [isLoadingProducts, setIsLoadingProducts] = useState(false);
-  const [productSelectionError, setProductSelectionError] = useState('');
   const [calculatedTotal, setCalculatedTotal] = useState(0);
   const [originalAmount, setOriginalAmount] = useState('');
-  const [isValidatingProducts, setIsValidatingProducts] = useState(false);
 
   const { getToken } = useAuth();
 
@@ -108,18 +104,12 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
     checkPinExists();
   }, [getToken]);
   const retryProductFetch = useCallback(() => {
-    setProductSelectionError('');
-    setIsLoadingProducts(true);
     setSellerProducts([]);
 
     // Force a re-render to trigger the useQuery hook to retry
     // This is a more robust approach to handle retry scenarios
     setTimeout(() => {
       if (sellerProductsQuery === null) {
-        // If still failing after retry, provide fallback options
-        setProductSelectionError(
-          'Unable to load products after retry. You can continue with a general transfer or try again later.'
-        );
       }
     }, 3000); // Give 3 seconds for the retry to complete
   }, [sellerProductsQuery]);
@@ -127,16 +117,11 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   // Handle product loading states and errors
   useEffect(() => {
     if (isProductsLoading) {
-      setIsLoadingProducts(true);
-      setProductSelectionError('');
     } else {
-      setIsLoadingProducts(false);
-
       // Handle product loading errors
       if (sellerProductsQuery === null) {
         const errorMessage =
           "Failed to load seller's products. This could be due to a network issue or server error.";
-        setProductSelectionError(errorMessage);
         setSellerProducts([]);
         toast.error('Product Loading Failed', {
           description: errorMessage,
@@ -146,16 +131,12 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
           },
         });
       } else if (sellerProductsQuery && sellerProductsQuery.length === 0) {
-        // No products available - this is not an error, just empty state
-        setProductSelectionError('');
         setSellerProducts([]);
         toast.info('No Products Available', {
           description:
             "This seller doesn't have any products listed yet. You can continue with a general transfer.",
         });
       } else if (sellerProductsQuery) {
-        // Products loaded successfully
-        setProductSelectionError('');
         setSellerProducts(sellerProductsQuery);
         if (sellerProductsQuery.length > 0) {
           toast.success('Products Loaded', {
@@ -232,7 +213,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
     });
   };
 
-const handleTransfer = async () => {
+  const handleTransfer = async () => {
     if (amount) {
       // Store the original amount before navigating to product selection
       setOriginalAmount(amount);
@@ -518,9 +499,6 @@ const handleTransfer = async () => {
         // Clear product selections when navigating back to amount entry
         setSelectedProducts([]);
         setCalculatedTotal(0);
-        setProductSelectionError('');
-        setIsLoadingProducts(false);
-        setIsValidatingProducts(false);
 
         // Preserve seller ID (maintained via props) and restore original amount
         if (originalAmount) {
@@ -561,9 +539,6 @@ const handleTransfer = async () => {
         setOriginalAmount('');
         setIsPinError(false);
         setErrorMessage('');
-        setProductSelectionError('');
-        setIsLoadingProducts(false);
-        setIsValidatingProducts(false);
         setSecurityState({
           pinAttempts: 0,
           maxPinAttempts: 5,
@@ -574,14 +549,19 @@ const handleTransfer = async () => {
   };
 
   const renderHeader = () => (
-    <div className="flex items-center justify-between p-6 pb-4">
+    <div className="flex items-center justify-between p-3 pb-4 md:p-6">
       {currentStep !== 'AMOUNT_ENTRY' && (
-        <Button className="p-2" onClick={handleBack} size="sm" variant="ghost">
-          <ArrowLeft className="h-5 w-5" />
+        <Button
+          className="p-0"
+          onClick={handleBack}
+          size="icon"
+          variant="ghost"
+        >
+          <ChevronLeft className="" />
         </Button>
       )}
       <div className="ml-auto flex items-center gap-2">
-        <Shield className="h-5 w-5 text-green-600" />
+        <ShieldCheck className="h-5 w-5 text-green-600" />
         <span className="font-medium text-green-600 text-sm">Secure</span>
       </div>
     </div>
@@ -608,49 +588,10 @@ const handleTransfer = async () => {
         {renderHeader()}
         <ProductSelectionScreen
           calculatedTotal={calculatedTotal}
-          error={productSelectionError}
-          errorType={
-            productSelectionError?.includes('network')
-              ? 'network'
-              : productSelectionError?.includes('server')
-                ? 'server'
-                : productSelectionError?.includes('authorized')
-                  ? 'auth'
-                  : 'generic'
-          }
-          isLoading={isLoadingProducts}
-          isValidating={isValidatingProducts}
-          loadingMessage={
-            isLoadingProducts
-              ? "Loading seller's products..."
-              : 'Fetching product details...'
-          }
           onContinue={async () => {
-            // Show validation loading state
-            setIsValidatingProducts(true);
-            setProductSelectionError('');
-
-            try {
-              // Add a small delay to show loading feedback
-              await new Promise((resolve) => setTimeout(resolve, 500));
-
-              // Validate products before continuing
-              const validation = validateSelectedProducts();
-              if (!validation.isValid) {
-                setProductSelectionError(
-                  validation.error || 'Product validation failed'
-                );
-                return;
-              }
-
-              // Continue to amount confirmation step when products are selected
-              setCurrentStep('AMOUNT_CONFIRMATION');
-            } finally {
-              setIsValidatingProducts(false);
-            }
+            setCurrentStep('AMOUNT_CONFIRMATION');
           }}
           onProductToggle={handleProductToggle}
-          onRetry={retryProductFetch}
           onSkip={() => {
             // Skip product selection and proceed to PIN verification
             setSelectedProducts([]);
@@ -668,6 +609,7 @@ const handleTransfer = async () => {
           }}
           products={sellerProducts}
           selectedProducts={selectedProducts}
+          seller={seller ? seller : null}
         />
       </div>
     );
@@ -675,38 +617,42 @@ const handleTransfer = async () => {
 
   if (currentStep === 'AMOUNT_CONFIRMATION') {
     return (
-      <AmountConfirmation
-        calculatedTotal={calculatedTotal}
-        initialAmount={originalAmount}
-        onBack={handleBack}
-        onSelectInitialAmount={() => {
-          // User chooses to use their initial amount
-          setAmount(originalAmount);
-          setDisplayAmount(formatAmount(originalAmount));
-          // Clear selected products since we're using manual amount
-          setSelectedProducts([]);
-          setCalculatedTotal(0);
-          // Proceed to PIN verification
-          if (pinExists === false) {
-            setCurrentStep('PIN_SETUP');
-          } else {
-            setCurrentStep('PIN_VERIFICATION');
-          }
-        }}
-        onSelectProductTotal={() => {
-          // User chooses to use the calculated product total
-          setAmount(calculatedTotal.toString());
-          setDisplayAmount(formatAmount(calculatedTotal.toString()));
-          // Keep selected products for the transfer
-          // Proceed to PIN verification
-          if (pinExists === false) {
-            setCurrentStep('PIN_SETUP');
-          } else {
-            setCurrentStep('PIN_VERIFICATION');
-          }
-        }}
-        selectedProductsCount={selectedProducts.length}
-      />
+      <div className="flex min-h-screen flex-col bg-white">
+        {renderHeader()}
+        <AmountConfirmation
+          calculatedTotal={calculatedTotal}
+          initialAmount={originalAmount}
+          onBack={handleBack}
+          onSelectInitialAmount={() => {
+            // User chooses to use their initial amount
+            setAmount(originalAmount);
+            setDisplayAmount(formatAmount(originalAmount));
+            // Clear selected products since we're using manual amount
+            setSelectedProducts([]);
+            setCalculatedTotal(0);
+            // Proceed to PIN verification
+            if (pinExists === false) {
+              setCurrentStep('PIN_SETUP');
+            } else {
+              setCurrentStep('PIN_VERIFICATION');
+            }
+          }}
+          onSelectProductTotal={() => {
+            // User chooses to use the calculated product total
+            setAmount(calculatedTotal.toString());
+            setDisplayAmount(formatAmount(calculatedTotal.toString()));
+            // Keep selected products for the transfer
+            // Proceed to PIN verification
+            if (pinExists === false) {
+              setCurrentStep('PIN_SETUP');
+            } else {
+              setCurrentStep('PIN_VERIFICATION');
+            }
+          }}
+          selectedProductsCount={selectedProducts.length}
+          sellerName={seller?.name || undefined}
+        />
+      </div>
     );
   }
 

@@ -216,29 +216,29 @@ export function PinVerification({
               </div>
 
               <style jsx>{`
-                                @keyframes orange-progress {
-                                    0% {
-                                        stroke-dashoffset: 276;
-                                        opacity: 0.8;
-                                    }
-                                    25% {
-                                        stroke-dashoffset: 207;
-                                        opacity: 1;
-                                    }
-                                    50% {
-                                        stroke-dashoffset: 138;
-                                        opacity: 1;
-                                    }
-                                    75% {
-                                        stroke-dashoffset: 69;
-                                        opacity: 1;
-                                    }
-                                    100% {
-                                        stroke-dashoffset: 0;
-                                        opacity: 0.9;
-                                    }
-                                }
-                            `}</style>
+                @keyframes orange-progress {
+                  0% {
+                    stroke-dashoffset: 276;
+                    opacity: 0.8;
+                  }
+                  25% {
+                    stroke-dashoffset: 207;
+                    opacity: 1;
+                  }
+                  50% {
+                    stroke-dashoffset: 138;
+                    opacity: 1;
+                  }
+                  75% {
+                    stroke-dashoffset: 69;
+                    opacity: 1;
+                  }
+                  100% {
+                    stroke-dashoffset: 0;
+                    opacity: 0.9;
+                  }
+                }
+              `}</style>
             </div>
           )}
         </div>

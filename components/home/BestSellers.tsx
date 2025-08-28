@@ -1,12 +1,12 @@
-"use client";
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
-import ProductCard from "../multipage/ProductCard";
-import { Skeleton } from "../ui/skeleton";
-import Container from "./Container";
+'use client';
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ProductCard from '../multipage/ProductCard';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
 
 export default function BestSellers() {
   const recommendation = useQuery(api.product.getRecommendations, {});
@@ -26,7 +26,7 @@ export default function BestSellers() {
         best sellers
       </h2>
       <Container className="!min-h-[40vh]">
-        <div className="grid grid-cols-2 lg:grid-cols-4 lg:w-4/6 w-full lg:gap-x-5 lg:gap-y-10 gap-x-1 gap-y-4">
+        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
           {personalized === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
@@ -41,8 +41,8 @@ export default function BestSellers() {
                   </div>
                 </div>
               ))
-            : !personalized?.length
-              ? all?.map((product, index) => (
+            : personalized?.length
+              ? personalized?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}
@@ -52,7 +52,7 @@ export default function BestSellers() {
                     />
                   </Link>
                 ))
-              : personalized?.map((product, index) => (
+              : all?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}

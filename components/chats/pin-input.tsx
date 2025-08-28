@@ -77,11 +77,14 @@ export function PinInput({
       </div>
 
       {/* Numeric Keypad */}
-      <div className="w-full bg-gray-200 p-2">
-        <div className="mx-auto grid max-w-md grid-cols-3 gap-4">
+      <div className="w-full bg-[#F5F5F5] p-2">
+        <span className="inline-block w-full text-center">
+          Flickmart Secure numeric keypad
+        </span>
+        <div className="mx-auto grid max-w-md grid-cols-3 gap-1">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <Button
-              className="h-16 rounded-2xl border-0 bg-white font-medium text-2xl text-gray-900 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+              className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
               disabled={disabled}
               key={number}
               onClick={() => handleNumberClick(number.toString())}
@@ -92,7 +95,7 @@ export function PinInput({
           ))}
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-gray-900 text-lg shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
             onClick={handleClear}
             variant="secondary"
@@ -101,7 +104,7 @@ export function PinInput({
           </Button>
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-2xl text-gray-900 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
             onClick={() => handleNumberClick('0')}
             variant="secondary"
@@ -110,7 +113,7 @@ export function PinInput({
           </Button>
 
           <Button
-            className="h-16 rounded-2xl border-0 bg-white font-medium text-gray-900 text-lg shadow-sm hover:bg-gray-50 disabled:opacity-50"
+            className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
             onClick={handleBackspace}
             variant="secondary"
