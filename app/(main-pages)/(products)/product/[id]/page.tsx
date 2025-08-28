@@ -1,5 +1,5 @@
-'use client';
-import { useMutation, useQuery } from 'convex/react';
+"use client";
+import { useMutation, useQuery } from "convex/react";
 import {
   Bookmark,
   ChevronLeft,
@@ -9,36 +9,36 @@ import {
   ThumbsDown,
   ThumbsUp,
   X,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { SyncLoader } from 'react-spinners';
-import { toast } from 'sonner';
-import Comment from '@/components/products/Comment';
-import CommentContent from '@/components/products/CommentContent';
-import ProductHeader from '@/components/products/ProductHeader';
-import SimilarAdverts from '@/components/products/SimilarAdverts';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { SyncLoader } from "react-spinners";
+import { toast } from "sonner";
+import Comment from "@/components/products/Comment";
+import CommentContent from "@/components/products/CommentContent";
+import ProductHeader from "@/components/products/ProductHeader";
+import SimilarAdverts from "@/components/products/SimilarAdverts";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion';
+} from "@/components/ui/accordion";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from '@/components/ui/carousel';
-import { Drawer, DrawerTrigger } from '@/components/ui/drawer';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { useAuthUser } from '@/hooks/useAuthUser';
-import { useIsLarge } from '@/hooks/useLarge';
-import useNav from '@/hooks/useNav';
-import useSlider from '@/hooks/useSlider';
+} from "@/components/ui/carousel";
+import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { useIsLarge } from "@/hooks/useLarge";
+import useNav from "@/hooks/useNav";
+import useSlider from "@/hooks/useSlider";
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -46,7 +46,7 @@ export default function ProductPage() {
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
   const params = useParams();
-  const productId = params.id as Id<'product'>;
+  const productId = params.id as Id<"product">;
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
@@ -56,14 +56,14 @@ export default function ProductPage() {
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: 'saved',
+    type: "saved",
   });
   const wishlist = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: 'wishlist',
+    type: "wishlist",
   });
   const view = useMutation(api.views.createView);
-  const exchangePossible = productData?.exchange === true ? 'yes' : 'no';
+  const exchangePossible = productData?.exchange === true ? "yes" : "no";
   const { setApi, setAutoScroll } = useSlider();
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
   const { user, isAuthenticated } = useAuthUser({
@@ -73,26 +73,26 @@ export default function ProductPage() {
 
   const productIcons = [
     {
-      label: 'likes',
+      label: "likes",
       icon: (
         <ThumbsUp
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.liked ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.liked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
         />
       ),
     },
     {
-      label: 'dislikes',
+      label: "dislikes",
       icon: (
         <ThumbsDown
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.disliked ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.disliked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
         />
       ),
     },
     {
-      label: 'wishlist',
+      label: "wishlist",
       icon: (
         <Heart
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${wishlist?.data?.added ? 'fill-red-600 stroke-none' : 'fill-none stroke-current'}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${wishlist?.data?.added ? "fill-red-600 stroke-none" : "fill-none stroke-current"}`}
         />
       ),
     },
@@ -101,21 +101,21 @@ export default function ProductPage() {
   const handleGestures = async (label: string) => {
     try {
       if (!isAuthenticated) {
-        toast.error('Please sign in to perform this action');
+        toast.error("Please sign in to perform this action");
         return;
       }
-      if (label === 'likes') {
+      if (label === "likes") {
         await likeProduct({ productId });
       }
-      if (label === 'dislikes') {
+      if (label === "dislikes") {
         await dislikeProduct({ productId });
       }
-      if (label === 'wishlist' || label === 'saved') {
+      if (label === "wishlist" || label === "saved") {
         const bookmarked = await bookmarkProduct({ productId, type: label });
 
         // bookmarked?.added
 
-        typeof bookmarked === 'object' && bookmarked?.added
+        typeof bookmarked === "object" && bookmarked?.added
           ? toast.success(`Item added to ${label}`)
           : toast.success(`Item removed from ${label}`);
       }
@@ -163,8 +163,8 @@ export default function ProductPage() {
             <div
               className={
                 enlarge
-                  ? 'fixed top-0 right-0 z-[60] block h-screen w-screen bg-black sm:bg-black/75'
-                  : 'hidden'
+                  ? "fixed top-0 right-0 z-[60] block h-screen w-screen bg-black sm:bg-black/75"
+                  : "hidden"
               }
               onClick={(e) => {
                 e.stopPropagation();
@@ -184,7 +184,7 @@ export default function ProductPage() {
               </button>
             </div>
             <div
-              className={`cursor-pointer sm:cursor-default ${enlarge ? 'enlarge' : ''}`}
+              className={`cursor-pointer sm:cursor-default ${enlarge ? "enlarge" : ""}`}
               onClick={() => {
                 setEnlarge(true);
                 setAutoScroll(false);
@@ -211,12 +211,12 @@ export default function ProductPage() {
 
             {isMobile ? (
               <ProductHeader
-                description={productData?.description || ''}
-                location={productData?.location ?? ''}
+                description={productData?.description || ""}
+                location={productData?.location ?? ""}
                 price={productData?.price ?? 0}
                 productId={productId}
-                timestamp={productData?.timeStamp ?? ''}
-                title={productData?.title ?? ''}
+                timestamp={productData?.timeStamp ?? ""}
+                title={productData?.title ?? ""}
                 userId={productData?.userId!}
               />
             ) : null}
@@ -228,11 +228,11 @@ export default function ProductPage() {
                     key={item.label}
                     onClick={() => handleGestures(item.label)}
                   >
-                    <div className={'flex justify-center'}>{item.icon}</div>{' '}
+                    <div className={"flex justify-center"}>{item.icon}</div>{" "}
                     <span className="inline-block text-sm lg:text-lg">
-                      {productData?.likes && item.label === 'likes'
+                      {productData?.likes && item.label === "likes"
                         ? productData.likes
-                        : productData?.dislikes && item.label === 'dislikes'
+                        : productData?.dislikes && item.label === "dislikes"
                           ? productData.dislikes
                           : item.label}
                     </span>
@@ -241,11 +241,11 @@ export default function ProductPage() {
               })}
               <DrawerTrigger className="">
                 <div className="cursor-pointer space-y-3 text-center capitalize">
-                  <div className={'flex justify-center'}>
+                  <div className={"flex justify-center"}>
                     <MessageCircle />
                   </div>
                   <span className="inline-block text-sm lg:text-lg">
-                    {comments?.length ? comments.length : 'comment'}
+                    {comments?.length ? comments.length : "comment"}
                   </span>
                 </div>
               </DrawerTrigger>
@@ -258,12 +258,12 @@ export default function ProductPage() {
             ) : null}
             {isMobile ? null : (
               <ProductHeader
-                description={productData?.description ?? ''}
-                location={productData?.location ?? ''}
+                description={productData?.description ?? ""}
+                location={productData?.location ?? ""}
                 price={productData?.price ?? 0}
                 productId={productId}
-                timestamp={productData?.timeStamp ?? ''}
-                title={productData?.title ?? ''}
+                timestamp={productData?.timeStamp ?? ""}
+                title={productData?.title ?? ""}
                 userId={productData?.userId!}
               />
             )}
@@ -280,8 +280,8 @@ export default function ProductPage() {
               <span className="font-semibold">{productData?.condition}</span>
               <span>category</span>
               <span className="font-semibold">{productData?.category}</span>
-              <span>exchange possible</span>
-              <span className="font-semibold">{exchangePossible}</span>
+              <span>negotiable</span>
+              <span className="font-semibold">{productData?.negotiable}</span>
             </div>
             <div className="rounded-md bg-white px-5">
               <Accordion type="multiple">
@@ -313,15 +313,15 @@ export default function ProductPage() {
               </Accordion>
             </div>
             <div
-              className={` ${isVisible ? 'translate-y-0' : '-translate-y-[-100%]'} fixed bottom-0 z-30 flex w-full space-x-5 bg-white p-3 transition duration-300 lg:relative lg:translate-y-0 lg:p-0`}
+              className={` ${isVisible ? "translate-y-0" : "-translate-y-[-100%]"} fixed bottom-0 z-30 flex w-full space-x-5 bg-white p-3 transition duration-300 lg:relative lg:translate-y-0 lg:p-0`}
             >
               <div
                 className="flex w-1/4 items-center justify-center rounded-md bg-white shadow-md transition-all duration-300 hover:scale-110 lg:w-1/12"
-                onClick={() => handleGestures('saved')}
+                onClick={() => handleGestures("saved")}
               >
                 <button className="rounded-full bg-white p-2 text-flickmart-chat-orange shadow-lg">
                   <Bookmark
-                    className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
+                    className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
                   />
                 </button>
               </div>
