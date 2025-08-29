@@ -128,7 +128,6 @@ export default function AdCharges({
       );
 
       const data = await response.json();
-      console.log('Charge response:', data, data.data.transactionId);
       if (data.status) {
         toast.success('Payment successful! Posting your ad...');
         // Only submit the form after successful payment

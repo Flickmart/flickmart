@@ -13,7 +13,6 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const userStore = useQuery(api.store.getStoresByUserId);
   const mutate = useMutation(api.store.addImage);
 
-  console.log(userStore?.data?.name);
 
   const { startUpload } = useUploadThing('imageUploader');
 
