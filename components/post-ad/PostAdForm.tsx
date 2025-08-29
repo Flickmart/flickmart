@@ -129,7 +129,7 @@ export default function PostAdForm({
       negotiable: undefined,
       condition: undefined,
       description: "",
-      price: 0,
+      price: undefined,
       store: "",
       phone: "",
       plan: "pro",
