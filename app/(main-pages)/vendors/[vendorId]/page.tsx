@@ -54,7 +54,8 @@ interface ProfileContentProps {
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState("");
   const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
-  const products = useQuery(api.product.getByUserId);
+  const products = useQuery(api.product.getByUserId, { userId: user._id });
+
   const [isHidden, setIsHidden] = useState(false);
   const router = useRouter();
   const filteredProducts = products?.filter((product) =>

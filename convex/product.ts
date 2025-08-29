@@ -30,7 +30,8 @@ export const getById = query({
 
 // Get products by user ID
 export const getByUserId = query({
-  handler: async (ctx) => {
+  args: { userId: v.optional(v.id("users")) },
+  handler: async (ctx, args) => {
     try {
       // Validate that the user exists
       const user = await getCurrentUserOrThrow(ctx);
@@ -45,7 +46,7 @@ export const getByUserId = query({
       // Get all products for the user
       const products = await ctx.db
         .query("product")
-        .filter((q) => q.eq(q.field("userId"), user._id))
+        .filter((q) => q.eq(q.field("userId"), args.userId || user._id))
         .collect();
 
       // Filter out any products that might be considered inactive

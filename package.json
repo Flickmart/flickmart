@@ -3,10 +3,15 @@
   "scripts": {
     "dev": "next dev  --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
-    "build": "next build",
     "start": "next start",
-    "lint": "npx ultracite@latest lint",
-    "format": "npx ultracite@latest format"
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "build": "npm run lint && next build",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": "eslint --fix",
+    "*.{json,css,md}": "prettier --write"
   },
   "dependencies": {
     "@clerk/backend": "^2.1.0",
@@ -87,12 +92,20 @@
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
+    "@eslint/js": "^9.34.0",
+    "@eslint/json": "^0.13.2",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "22.10.2",
     "@types/react": "^19.0.9",
     "@types/react-dom": "19.0.2",
     "@types/web-push": "^3.6.4",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "eslint-plugin-react": "^7.37.5",
+    "globals": "^16.3.0",
     "husky": "^9.1.7",
+    "lint-staged": "^16.1.5",
     "postcss": "8.4.49",
     "tailwind-merge": "^2.6.0",
     "tailwindcss": "3.4.17",
@@ -100,6 +113,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "5.7.2",
+    "typescript-eslint": "^8.41.0",
     "ultracite": "5.2.4"
   },
   "pnpm": {
