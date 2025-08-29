@@ -1,5 +1,5 @@
-import { useQuery } from 'convex/react';
-import { formatDistanceToNow } from 'date-fns';
+import { useQuery } from "convex/react";
+import { formatDistanceToNow } from "date-fns";
 import {
   ArrowLeft,
   Bookmark,
@@ -9,35 +9,39 @@ import {
   Search,
   Share2,
   X,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Sheet, SheetContent, SheetTitle } from '@/components/ui/sheet';
-import { api } from '@/convex/_generated/api';
-import type { Doc, Id } from '@/convex/_generated/dataModel';
-import { shareProduct } from '@/utils/helpers';
-import ProductCard from '../multipage/ProductCard';
-import { Command, CommandInput } from '../ui/command';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+import { api } from "@/convex/_generated/api";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { shareProduct } from "@/utils/helpers";
+import ProductCard from "../multipage/ProductCard";
+import { Command, CommandInput } from "../ui/command";
 
 interface UserProfileProps {
   open?: boolean;
   onClose: () => void;
-  userId: Id<'users'>;
+  userId: Id<"users">;
 }
 
 interface ProfileContentProps {
-  user: Doc<'users'>;
-  store: Doc<'store'>;
+  user: Doc<"users">;
+  store: Doc<"store">;
 }
 // Profile content component to share between mobile and desktop views
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
-  const [search, setSearch] = useState('');
-  const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
-  const products = useQuery(api.product.getByUserId);
+  const [search, setSearch] = useState("");
+  const presence = useQuery(api.presence.getUserOnlineStatus, {
+    userId: user._id,
+  });
+  const products = useQuery(api.product.getByUserId, {
+    userId: user._id,
+  });
   const [isHidden, setIsHidden] = useState(false);
   const filteredProducts = products?.filter((product) =>
     product.title.toLowerCase().includes(search.toLowerCase())
@@ -58,7 +62,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
                 className="size-[80px] rounded-full border-4 border-white object-cover shadow-lg"
                 height={150}
                 priority
-                src={`${user.imageUrl || 'placeholder.svg'}`}
+                src={`${user.imageUrl || "placeholder.svg"}`}
                 width={150}
               />
             </div>
@@ -66,14 +70,20 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
               <h1 className="font-bold text-gray-800 text-xl">{user.name}</h1>
               {!!presence && (
                 <p className="mt-1 text-gray-500 text-xs">
-                  {presence?.status === 'online' ? (
-                    'online'
+                  {presence?.isOnline ? (
+                    "online"
                   ) : (
                     <span>
-                      Last seen{' '}
-                      {formatDistanceToNow(presence?.lastUpdated, {
-                        addSuffix: true,
-                      })}{' '}
+                      {presence?.lastSeen && presence.lastSeen > 0 ? (
+                        <>
+                          Last seen{" "}
+                          {formatDistanceToNow(presence.lastSeen, {
+                            addSuffix: true,
+                          })}
+                        </>
+                      ) : (
+                        "offline"
+                      )}
                     </span>
                   )}
                 </p>
@@ -105,8 +115,8 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             className="flex items-center justify-center rounded-xl border-gray-200 py-5 transition-all hover:border-orange-200 hover:bg-orange-50"
             onClick={() =>
               shareProduct({
-                title: store.name ?? '',
-                description: store.description ?? '',
+                title: store.name ?? "",
+                description: store.description ?? "",
               })
             }
             variant="outline"
@@ -186,10 +196,10 @@ export default function UserProfile({
     };
 
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
 
     return () => {
-      window.removeEventListener('resize', checkIsMobile);
+      window.removeEventListener("resize", checkIsMobile);
     };
   }, []);
 
@@ -204,7 +214,7 @@ export default function UserProfile({
       <Sheet onOpenChange={onClose} open={open}>
         <SheetTitle>Profile</SheetTitle>
         <SheetContent className="w-full overflow-y-auto p-0" side="right">
-          <ProfileContent store={store as Doc<'store'>} user={user!} />
+          <ProfileContent store={store as Doc<"store">} user={user!} />
         </SheetContent>
       </Sheet>
     );
@@ -218,7 +228,7 @@ export default function UserProfile({
           <ArrowLeft className="h-8 w-8 cursor-pointer" onClick={onClose} />
           <h2 className="ml-6 font-bold text-2xl text-black">Profile</h2>
         </div>
-        <ProfileContent store={store as Doc<'store'>} user={user!} />
+        <ProfileContent store={store as Doc<"store">} user={user!} />
       </div>
     </div>
   );

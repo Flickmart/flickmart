@@ -47,6 +47,7 @@ import { cn } from '@/lib/utils';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 
+
 export default function Navbar({ children }: { children?: React.ReactNode }) {
   const { isSignedIn, isLoaded, user } = useUser();
   const [open, setOpen] = useState(false);

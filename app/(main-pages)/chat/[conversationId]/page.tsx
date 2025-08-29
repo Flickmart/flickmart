@@ -61,10 +61,8 @@ export default function ConversationPage() {
   // Fetch current user
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
 
-  // Presence-related mutations
-  const updatePresence = useMutation(api.presence.updatePresence);
+  // Typing status mutation
   const updateTypingStatus = useMutation(api.presence.updateTypingStatus);
-  const heartbeat = useMutation(api.presence.heartbeat);
 
   // Mark messages as read mutation
   const markMessagesAsRead = useMutation(api.chat.markMessagesAsRead);
@@ -98,9 +96,9 @@ export default function ConversationPage() {
   // Mutation to send a message
   const sendMessage = useMutation(api.chat.sendMessage);
 
-  // Get presence information for the active conversation
-  const conversationPresence = useQuery(
-    api.presence.getConversationPresence,
+  // Get typing status for the active conversation
+  const conversationTypingStatus = useQuery(
+    api.presence.getConversationTypingStatus,
     conversationId ? { conversationId } : 'skip'
   );
 
@@ -200,57 +198,24 @@ export default function ConversationPage() {
 
   // Determine if the other user is typing
   const otherUserIsTyping = useMemo(() => {
-    if (!(user?._id && conversationPresence && conversationId)) return false;
+    if (!(user?._id && conversationTypingStatus && conversationId)) return false;
 
     const otherUser =
-      conversationPresence.user1.userId === user._id
-        ? conversationPresence.user2
-        : conversationPresence.user1;
+      conversationTypingStatus.user1.userId === user._id
+        ? conversationTypingStatus.user2
+        : conversationTypingStatus.user1;
 
     return otherUser.isTyping;
-  }, [user?._id, conversationPresence, conversationId]);
+  }, [user?._id, conversationTypingStatus, conversationId]);
 
-  // Determine if the other user is online
-  const otherUserIsOnline = useMemo(() => {
-    if (!(user?._id && conversationPresence && conversationId)) return false;
+  // Get other user's online status using the new presence system
+  const otherUserOnlineStatus = useQuery(
+    api.presence.getUserOnlineStatus,
+    otherUserId ? { userId: otherUserId } : 'skip'
+  );
 
-    const otherUser =
-      conversationPresence.user1.userId === user._id
-        ? conversationPresence.user2
-        : conversationPresence.user1;
-
-    return otherUser.status === 'online';
-  }, [user?._id, conversationPresence, conversationId]);
-
-  // Update online presence with heartbeat
-  useEffect(() => {
-    if (!user?._id) return;
-
-    // Initial presence update
-    updatePresence({
-      userId: user._id,
-      status: 'online',
-      isTyping: false,
-      typingInConversation: undefined,
-    });
-
-    // Set up regular heartbeat interval
-    const intervalId = setInterval(() => {
-      heartbeat({ userId: user._id });
-    }, 5000);
-
-    // Clean up on unmount
-    return () => {
-      clearInterval(intervalId);
-      updatePresence({
-        userId: user._id,
-        status: 'offline',
-        isTyping: false,
-        typingInConversation: undefined,
-      });
-    };
-  }, [user?._id, updatePresence, heartbeat]);
-
+  console.log("otherUserId:", otherUserId);
+  console.log("otherUserOnlineStatus:", otherUserOnlineStatus);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newInput = e.target.value;
     setInput(newInput);
@@ -460,7 +425,7 @@ export default function ConversationPage() {
     <div className="flex h-full flex-col">
       <ChatHeader
         activeChatData={activeChatData}
-        isOnline={otherUserIsOnline}
+        isOnline={otherUserOnlineStatus?.isOnline || false}
         isTyping={otherUserIsTyping ? otherUserIsTyping : false}
         selectedMessages={selectedMessages}
         selectionMode={selectionMode}

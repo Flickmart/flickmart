@@ -13,7 +13,9 @@ export default function MiniListings({
   userId: Id<"users">;
   updateLength: (Length: number) => void;
 }) {
-  const userProducts = useQuery(api.product.getByUserId);
+  const userProducts = useQuery(api.product.getByUserId, {
+    userId,
+  });
 
   useEffect(() => {
     updateLength(userProducts?.length ?? 0);
