@@ -1,61 +1,58 @@
-import { v } from 'convex/values';
-import { mutation, query } from './_generated/server';
+import { mutation, query } from "./_generated/server";
+import { components } from "./_generated/api";
+import { v } from "convex/values";
+import { Presence } from "@convex-dev/presence";
 
-// Update user presence status (online and typing)
-export const updatePresence = mutation({
+export const presence = new Presence(components.presence);
+
+// App-wide presence management
+export const heartbeat = mutation({
   args: {
-    userId: v.id('users'),
-    status: v.union(v.literal('online'), v.literal('offline')),
-    isTyping: v.boolean(),
-    typingInConversation: v.optional(v.id('conversations')),
+    roomId: v.string(),
+    userId: v.string(),
+    sessionId: v.string(),
+    interval: v.number(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, { roomId, userId, sessionId, interval }) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
-    const existingPresence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first();
-
-    if (existingPresence) {
-      await ctx.db.patch(existingPresence._id, {
-        status: args.status,
-        lastUpdated: Date.now(),
-        isTyping: args.isTyping,
-        typingInConversation: args.typingInConversation,
-      });
-      return existingPresence._id;
-    }
-    const presenceId = await ctx.db.insert('presence', {
-      userId: args.userId,
-      status: args.status,
-      lastUpdated: Date.now(),
-      isTyping: args.isTyping,
-      typingInConversation: args.typingInConversation,
-    });
-    return presenceId;
+    return await presence.heartbeat(ctx, roomId, userId, sessionId, interval);
   },
 });
 
-// Update user typing status
+export const list = query({
+  args: { roomToken: v.string() },
+  handler: async (ctx, { roomToken }) => {
+    return await presence.list(ctx, roomToken);
+  },
+});
+
+export const disconnect = mutation({
+  args: { sessionToken: v.string() },
+  handler: async (ctx, { sessionToken }) => {
+    return await presence.disconnect(ctx, sessionToken);
+  },
+});
+
+// Typing indicators (keeping custom implementation for conversation-specific typing)
 export const updateTypingStatus = mutation({
   args: {
-    userId: v.id('users'),
+    userId: v.id("users"),
     isTyping: v.boolean(),
-    conversationId: v.optional(v.id('conversations')),
+    conversationId: v.optional(v.id("conversations")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const existingPresence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), args.userId))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
       .first();
 
     if (existingPresence) {
@@ -63,134 +60,113 @@ export const updateTypingStatus = mutation({
         isTyping: args.isTyping,
         typingInConversation: args.isTyping ? args.conversationId : undefined,
         lastUpdated: Date.now(),
+        status: "online",
       });
       return existingPresence._id;
     }
-    const presenceId = await ctx.db.insert('presence', {
+    const presenceId = await ctx.db.insert("presence", {
       userId: args.userId,
-      status: 'online',
-      lastUpdated: Date.now(),
       isTyping: args.isTyping,
       typingInConversation: args.isTyping ? args.conversationId : undefined,
-    });
-    return presenceId;
-  },
-});
-
-// Send a heartbeat to maintain online status
-export const heartbeat = mutation({
-  args: {
-    userId: v.id('users'),
-  },
-  handler: async (ctx, args) => {
-    const identity = await ctx.auth.getUserIdentity();
-    if (!identity) {
-      throw new Error('Unauthorized');
-    }
-
-    const existingPresence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first();
-
-    if (existingPresence) {
-      await ctx.db.patch(existingPresence._id, {
-        lastUpdated: Date.now(),
-        status: 'online',
-      });
-      return existingPresence._id;
-    }
-    const presenceId = await ctx.db.insert('presence', {
-      userId: args.userId,
-      status: 'online',
       lastUpdated: Date.now(),
-      isTyping: false,
+      status: "online",
     });
     return presenceId;
   },
 });
 
-// Get presence information for a specific user
-export const getUserPresence = query({
+// Get typing status for a conversation
+export const getConversationTypingStatus = query({
   args: {
-    userId: v.id('users'),
-  },
-  handler: async (ctx, args) => {
-    const presence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), args.userId))
-      .first();
-
-    if (!presence) {
-      return {
-        status: 'offline',
-        isTyping: false,
-        lastUpdated: 0,
-      };
-    }
-
-    // Check if the user is online based on the last update time
-    // Consider them offline if no update in the last 10 seconds
-    const isOnline = Date.now() - presence.lastUpdated < 10_000;
-
-    return {
-      ...presence,
-      status: isOnline ? presence.status : 'offline',
-    };
-  },
-});
-
-// Get presence information for a conversation (both participants)
-export const getConversationPresence = query({
-  args: {
-    conversationId: v.id('conversations'),
+    conversationId: v.id("conversations"),
   },
   handler: async (ctx, args) => {
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error('Conversation not found');
+      throw new Error("Conversation not found");
     }
 
     const user1Presence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), conversation.user1))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), conversation.user1))
       .first();
 
     const user2Presence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), conversation.user2))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), conversation.user2))
       .first();
 
     const currentTime = Date.now();
-    const onlineThreshold = 10_000; // 10 seconds
+    const typingThreshold = 5000; // 5 seconds
 
     return {
       user1: {
         userId: conversation.user1,
-        status:
-          user1Presence &&
-          currentTime - user1Presence.lastUpdated < onlineThreshold
-            ? user1Presence.status
-            : 'offline',
         isTyping:
           user1Presence?.isTyping &&
           user1Presence.typingInConversation === args.conversationId &&
-          currentTime - user1Presence.lastUpdated < 5000, // Typing status is even more short-lived
-        lastUpdated: user1Presence?.lastUpdated || 0,
+          currentTime - user1Presence.lastUpdated < typingThreshold,
       },
       user2: {
         userId: conversation.user2,
-        status:
-          user2Presence &&
-          currentTime - user2Presence.lastUpdated < onlineThreshold
-            ? user2Presence.status
-            : 'offline',
         isTyping:
           user2Presence?.isTyping &&
           user2Presence.typingInConversation === args.conversationId &&
-          currentTime - user2Presence.lastUpdated < 5000,
-        lastUpdated: user2Presence?.lastUpdated || 0,
+          currentTime - user2Presence.lastUpdated < typingThreshold,
       },
     };
+  },
+});
+
+// Get user's online status (for profile pages)
+export const getUserOnlineStatus = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    try {
+      // Get the user to find their external ID (Clerk ID)
+      const user = await ctx.db.get(args.userId);
+      if (!user) {
+        console.log("User not found:", args.userId);
+        return { isOnline: false, lastSeen: 0 };
+      }
+
+      // Check if user is in the app-wide room using their external ID
+      const appPresence = await presence.listRoom(ctx, "app-wide");
+      console.log("appPresence for room 'app-wide':", appPresence);
+      console.log("Looking for user with externalId:", user.externalId);
+
+      // Check if the user's external ID (Clerk ID) is in the presence list
+      const isOnline = appPresence.some((p) => p.userId === user.externalId);
+      console.log("User online status:", isOnline);
+
+      return {
+        isOnline,
+        lastSeen: isOnline ? Date.now() : 0,
+      };
+    } catch (error) {
+      console.error("Error getting user online status:", error);
+      return { isOnline: false, lastSeen: 0 };
+    }
+  },
+});
+
+// Debug function to check presence system
+export const debugPresence = query({
+  handler: async (ctx) => {
+    try {
+      const appPresence = await presence.listRoom(ctx, "app-wide");
+      console.log("Debug - App presence:", appPresence);
+
+      return {
+        roomPresence: appPresence,
+        roomCount: appPresence.length,
+        timestamp: Date.now(),
+      };
+    } catch (error) {
+      console.error("Debug presence error:", error);
+      return { error: error instanceof Error ? error.message : String(error) };
+    }
   },
 });

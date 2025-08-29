@@ -209,10 +209,10 @@ export default defineSchema({
 
   presence: defineTable({
     userId: v.id('users'),
-    status: v.union(v.literal('online'), v.literal('offline')),
-    lastUpdated: v.number(),
-    isTyping: v.optional(v.boolean()),
+    isTyping: v.boolean(),
     typingInConversation: v.optional(v.id('conversations')),
+    lastUpdated: v.number(),
+    status: v.union(v.literal('online'), v.literal('offline'), v.literal('away')),
   })
     .index('byUserId', ['userId'])
     .index('byTypingInConversation', ['typingInConversation']),

@@ -36,7 +36,7 @@ interface ProfileContentProps {
 // Profile content component to share between mobile and desktop views
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState('');
-  const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
+  const presence = useQuery(api.presence.getUserOnlineStatus, { userId: user._id });
   const products = useQuery(api.product.getByUserId);
   const [isHidden, setIsHidden] = useState(false);
   const filteredProducts = products?.filter((product) =>
@@ -66,14 +66,20 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
               <h1 className="font-bold text-gray-800 text-xl">{user.name}</h1>
               {!!presence && (
                 <p className="mt-1 text-gray-500 text-xs">
-                  {presence?.status === 'online' ? (
+                  {presence?.isOnline ? (
                     'online'
                   ) : (
                     <span>
-                      Last seen{' '}
-                      {formatDistanceToNow(presence?.lastUpdated, {
-                        addSuffix: true,
-                      })}{' '}
+                      {presence?.lastSeen && presence.lastSeen > 0 ? (
+                        <>
+                          Last seen{' '}
+                          {formatDistanceToNow(presence.lastSeen, {
+                            addSuffix: true,
+                          })}
+                        </>
+                      ) : (
+                        'offline'
+                      )}
                     </span>
                   )}
                 </p>
