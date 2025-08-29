@@ -15,6 +15,7 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
   const pathname = usePathname();
   const queryString = useSearchParams();
   const action = queryString.get("action");
+  const [searchOpen, setSearchOpen] = useState(false);
 
   // If the pathname is one where a custom MobileHeader is rendered, return null
   const overrideRoutes = ["/notifications"];
@@ -50,7 +51,6 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
     return hiddenPaths.some((path) => pathname.includes(path));
   };
 
-  const [searchOpen, setSearchOpen] = useState(false);
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
