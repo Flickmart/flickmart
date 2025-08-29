@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { useQuery } from 'convex/react';
-import { formatDistanceToNow } from 'date-fns';
+import { useQuery } from "convex/react";
+import { formatDistanceToNow } from "date-fns";
 import {
   ChevronLeft,
   ChevronRight,
   MessageSquare,
   Search,
   Share2,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
-import Loader from '@/components/multipage/Loader';
-import ProductCard from '@/components/multipage/ProductCard';
-import { Button } from '@/components/ui/button';
-import { Command, CommandInput } from '@/components/ui/command';
-import { api } from '@/convex/_generated/api';
-import type { Doc, Id } from '@/convex/_generated/dataModel';
-import { shareProduct } from '@/utils/helpers';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { use, useEffect, useState } from "react";
+import Loader from "@/components/multipage/Loader";
+import ProductCard from "@/components/multipage/ProductCard";
+import { Button } from "@/components/ui/button";
+import { Command, CommandInput } from "@/components/ui/command";
+import { api } from "@/convex/_generated/api";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
+import { shareProduct } from "@/utils/helpers";
 
 const VendorProfile = ({
   params,
 }: {
-  params: Promise<{ vendorId: Id<'users'> }>;
+  params: Promise<{ vendorId: Id<"users"> }>;
 }) => {
   const { vendorId } = use(params);
 
   const user = useQuery(api.users.getUser, { userId: vendorId });
-  const store = useQuery(api.store.getStoreByUserId);
+  const store = useQuery(api.store.getExternalUserStore, { userId: vendorId });
 
   if (!user) {
     return <Loader />;
@@ -38,7 +38,7 @@ const VendorProfile = ({
   return (
     <div className="z-50 flex lg:w-full">
       <div className="relative h-full w-full overflow-y-auto bg-white lg:w-full">
-        <ProfileContent store={store as Doc<'store'>} user={user} />
+        <ProfileContent store={store as Doc<"store">} user={user} />
       </div>
     </div>
   );
@@ -47,12 +47,12 @@ export default VendorProfile;
 
 // Profile content component to share between mobile and desktop views
 interface ProfileContentProps {
-  user: Doc<'users'>;
-  store: Doc<'store'>;
+  user: Doc<"users">;
+  store: Doc<"store">;
 }
 
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const presence = useQuery(api.presence.getUserPresence, { userId: user._id });
   const products = useQuery(api.product.getByUserId);
   const [isHidden, setIsHidden] = useState(false);
@@ -68,7 +68,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
       <div className="p-4 lg:mx-auto lg:w-3/6">
         {/* Profile Header */}
         <div
-          className={`${isHidden ? 'hidden' : 'block'} mb-6 flex flex-col items-start transition-all duration-300 ease-in-out`}
+          className={`${isHidden ? "hidden" : "block"} mb-6 flex flex-col items-start transition-all duration-300 ease-in-out`}
         >
           <div className="flex items-center gap-3">
             <div className="relative">
@@ -78,7 +78,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
                 className="size-[80px] rounded-full border-4 border-white object-cover shadow-lg"
                 height={150}
                 priority
-                src={`${user.imageUrl || 'placeholder.svg'}`}
+                src={`${user.imageUrl || "placeholder.svg"}`}
                 width={150}
               />
             </div>
@@ -86,14 +86,14 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
               <h1 className="font-bold text-gray-800 text-xl">{user.name}</h1>
               {!!presence && (
                 <p className="mt-1 text-gray-500 text-xs">
-                  {presence?.status === 'online' ? (
-                    'online'
+                  {presence?.status === "online" ? (
+                    "online"
                   ) : (
                     <span>
-                      Last seen{' '}
+                      Last seen{" "}
                       {formatDistanceToNow(presence?.lastUpdated, {
                         addSuffix: true,
-                      })}{' '}
+                      })}{" "}
                     </span>
                   )}
                 </p>
@@ -114,7 +114,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
 
         {/* Action Buttons */}
         <div
-          className={`${isHidden ? 'hidden' : 'block'} mb-6 grid max-w-lg grid-cols-2 gap-3 transition-all duration-300 ease-in-out`}
+          className={`${isHidden ? "hidden" : "block"} mb-6 grid max-w-lg grid-cols-2 gap-3 transition-all duration-300 ease-in-out`}
         >
           <Button
             className="flex items-center justify-center rounded-xl border-gray-200 py-5 transition-all hover:border-orange-200 hover:bg-orange-50"
@@ -128,7 +128,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             className="flex items-center justify-center rounded-xl border-gray-200 py-5 transition-all hover:border-orange-200 hover:bg-orange-50"
             onClick={() =>
               shareProduct({
-                title: store.name || 'Check out this store',
+                title: store.name || "Check out this store",
                 url: `https://flickmart.app/vendors/${user._id}`,
                 description: `Have you checked out ${user.name}'s store on Flickmart?`,
               })
@@ -144,7 +144,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
         {!!store && (
           <div className="mb-6">
             <div
-              className={`${isHidden ? 'hidden' : 'block'} mb-4 flex items-center justify-between transition-all duration-300 ease-in-out`}
+              className={`${isHidden ? "hidden" : "block"} mb-4 flex items-center justify-between transition-all duration-300 ease-in-out`}
             >
               <h2 className="font-semibold text-gray-800 text-xl">
                 More Products

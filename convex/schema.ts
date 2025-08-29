@@ -66,6 +66,7 @@ export default defineSchema({
     store: v.string(),
   }).index('by_userId', ['userId']),
 
+
   // Interactions
   interactions: defineTable({
     productId: v.id('product'),

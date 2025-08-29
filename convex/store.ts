@@ -1,7 +1,7 @@
-import { v } from 'convex/values';
-import { internal } from './_generated/api';
-import { mutation, query } from './_generated/server';
-import { getCurrentUser, getCurrentUserOrThrow } from './users';
+import { v } from "convex/values";
+import { internal } from "./_generated/api";
+import { mutation, query } from "./_generated/server";
+import { getCurrentUser, getCurrentUserOrThrow } from "./users";
 // Create a new store
 export const createStore = mutation({
   args: {
@@ -14,16 +14,16 @@ export const createStore = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error('User not found');
+      throw new Error("User not found");
     }
 
-    const storeId = await ctx.db.insert('store', {
+    const storeId = await ctx.db.insert("store", {
       name: args.name,
       location: args.location,
       description: args.description,
@@ -33,13 +33,13 @@ export const createStore = mutation({
     });
 
     await ctx.runMutation(internal.notifications.createNotification, {
-      title: 'New Store Created',
+      title: "New Store Created",
       content: `Your store ${args.name} has been created successfully`,
       imageUrl: args.image,
       isRead: false,
       timestamp: Date.now(),
       link: `/store/${storeId}`,
-      type: 'advertisement',
+      type: "advertisement",
     });
 
     return storeId;
@@ -48,13 +48,13 @@ export const createStore = mutation({
 
 export const addImage = mutation({
   args: {
-    storeId: v.id('store'),
+    storeId: v.id("store"),
     image: v.string(),
   },
   handler: async (ctx, args) => {
     const store = await ctx.db.get(args.storeId);
     if (!store) {
-      throw new Error('Store not found');
+      throw new Error("Store not found");
     }
     const update = await ctx.db.patch(args.storeId, {
       image: args.image,
@@ -65,7 +65,7 @@ export const addImage = mutation({
 
 // Get a store by ID
 export const getStore = query({
-  args: { id: v.id('store') },
+  args: { id: v.id("store") },
   handler: async (ctx, args) => {
     return await ctx.db.get(args.id);
   },
@@ -74,7 +74,7 @@ export const getStore = query({
 // Get all stores
 export const getAllStores = query({
   handler: async (ctx) => {
-    return await ctx.db.query('store').collect();
+    return await ctx.db.query("store").collect();
   },
 });
 
@@ -87,8 +87,8 @@ export const getStoresByUserId = query({
       success: false,
       data: null,
       error: {
-        code: 'USER_NOT_FOUND',
-        message: 'Authentication Required',
+        code: "USER_NOT_FOUND",
+        message: "Authentication Required",
         status: 401,
       },
     };
@@ -100,16 +100,16 @@ export const getStoresByUserId = query({
 
     // Retrieve Store if user exists
     const [store] = await ctx.db
-      .query('store')
-      .filter((q) => q.eq(q.field('userId'), user._id))
+      .query("store")
+      .filter((q) => q.eq(q.field("userId"), user._id))
       .collect();
 
     if (!store)
       return {
         ...errorObject,
         error: {
-          code: 'STORE_NOT_FOUND',
-          message: 'Create a store',
+          code: "STORE_NOT_FOUND",
+          message: "Create a store",
           status: 404,
         },
       };
@@ -121,7 +121,7 @@ export const getStoresByUserId = query({
 // Update a store
 export const updateStore = mutation({
   args: {
-    id: v.id('store'),
+    id: v.id("store"),
     name: v.optional(v.string()),
     location: v.optional(v.string()),
     description: v.optional(v.string()),
@@ -138,7 +138,7 @@ export const updateStore = mutation({
 
 // Delete a store
 export const deleteStore = mutation({
-  args: { id: v.id('store') },
+  args: { id: v.id("store") },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.id);
     return args.id;
@@ -153,8 +153,8 @@ export const getStoreByUserId = query({
       success: false,
       data: null,
       error: {
-        code: 'USER_NOT_FOUND',
-        message: 'Authentication Required',
+        code: "USER_NOT_FOUND",
+        message: "Authentication Required",
         status: 401,
       },
     };
@@ -164,8 +164,37 @@ export const getStoreByUserId = query({
     }
 
     const store = await ctx.db
-      .query('store')
-      .withIndex('byUserId', (q) => q.eq('userId', user._id))
+      .query("store")
+      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .first();
+
+    return store;
+  },
+});
+
+export const getExternalUserStore = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const errorObject = {
+      success: false,
+      data: null,
+      error: {
+        code: "USER_NOT_FOUND",
+        message: "User not found",
+        status: 404,
+      },
+    };
+    // Check if user Exists
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      return errorObject;
+    }
+
+    const store = await ctx.db
+      .query("store")
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
       .first();
 
     return store;
