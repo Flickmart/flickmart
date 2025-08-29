@@ -49,7 +49,7 @@ export default function Page() {
           Click the button below, and view the sample error on the Sentry{' '}
           <a
             href="https://flickmart.sentry.io/issues/?project=4509559717101568"
-            rel="noopener"
+            rel="noopener noreferrer"
             target="_blank"
           >
             Issues Page
@@ -57,7 +57,7 @@ export default function Page() {
           . For more details about setting up Sentry,{' '}
           <a
             href="https://docs.sentry.io/platforms/javascript/guides/nextjs/"
-            rel="noopener"
+            rel="noopener noreferrer"
             target="_blank"
           >
             read our docs
@@ -99,7 +99,7 @@ export default function Page() {
               due to an adblocker. For more information, see{' '}
               <a
                 href="https://docs.sentry.io/platforms/javascript/guides/nextjs/troubleshooting/#the-sdk-is-not-sending-any-data"
-                rel="noopener"
+                rel="noopener noreferrer"
                 target="_blank"
               >
                 the troubleshooting guide

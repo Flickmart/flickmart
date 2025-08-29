@@ -262,7 +262,7 @@ export const sendMessage = mutation({
         // Fire-and-forget: do not block message sending on email issues
         // No await on purpose; Convex mutations can't spawn background tasks,
         // so we catch and ignore errors if the call fails quickly.
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+         
         ctx.runMutation(internal.email.sendEmailNotification, {
           username: sender?.name ?? 'A customer',
           subject: 'You have a new chat message',
