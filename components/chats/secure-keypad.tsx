@@ -40,6 +40,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   const [amount, setAmount] = useState('');
   const [displayAmount, setDisplayAmount] = useState('');
   const [pin, setPin] = useState('');
+  const [createdOrderId, setCreatedOrderId] = useState<Id<'orders'> | null>(null);
 
   const [isPinError, setIsPinError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -62,7 +63,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   // Fetch seller's products using the existing  quegetByUserIdry
   const seller = useQuery(api.users.getUserById, { userId: sellerId });
   const sellerProductsQuery = useQuery(api.product.getBySellerId, {
-    sellerId : sellerId
+    sellerId,
   });
   const isProductsLoading = sellerProductsQuery === undefined;
 
@@ -107,9 +108,6 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   }, [getToken]);
   const retryProductFetch = useCallback(() => {
     setSellerProducts([]);
-
-    // Force a re-render to trigger the useQuery hook to retry
-    // This is a more robust approach to handle retry scenarios
     setTimeout(() => {
       if (sellerProductsQuery === null) {
       }
@@ -316,6 +314,9 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
           toast.success('Transfer Successful', {
             description: `Successfully transferred ₦${formatAmount(amount)} to the seller.`,
           });
+          if (data.orderId) {
+            setCreatedOrderId(data.orderId as Id<'orders'>);
+          }
           setCurrentStep('TRANSFER_COMPLETE');
         } else {
           // Handle errors from the API
@@ -693,6 +694,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
       <TransferComplete
         calculatedTotal={calculatedTotal}
         displayAmount={displayAmount}
+        orderId={createdOrderId ?? undefined}
         onBack={handleBack}
         selectedProductsCount={selectedProducts.length}
       />
