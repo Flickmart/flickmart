@@ -4,15 +4,8 @@
     "dev": "next dev  --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
     "start": "next start",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "build": "npm run lint && next build",
-    "prepare": "husky",
     "test": "echo \"No tests yet\" && exit 0"
-  },
-  "lint-staged": {
-    "*.{js,jsx,ts,tsx}": "eslint --fix",
-    "*.{json,css,md}": "prettier --write"
   },
   "dependencies": {
     "@clerk/backend": "^2.1.0",
