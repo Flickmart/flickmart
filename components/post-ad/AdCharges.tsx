@@ -18,6 +18,8 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 
+
+
 interface AdChargesProps {
   plan: 'free' | 'basic' | 'pro' | 'premium';
   isPending: boolean;
@@ -26,6 +28,7 @@ interface AdChargesProps {
   images: Array<string>;
   adId: Id<'product'> | undefined;
   basicDuration: number;
+  action?: string;
 }
 
 export default function AdCharges({
@@ -36,6 +39,7 @@ export default function AdCharges({
   images,
   adId,
   basicDuration,
+  action,
 }: AdChargesProps) {
   const PLAN_PRICES = {
     basic: basicDuration === 7 ? 300 : 200,
@@ -57,6 +61,7 @@ export default function AdCharges({
 
   const balance = wallet?.balance ? wallet?.balance / 100 : 0;
   const chargeAmount = PLAN_PRICES[plan];
+  const router = useRouter();
 
   const handlePostAdClick = async () => {
     if (!images.length) {
@@ -79,6 +84,13 @@ export default function AdCharges({
       toast.error('Please log in to post an ad');
       return;
     }
+    if (action === "edit" || plan === "free") {
+      await formSubmit();
+      setShowChargeDialog(false);
+      router.push("/settings/products");
+      return;
+    }
+
     if (!wallet) {
       toast.error('Please create a wallet first');
       return;
@@ -109,7 +121,7 @@ export default function AdCharges({
             amount: chargeAmount,
             plan,
             userId: user?._id,
-            walletId: wallet._id,
+            walletId: wallet?._id,
           }),
         }
       );
@@ -144,16 +156,22 @@ export default function AdCharges({
   return (
     <>
       <div className="w-full space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Ad Posting Fee ({plan} plan)</span>
-          <span className="font-semibold">
-            ₦{chargeAmount.toLocaleString()}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span className="text-gray-600">Your Wallet Balance</span>
-          <span className="font-semibold">₦{balance.toLocaleString()}</span>
-        </div>
+        {action === "edit" ? null : (
+          <>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">
+                Ad Posting Fee ({plan} plan)
+              </span>
+              <span className="font-semibold">
+                ₦{chargeAmount.toLocaleString()}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600">Your Wallet Balance</span>
+              <span className="font-semibold">₦{balance.toLocaleString()}</span>
+            </div>
+          </>
+        )}
         <Button
           className="w-full bg-flickmart py-7 text-xl transition-all duration-300 hover:scale-110 lg:rounded-none lg:py-9"
           disabled={isPending || isProcessing}
@@ -162,6 +180,8 @@ export default function AdCharges({
         >
           {isPending || isProcessing ? (
             <ClipLoader color="#ffffff" />
+          ) : action === "edit" ? (
+            "Update Ad"
           ) : (
             'Post Ad'
           )}
@@ -171,13 +191,16 @@ export default function AdCharges({
       <Dialog onOpenChange={setShowChargeDialog} open={showChargeDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Confirm Ad Posting</DialogTitle>
+            <DialogTitle>
+              {action === "edit" ? "Confirm Update" : "Confirm Ad Posting"}
+            </DialogTitle>
             <DialogDescription>
-              You are about to post an ad with {plan} plan. ₦{chargeAmount} will
-              be deducted from your wallet.
+              {action === "edit"
+                ? "You are about to update this ad, are you sure you want to proceed with this action?"
+                : "You are about to post an ad with {plan} plan. ₦{chargeAmount} will be deducted from your wallet."}
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="gap-3">
             <Button
               disabled={isProcessing}
               onClick={() => setShowChargeDialog(false)}
@@ -192,6 +215,8 @@ export default function AdCharges({
             >
               {isProcessing ? (
                 <ClipLoader color="#ffffff" size={20} />
+              ) : action === "edit" ? (
+                "Update Ad"
               ) : (
                 'Confirm & Post'
               )}

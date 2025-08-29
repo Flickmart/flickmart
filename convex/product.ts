@@ -22,7 +22,9 @@ export const getAll = query({
 // Get product by ID
 export const getById = query({
   args: { productId: v.id('product') },
+
   handler: async (ctx, args) => {
+    if (!args.productId) return null;
     return await ctx.db.get(args.productId);
   },
 });
@@ -175,13 +177,19 @@ export const update = mutation({
     images: v.optional(v.array(v.string())),
     price: v.optional(v.number()),
     category: v.optional(v.string()),
-    plan: v.optional(
-      v.union(v.literal('basic'), v.literal('pro'), v.literal('premium'))
-    ),
-    exchange: v.optional(v.boolean()),
-    condition: v.optional(v.boolean()),
-    location: v.optional(v.union(v.literal('Enugu'), v.literal('Nsuka'))),
-    link: v.optional(v.string()),
+
+    subcategory: v.optional(v.string()),
+    // plan: v.optional(
+    //   v.union(
+    //     v.literal("free"),
+    //     v.literal("basic"),
+    //     v.literal("pro"),
+    //     v.literal("premium")
+    //   )
+    // ),
+    condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
+    location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
+    negotiable: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -203,16 +211,18 @@ export const update = mutation({
 
     // Build updates object with only the fields that were provided
     const updateFields = [
-      'title',
-      'description',
-      'images',
-      'price',
-      'category',
-      'plan',
-      'exchange',
-      'condition',
-      'location',
-      'link',
+
+      "title",
+      "description",
+      "images",
+      "price",
+      "category",
+      "subcategory",
+      // "plan",
+      "condition",
+      "location",
+      "negotiable",
+
     ] as const;
 
     // Type-safe way to build the updates object

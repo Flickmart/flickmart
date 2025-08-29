@@ -1,3 +1,4 @@
+
 'use client';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@radix-ui/react-select';
@@ -6,6 +7,7 @@ import { useMutation as useMutationConvex, useQuery } from 'convex/react';
 import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useState } from 'react';
+
 import {
   type SubmitErrorHandler,
   type SubmitHandler,
@@ -84,7 +86,10 @@ const formSchema = z.object({
     .min(30, { message: 'Description is too short' })
     .max(900, { message: 'Description cannot exceed 900 characters' }),
   price: z.union([
-    z.string(),
+    z.string().refine((val) => +val !== 0, {
+      message: "Price must be a valid number, price cannot be zero",
+    }),
+
     z.number({
       required_error: 'Price is required',
     }),
@@ -107,6 +112,13 @@ export default function PostAdForm({
   setClear: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const [basicDuration, setBasicDuration] = useState<number>(0);
+  const searchParams = useSearchParams();
+  const action = searchParams.get("action");
+  const [query, setQuery] = useState(action);
+  const productId = searchParams.get("product-id");
+  const product = useQuery(api.product.getById, {
+    productId: productId as Id<"product">,
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -122,17 +134,40 @@ export default function PostAdForm({
       store: '',
       phone: '',
       plan: 'pro',
+
     },
   });
   const { images } = useOthersStore((state) => state);
+  const storeImage = useOthersStore((state) => state.storeImage);
   const router = useRouter();
   const createNewAd = useMutationConvex(api.product.create);
+  const updateProduct = useMutationConvex(api.product.update);
   let postToastId: ReturnType<typeof toast.loading>;
   const userStore = useQuery(api.store.getStoresByUserId)?.data;
   const businessId = userStore?._id as Id<'store'>;
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [textAreaLength, setTextAreaLength] = useState<number>(0);
   const [adId, setAdId] = useState<Id<'product'> | undefined>();
+
+  useEffect(() => {
+    product?.images;
+    if (query && product) {
+      form.setValue("category", product.category);
+      form.setValue("subcategory", product.subcategory || "");
+      form.setValue("location", product.location);
+      form.setValue("negotiable", product.negotiable ?? false);
+      form.setValue("condition", product.condition);
+      form.setValue("title", product.title);
+      form.setValue("description", product.description);
+      form.setValue("price", product.price);
+      form.setValue("store", product.store);
+      form.setValue("phone", product.phone);
+      form.setValue("plan", product.plan);
+      storeImage(product.images);
+
+      setQuery(null);
+    }
+  }, [product]);
 
   // Clear Form
   useEffect(() => {
@@ -177,13 +212,29 @@ export default function PostAdForm({
         images,
         price: +formData.price,
       };
-      adPostMutate(modifiedObj);
+
+      action === "edit"
+        ? updateProduct({
+            condition: modifiedObj.condition,
+            description: modifiedObj.description,
+            images: modifiedObj.images,
+            location: modifiedObj.location,
+            negotiable: modifiedObj.negotiable,
+            price: modifiedObj.price,
+            subcategory: modifiedObj.subcategory,
+            category: modifiedObj.category,
+            title: modifiedObj.title,
+            productId: productId as Id<"product">,
+          })
+        : adPostMutate(modifiedObj);
 
       // Only reset if everything was successful
       setIsSubmitted(true);
       setTextAreaLength(0);
-      form.reset();
-      toast.success('Ad posted successfully!');
+
+      toast.success(
+        `Ad ${action === "edit" ? "updated" : "posted"} successfully!`
+      );
     } catch (error) {
       toast.error('Failed to post ad');
     }
@@ -260,18 +311,25 @@ export default function PostAdForm({
         <Separator className="h-5 w-full bg-gray-100" />
 
         <div className="flex w-full flex-col items-center justify-between space-y-5 p-5 lg:p-10 lg:pt-0">
-          <div className="w-full space-y-2 capitalize">
-            <h2 className="font-bold lg:text-xl">promote your ad</h2>
-            <p className="font-light text-gray-400 text-sm">
-              select a visibility rate and promote your ad
-            </p>
-          </div>
-          <AdPromotion
-            basicDuration={basicDuration}
-            form={form}
-            onBasicChange={(days: number) => setBasicDuration(days)}
-          />
+
+          {action === "edit" ? null : (
+            <>
+              <div className="w-full space-y-2 capitalize">
+                <h2 className="lg:text-xl font-bold">promote your ad</h2>
+                <p className="font-light text-gray-400 text-sm">
+                  select a visibility rate and promote your ad
+                </p>
+              </div>
+              <AdPromotion
+                form={form}
+                basicDuration={basicDuration}
+                onBasicChange={(days: number) => setBasicDuration(days)}
+              />
+            </>
+          )}
           <AdCharges
+            action={action as string}
+            basicDuration={basicDuration}
             adId={adId}
             basicDuration={basicDuration}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
@@ -280,12 +338,17 @@ export default function PostAdForm({
             isPending={isPending}
             plan={form.watch('plan') || 'basic'}
           />
-          <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
-            By clicking on Post Ad you accepted the{' '}
-            <span className="cursor-pointer text-flickmart">Sell Policy </span>
-            confirm that you will abide by the safety tips and other terms and
-            conditions
-          </p>
+
+          {action === "edit" ? null : (
+            <p className="text-center font-light text-xs capitalize leading-relaxed lg:w-2/4 lg:text-sm">
+              By clicking on Post Ad you accepted the{" "}
+              <span className="cursor-pointer text-flickmart">
+                Sell Policy{" "}
+              </span>
+              confirm that you will abide by the safety tips and other terms and
+              conditions
+            </p>
+          )}
         </div>
       </form>
     </Form>

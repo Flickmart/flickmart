@@ -86,6 +86,9 @@ export default function AdPromotion({
                         );
                       }
                     }}
+                    key={index}
+                    className={`rounded-2xl cursor-pointer   px-5 py-2 border-flickmartLight border text-sm ${basicDuration === duration || (values.plan === item.type && item.type !== "basic") ? "transition-all duration-300 bg-flickmart text-white border-none" : ""}`}
+
                   >
                     {duration} {item.type === 'premium' ? 'month' : 'days'}
                   </span>
