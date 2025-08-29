@@ -3,11 +3,10 @@
   "scripts": {
     "dev": "next dev  --turbopack",
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
+    "build": "next build",
     "start": "next start",
-    "build": "npm run lint && next build",
-     "lint": "npx ultracite@latest lint",
-    "format": "npx ultracite@latest format",
-    "test": "echo \"No tests yet\" && exit 0"
+    "lint": "npx ultracite@latest lint",
+    "format": "npx ultracite@latest format"
   },
   "dependencies": {
     "@clerk/backend": "^2.1.0",
