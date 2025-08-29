@@ -21,7 +21,8 @@ export const getAll = query({
 
 // Get product by ID
 export const getById = query({
-  args: { productId: v.union(v.null(), v.id("product")) },
+  args: { productId: v.id("product") },
+
   handler: async (ctx, args) => {
     if (!args.productId) return null;
     return await ctx.db.get(args.productId);
@@ -177,6 +178,7 @@ export const update = mutation({
     images: v.optional(v.array(v.string())),
     price: v.optional(v.number()),
     category: v.optional(v.string()),
+
     subcategory: v.optional(v.string()),
     // plan: v.optional(
     //   v.union(
@@ -905,7 +907,7 @@ function calculateTextSimilarity(text1: string, text2: string): number {
 export const getProductsByCategoryOrSubCategory = query({
   args: { category: v.string() },
   handler: async (ctx, args) => {
-    const user = getCurrentUserOrThrow(ctx);
+    const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
       throw Error("User is not logged in");

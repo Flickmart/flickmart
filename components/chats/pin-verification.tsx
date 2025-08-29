@@ -53,43 +53,14 @@ export function PinVerification({
       {/* Content area that takes remaining space */}
       <div className="flex flex-1 flex-col">
         {/* Top content */}
-        <div className="flex flex-1 flex-col justify-start pt-4">
+        <div className="flex flex-1 flex-col pt-6 justify-center">
           <div className="mx-auto mb-6 max-w-md text-center">
-            <h1 className="mb-4 font-semibold text-2xl text-gray-900">
-              Enter Your PIN
+            <h1 className="font-semibold text-2xl text-gray-900">
+              Enter Payment PIN
             </h1>
-            <p className="mb-4 text-gray-600">
-              Enter your 6-digit PIN to complete the transfer
+            <p className="mb-4 text-gray-600 text-sm">
+              Enter your PIN to complete payment
             </p>
-
-            {/* Transfer Summary */}
-            <div className="mb-6 rounded-lg bg-gray-50 py-4 text-left md:p-0">
-              <h3 className="mb-2 font-medium text-gray-900">
-                Transfer Summary
-              </h3>
-              <div className="space-y-1 text-gray-600 text-sm">
-                <div className="flex justify-between">
-                  <span>Amount:</span>
-                  <span className="font-medium">₦{displayAmount}</span>
-                </div>
-                {selectedProductsCount > 0 && (
-                  <>
-                    <div className="flex justify-between">
-                      <span>Products Selected:</span>
-                      <span className="font-medium">
-                        {selectedProductsCount}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Product Total:</span>
-                      <span className="font-medium">
-                        ₦{formatAmount(calculatedTotal)}
-                      </span>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
           </div>
 
           {errorMessage && (
