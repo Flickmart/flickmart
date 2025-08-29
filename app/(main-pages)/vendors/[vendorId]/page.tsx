@@ -54,7 +54,8 @@ interface ProfileContentProps {
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState("");
   const presence = useQuery(api.presence.getUserOnlineStatus, { userId: user._id });
-  const products = useQuery(api.product.getByUserId);
+  const products = useQuery(api.product.getByUserId, { userId: user._id });
+
   const [isHidden, setIsHidden] = useState(false);
   const router = useRouter();
   const filteredProducts = products?.filter((product) =>
@@ -63,6 +64,9 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const handleSearch = (value: string) => {
     setSearch(value);
   };
+  const firstName = user.name.split(" ")[0];
+  const lastName = user.name.split(" ")[1];
+
   return (
     <>
       <div className="p-4 lg:mx-auto lg:w-3/6">
@@ -83,7 +87,10 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
               />
             </div>
             <div>
-              <h1 className="font-bold text-gray-800 text-xl">{user.name}</h1>
+              <h1 className="font-bold text-gray-800 text-xl">
+                {firstName} {lastName !== "null" ? lastName : ""}
+              </h1>
+
               {!!presence && (
                 <p className="mt-1 text-gray-500 text-xs">
                   {presence?.isOnline ? (
@@ -187,19 +194,27 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:w-full lg:grid-cols-3">
-              {filteredProducts
-                ?.slice(0, isHidden ? filteredProducts.length : 6)
-                .map((item) => (
-                  <div key={item._id}>
-                    <Link href={`/product/${item._id}`}>
-                      <ProductCard
-                        image={item.images[0]}
-                        price={item.price}
-                        title={item.title}
-                      />
-                    </Link>
-                  </div>
-                ))}
+              {filteredProducts?.length ? (
+                filteredProducts
+                  ?.slice(0, isHidden ? filteredProducts.length : 6)
+                  .map((item) => (
+                    <div key={item._id}>
+                      <Link href={`/product/${item._id}`}>
+                        <ProductCard
+                          image={item.images[0]}
+                          price={item.price}
+                          title={item.title}
+                        />
+                      </Link>
+                    </div>
+                  ))
+              ) : (
+                <div className="flex items-center justify-center w-full col-span-2 h-96 ">
+                  <p className="text-center text-gray-500">
+                    No products posted yet
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         )}
