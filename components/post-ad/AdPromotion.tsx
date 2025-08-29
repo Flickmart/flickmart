@@ -65,7 +65,6 @@ export default function AdPromotion({
               {item.duration.map((duration, index) => {
                 return (
                   <span
-                    className={`cursor-pointer rounded-2xl ${item.type === 'premium' ? 'border-none bg-flickmartLight/70' : ''} border border-flickmartLight px-5 py-2 text-sm ${basicDuration === duration ? 'border-none bg-flickmart text-white' : ''}`}
                     key={index}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -86,7 +85,7 @@ export default function AdPromotion({
                         );
                       }
                     }}
-                    key={index}
+                 
                     className={`rounded-2xl cursor-pointer   px-5 py-2 border-flickmartLight border text-sm ${basicDuration === duration || (values.plan === item.type && item.type !== "basic") ? "transition-all duration-300 bg-flickmart text-white border-none" : ""}`}
 
                   >

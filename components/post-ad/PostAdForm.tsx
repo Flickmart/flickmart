@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@radix-ui/react-select';
 import { useMutation } from '@tanstack/react-query';
 import { useMutation as useMutationConvex, useQuery } from 'convex/react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 
@@ -331,7 +331,6 @@ export default function PostAdForm({
             action={action as string}
             basicDuration={basicDuration}
             adId={adId}
-            basicDuration={basicDuration}
             formSubmit={() => form.handleSubmit(onSubmit, onError)()}
             formTrigger={form.trigger}
             images={images}
