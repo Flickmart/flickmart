@@ -88,14 +88,11 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@eslint/js": "^9.34.0",
-    "@eslint/json": "^0.13.2",
     "@types/bcrypt": "^5.0.2",
     "@types/node": "22.10.2",
     "@types/react": "^19.0.9",
     "@types/react-dom": "19.0.2",
     "@types/web-push": "^3.6.4",
-    "@typescript-eslint/eslint-plugin": "^8.41.0",
-    "@typescript-eslint/parser": "^8.41.0",
     "eslint": "^9.34.0",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^16.3.0",
@@ -109,7 +106,7 @@
     "tsx": "^4.19.3",
     "typescript": "5.7.2",
     "typescript-eslint": "^8.41.0",
-    "ultracite": "5.2.4"
+    "ultracite": "5.2.9"
   },
   "pnpm": {
     "ignoredBuiltDependencies": [
@@ -123,6 +120,11 @@
       "@sentry/cli",
       "core-js",
       "sharp"
+    ]
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "pnpm dlx ultracite format"
     ]
   }
 }
