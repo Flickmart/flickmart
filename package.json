@@ -5,6 +5,7 @@
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
     "start": "next start",
     "build": "npm run lint && next build",
+    "lint": "ultracite lint",
     "test": "echo \"No tests yet\" && exit 0"
   },
   "dependencies": {
