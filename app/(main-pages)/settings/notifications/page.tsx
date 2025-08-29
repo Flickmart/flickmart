@@ -28,9 +28,6 @@ export default function NotificationsPage() {
   );
   const updateNotifications = useMutation(api.users.updateUser);
 
-  useEffect(() => {
-    console.log(user?.allowNotifications);
-  }, [user]);
 
   return (
     <div className="flex w-full flex-col">

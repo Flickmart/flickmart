@@ -12,8 +12,6 @@ interface AppPresenceProviderProps {
 export function AppPresenceProvider({ children }: AppPresenceProviderProps) {
   const { isSignedIn, userId } = useAuth();
 
-  console.log("Clerk userId", userId);
-  console.log("isSignedIn", isSignedIn);
 
   // Use the Convex Presence Component for app-wide presence
   const presenceState = usePresence(
@@ -22,12 +20,6 @@ export function AppPresenceProvider({ children }: AppPresenceProviderProps) {
     userId || "anonymous"
   );
 
-  // Log presence state for debugging (remove in production)
-  useEffect(() => {
-    if (isSignedIn && userId) {
-      console.log("App presence state:", presenceState);
-    }
-  }, [presenceState, isSignedIn, userId]);
 
   return <>{children}</>;
 }

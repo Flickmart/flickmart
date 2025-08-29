@@ -187,7 +187,6 @@ export default function PostAdForm({
 
       // Show a loading toast for redirection
       toast.info("Redirecting to product page...");
-      console.log("Ad ID:", data);
       router.push(`/product/${data}`);
     },
     onError: (err) => {
