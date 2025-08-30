@@ -45,6 +45,13 @@ export default function WalletPage() {
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
+
+  // Bank account management state
+  const [selectedBankAccountId, setSelectedBankAccountId] =
+    useState<string>("");
+  const [saveNewAccount, setSaveNewAccount] = useState(false);
+  const [useNewAccount, setUseNewAccount] = useState(false);
+
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
 
   // Fetch banks when withdrawal dialog opens
@@ -65,6 +72,11 @@ export default function WalletPage() {
   const transactions = useQuery(
     api.transactions.getByUserId,
     user ? { userId: user._id } : "skip"
+  );
+
+  const bankAccounts = useQuery(
+    api.bankAccounts.getUserBankAccounts,
+    user ? {} : "skip"
   );
 
   const { getToken } = useAuth();
@@ -286,7 +298,7 @@ export default function WalletPage() {
       if (data.status) {
         setRecipientDetails(data.data);
         setAccountName(data.data.account_name);
-        setVerifyDialogOpen(true);
+        toast.success("Account verified successfully!");
       } else {
         setError(data.message || "Failed to verify account");
         toast.error(data.message || "Failed to verify account");
@@ -297,6 +309,11 @@ export default function WalletPage() {
     } finally {
       setIsVerifyingAccount(false);
     }
+  };
+
+  const handleContinueToConfirmation = () => {
+    // Open the verification dialog for confirmation
+    setVerifyDialogOpen(true);
   };
 
   const handleWithdraw = async () => {
@@ -331,22 +348,31 @@ export default function WalletPage() {
       return;
     }
 
-    if (!selectedBank) {
-      setError("Please select a bank.");
-      toast.error("Bank selection required");
+    // Check if using saved account or new account
+    if (!useNewAccount && !selectedBankAccountId) {
+      setError("Please select a bank account or choose to add a new one.");
+      toast.error("Bank account selection required");
       return;
     }
 
-    if (!accountNumber || accountNumber.length !== 10) {
-      setError("Please enter a valid 10-digit account number.");
-      toast.error("Invalid account number");
-      return;
-    }
+    if (useNewAccount) {
+      if (!selectedBank) {
+        setError("Please select a bank.");
+        toast.error("Bank selection required");
+        return;
+      }
 
-    if (!recipientDetails || !accountName) {
-      setError("Please verify your account first.");
-      toast.error("Account verification required");
-      return;
+      if (!accountNumber || accountNumber.length !== 10) {
+        setError("Please enter a valid 10-digit account number.");
+        toast.error("Invalid account number");
+        return;
+      }
+
+      if (!recipientDetails || !accountName) {
+        setError("Please verify your account first.");
+        toast.error("Account verification required");
+        return;
+      }
     }
 
     if (!user) {
@@ -376,9 +402,20 @@ export default function WalletPage() {
           },
           body: JSON.stringify({
             amount,
-            bankCode: selectedBank,
-            accountNumber,
-            accountName: accountName || "Not Verified",
+            ...(useNewAccount
+              ? {
+                  // New account details
+                  bankCode: selectedBank,
+                  accountNumber,
+                  accountName: accountName || "Not Verified",
+                  bankName:
+                    banks.find((b) => b.code === selectedBank)?.name || "",
+                  saveAccount: saveNewAccount,
+                }
+              : {
+                  // Saved account
+                  bankAccountId: selectedBankAccountId,
+                }),
           }),
         }
       );
@@ -391,6 +428,9 @@ export default function WalletPage() {
         setAccountNumber("");
         setAccountName("");
         setRecipientDetails(null);
+        setSelectedBankAccountId("");
+        setSaveNewAccount(false);
+        setUseNewAccount(false);
         setError(null);
         setWithdrawOpen(false);
         setVerifyDialogOpen(false);
@@ -407,7 +447,10 @@ export default function WalletPage() {
   };
 
   const isLoadingData =
-    authLoading || wallet === undefined || transactions === undefined;
+    authLoading ||
+    wallet === undefined ||
+    transactions === undefined ||
+    bankAccounts === undefined;
 
   if (isLoadingData || isLoading) {
     return <WalletPageSkeleton />;
@@ -461,7 +504,15 @@ export default function WalletPage() {
         setAccountName={setAccountName}
         verifyAccount={verifyAccount}
         handleWithdraw={handleWithdraw}
+        handleContinueToConfirmation={handleContinueToConfirmation}
         setVerifyDialogOpen={setVerifyDialogOpen}
+        bankAccounts={bankAccounts || []}
+        selectedBankAccountId={selectedBankAccountId}
+        setSelectedBankAccountId={setSelectedBankAccountId}
+        saveNewAccount={saveNewAccount}
+        setSaveNewAccount={setSaveNewAccount}
+        useNewAccount={useNewAccount}
+        setUseNewAccount={setUseNewAccount}
       />
     </ClientOnly>
   );

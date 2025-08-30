@@ -525,23 +525,32 @@ http.route({
       });
     }
 
-    const { accountNumber, bankCode, amount, accountName } =
-      await request.json();
+    const {
+      bankAccountId,
+      accountNumber,
+      bankCode,
+      amount,
+      accountName,
+      bankName,
+      saveAccount,
+    } = await request.json();
 
-    const missingFields = [];
-    if (!accountNumber) missingFields.push("accountNumber");
-    if (!bankCode) missingFields.push("bankCode");
-    if (!amount) missingFields.push("amount");
-    if (!accountName) missingFields.push("accountName");
-    if (missingFields.length > 0) {
+    // Validate required fields
+    if (!amount) {
+      return new Response(JSON.stringify({ error: "Amount is required" }), {
+        status: 400,
+        headers,
+      });
+    }
+
+    // Either bankAccountId OR account details must be provided
+    if (!bankAccountId && (!accountNumber || !bankCode || !accountName)) {
       return new Response(
         JSON.stringify({
-          error: `Missing fields: ${missingFields.join(", ")}`,
+          error:
+            "Either select a saved account or provide complete account details",
         }),
-        {
-          status: 400,
-          headers,
-        }
+        { status: 400, headers }
       );
     }
 
@@ -601,18 +610,110 @@ http.route({
       );
     }
 
-    let recipientCode = wallet.recipientCode;
-    if (!recipientCode) {
-      // If recipient code does not exist, create a new recipient
+    let recipientCode: string;
+    let finalAccountNumber: string;
+    let finalAccountName: string;
+    let finalBankCode: string;
+    let finalBankName: string;
+    let bankAccountIdToUse: string | null = null;
+
+    if (bankAccountId) {
+      // Using saved bank account
+      const bankAccount = await ctx.runQuery(
+        api.bankAccounts.getBankAccountById,
+        {
+          bankAccountId,
+        }
+      );
+
+      if (!bankAccount) {
+        // Rollback withdrawal
+        await ctx.runMutation(internal.wallet.refundWithdrawal, {
+          walletId: wallet._id,
+          amount: amountInKobo,
+        });
+
+        return new Response(
+          JSON.stringify({ error: "Bank account not found" }),
+          { status: 404, headers }
+        );
+      }
+
+      recipientCode = bankAccount.recipientCode || "";
+      finalAccountNumber = bankAccount.accountNumber;
+      finalAccountName = bankAccount.accountName;
+      finalBankCode = bankAccount.bankCode;
+      finalBankName = bankAccount.bankName;
+      bankAccountIdToUse = bankAccountId;
+
+      // If no recipient code, create one
+      if (!recipientCode) {
+        const recipientBody: any = {
+          type: "nuban",
+          name: finalAccountName,
+          account_number: finalAccountNumber,
+          bank_code: finalBankCode,
+          currency: "NGN",
+        };
+
+        if (wallet.paystackCustomerId) {
+          recipientBody.customer = wallet.paystackCustomerId;
+        }
+
+        const recipientRes = await fetch(
+          "https://api.paystack.co/transferrecipient",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(recipientBody),
+          }
+        );
+
+        const recipientData = await recipientRes.json();
+
+        if (!recipientData.status) {
+          await ctx.runMutation(internal.wallet.refundWithdrawal, {
+            walletId: wallet._id,
+            amount: amountInKobo,
+          });
+
+          return new Response(
+            JSON.stringify({
+              error:
+                "Failed to verify recipient details. Please check your account information.",
+            }),
+            { status: 400, headers }
+          );
+        }
+
+        recipientCode = recipientData.data.recipient_code;
+
+        // Update the saved bank account with recipient code
+        await ctx.runMutation(internal.bankAccounts.updateBankAccount, {
+          bankAccountId,
+          recipientCode,
+          isVerified: true,
+        });
+      }
+    } else {
+      // Using new account details
+      finalAccountNumber = accountNumber!;
+      finalAccountName = accountName!;
+      finalBankCode = bankCode!;
+      finalBankName = bankName || "";
+
+      // Create recipient for new account
       const recipientBody: any = {
         type: "nuban",
-        name: accountName,
-        account_number: accountNumber,
-        bank_code: bankCode,
+        name: finalAccountName,
+        account_number: finalAccountNumber,
+        bank_code: finalBankCode,
         currency: "NGN",
       };
 
-      // Add customer ID if available
       if (wallet.paystackCustomerId) {
         recipientBody.customer = wallet.paystackCustomerId;
       }
@@ -630,10 +731,8 @@ http.route({
       );
 
       const recipientData = await recipientRes.json();
-      console.log(recipientData);
 
       if (!recipientData.status) {
-        // Rollback the withdrawal since recipient creation failed
         await ctx.runMutation(internal.wallet.refundWithdrawal, {
           walletId: wallet._id,
           amount: amountInKobo,
@@ -647,14 +746,26 @@ http.route({
           { status: 400, headers }
         );
       }
+
       recipientCode = recipientData.data.recipient_code;
 
-      // Save the recipient code to the wallet for future use
-      if (recipientCode) {
-        await ctx.runMutation(internal.wallet.updateRecipientCode, {
-          walletId: wallet._id,
-          recipientCode,
-        });
+      // Save account if requested
+      if (saveAccount) {
+        try {
+          bankAccountIdToUse = await ctx.runMutation(
+            api.bankAccounts.createBankAccount,
+            {
+              accountNumber: finalAccountNumber,
+              accountName: finalAccountName,
+              bankCode: finalBankCode,
+              bankName: finalBankName,
+              recipientCode,
+            }
+          );
+        } catch (error) {
+          // Don't fail withdrawal if saving account fails
+          console.error("Failed to save bank account:", error);
+        }
       }
     }
 

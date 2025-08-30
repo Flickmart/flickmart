@@ -46,6 +46,9 @@ export function PushNotificationProvider({
   const savePushSubscription = useMutation(
     api.notifications.savePushSubscription
   );
+  const removePushSubscriptionByEndpoint = useMutation(
+    api.notifications.removePushSubscriptionByEndpoint
+  );
 
   // Check if push notifications are supported
   useEffect(() => {
@@ -88,6 +91,14 @@ export function PushNotificationProvider({
       if (!("serviceWorker" in navigator)) return;
 
       const registration = await navigator.serviceWorker.ready;
+
+      // Check if registration is valid before proceeding
+      if (!registration) {
+        console.error("Service worker registration not available");
+        setIsLoading(false);
+        return;
+      }
+
       const subscription = await registration.pushManager.getSubscription();
 
       setIsSubscribed(!!subscription);
@@ -139,6 +150,11 @@ export function PushNotificationProvider({
       const registration = await navigator.serviceWorker.register("/sw.js");
       await navigator.serviceWorker.ready;
 
+      // Check if registration is valid before proceeding
+      if (!registration) {
+        throw new Error("Service worker registration failed");
+      }
+
       // Subscribe to push notifications
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
@@ -166,12 +182,45 @@ export function PushNotificationProvider({
       if (!("serviceWorker" in navigator)) return false;
 
       const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
 
-      if (subscription) {
-        await subscription.unsubscribe();
+      // Check if registration is valid before proceeding
+      if (!registration) {
+        throw new Error("Service worker registration not available");
       }
 
+      const subscription = await registration.pushManager.getSubscription();
+
+      if (!subscription) {
+        // No subscription exists, but still update state
+        setIsSubscribed(false);
+        return true;
+      }
+
+      // First unsubscribe from the browser
+      const browserUnsubscribed = await subscription.unsubscribe();
+      if (!browserUnsubscribed) {
+        throw new Error("Failed to unsubscribe from browser");
+      }
+
+      // Then remove the subscription record from backend
+      try {
+        await removePushSubscriptionByEndpoint({
+          endpoint: subscription.endpoint,
+        });
+      } catch (backendError) {
+        console.error(
+          "Error removing subscription from backend:",
+          backendError
+        );
+        // Re-throw to let caller handle the error
+        const errorMessage =
+          backendError instanceof Error
+            ? backendError.message
+            : String(backendError);
+        throw new Error(`Backend cleanup failed: ${errorMessage}`);
+      }
+
+      // Only update state after both browser and backend cleanup succeed
       setIsSubscribed(false);
       return true;
     } catch (error) {

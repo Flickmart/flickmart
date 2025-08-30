@@ -49,7 +49,16 @@ interface WalletLayoutProps {
   setAccountName: (name: string) => void;
   verifyAccount: () => void;
   handleWithdraw: () => void;
+  handleContinueToConfirmation: () => void;
   setVerifyDialogOpen: (open: boolean) => void;
+  // Bank account management
+  bankAccounts: any[];
+  selectedBankAccountId: string;
+  setSelectedBankAccountId: (id: string) => void;
+  saveNewAccount: boolean;
+  setSaveNewAccount: (save: boolean) => void;
+  useNewAccount: boolean;
+  setUseNewAccount: (use: boolean) => void;
 }
 
 export default function WalletLayout({
@@ -94,7 +103,15 @@ export default function WalletLayout({
   setAccountName,
   verifyAccount,
   handleWithdraw,
+  handleContinueToConfirmation,
   setVerifyDialogOpen,
+  bankAccounts,
+  selectedBankAccountId,
+  setSelectedBankAccountId,
+  saveNewAccount,
+  setSaveNewAccount,
+  useNewAccount,
+  setUseNewAccount,
 }: WalletLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,9 +158,17 @@ export default function WalletLayout({
               isWithdrawing={isWithdrawing}
               verifyAccount={verifyAccount}
               handleWithdraw={handleWithdraw}
+              handleContinueToConfirmation={handleContinueToConfirmation}
               recipientDetails={recipientDetails}
               verifyDialogOpen={verifyDialogOpen}
               setVerifyDialogOpen={setVerifyDialogOpen}
+              bankAccounts={bankAccounts}
+              selectedBankAccountId={selectedBankAccountId}
+              setSelectedBankAccountId={setSelectedBankAccountId}
+              saveNewAccount={saveNewAccount}
+              setSaveNewAccount={setSaveNewAccount}
+              useNewAccount={useNewAccount}
+              setUseNewAccount={setUseNewAccount}
             />
           </WalletBalance>
         </Card>
@@ -206,9 +231,17 @@ export default function WalletLayout({
                   isWithdrawing={isWithdrawing}
                   verifyAccount={verifyAccount}
                   handleWithdraw={handleWithdraw}
+                  handleContinueToConfirmation={handleContinueToConfirmation}
                   recipientDetails={recipientDetails}
                   verifyDialogOpen={verifyDialogOpen}
                   setVerifyDialogOpen={setVerifyDialogOpen}
+                  bankAccounts={bankAccounts}
+                  selectedBankAccountId={selectedBankAccountId}
+                  setSelectedBankAccountId={setSelectedBankAccountId}
+                  saveNewAccount={saveNewAccount}
+                  setSaveNewAccount={setSaveNewAccount}
+                  useNewAccount={useNewAccount}
+                  setUseNewAccount={setUseNewAccount}
                 />
               </WalletBalance>
 

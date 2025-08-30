@@ -9,7 +9,7 @@ interface WalletActionsProps {
   withdrawOpen: boolean;
   setOpen: (open: boolean) => void;
   setWithdrawOpen: (open: boolean) => void;
-  amount: number;
+  amount: string;
   setAmount: (amount: string) => void;
   error: string | null;
   setError: (error: string | null) => void;
@@ -33,9 +33,18 @@ interface WalletActionsProps {
   isWithdrawing: boolean;
   verifyAccount: () => void;
   handleWithdraw: () => void;
+  handleContinueToConfirmation: () => void;
   recipientDetails: any;
   verifyDialogOpen: boolean;
   setVerifyDialogOpen: (open: boolean) => void;
+  // Bank account management
+  bankAccounts: any[];
+  selectedBankAccountId: string;
+  setSelectedBankAccountId: (id: string) => void;
+  saveNewAccount: boolean;
+  setSaveNewAccount: (save: boolean) => void;
+  useNewAccount: boolean;
+  setUseNewAccount: (use: boolean) => void;
 }
 
 export default function WalletActions({
@@ -69,9 +78,17 @@ export default function WalletActions({
   isWithdrawing,
   verifyAccount,
   handleWithdraw,
+  handleContinueToConfirmation,
   recipientDetails,
   verifyDialogOpen,
   setVerifyDialogOpen,
+  bankAccounts,
+  selectedBankAccountId,
+  setSelectedBankAccountId,
+  saveNewAccount,
+  setSaveNewAccount,
+  useNewAccount,
+  setUseNewAccount,
 }: WalletActionsProps) {
   const buttonHeight = isMobile ? "h-12" : "h-16";
   const buttonTextSize = isMobile ? "text-base" : "text-lg";
@@ -84,7 +101,7 @@ export default function WalletActions({
         user={user}
         open={open}
         setOpen={setOpen}
-        amount={amount}
+        amount={Number(amount)}
         setAmount={setAmount}
         error={error}
         setError={setError}
@@ -103,10 +120,9 @@ export default function WalletActions({
       />
 
       <WithdrawDialog
-        user={user}
         withdrawOpen={withdrawOpen}
         setWithdrawOpen={setWithdrawOpen}
-        amount={amount}
+        amount={Number(amount)}
         setAmount={setAmount}
         error={error}
         setError={setError}
@@ -116,18 +132,26 @@ export default function WalletActions({
         accountNumber={accountNumber}
         setAccountNumber={setAccountNumber}
         accountName={accountName}
-        setAccountName={setAccountName}
         isLoadingBanks={isLoadingBanks}
         isVerifyingAccount={isVerifyingAccount}
         isWithdrawing={isWithdrawing}
         verifyAccount={verifyAccount}
         handleWithdraw={handleWithdraw}
+        handleContinueToConfirmation={handleContinueToConfirmation}
         recipientDetails={recipientDetails}
         verifyDialogOpen={verifyDialogOpen}
         setVerifyDialogOpen={setVerifyDialogOpen}
+        bankAccounts={bankAccounts}
+        selectedBankAccountId={selectedBankAccountId}
+        setSelectedBankAccountId={setSelectedBankAccountId}
+        saveNewAccount={saveNewAccount}
+        setSaveNewAccount={setSaveNewAccount}
+        useNewAccount={useNewAccount}
+        setUseNewAccount={setUseNewAccount}
         buttonHeight={buttonHeight}
         buttonTextSize={buttonTextSize}
         iconSize={iconSize}
+        setAccountName={setAccountName}
         buttonGap={buttonGap}
       />
     </div>

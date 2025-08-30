@@ -205,7 +205,7 @@ export default function DepositDialog({
                     }
 
                     const clampedValue = Math.max(0, parsedValue);
-                    setAmount(clampedValue);
+                    setAmount(String(clampedValue));
                     setError(null);
                   }}
                   type="number"
