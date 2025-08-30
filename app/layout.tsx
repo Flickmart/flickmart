@@ -1,13 +1,12 @@
-
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { Toaster } from '@/components/ui/sonner';
-import 'react-photo-view/dist/react-photo-view.css';
-import { Suspense } from 'react';
-import MobileHeader from '@/components/MobileHeader';
-import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
-import { Providers } from '@/providers/providers';
-
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { Toaster } from "@/components/ui/sonner";
+import "react-photo-view/dist/react-photo-view.css";
+import { Suspense } from "react";
+import MobileHeader from "@/components/MobileHeader";
+import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
+import { Providers } from "@/providers/providers";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,6 +36,7 @@ export default function RootLayout({
       <body className="text relative bg-background">
         <Providers>
           <ServiceWorkerRegistration />
+          <PushNotificationPrompt />
 
           <Suspense fallback={<div>Loading...</div>}>
             <MobileHeader />

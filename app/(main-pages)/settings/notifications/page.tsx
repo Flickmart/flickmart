@@ -1,26 +1,27 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery } from 'convex/react';
-import { ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from "convex/react";
+import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { usePushNotifications } from "@/providers/PushNotificationProvider";
+import { TestPushNotification } from "@/components/TestPushNotification";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
-import { Switch } from '@/components/ui/switch';
-import { api } from '@/convex/_generated/api';
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
+import { Switch } from "@/components/ui/switch";
+import { api } from "@/convex/_generated/api";
 
 export default function NotificationsPage() {
-  const [pushNotifications, setPushNotifications] = useState(true);
   const [notifications, setNotifications] = useState(true);
-  const { isMobile, openMobile, setOpenMobile } = useSidebar();
+  const { isMobile } = useSidebar();
   const router = useRouter();
   const user = useQuery(api.users.current);
   const [emailNotification, setEmailNotification] = useState(
@@ -28,6 +29,15 @@ export default function NotificationsPage() {
   );
   const updateNotifications = useMutation(api.users.updateUser);
 
+  // Custom push notifications integration
+  const {
+    isSupported,
+    permission,
+    isSubscribed,
+    promptForPermission,
+    subscribe,
+    unsubscribe,
+  } = usePushNotifications();
 
   return (
     <div className="flex w-full flex-col">
@@ -92,14 +102,47 @@ export default function NotificationsPage() {
               <p className="font-medium">Push Notifications</p>
               <p className="text-muted-foreground text-sm">
                 Receive alerts on your device
+                {!isSupported && (
+                  <span className="block text-red-500 text-xs mt-1">
+                    Not supported in this browser
+                  </span>
+                )}
+                {permission === "denied" && (
+                  <span className="block text-red-500 text-xs mt-1">
+                    Notifications blocked. Enable in browser settings.
+                  </span>
+                )}
+                {permission === "default" && (
+                  <span className="block text-yellow-600 text-xs mt-1">
+                    Click to enable notifications
+                  </span>
+                )}
               </p>
             </div>
             <Switch
-              checked={pushNotifications}
-              onCheckedChange={setPushNotifications}
+              checked={isSubscribed}
+              disabled={!isSupported || permission === "denied"}
+              onCheckedChange={async (checked) => {
+                try {
+                  if (checked) {
+                    if (permission === "default") {
+                      await promptForPermission();
+                    } else {
+                      await subscribe();
+                    }
+                  } else {
+                    await unsubscribe();
+                  }
+                } catch (error) {
+                  console.error("Error toggling push notifications:", error);
+                }
+              }}
             />
           </div>
         </div>
+
+        {/* Test Notification Component */}
+        <TestPushNotification />
       </div>
     </div>
   );
