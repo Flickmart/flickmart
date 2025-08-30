@@ -9,7 +9,7 @@ interface WalletActionsProps {
   withdrawOpen: boolean;
   setOpen: (open: boolean) => void;
   setWithdrawOpen: (open: boolean) => void;
-  amount: string;
+  amount: number | string;
   setAmount: (amount: string) => void;
   error: string | null;
   setError: (error: string | null) => void;
