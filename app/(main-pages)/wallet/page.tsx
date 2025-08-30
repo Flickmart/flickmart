@@ -123,7 +123,6 @@ export default function WalletPage() {
   };
 
   const handlePaystackSuccess = async (response: { reference: string }) => {
-    console.log(response);
     try {
       // Get the auth token from Clerk
       const token = await getToken({ template: "convex" });
@@ -147,7 +146,6 @@ export default function WalletPage() {
         }
       );
       const data = await result.json();
-      console.log("Verification response:", data);
 
       if (data.status) {
         // Check the actual transaction status

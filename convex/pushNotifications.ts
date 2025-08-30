@@ -37,12 +37,8 @@ export const sendPushNotification = action({
       userId: args.userId,
     });
 
-    if (!user?.allowNotifications) {
-      console.log(' User has disabled notifications:', args.userId);
-      return false;
-    }
+   
 
-    console.log('User allows notifications:', args.userId);
 
     const payload = JSON.stringify({
       title: args.title,
