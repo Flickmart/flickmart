@@ -7,6 +7,8 @@ import MobileHeader from "@/components/MobileHeader";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import { Providers } from "@/providers/providers";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -37,7 +39,8 @@ export default function RootLayout({
         <Providers>
           <ServiceWorkerRegistration />
           <PushNotificationPrompt />
-
+          <Analytics />
+          <SpeedInsights />
           <Suspense fallback={<div>Loading...</div>}>
             <MobileHeader />
           </Suspense>
