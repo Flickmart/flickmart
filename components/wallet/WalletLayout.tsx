@@ -1,13 +1,13 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { type Doc } from '@/convex/_generated/dataModel';
-import WalletHeader from './WalletHeader';
-import WalletBalance from './WalletBalance';
-import WalletActions from './WalletActions';
-import TransactionHistory from './TransactionHistory';
-import AccountVerificationDialog from './AccountVerificationDialog';
+import { Card, CardContent } from "@/components/ui/card";
+import { type Doc } from "@/convex/_generated/dataModel";
+import WalletHeader from "./WalletHeader";
+import WalletBalance from "./WalletBalance";
+import WalletActions from "./WalletActions";
+import TransactionHistory from "./TransactionHistory";
+import AccountVerificationDialog from "./AccountVerificationDialog";
 
 interface WalletLayoutProps {
-  user: Doc<'users'>;
+  user: Doc<"users">;
   balance: number;
   showBalance: boolean;
   isRefreshingBalance: boolean;
@@ -37,7 +37,7 @@ interface WalletLayoutProps {
   handleRefreshTransactions: () => void;
   setOpen: (open: boolean) => void;
   setWithdrawOpen: (open: boolean) => void;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: string) => void;
   setError: (error: string | null) => void;
   setPaystackReference: (reference: string) => void;
   setIsPaystackModalOpen: (open: boolean) => void;
@@ -49,7 +49,16 @@ interface WalletLayoutProps {
   setAccountName: (name: string) => void;
   verifyAccount: () => void;
   handleWithdraw: () => void;
+  handleContinueToConfirmation: () => void;
   setVerifyDialogOpen: (open: boolean) => void;
+  // Bank account management
+  bankAccounts: any[];
+  selectedBankAccountId: string;
+  setSelectedBankAccountId: (id: string) => void;
+  saveNewAccount: boolean;
+  setSaveNewAccount: (save: boolean) => void;
+  useNewAccount: boolean;
+  setUseNewAccount: (use: boolean) => void;
 }
 
 export default function WalletLayout({
@@ -94,7 +103,15 @@ export default function WalletLayout({
   setAccountName,
   verifyAccount,
   handleWithdraw,
+  handleContinueToConfirmation,
   setVerifyDialogOpen,
+  bankAccounts,
+  selectedBankAccountId,
+  setSelectedBankAccountId,
+  saveNewAccount,
+  setSaveNewAccount,
+  useNewAccount,
+  setUseNewAccount,
 }: WalletLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50">
@@ -141,10 +158,17 @@ export default function WalletLayout({
               isWithdrawing={isWithdrawing}
               verifyAccount={verifyAccount}
               handleWithdraw={handleWithdraw}
+              handleContinueToConfirmation={handleContinueToConfirmation}
               recipientDetails={recipientDetails}
               verifyDialogOpen={verifyDialogOpen}
               setVerifyDialogOpen={setVerifyDialogOpen}
-
+              bankAccounts={bankAccounts}
+              selectedBankAccountId={selectedBankAccountId}
+              setSelectedBankAccountId={setSelectedBankAccountId}
+              saveNewAccount={saveNewAccount}
+              setSaveNewAccount={setSaveNewAccount}
+              useNewAccount={useNewAccount}
+              setUseNewAccount={setUseNewAccount}
             />
           </WalletBalance>
         </Card>
@@ -207,11 +231,17 @@ export default function WalletLayout({
                   isWithdrawing={isWithdrawing}
                   verifyAccount={verifyAccount}
                   handleWithdraw={handleWithdraw}
+                  handleContinueToConfirmation={handleContinueToConfirmation}
                   recipientDetails={recipientDetails}
                   verifyDialogOpen={verifyDialogOpen}
                   setVerifyDialogOpen={setVerifyDialogOpen}
-            
-
+                  bankAccounts={bankAccounts}
+                  selectedBankAccountId={selectedBankAccountId}
+                  setSelectedBankAccountId={setSelectedBankAccountId}
+                  saveNewAccount={saveNewAccount}
+                  setSaveNewAccount={setSaveNewAccount}
+                  useNewAccount={useNewAccount}
+                  setUseNewAccount={setUseNewAccount}
                 />
               </WalletBalance>
 
