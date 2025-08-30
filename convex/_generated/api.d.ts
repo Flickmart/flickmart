@@ -9,6 +9,7 @@
  */
 
 import type * as actions from "../actions.js";
+import type * as bankAccounts from "../bankAccounts.js";
 import type * as categories from "../categories.js";
 import type * as chat from "../chat.js";
 import type * as comments from "../comments.js";
@@ -44,6 +45,7 @@ import type {
  */
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
+  bankAccounts: typeof bankAccounts;
   categories: typeof categories;
   chat: typeof chat;
   comments: typeof comments;
