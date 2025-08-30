@@ -1,16 +1,16 @@
-import { type Doc } from '@/convex/_generated/dataModel';
-import DepositDialog from './DepositDialog';
-import WithdrawDialog from './WithdrawDialog';
+import { type Doc } from "@/convex/_generated/dataModel";
+import DepositDialog from "./DepositDialog";
+import WithdrawDialog from "./WithdrawDialog";
 
 interface WalletActionsProps {
-  user: Doc<'users'>;
+  user: Doc<"users">;
   isMobile?: boolean;
   open: boolean;
   withdrawOpen: boolean;
   setOpen: (open: boolean) => void;
   setWithdrawOpen: (open: boolean) => void;
   amount: number;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: string) => void;
   error: string | null;
   setError: (error: string | null) => void;
   isInitializing: boolean;
@@ -73,10 +73,10 @@ export default function WalletActions({
   verifyDialogOpen,
   setVerifyDialogOpen,
 }: WalletActionsProps) {
-  const buttonHeight = isMobile ? 'h-12' : 'h-16';
-  const buttonTextSize = isMobile ? 'text-base' : 'text-lg';
-  const iconSize = isMobile ? 'h-5 w-5' : 'h-6 w-6';
-  const buttonGap = isMobile ? 'gap-2' : 'gap-3';
+  const buttonHeight = isMobile ? "h-12" : "h-16";
+  const buttonTextSize = isMobile ? "text-base" : "text-lg";
+  const iconSize = isMobile ? "h-5 w-5" : "h-6 w-6";
+  const buttonGap = isMobile ? "gap-2" : "gap-3";
 
   return (
     <div className="grid grid-cols-2 gap-4">

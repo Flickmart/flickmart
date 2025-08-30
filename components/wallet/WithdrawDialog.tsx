@@ -1,5 +1,13 @@
-import { ArrowUpFromLine, RefreshCw, Banknote, Building2, CreditCard, AlertCircle, CheckCircle2, X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import {
+  ArrowUpFromLine,
+  RefreshCw,
+  Building2,
+  CreditCard,
+  AlertCircle,
+  CheckCircle2,
+  X,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogClose,
@@ -9,18 +17,18 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { type Doc } from '@/convex/_generated/dataModel';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { type Doc } from "@/convex/_generated/dataModel";
+import { cn } from "@/lib/utils";
 
 interface WithdrawDialogProps {
-  user: Doc<'users'>;
+  user: Doc<"users">;
   withdrawOpen: boolean;
   setWithdrawOpen: (open: boolean) => void;
   amount: number;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: string) => void;
   error: string | null;
   setError: (error: string | null) => void;
   banks: any[];
@@ -73,19 +81,25 @@ export default function WithdrawDialog({
   buttonGap,
 }: WithdrawDialogProps) {
   const isFormValid = amount > 0 && selectedBank && accountNumber.length === 10;
-  const selectedBankName = banks.find(bank => bank.code === selectedBank)?.name;
+  const selectedBankName = banks.find(
+    (bank) => bank.code === selectedBank
+  )?.name;
 
   return (
     <Dialog onOpenChange={setWithdrawOpen} open={withdrawOpen}>
       <DialogTrigger asChild>
-        <Button className={`flex w-full ${buttonHeight} items-center ${buttonGap} rounded-full bg-orange-500 ${buttonTextSize} text-white hover:bg-orange-600`}>
+        <Button
+          className={`flex w-full ${buttonHeight} items-center ${buttonGap} rounded-full bg-orange-500 ${buttonTextSize} text-white hover:bg-orange-600`}
+        >
           <ArrowUpFromLine className={iconSize} />
           Withdraw
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader className="text-center pb-4">
-          <DialogTitle className="text-lg font-semibold sm:text-xl">Withdraw Money</DialogTitle>
+          <DialogTitle className="text-lg font-semibold sm:text-xl">
+            Withdraw Money
+          </DialogTitle>
           <DialogDescription className="text-sm text-gray-600">
             Transfer funds from your wallet to your bank account securely
           </DialogDescription>
@@ -97,7 +111,9 @@ export default function WithdrawDialog({
               <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-red-800">Withdrawal Error</span>
+                  <span className="text-sm font-medium text-red-800">
+                    Withdrawal Error
+                  </span>
                   <button
                     type="button"
                     onClick={() => setError(null)}
@@ -106,9 +122,7 @@ export default function WithdrawDialog({
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-red-700 break-words">
-                  {error}
-                </p>
+                <p className="mt-1 text-sm text-red-700 break-words">{error}</p>
                 <div className="mt-2 text-xs text-red-600 space-y-1">
                   <p>Please check the following:</p>
                   <ul className="list-disc list-inside ml-2 space-y-0.5">
@@ -116,7 +130,9 @@ export default function WithdrawDialog({
                     <li>You have sufficient balance</li>
                     <li>Your bank details are valid</li>
                   </ul>
-                  <p className="mt-1">If the problem persists, contact support.</p>
+                  <p className="mt-1">
+                    If the problem persists, contact support.
+                  </p>
                 </div>
               </div>
             </div>
@@ -126,18 +142,23 @@ export default function WithdrawDialog({
         <div className="space-y-4 sm:space-y-6">
           {/* Amount Section */}
           <div className="space-y-2 sm:space-y-3">
-            <Label htmlFor="withdraw-amount" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="withdraw-amount"
+              className="text-sm font-medium text-gray-700"
+            >
               Amount to Withdraw
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₦</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                ₦
+              </span>
               <Input
                 id="withdraw-amount"
                 name="withdraw-amount"
                 className="pl-8 text-base font-semibold sm:text-lg"
                 placeholder="0.00"
                 onChange={(e) => {
-                  setAmount(Number(e.target.value));
+                  setAmount(e.target.value);
                   setError(null);
                 }}
                 type="number"
@@ -154,13 +175,18 @@ export default function WithdrawDialog({
 
           {/* Bank Selection */}
           <div className="space-y-2 sm:space-y-3">
-            <Label htmlFor="bank-select" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="bank-select"
+              className="text-sm font-medium text-gray-700"
+            >
               Select Bank
             </Label>
             {isLoadingBanks ? (
               <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4">
                 <RefreshCw className="h-4 w-4 animate-spin text-orange-500 sm:h-5 sm:w-5" />
-                <span className="ml-2 text-sm text-gray-600 sm:ml-3">Loading banks...</span>
+                <span className="ml-2 text-sm text-gray-600 sm:ml-3">
+                  Loading banks...
+                </span>
               </div>
             ) : (
               <div className="relative">
@@ -187,7 +213,10 @@ export default function WithdrawDialog({
 
           {/* Account Number */}
           <div className="space-y-2 sm:space-y-3">
-            <Label htmlFor="account-number" className="text-sm font-medium text-gray-700">
+            <Label
+              htmlFor="account-number"
+              className="text-sm font-medium text-gray-700"
+            >
               Account Number
             </Label>
             <div className="relative">
@@ -199,7 +228,7 @@ export default function WithdrawDialog({
                 className="pl-10"
                 placeholder="Enter 10-digit account number"
                 onChange={(e) => {
-                  setAccountNumber(e.target.value.replace(/\D/g, ''));
+                  setAccountNumber(e.target.value.replace(/\D/g, ""));
                   setError(null);
                 }}
                 type="text"
@@ -224,10 +253,13 @@ export default function WithdrawDialog({
             <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
               <div className="flex items-center gap-2">
                 <CheckCircle2 className="h-4 w-4 text-green-600" />
-                <span className="text-sm font-medium text-green-800">Account Verified</span>
+                <span className="text-sm font-medium text-green-800">
+                  Account Verified
+                </span>
               </div>
               <p className="mt-1 text-sm text-green-700">
-                Account Name: <span className="font-semibold">{accountName}</span>
+                Account Name:{" "}
+                <span className="font-semibold">{accountName}</span>
               </p>
             </div>
           )}
@@ -239,12 +271,12 @@ export default function WithdrawDialog({
               Cancel
             </Button>
           </DialogClose>
-          
+
           <Button
             className={cn(
               "flex items-center justify-center gap-2 w-full sm:w-auto",
-              isFormValid 
-                ? "bg-orange-500 text-white hover:bg-orange-600" 
+              isFormValid
+                ? "bg-orange-500 text-white hover:bg-orange-600"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             )}
             disabled={!isFormValid || isVerifyingAccount}

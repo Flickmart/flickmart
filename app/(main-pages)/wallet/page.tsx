@@ -18,6 +18,18 @@ export default function WalletPage() {
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [amount, setAmount] = useState(0);
+
+  // Helper function to validate and format amount
+  const validateAndSetAmount = (value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      // Round to 2 decimal places to prevent precision issues
+      const roundedValue = Math.round(numValue * 100) / 100;
+      setAmount(roundedValue);
+    } else if (value === "" || value === "0") {
+      setAmount(0);
+    }
+  };
   const [error, setError] = useState<string | null>("");
   const [open, setOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
@@ -288,9 +300,34 @@ export default function WalletPage() {
   };
 
   const handleWithdraw = async () => {
+    const MIN_WITHDRAWAL = 100; // ₦100 minimum withdrawal
+    const MAX_WITHDRAWAL = 1000000; // ₦1M maximum withdrawal
+
     if (amount <= 0) {
       setError("Please enter a valid amount.");
       toast.error("Amount invalid");
+      return;
+    }
+
+    if (amount < MIN_WITHDRAWAL) {
+      setError(
+        `Minimum withdrawal amount is ₦${MIN_WITHDRAWAL.toLocaleString()}.`
+      );
+      toast.error(`Minimum withdrawal is ₦${MIN_WITHDRAWAL.toLocaleString()}`);
+      return;
+    }
+
+    if (amount > MAX_WITHDRAWAL) {
+      setError(
+        `Maximum withdrawal amount is ₦${MAX_WITHDRAWAL.toLocaleString()}.`
+      );
+      toast.error(`Maximum withdrawal is ₦${MAX_WITHDRAWAL.toLocaleString()}`);
+      return;
+    }
+
+    if (amount > balance) {
+      setError("Insufficient funds in your wallet.");
+      toast.error("Insufficient funds");
       return;
     }
 
@@ -303,6 +340,12 @@ export default function WalletPage() {
     if (!accountNumber || accountNumber.length !== 10) {
       setError("Please enter a valid 10-digit account number.");
       toast.error("Invalid account number");
+      return;
+    }
+
+    if (!recipientDetails || !accountName) {
+      setError("Please verify your account first.");
+      toast.error("Account verification required");
       return;
     }
 
@@ -347,7 +390,10 @@ export default function WalletPage() {
         setSelectedBank("");
         setAccountNumber("");
         setAccountName("");
+        setRecipientDetails(null);
+        setError(null);
         setWithdrawOpen(false);
+        setVerifyDialogOpen(false);
       } else {
         setError(data.message || "Failed to process withdrawal.");
         toast.error(data.message || "Failed to process withdrawal.");
@@ -403,7 +449,7 @@ export default function WalletPage() {
         handleRefreshTransactions={handleRefreshTransactions}
         setOpen={setOpen}
         setWithdrawOpen={setWithdrawOpen}
-        setAmount={setAmount}
+        setAmount={validateAndSetAmount}
         setError={setError}
         setPaystackReference={setPaystackReference}
         setIsPaystackModalOpen={setIsPaystackModalOpen}

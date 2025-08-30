@@ -60,7 +60,7 @@ interface DepositDialogProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   amount: number;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: string) => void;
   error: string | null;
   setError: (error: string | null) => void;
   isInitializing: boolean;
@@ -112,8 +112,8 @@ export default function DepositDialog({
     return null;
   }
 
-    const MAX_AMOUNT = 10000000; // 10 million Naira
-    const roundedAmount = Math.round(amount * 100) / 100; // Round to 2 decimal places
+  const MAX_AMOUNT = 10000000; // 10 million Naira
+  const roundedAmount = Math.round(amount * 100) / 100; // Round to 2 decimal places
 
   const paystackConfig: PaystackConfig = {
     email: user.email,
@@ -198,12 +198,12 @@ export default function DepositDialog({
                   placeholder="0.00"
                   onChange={(e) => {
                     const parsedValue = parseFloat(e.target.value);
-                    
+
                     if (!isFinite(parsedValue)) {
                       setError("Please enter a valid amount");
                       return;
                     }
-                    
+
                     const clampedValue = Math.max(0, parsedValue);
                     setAmount(clampedValue);
                     setError(null);

@@ -1,13 +1,13 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { type Doc } from '@/convex/_generated/dataModel';
-import WalletHeader from './WalletHeader';
-import WalletBalance from './WalletBalance';
-import WalletActions from './WalletActions';
-import TransactionHistory from './TransactionHistory';
-import AccountVerificationDialog from './AccountVerificationDialog';
+import { Card, CardContent } from "@/components/ui/card";
+import { type Doc } from "@/convex/_generated/dataModel";
+import WalletHeader from "./WalletHeader";
+import WalletBalance from "./WalletBalance";
+import WalletActions from "./WalletActions";
+import TransactionHistory from "./TransactionHistory";
+import AccountVerificationDialog from "./AccountVerificationDialog";
 
 interface WalletLayoutProps {
-  user: Doc<'users'>;
+  user: Doc<"users">;
   balance: number;
   showBalance: boolean;
   isRefreshingBalance: boolean;
@@ -37,7 +37,7 @@ interface WalletLayoutProps {
   handleRefreshTransactions: () => void;
   setOpen: (open: boolean) => void;
   setWithdrawOpen: (open: boolean) => void;
-  setAmount: (amount: number) => void;
+  setAmount: (amount: string) => void;
   setError: (error: string | null) => void;
   setPaystackReference: (reference: string) => void;
   setIsPaystackModalOpen: (open: boolean) => void;
@@ -144,7 +144,6 @@ export default function WalletLayout({
               recipientDetails={recipientDetails}
               verifyDialogOpen={verifyDialogOpen}
               setVerifyDialogOpen={setVerifyDialogOpen}
-
             />
           </WalletBalance>
         </Card>
@@ -210,8 +209,6 @@ export default function WalletLayout({
                   recipientDetails={recipientDetails}
                   verifyDialogOpen={verifyDialogOpen}
                   setVerifyDialogOpen={setVerifyDialogOpen}
-            
-
                 />
               </WalletBalance>
 
