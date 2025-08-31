@@ -38,7 +38,7 @@ export const getByUserId = query({
 
       if (!user) {
         throw new ConvexError({
-          message: "User not found",
+          message: "User not Found",
           code: "USER_NOT_FOUND",
         });
       }
