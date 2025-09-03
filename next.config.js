@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const { withBotId } = require('botid/next/config');
 const { withSentryConfig } = require('@sentry/nextjs');
+const withPWA = require("next-pwa")({
+  dest: 'public'
+})
 
 const baseConfig = {
   reactStrictMode: true,
@@ -70,3 +73,7 @@ if (!process.env.TURBOPACK) {
 }
 
 module.exports = finalConfig;
+
+module.exports = withPWA({
+  // next.js config
+})
