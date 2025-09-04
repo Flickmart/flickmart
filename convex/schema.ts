@@ -399,10 +399,10 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
-    endpoint: v.optional(v.string()), // <-- add this
+    // Removed duplicate endpoint field
     isActive: v.optional(v.boolean()),
-  }).index("by_user", ["userId"])
+  })
+    .index("by_user", ["userId"])
     .index("by_endpoint", ["endpoint"])
     .index("by_user_endpoint", ["userId", "endpoint"]),
-  }).index("by_user", ["userId"]),
 });
