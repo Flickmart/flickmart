@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import type { Id } from "@/convex/_generated/dataModel";
 import { cn } from "@/lib/utils";
 import MobileNav from "../MobileNav";
+import { SidebarSkeleton } from "./ChatSkeleton";
 
 interface ChatSidebarProps {
   sidebarOpen: boolean;
@@ -16,16 +17,18 @@ interface ChatSidebarProps {
   activeChat: Id<"conversations"> | null;
   setActiveChat: (chatId: Id<"conversations">) => void;
   setSidebarOpen: (open: boolean) => void;
-  conversations: Array<{
-    id: Id<"conversations">;
-    name: string;
-    imageUrl: string;
-    lastMessage: string;
-    containsImage: boolean;
-    time: string;
-    unread: number;
-    archived: boolean;
-  }>;
+  conversations:
+    | Array<{
+        id: Id<"conversations">;
+        name: string;
+        imageUrl: string;
+        lastMessage: string;
+        containsImage: boolean;
+        time: string;
+        unread: number;
+        archived: boolean;
+      }>
+    | undefined;
 }
 
 export default function ChatSidebar({
@@ -46,10 +49,12 @@ export default function ChatSidebar({
     | undefined;
 
   // Count total unread messages
-  const totalUnread = conversations.reduce((sum, chat) => sum + chat.unread, 0);
+  const totalUnread =
+    conversations?.reduce((sum, chat) => sum + chat.unread, 0) || 0;
 
   // Count archived conversations
-  const archivedCount = conversations.filter((chat) => chat.archived).length;
+  const archivedCount =
+    conversations?.filter((chat) => chat.archived).length || 0;
 
   // Create a ref for the search input
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -148,74 +153,79 @@ export default function ChatSidebar({
       </div>
 
       {/* Chat List */}
-      <div className="mt-4 overflow-y-auto">
-        {conversations.length === 0 ? (
-          <div className="py-4 px-3 text-center text-gray-500">
-            No conversations found
-          </div>
-        ) : (
-          <div>
-            {conversations.map((chat) => (
-              <div
-                className={cn(
-                  "flex cursor-pointer items-center border-gray-200 border-b py-3 px-3 hover:bg-gray-100",
-                  currentConversationId === chat.id && "bg-orange-50"
-                )}
-                key={chat.id}
-                onClick={() => handleChatSelect(chat.id)}
-              >
-                <Avatar className="size-12">
-                  <AvatarImage alt={chat.name} src={chat.imageUrl} />
-                  <AvatarFallback className="bg-flickmart text-white">
-                    {chat?.name?.charAt(0) || "?"}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="ml-3 flex-1 overflow">
-                  <div className="!leading-normal flex items-center justify-between">
-                    <h3
-                      className={cn(
-                        "truncate font-medium mb-[3px]",
-                        chat.unread > 0 && "font-semibold"
+      {!conversations ? (
+        // Check if conversations is undefined and display skeleton if true
+        <SidebarSkeleton />
+      ) : (
+        <div className="mt-4 overflow-y-auto">
+          {conversations?.length === 0 ? (
+            <div className="py-4 px-3 text-center text-gray-500">
+              No conversations found
+            </div>
+          ) : (
+            <div>
+              {conversations?.map((chat) => (
+                <div
+                  className={cn(
+                    "flex cursor-pointer items-center border-gray-200 border-b py-3 px-3 hover:bg-gray-100",
+                    currentConversationId === chat.id && "bg-orange-50"
+                  )}
+                  key={chat.id}
+                  onClick={() => handleChatSelect(chat.id)}
+                >
+                  <Avatar className="size-12">
+                    <AvatarImage alt={chat.name} src={chat.imageUrl} />
+                    <AvatarFallback className="bg-flickmart text-white">
+                      {chat?.name?.charAt(0) || "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="ml-3 flex-1 overflow">
+                    <div className="!leading-normal flex items-center justify-between">
+                      <h3
+                        className={cn(
+                          "truncate font-medium mb-[3px]",
+                          chat.unread > 0 && "font-semibold"
+                        )}
+                      >
+                        {chat.name}
+                        {chat.archived && (
+                          <Archive className="ml-1 inline h-3 w-3 text-gray-400" />
+                        )}
+                      </h3>
+                      <span className="text-gray-500 text-xs">{chat.time}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <p
+                        className={cn(
+                          "flex items-center gap-x-1 truncate text-sm",
+                          chat.unread > 0
+                            ? "font-medium text-gray-800"
+                            : "text-gray-600"
+                        )}
+                      >
+                        {chat.containsImage && <Image className="h-4 w-4" />}
+                        {chat.lastMessage.length > 20
+                          ? chat.lastMessage.substring(0, 40) + "..."
+                          : chat.lastMessage}
+                      </p>
+                      {chat.unread > 0 && (
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs">
+                          {chat.unread}
+                        </span>
                       )}
-                    >
-                      {chat.name}
-                      {chat.archived && (
-                        <Archive className="ml-1 inline h-3 w-3 text-gray-400" />
-                      )}
-                    </h3>
-                    <span className="text-gray-500 text-xs">{chat.time}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <p
-                      className={cn(
-                        "flex items-center gap-x-1 truncate text-sm",
-                        chat.unread > 0
-                          ? "font-medium text-gray-800"
-                          : "text-gray-600"
-                      )}
-                    >
-                      {chat.containsImage && <Image className="h-4 w-4" />}
-                      {chat.lastMessage.length > 20
-                        ? chat.lastMessage.substring(0, 40) + "..."
-                        : chat.lastMessage}
-                    </p>
-                    {chat.unread > 0 && (
-                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-500 text-white text-xs">
-                        {chat.unread}
-                      </span>
-                    )}
+                    </div>
                   </div>
                 </div>
+              ))}
+              <div className="mt-2 text-center text-gray-700 text-xs">
+                Your dms on flickmart are personal
               </div>
-            ))}
-            <div className="mt-2 text-center text-gray-700 text-xs">
-              Your dms on flickmart are personal
+              {/* Extra spacing at bottom for better scrolling */}
+              <div className="h-32" />
             </div>
-            {/* Extra spacing at bottom for better scrolling */}
-            <div className="h-32" />
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </section>
   );
 
