@@ -1,48 +1,48 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery } from 'convex/react';
-import { Wallet } from 'lucide-react';
-import Link from 'next/link';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { toast } from 'sonner';
-import ChatHeader from '@/components/chats/chat-header';
-import ChatInput from '@/components/chats/chat-input';
-import ChatMessages from '@/components/chats/chat-messages';
-import UserProfile from '@/components/chats/user-profile';
-import Loader from '@/components/multipage/Loader';
-import { Button } from '@/components/ui/button';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useAuthUser } from '@/hooks/useAuthUser';
-import { useUploadThing } from '@/utils/uploadthing';
+import { useMutation, useQuery } from "convex/react";
+import { Wallet } from "lucide-react";
+import Link from "next/link";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "sonner";
+import ChatHeader from "@/components/chats/chat-header";
+import ChatInput from "@/components/chats/chat-input";
+import ChatMessages from "@/components/chats/chat-messages";
+import UserProfile from "@/components/chats/user-profile";
+import Loader from "@/components/multipage/Loader";
+import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { useUploadThing } from "@/utils/uploadthing";
 
 interface Message {
-  _id: Id<'message'>;
-  senderId: Id<'users'>;
+  _id: Id<"message">;
+  senderId: Id<"users">;
   content: string;
-  conversationId: Id<'conversations'>;
+  conversationId: Id<"conversations">;
   _creationTime: number;
-  readByUsers?: Id<'users'>[];
+  readByUsers?: Id<"users">[];
   images?: string[];
-  type?: 'text' | 'product' | 'image' | 'transfer';
+  type?: "text" | "product" | "image" | "transfer";
   product?: {
     title: string;
     price: number;
     image: string;
   };
   // Transfer-specific fields
-  orderId?: Id<'orders'>;
+  orderId?: Id<"orders">;
   transferAmount?: number;
   currency?: string;
   order?: any;
 }
 
 export default function ConversationPage() {
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const { startUpload, isUploading } = useUploadThing('imageUploader');
+  const { startUpload, isUploading } = useUploadThing("imageUploader");
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -50,11 +50,11 @@ export default function ConversationPage() {
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [processedProductId, setProcessedProductId] =
-    useState<Id<'product'> | null>(null);
+    useState<Id<"product"> | null>(null);
 
-  const conversationId = params?.conversationId as Id<'conversations'>;
-  const vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
-  const productId = searchParams?.get('productId') as Id<'product'> | null;
+  const conversationId = params?.conversationId as Id<"conversations">;
+  const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
+  const productId = searchParams?.get("productId") as Id<"product"> | null;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -70,13 +70,13 @@ export default function ConversationPage() {
   // Fetch messages for active conversation
   const messages = useQuery(
     api.chat.getMessages,
-    conversationId ? { conversationId } : 'skip'
+    conversationId ? { conversationId } : "skip"
   );
 
   // Fetch conversation details
   const conversation = useQuery(
     api.chat.getConversation,
-    conversationId ? { conversationId } : 'skip'
+    conversationId ? { conversationId } : "skip"
   );
 
   // Get the other user's ID
@@ -90,7 +90,7 @@ export default function ConversationPage() {
   // Fetch other user's data
   const otherUser = useQuery(
     api.users.getUserById,
-    otherUserId ? { userId: otherUserId } : 'skip'
+    otherUserId ? { userId: otherUserId } : "skip"
   );
 
   // Mutation to send a message
@@ -99,25 +99,25 @@ export default function ConversationPage() {
   // Get typing status for the active conversation
   const conversationTypingStatus = useQuery(
     api.presence.getConversationTypingStatus,
-    conversationId ? { conversationId } : 'skip'
+    conversationId ? { conversationId } : "skip"
   );
 
   // Fetch product data if productId is present
   const product = useQuery(
     api.product.getById,
-    productId ? { productId } : 'skip'
+    productId ? { productId } : "skip"
   );
 
   // Function to send initial product message
   const sendInitialProductMessage = useCallback(
-    async (currentProductId: Id<'product'>) => {
+    async (currentProductId: Id<"product">) => {
       if (
         !user?._id ||
         processedProductId === currentProductId ||
         !product ||
         !conversationId
       ) {
-        console.log('Skipping product message send:', {
+        console.log("Skipping product message send:", {
           hasUser: !!user?._id,
           alreadyProcessed: processedProductId === currentProductId,
           hasProduct: !!product,
@@ -127,7 +127,7 @@ export default function ConversationPage() {
       }
 
       try {
-        console.log('Sending product message:', {
+        console.log("Sending product message:", {
           productId: currentProductId,
           productTitle: product.title,
           conversationId,
@@ -136,7 +136,7 @@ export default function ConversationPage() {
         await sendMessage({
           senderId: user._id,
           conversationId,
-          type: 'product',
+          type: "product",
           productId: currentProductId,
           price: product?.price,
           title: product?.title,
@@ -144,10 +144,10 @@ export default function ConversationPage() {
           content: `Hey i'm interested in this product, ${product?.title} is it still available?`,
         });
         setProcessedProductId(currentProductId);
-        console.log('Product message sent successfully');
+        console.log("Product message sent successfully");
       } catch (error) {
-        console.error('Failed to send initial product message:', error);
-        toast.error('Failed to send message');
+        console.error("Failed to send initial product message:", error);
+        toast.error("Failed to send message");
       }
     },
     [user?._id, processedProductId, sendMessage, product, conversationId]
@@ -156,7 +156,7 @@ export default function ConversationPage() {
   // Handle product message when productId is present
   useEffect(() => {
     if (productId && product && processedProductId !== productId) {
-      console.log('Sending initial product message for product:', productId);
+      console.log("Sending initial product message for product:", productId);
       sendInitialProductMessage(productId);
       // Clean URL
       router.replace(`/chat/${conversationId}`);
@@ -180,7 +180,7 @@ export default function ConversationPage() {
             conversationId,
           });
         } catch (error) {
-          console.error('Failed to mark messages as read:', error);
+          console.error("Failed to mark messages as read:", error);
         }
       }
     };
@@ -189,7 +189,7 @@ export default function ConversationPage() {
   }, [conversationId, user?._id, markMessagesAsRead, messages]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -198,7 +198,8 @@ export default function ConversationPage() {
 
   // Determine if the other user is typing
   const otherUserIsTyping = useMemo(() => {
-    if (!(user?._id && conversationTypingStatus && conversationId)) return false;
+    if (!(user?._id && conversationTypingStatus && conversationId))
+      return false;
 
     const otherUser =
       conversationTypingStatus.user1.userId === user._id
@@ -211,7 +212,7 @@ export default function ConversationPage() {
   // Get other user's online status using the new presence system
   const otherUserOnlineStatus = useQuery(
     api.presence.getUserOnlineStatus,
-    otherUserId ? { userId: otherUserId } : 'skip'
+    otherUserId ? { userId: otherUserId } : "skip"
   );
 
   console.log("otherUserId:", otherUserId);
@@ -263,31 +264,31 @@ export default function ConversationPage() {
   // Format messages for the UI
   const formattedMessages = useMemo(() => {
     return (messages || []).map((message) => {
-      const role: 'user' | 'assistant' =
-        message.senderId === user?._id ? 'user' : 'assistant';
+      const role: "user" | "assistant" =
+        message.senderId === user?._id ? "user" : "assistant";
 
       // Determine message status (sent, delivered, read)
-      let status: 'sent' | 'delivered' | 'read' = 'sent';
+      let status: "sent" | "delivered" | "read" = "sent";
 
       if (message.readByUsers && message.readByUsers.length > 0) {
         const otherUserRead = message.readByUsers.some(
           (id) => id !== user?._id
         );
-        status = otherUserRead ? 'read' : 'delivered';
+        status = otherUserRead ? "read" : "delivered";
       }
 
       return {
         id: message._id,
         chatId: message.conversationId,
-        content: message.content ?? '',
+        content: message.content ?? "",
         images: message.images || [],
         role,
         timestamp: new Date(message._creationTime),
         status: message.senderId === user?._id ? status : undefined,
         type: message.type,
-        title: message.title || '',
+        title: message.title || "",
         price: message.price || 0,
-        productImage: message.productImage || '',
+        productImage: message.productImage || "",
         productId: message.productId,
         // Transfer-specific fields
         orderId: message.orderId,
@@ -302,8 +303,8 @@ export default function ConversationPage() {
     () =>
       conversationId && otherUser
         ? {
-            name: otherUser.name || 'Unknown User',
-            image: otherUser.imageUrl || '',
+            name: otherUser.name || "Unknown User",
+            image: otherUser.imageUrl || "",
           }
         : null,
     [conversationId, otherUser]
@@ -312,7 +313,7 @@ export default function ConversationPage() {
   const toggleSidebar = () => {
     // On mobile, navigate back to chat list
     if (window.innerWidth < 768) {
-      router.push('/chat');
+      router.push("/chat");
     }
   };
 
@@ -340,8 +341,8 @@ export default function ConversationPage() {
           const res = await startUpload(selectedImages);
           imageUrls = res?.map((file) => file.ufsUrl);
         } catch (error) {
-          console.error('Failed to upload images:', error);
-          toast.error('Failed to upload images');
+          console.error("Failed to upload images:", error);
+          toast.error("Failed to upload images");
           return;
         }
       }
@@ -352,14 +353,14 @@ export default function ConversationPage() {
         content: input,
         conversationId,
         images: imageUrls,
-        type: 'text',
+        type: "text",
       });
 
-      setInput('');
+      setInput("");
       setSelectedImages([]);
     } catch (error) {
-      console.error('Failed to send message:', error);
-      toast.error('Failed to send message');
+      console.error("Failed to send message:", error);
+      toast.error("Failed to send message");
     }
   };
 

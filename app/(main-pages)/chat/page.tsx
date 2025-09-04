@@ -69,7 +69,7 @@ export default function ChatPage() {
   // Transform conversations data to match UI requirements
   const formattedConversations = useMemo(() => {
     if (!(conversations && allUsers && allConversationMessages && user?._id))
-      return [];
+      return undefined;
 
     return conversations.map((conversation) => {
       // Determine the other participant (not the current user)
@@ -79,7 +79,7 @@ export default function ChatPage() {
           : conversation.user1;
 
       // Find user in our pre-fetched users
-      const otherUser = allUsers.find((u) => u._id === otherUserId);
+      const otherUser = allUsers.find((u) => u?._id === otherUserId);
 
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
@@ -130,7 +130,7 @@ export default function ChatPage() {
 
   // Filter conversations based on the active filter
   const filteredConversations = useMemo(() => {
-    return formattedConversations.filter((chat) => {
+    return formattedConversations?.filter((chat) => {
       // Apply search filter
       const matchesSearch =
         chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -218,26 +218,26 @@ export default function ChatPage() {
     }
   }, [conversations, router, vendorId]);
 
-  if (authLoading) {
-    return (
-      <div className="grid h-screen place-items-center">
-        <Loader />
-      </div>
-    );
-  }
+  // if (authLoading) {
+  //   return (
+  //     <div className="grid h-screen place-items-center">
+  //       <Loader />
+  //     </div>
+  //   );
+  // }
 
-  if (!isAuthenticated) {
-    return null;
-  }
+  // if (!isAuthenticated) {
+  //   return null;
+  // }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-gray-100">
+    <div className="flex h-full w-full overflow-auto bg-gray-100">
       {/* Mobile: Show sidebar, Desktop: Show welcome message */}
       <div className="w-full md:hidden">
         <ChatSidebar
           activeChat={null}
           activeFilter={activeFilter}
-          conversations={filteredConversations.map((convo) => ({
+          conversations={filteredConversations?.map((convo) => ({
             ...convo,
             archived: convo.archived ?? false,
           }))}

@@ -73,6 +73,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
         }
       )}
     >
+      
       <div className="mx-auto w-[95%] py-1">
         <div className="flex w-full items-center justify-between">
           <Link className="flex items-center gap-1" href={'/'}>
