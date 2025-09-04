@@ -97,50 +97,60 @@ export function DeviceSubscriptions() {
           </div>
         ) : (
           <div className="space-y-3">
-            {subscriptions.map((subscription) => (
-              <div
-                key={subscription._id}
-                className="flex items-center justify-between p-3 border rounded-lg"
-              >
-                <div className="flex items-center gap-3">
-                  {getDeviceIcon(subscription.deviceInfo?.deviceType)}
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-medium">
-                        {subscription.deviceInfo?.platform || "Unknown Device"}
-                      </span>
-                      <Badge variant="secondary" className="text-xs">
-                        {subscription.deviceInfo?.browser || "Unknown"}
-                      </Badge>
-                      <Badge variant="outline" className="text-xs">
-                        {subscription.deviceInfo?.deviceType || "Desktop"}
-                      </Badge>
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      Added: {formatDate(subscription.createdAt)}
-                      {subscription.lastUsed && (
-                        <span className="ml-2">
-                          • Last used: {formatDate(subscription.lastUsed)}
+            {subscriptions
+              .filter((subscription) => subscription.endpoint) // Only show subscriptions with endpoints
+              .map((subscription) => (
+                <div
+                  key={subscription._id}
+                  className="flex items-center justify-between p-3 border rounded-lg"
+                >
+                  <div className="flex items-center gap-3">
+                    {getDeviceIcon(subscription.deviceInfo?.deviceType)}
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">
+                          {subscription.deviceInfo?.platform ||
+                            "Unknown Device"}
                         </span>
-                      )}
+                        <Badge variant="secondary" className="text-xs">
+                          {subscription.deviceInfo?.browser || "Unknown"}
+                        </Badge>
+                        <Badge variant="outline" className="text-xs">
+                          {subscription.deviceInfo?.deviceType || "Desktop"}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        Added: {formatDate(subscription.createdAt)}
+                        {subscription.lastUsed && (
+                          <span className="ml-2">
+                            • Last used: {formatDate(subscription.lastUsed)}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (subscription.endpoint) {
+                        handleRemoveSubscription(
+                          subscription.endpoint,
+                          subscription.deviceInfo
+                        );
+                      } else {
+                        toast.error(
+                          "Cannot remove subscription: missing endpoint"
+                        );
+                      }
+                    }}
+                    disabled={!subscription.endpoint}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    handleRemoveSubscription(
-                      subscription.endpoint,
-                      subscription.deviceInfo
-                    )
-                  }
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
           </div>
         )}
       </CardContent>

@@ -388,7 +388,7 @@ export default defineSchema({
   pushSubscriptions: defineTable({
     userId: v.id("users"),
     subscription: v.string(), // JSON stringified subscription object
-    endpoint: v.optional(v.string()), // Unique endpoint for this subscription (optional during migration)
+    endpoint: v.string(), // Unique endpoint for this subscription
     userAgent: v.optional(v.string()),
     deviceInfo: v.optional(
       v.object({

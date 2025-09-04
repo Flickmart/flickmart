@@ -1,1 +1,1 @@
-export { PushNotificationSetup } from './PushNotificationSetup';
+export { PushNotificationSetup } from "./PushNotificationSetup";
