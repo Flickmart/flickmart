@@ -5,20 +5,28 @@ import "react-photo-view/dist/react-photo-view.css";
 import { Suspense } from "react";
 import MobileHeader from "@/components/MobileHeader";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
-import { PushNotificationPrompt } from "@/components/PushNotificationPrompt";
 import { Providers } from "@/providers/providers";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { Analytics } from "@vercel/analytics/next";
+import { Metadata } from "next";
+import Loader from "@/components/multipage/Loader";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "http://localhost:3000";
 
-export const metadata = {
+export const metadata: Metadata = {
   metadataBase: new URL(defaultUrl),
   title: "Flickmart",
+  manifest: "/manifest.json",
+  keywords: ["nextjs", "next15", "pwa", "next-pwa"],
   description:
     "A classified online marketplace where students and locals discover, buy, and sell everything they need — securely and with greater visibility for sellers, all in one trusted platform.",
+  generator: "Next.js",
+  viewport:
+    "minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover",
+  icons: [
+    { rel: "apple-touch-icon", url: "icon512_rounded.png" },
+    { rel: "icon", url: "icon512_maskable.png" },
+  ],
 };
 const inter = Inter({
   subsets: ["latin"],
@@ -38,10 +46,14 @@ export default function RootLayout({
       <body className="text relative bg-background">
         <Providers>
           <ServiceWorkerRegistration />
-          <PushNotificationPrompt />
-          <Analytics />
-          <SpeedInsights />
-          <Suspense fallback={<div>Loading...</div>}>
+
+          <Suspense
+            fallback={
+              <div className="h-screen bg-transparent flex justify-center items-center w-full">
+                <Loader />
+              </div>
+            }
+          >
             <MobileHeader />
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>

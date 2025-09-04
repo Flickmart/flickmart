@@ -1,117 +1,106 @@
-// Service Worker for Push Notifications
+/**
+ * Copyright 2018 Google Inc. All Rights Reserved.
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
-self.addEventListener("install", (event) => {
-  console.log("Service Worker installing");
+// If the loader is already loaded, just stop.
+if (!self.define) {
+  let registry = {};
+
+  // Used for `eval` and `importScripts` where we can't get script URL by other means.
+  // In both cases, it's safe to use a global var because those functions are synchronous.
+  let nextDefineUri;
+
+  const singleRequire = (uri, parentUri) => {
+    uri = new URL(uri + ".js", parentUri).href;
+    return (
+      registry[uri] ||
+      new Promise((resolve) => {
+        if ("document" in self) {
+          const script = document.createElement("script");
+          script.src = uri;
+          script.onload = resolve;
+          document.head.appendChild(script);
+        } else {
+          nextDefineUri = uri;
+          importScripts(uri);
+          resolve();
+        }
+      }).then(() => {
+        let promise = registry[uri];
+        if (!promise) {
+          throw new Error(`Module ${uri} didn’t register its module`);
+        }
+        return promise;
+      })
+    );
+  };
+
+  self.define = (depsNames, factory) => {
+    const uri =
+      nextDefineUri ||
+      ("document" in self ? document.currentScript.src : "") ||
+      location.href;
+    if (registry[uri]) {
+      // Module is already loading or loaded.
+      return;
+    }
+    let exports = {};
+    const require = (depUri) => singleRequire(depUri, uri);
+    const specialDeps = {
+      module: { uri },
+      exports,
+      require,
+    };
+    registry[uri] = Promise.all(
+      depsNames.map((depName) => specialDeps[depName] || require(depName))
+    ).then((deps) => {
+      factory(...deps);
+      return exports;
+    });
+  };
+}
+define(["./workbox-8817a5e5"], function (workbox) {
+  "use strict";
+
+  importScripts();
   self.skipWaiting();
-});
-
-self.addEventListener("activate", (event) => {
-  console.log("Service Worker activating");
-  event.waitUntil(self.clients.claim());
-});
-
-self.addEventListener("push", (event) => {
-  console.log("Push event received:", event);
-
-  if (!event.data) {
-    console.log("Push event has no data");
-    return;
-  }
-
-  try {
-    const data = event.data.json();
-    console.log("Push notification data:", data);
-
-    const options = {
-      body: data.body,
-      icon: data.icon || "/icon-192x192.png",
-      badge: data.badge || "/badge-72x72.png",
-      data: data.data || {},
-      actions: data.actions || [
+  workbox.clientsClaim();
+  workbox.registerRoute(
+    "/",
+    new workbox.NetworkFirst({
+      cacheName: "start-url",
+      plugins: [
         {
-          action: "view",
-          title: "View",
-        },
-        {
-          action: "close",
-          title: "Close",
+          cacheWillUpdate: async ({ request, response, event, state }) => {
+            if (response && response.type === "opaqueredirect") {
+              return new Response(response.body, {
+                status: 200,
+                statusText: "OK",
+                headers: response.headers,
+              });
+            }
+            return response;
+          },
         },
       ],
-      requireInteraction: false,
-      silent: false,
-    };
-
-    event.waitUntil(self.registration.showNotification(data.title, options));
-  } catch (error) {
-    console.error("Error processing push notification:", error);
-  }
-});
-
-self.addEventListener("notificationclick", (event) => {
-  console.log("Notification clicked:", event);
-
-  const notification = event.notification;
-  const action = event.action;
-  const data = notification.data || {};
-
-  notification.close();
-
-  if (action === "close") {
-    return;
-  }
-
-  // Determine the URL to open with security validation
-  let urlToOpen = "/";
-
-  if (data.url) {
-    try {
-      const parsedUrl = new URL(data.url, self.location.origin);
-      // Only allow same-origin navigation
-      if (parsedUrl.origin === self.location.origin) {
-        urlToOpen = parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
-      }
-    } catch (error) {
-      console.warn("Invalid URL in notification data:", data.url);
-      urlToOpen = "/";
-    }
-  } else if (data.type === "new_message" && data.relatedId) {
-    // Ensure relatedId exists and is truthy before using it
-    urlToOpen = data.relatedId ? `/chats/${data.relatedId}` : "/chats";
-  } else if (
-    (data.type === "new_like" || data.type === "new_comment") &&
-    data.relatedId
-  ) {
-    // Ensure relatedId exists and is truthy before using it
-    urlToOpen = data.relatedId ? `/products/${data.relatedId}` : "/products";
-  } else if (data.type === "escrow_funded" || data.type === "escrow_released") {
-    urlToOpen = "/orders";
-  }
-
-  // Ensure the URL starts with '/' for proper navigation
-  if (!urlToOpen.startsWith("/")) {
-    urlToOpen = "/" + urlToOpen;
-  }
-
-  event.waitUntil(
-    clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then((clientList) => {
-        // Check if there's already a window/tab open with the target URL
-        for (const client of clientList) {
-          if (client.url === urlToOpen && "focus" in client) {
-            return client.focus();
-          }
-        }
-
-        // If no existing window/tab, open a new one
-        if (clients.openWindow) {
-          return clients.openWindow(urlToOpen);
-        }
-      })
+    }),
+    "GET"
   );
-});
-
-self.addEventListener("notificationclose", (event) => {
-  console.log("Notification closed:", event);
-  // You can track notification close events here if needed
+  workbox.registerRoute(
+    /.*/i,
+    new workbox.NetworkOnly({
+      cacheName: "dev",
+      plugins: [],
+    }),
+    "GET"
+  );
 });
