@@ -7,6 +7,7 @@ import MobileHeader from "@/components/MobileHeader";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { Providers } from "@/providers/providers";
 import { Metadata } from "next";
+import Loader from "@/components/multipage/Loader";
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -46,7 +47,13 @@ export default function RootLayout({
         <Providers>
           <ServiceWorkerRegistration />
 
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense
+            fallback={
+              <div className="h-screen bg-transparent flex justify-center items-center w-full">
+                <Loader />
+              </div>
+            }
+          >
             <MobileHeader />
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
