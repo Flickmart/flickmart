@@ -2,6 +2,15 @@
 const { withBotId } = require('botid/next/config');
 const { withSentryConfig } = require('@sentry/nextjs');
 
+const withPWA = require('next-pwa')({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+})
+
+
+
+
 const baseConfig = {
   reactStrictMode: true,
   serverComponentsExternalPackages: ['require-in-the-middle'],
@@ -69,4 +78,5 @@ if (!process.env.TURBOPACK) {
   finalConfig = withSentryConfig(finalConfig, sentryOptions);
 }
 
-module.exports = finalConfig;
+
+module.exports = withPWA(finalConfig)

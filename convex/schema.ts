@@ -399,7 +399,8 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
-    isActive: v.optional(v.boolean()), // Track if subscription is still valid
+    // Removed duplicate endpoint field
+    isActive: v.optional(v.boolean()),
   })
     .index("by_user", ["userId"])
     .index("by_endpoint", ["endpoint"])

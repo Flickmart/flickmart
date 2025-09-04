@@ -1,25 +1,32 @@
-'use client';
-import { useQuery } from 'convex/react';
-import { ArrowRight } from 'lucide-react';
-import Link from 'next/link';
-import React from 'react';
-import { api } from '@/convex/_generated/api';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Skeleton } from '../ui/skeleton';
-import Container from './Container';
-import NewArrivalItem from './NewArrivalItem';
+"use client";
+import { useQuery } from "convex/react";
+import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import React from "react";
+import { api } from "@/convex/_generated/api";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Skeleton } from "../ui/skeleton";
+import Container from "./Container";
+import NewArrivalItem from "./NewArrivalItem";
+import { useRouter } from "next/navigation";
 
 export default function NewArrivals() {
   const newProducts = useQuery(api.product.getNewProducts);
   const isMobile = useIsMobile();
   const firstTenProducts = newProducts?.slice(0, 10);
   const all = useQuery(api.product.getAll, { limit: 10 });
+  const router = useRouter();
 
   return (
     <div className="!flex mx-auto mt-0 flex-col items-center justify-start space-y-5 py-5 text-gray-800 capitalize lg:w-5/6">
       <div className="flex w-full justify-between lg:w-5/6">
         <h2 className="font-semibold text-2xl lg:text-3xl">new arrivals</h2>
-        <p className="flex space-x-2 pt-1.5 lg:pt-2">
+        <p
+          className="flex space-x-2 pt-1.5 lg:pt-2 cursor-pointer"
+          onClick={() => {
+            router.push("/more-products");
+          }}
+        >
           <span className="text-xs underline underline-offset-8 lg:text-base">
             more products
           </span>
