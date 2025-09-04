@@ -3,10 +3,10 @@
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
 import ChatSidebar from "@/components/chats/chat-sidebar";
-import Loader from "@/components/multipage/Loader";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import ChatSkeleton from "@/components/chats/ChatSkeleton";
 
 type FilterType = "all" | "unread" | "archived";
 
@@ -61,7 +61,7 @@ export default function ChatLayout({
   // Transform conversations data to match UI requirements
   const formattedConversations = useMemo(() => {
     if (!(conversations && allUsers && allConversationMessages && user?._id))
-      return [];
+      return undefined;
 
     return conversations.map((conversation) => {
       // Determine the other participant (not the current user)
@@ -123,7 +123,7 @@ export default function ChatLayout({
 
   // Filter conversations based on the active filter
   const filteredConversations = useMemo(() => {
-    return formattedConversations.filter((chat) => {
+    return formattedConversations?.filter((chat) => {
       // Apply search filter
       const matchesSearch =
         chat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,11 +142,7 @@ export default function ChatLayout({
   }, [formattedConversations, searchQuery, activeFilter]);
 
   if (authLoading) {
-    return (
-      <div className="grid h-screen place-items-center">
-        <Loader />
-      </div>
-    );
+    return <ChatSkeleton />;
   }
 
   if (!isAuthenticated) {
@@ -156,7 +152,7 @@ export default function ChatLayout({
   return (
     <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar - always visible on desktop */}
-      <div className="hidden w-[360px] border-gray-200 border-r bg-white md:block">
+      <div className="hidden w-[360px] border-gray-200 border-r  bg-white md:block">
         <ChatSidebar
           activeChat={null}
           activeFilter={activeFilter}

@@ -18,6 +18,18 @@ export default function WalletPage() {
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
   const [amount, setAmount] = useState(0);
+
+  // Helper function to validate and format amount
+  const validateAndSetAmount = (value: string) => {
+    const numValue = parseFloat(value);
+    if (!isNaN(numValue) && numValue >= 0) {
+      // Round to 2 decimal places to prevent precision issues
+      const roundedValue = Math.round(numValue * 100) / 100;
+      setAmount(roundedValue);
+    } else if (value === "" || value === "0") {
+      setAmount(0);
+    }
+  };
   const [error, setError] = useState<string | null>("");
   const [open, setOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
@@ -33,6 +45,13 @@ export default function WalletPage() {
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
   const [verifyDialogOpen, setVerifyDialogOpen] = useState(false);
+
+  // Bank account management state
+  const [selectedBankAccountId, setSelectedBankAccountId] =
+    useState<string>("");
+  const [saveNewAccount, setSaveNewAccount] = useState(false);
+  const [useNewAccount, setUseNewAccount] = useState(false);
+
   const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
 
   // Fetch banks when withdrawal dialog opens
@@ -53,6 +72,11 @@ export default function WalletPage() {
   const transactions = useQuery(
     api.transactions.getByUserId,
     user ? { userId: user._id } : "skip"
+  );
+
+  const bankAccounts = useQuery(
+    api.bankAccounts.getUserBankAccounts,
+    user ? {} : "skip"
   );
 
   const { getToken } = useAuth();
@@ -123,7 +147,6 @@ export default function WalletPage() {
   };
 
   const handlePaystackSuccess = async (response: { reference: string }) => {
-    console.log(response);
     try {
       // Get the auth token from Clerk
       const token = await getToken({ template: "convex" });
@@ -147,7 +170,6 @@ export default function WalletPage() {
         }
       );
       const data = await result.json();
-      console.log("Verification response:", data);
 
       if (data.status) {
         // Check the actual transaction status
@@ -276,7 +298,7 @@ export default function WalletPage() {
       if (data.status) {
         setRecipientDetails(data.data);
         setAccountName(data.data.account_name);
-        setVerifyDialogOpen(true);
+        toast.success("Account verified successfully!");
       } else {
         setError(data.message || "Failed to verify account");
         toast.error(data.message || "Failed to verify account");
@@ -289,23 +311,68 @@ export default function WalletPage() {
     }
   };
 
+  const handleContinueToConfirmation = () => {
+    // Open the verification dialog for confirmation
+    setVerifyDialogOpen(true);
+  };
+
   const handleWithdraw = async () => {
+    const MIN_WITHDRAWAL = 100; // ₦100 minimum withdrawal
+    const MAX_WITHDRAWAL = 1000000; // ₦1M maximum withdrawal
+
     if (amount <= 0) {
       setError("Please enter a valid amount.");
       toast.error("Amount invalid");
       return;
     }
 
-    if (!selectedBank) {
-      setError("Please select a bank.");
-      toast.error("Bank selection required");
+    if (amount < MIN_WITHDRAWAL) {
+      setError(
+        `Minimum withdrawal amount is ₦${MIN_WITHDRAWAL.toLocaleString()}.`
+      );
+      toast.error(`Minimum withdrawal is ₦${MIN_WITHDRAWAL.toLocaleString()}`);
       return;
     }
 
-    if (!accountNumber || accountNumber.length !== 10) {
-      setError("Please enter a valid 10-digit account number.");
-      toast.error("Invalid account number");
+    if (amount > MAX_WITHDRAWAL) {
+      setError(
+        `Maximum withdrawal amount is ₦${MAX_WITHDRAWAL.toLocaleString()}.`
+      );
+      toast.error(`Maximum withdrawal is ₦${MAX_WITHDRAWAL.toLocaleString()}`);
       return;
+    }
+
+    if (amount > balance) {
+      setError("Insufficient funds in your wallet.");
+      toast.error("Insufficient funds");
+      return;
+    }
+
+    // Check if using saved account or new account
+    if (!useNewAccount && !selectedBankAccountId) {
+      setError("Please select a bank account or choose to add a new one.");
+      toast.error("Bank account selection required");
+      return;
+    }
+
+    if (useNewAccount) {
+      if (!selectedBank) {
+        setError("Please select a bank.");
+        toast.error("Bank selection required");
+        return;
+      }
+
+      if (!accountNumber || accountNumber.length !== 10) {
+        setError("Please enter a valid 10-digit account number.");
+        toast.error("Invalid account number");
+        return;
+      }
+
+      if (!recipientDetails || !accountName) {
+        setError("Please verify your account first.");
+        toast.error("Account verification required");
+        return;
+      }
     }
 
     if (!user) {
@@ -335,9 +402,20 @@ export default function WalletPage() {
           },
           body: JSON.stringify({
             amount,
-            bankCode: selectedBank,
-            accountNumber,
-            accountName: accountName || "Not Verified",
+            ...(useNewAccount
+              ? {
+                  // New account details
+                  bankCode: selectedBank,
+                  accountNumber,
+                  accountName: accountName || "Not Verified",
+                  bankName:
+                    banks.find((b) => b.code === selectedBank)?.name || "",
+                  saveAccount: saveNewAccount,
+                }
+              : {
+                  // Saved account
+                  bankAccountId: selectedBankAccountId,
+                }),
           }),
         }
       );
@@ -349,7 +427,13 @@ export default function WalletPage() {
         setSelectedBank("");
         setAccountNumber("");
         setAccountName("");
+        setRecipientDetails(null);
+        setSelectedBankAccountId("");
+        setSaveNewAccount(false);
+        setUseNewAccount(false);
+        setError(null);
         setWithdrawOpen(false);
+        setVerifyDialogOpen(false);
       } else {
         setError(data.message || "Failed to process withdrawal.");
         toast.error(data.message || "Failed to process withdrawal.");
@@ -363,7 +447,10 @@ export default function WalletPage() {
   };
 
   const isLoadingData =
-    authLoading || wallet === undefined || transactions === undefined;
+    authLoading ||
+    wallet === undefined ||
+    transactions === undefined ||
+    bankAccounts === undefined;
 
   if (isLoadingData || isLoading) {
     return <WalletPageSkeleton />;
@@ -405,7 +492,7 @@ export default function WalletPage() {
         handleRefreshTransactions={handleRefreshTransactions}
         setOpen={setOpen}
         setWithdrawOpen={setWithdrawOpen}
-        setAmount={setAmount}
+        setAmount={validateAndSetAmount}
         setError={setError}
         setPaystackReference={setPaystackReference}
         setIsPaystackModalOpen={setIsPaystackModalOpen}
@@ -417,7 +504,15 @@ export default function WalletPage() {
         setAccountName={setAccountName}
         verifyAccount={verifyAccount}
         handleWithdraw={handleWithdraw}
+        handleContinueToConfirmation={handleContinueToConfirmation}
         setVerifyDialogOpen={setVerifyDialogOpen}
+        bankAccounts={bankAccounts || []}
+        selectedBankAccountId={selectedBankAccountId}
+        setSelectedBankAccountId={setSelectedBankAccountId}
+        saveNewAccount={saveNewAccount}
+        setSaveNewAccount={setSaveNewAccount}
+        useNewAccount={useNewAccount}
+        setUseNewAccount={setUseNewAccount}
       />
     </ClientOnly>
   );

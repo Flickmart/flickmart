@@ -1,13 +1,13 @@
-'use client';
-import { useMutation, useQuery } from 'convex/react';
-import { Search, X } from 'lucide-react';
-import { motion } from 'motion/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import type React from 'react';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { api } from '@/convex/_generated/api';
-import { useIsMobile } from '@/hooks/use-mobile';
+"use client";
+import { useMutation, useQuery } from "convex/react";
+import { Search, X } from "lucide-react";
+import { motion } from "motion/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type React from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Command,
   CommandEmpty,
@@ -15,7 +15,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from './ui/command';
+} from "./ui/command";
 
 const MotionCommandList = motion.create(CommandList);
 
@@ -35,15 +35,15 @@ export default function SearchInput({
   ref?: React.ForwardedRef<HTMLInputElement>;
 }) {
   const isMobile = useIsMobile();
-  const [searchInput, setSearchInput] = useState('');
+  const [searchInput, setSearchInput] = useState("");
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [focus, setFocus] = useState<boolean>(false);
   const saveSearchInput = useMutation(api.search.insertSearchHistory);
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const autoSuggest = useQuery(api.product.search, {
-    query: searchInput || '',
-    type: 'suggestions',
+    query: searchInput || "",
+    type: "suggestions",
   });
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -57,20 +57,20 @@ export default function SearchInput({
   function handleKeyPress<T extends HTMLElement>(
     event: React.KeyboardEvent<T>
   ) {
-    if (event.key === 'Enter') {
-      const locationQuery = !loc || loc === 'all' ? '' : `?location=${loc}`;
+    if (event.key === "Enter") {
+      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
       router.push(`/search?query=${searchInput}${locationQuery}`);
       openSearch && openSearch(false);
       saveSearchInput({
         search: searchInput,
       });
       // Perform search action
-      !isMobile && isOverlayOpen && setSearchInput('');
+      !isMobile && isOverlayOpen && setSearchInput("");
       setIsTyping(false);
     }
   }
   function handlePrefetch() {
-    router.prefetch('/search');
+    router.prefetch("/search");
     if (searchInput) {
       setFocus(false);
       return;
@@ -100,7 +100,7 @@ export default function SearchInput({
           >
             <Search className="size-4" />
             <span className="text-sm lg:text-lg">
-              {searchInput || 'What are you looking for?'}
+              {searchInput || "What are you looking for?"}
             </span>
           </div>
         ) : (
@@ -154,13 +154,13 @@ export default function SearchInput({
                   <CommandItem
                     className="cursor-pointer"
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
+                      if (e.key === "Enter") {
                         router.push(`/search?query=${item}`);
                         setIsTyping(false);
                       }
                     }}
                   >
-                    {typeof item === 'string' ? item : null}
+                    {typeof item === "string" ? item : null}
                   </CommandItem>
                 </Link>
               ))}
@@ -196,7 +196,7 @@ export default function SearchInput({
                     className="cursor-pointer text-gray-600"
                     onClick={(e) => {
                       e.stopPropagation();
-                      console.log('deleted');
+
                       deleteSearchInput({
                         searchId: item._id,
                       });
