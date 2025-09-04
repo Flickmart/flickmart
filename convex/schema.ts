@@ -391,7 +391,5 @@ export default defineSchema({
     userAgent: v.optional(v.string()),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
-    endpoint: v.optional(v.string()), // <-- add this
-    isActive: v.optional(v.boolean()),
   }).index("by_user", ["userId"]),
 });
