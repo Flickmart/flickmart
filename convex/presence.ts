@@ -138,7 +138,10 @@ export const getUserOnlineStatus = query({
       console.log("Looking for user with externalId:", user.externalId);
 
       // Check if the user's external ID (Clerk ID) is in the presence list
-      const isOnline = appPresence.some((p) => p.userId === user.externalId);
+      const isOnline = appPresence.some(
+        (p) => p.userId === user.externalId && p.online === true
+      );
+
       console.log("User online status:", isOnline);
 
       return {
