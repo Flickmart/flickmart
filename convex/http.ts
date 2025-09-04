@@ -781,7 +781,7 @@ http.route({
         source: "balance",
         amount: amountInKobo,
         recipient: recipientCode,
-        reason: "User withdrawal",
+        reason: "Flickmart balance withdrawal",
       }),
     });
 
