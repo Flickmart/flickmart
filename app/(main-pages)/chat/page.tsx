@@ -79,7 +79,7 @@ export default function ChatPage() {
           : conversation.user1;
 
       // Find user in our pre-fetched users
-      const otherUser = allUsers.find((u) => u._id === otherUserId);
+      const otherUser = allUsers.find((u) => u?._id === otherUserId);
 
       // Get last messages for this conversation
       const conversationMessages = allConversationMessages
@@ -231,7 +231,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-gray-100">
+    <div className="flex h-full w-full overflow-auto bg-gray-100">
       {/* Mobile: Show sidebar, Desktop: Show welcome message */}
       <div className="w-full md:hidden">
         <ChatSidebar

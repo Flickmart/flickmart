@@ -156,7 +156,7 @@ export default function ChatLayout({
   return (
     <div className="flex h-[calc(100vh-74px)] w-full overflow-hidden bg-gray-100">
       {/* Sidebar - always visible on desktop */}
-      <div className="hidden w-[360px] border-gray-200 border-r bg-white md:block">
+      <div className="hidden w-[360px] border-gray-200 border-r  bg-white md:block">
         <ChatSidebar
           activeChat={null}
           activeFilter={activeFilter}

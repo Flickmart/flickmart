@@ -44,13 +44,13 @@ export default function ChatMessages({
 }: ChatMessagesProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  // const scrollToBottom = () => {
+  //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // };
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
 
   // Toggle selection mode
   const toggleSelectionMode = () => {
@@ -158,7 +158,7 @@ export default function ChatMessages({
                 id={message.id}
                 image={message.productImage}
                 images={message.images}
-                isUser={message.role === 'user'}
+                isUser={message.role === "user"}
                 key={message.id}
                 message={message.content}
                 orderId={message.orderId}
@@ -166,10 +166,10 @@ export default function ChatMessages({
                 productId={message.productId}
                 selectedMessages={selectedMessages}
                 selectionMode={selectionMode}
-                status={message.role === 'user' ? 'sent' : undefined}
+                status={message.role === "user" ? "sent" : undefined}
                 timestamp={message.timestamp.toLocaleTimeString([], {
-                  hour: '2-digit',
-                  minute: '2-digit',
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
                 title={message.title}
                 toggleMessageSelection={toggleMessageSelection}
@@ -182,7 +182,7 @@ export default function ChatMessages({
           </div>
         ))}
       </PhotoProvider>
-      <div ref={messagesEndRef} />
+      {/* <div ref={messagesEndRef} /> */}
       {/* Extra spacing at bottom for better scrolling */}
       <div className="h-16" />
     </div>
