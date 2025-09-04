@@ -388,8 +388,21 @@ export default defineSchema({
   pushSubscriptions: defineTable({
     userId: v.id("users"),
     subscription: v.string(), // JSON stringified subscription object
+    endpoint: v.string(), // Unique endpoint for this subscription
     userAgent: v.optional(v.string()),
+    deviceInfo: v.optional(
+      v.object({
+        platform: v.optional(v.string()),
+        browser: v.optional(v.string()),
+        deviceType: v.optional(v.string()),
+      })
+    ),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
+    endpoint: v.optional(v.string()), // <-- add this
+    isActive: v.optional(v.boolean()),
+  }).index("by_user", ["userId"])
+    .index("by_endpoint", ["endpoint"])
+    .index("by_user_endpoint", ["userId", "endpoint"]),
   }).index("by_user", ["userId"]),
 });
