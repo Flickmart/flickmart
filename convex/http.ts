@@ -596,6 +596,7 @@ http.route({
     }
 
     // Atomically check and deduct balance
+
     try {
       await ctx.runMutation(internal.wallet.attemptWithdrawal, {
         walletId: wallet._id,
@@ -944,7 +945,7 @@ http.route({
 
       // Process event
       if (event.event === "charge.success") {
-        console.log(event);
+        console.log("succesful", event);
         console.log("Processing charge.success event");
         const { reference, amount, customer } = event.data;
 
@@ -1133,6 +1134,18 @@ http.route({
         headers,
       });
     }
+  }),
+});
+
+http.route({
+  path: "/paystack/transfer-webhook",
+  method: "POST",
+  handler: httpAction(async (ctx, request) => {
+    const event = await request.json();
+
+    console.log(event);
+
+    return new Response(null, { status: 200 });
   }),
 });
 
