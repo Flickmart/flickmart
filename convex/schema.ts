@@ -399,9 +399,9 @@ export default defineSchema({
     ),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),
-    endpoint: v.optional(v.string()), // <-- add this
-    isActive: v.optional(v.boolean()),
-  }).index("by_user", ["userId"])
+    isActive: v.optional(v.boolean()), // Track if subscription is still valid
+  })
+    .index("by_user", ["userId"])
     .index("by_endpoint", ["endpoint"])
     .index("by_user_endpoint", ["userId", "endpoint"]),
 });
