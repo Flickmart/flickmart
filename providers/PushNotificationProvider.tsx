@@ -1,7 +1,7 @@
 "use client";
 
 import { useUser } from "@clerk/nextjs";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/convex/_generated/api";
 
@@ -63,15 +63,15 @@ export function PushNotificationProvider({
         setIsLoading(false);
       }
     }
-  }, []);
+  }, [user]); // Add user dependency to recheck when user changes
 
   // Prompt for permission immediately when user visits (if not already asked)
   useEffect(() => {
     const promptForNotifications = async () => {
       if (!isSupported || !user || isLoading) return;
 
-      // Only prompt if permission hasn't been asked before
-      if (permission === "default") {
+      // Only prompt if permission hasn't been asked before and user is not subscribed on this device
+      if (permission === "default" && !isSubscribed) {
         // Small delay to ensure page is loaded
         setTimeout(async () => {
           try {
@@ -84,11 +84,14 @@ export function PushNotificationProvider({
     };
 
     promptForNotifications();
-  }, [isSupported, user, permission, isLoading]);
+  }, [isSupported, user, permission, isLoading, isSubscribed]);
 
   const checkSubscriptionStatus = async () => {
     try {
-      if (!("serviceWorker" in navigator)) return;
+      if (!("serviceWorker" in navigator) || !user) {
+        setIsLoading(false);
+        return;
+      }
 
       const registration = await navigator.serviceWorker.ready;
 
@@ -101,7 +104,14 @@ export function PushNotificationProvider({
 
       const subscription = await registration.pushManager.getSubscription();
 
-      setIsSubscribed(!!subscription);
+      if (subscription) {
+        // For now, just check if browser subscription exists
+        // We'll implement a more robust check later
+        setIsSubscribed(true);
+      } else {
+        setIsSubscribed(false);
+      }
+
       setIsLoading(false);
     } catch (error) {
       console.error("Error checking subscription status:", error);
@@ -163,11 +173,25 @@ export function PushNotificationProvider({
         ),
       });
 
+      // Detect device information
+      const deviceInfo = {
+        platform: navigator.platform || "Unknown",
+        browser: getBrowserInfo(),
+        deviceType: getDeviceType(),
+      };
+
       // Save subscription to database
-      await savePushSubscription({
+      const result = await savePushSubscription({
         subscription: JSON.stringify(subscription),
         userAgent: navigator.userAgent,
+        deviceInfo,
       });
+
+      console.log(
+        result.isNew
+          ? "✅ New device subscription created"
+          : "🔄 Existing device subscription updated"
+      );
 
       setIsSubscribed(true);
       return true;
@@ -258,4 +282,40 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
     outputArray[i] = rawData.charCodeAt(i);
   }
   return outputArray;
+}
+
+// Helper function to detect browser
+function getBrowserInfo(): string {
+  const userAgent = navigator.userAgent;
+
+  if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+    return "Chrome";
+  } else if (userAgent.includes("Firefox")) {
+    return "Firefox";
+  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+    return "Safari";
+  } else if (userAgent.includes("Edg")) {
+    return "Edge";
+  } else if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
+    return "Opera";
+  }
+
+  return "Unknown";
+}
+
+// Helper function to detect device type
+function getDeviceType(): string {
+  const userAgent = navigator.userAgent;
+
+  if (/tablet|ipad|playbook|silk/i.test(userAgent)) {
+    return "Tablet";
+  } else if (
+    /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
+      userAgent
+    )
+  ) {
+    return "Mobile";
+  }
+
+  return "Desktop";
 }

@@ -323,6 +323,13 @@ export const savePushSubscription = mutation({
   args: {
     subscription: v.string(),
     userAgent: v.optional(v.string()),
+    deviceInfo: v.optional(
+      v.object({
+        platform: v.optional(v.string()),
+        browser: v.optional(v.string()),
+        deviceType: v.optional(v.string()),
+      })
+    ),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -335,25 +342,51 @@ export const savePushSubscription = mutation({
       throw new Error("User not found");
     }
 
-    // Remove existing subscription for this user
+    // Parse subscription to get endpoint
+    let subscriptionData;
+    try {
+      subscriptionData = JSON.parse(args.subscription);
+    } catch (error) {
+      throw new Error("Invalid subscription format");
+    }
+
+    const endpoint = subscriptionData.endpoint;
+    if (!endpoint) {
+      throw new Error("Subscription missing endpoint");
+    }
+
+    // Check if this exact subscription already exists for this user
     const existing = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .filter((q) => q.eq(q.field("endpoint"), endpoint))
       .first();
 
     if (existing) {
-      await ctx.db.delete(existing._id);
+      // Update existing subscription with new data
+      await ctx.db.patch(existing._id, {
+        subscription: args.subscription,
+        userAgent: args.userAgent,
+        deviceInfo: args.deviceInfo,
+        lastUsed: Date.now(),
+        isActive: true,
+      });
+      return { subscriptionId: existing._id, isNew: false };
     }
 
     // Save new subscription
-    await ctx.db.insert("pushSubscriptions", {
+    const subscriptionId = await ctx.db.insert("pushSubscriptions", {
       userId: user._id,
       subscription: args.subscription,
+      endpoint,
       userAgent: args.userAgent,
+      deviceInfo: args.deviceInfo,
       createdAt: Date.now(),
+      lastUsed: Date.now(),
+      isActive: true,
     });
 
-    return true;
+    return { subscriptionId, isNew: true };
   },
 });
 
@@ -365,6 +398,53 @@ export const getPushSubscription = query({
     const subscription = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .first();
+
+    return subscription;
+  },
+});
+
+export const getAllPushSubscriptions = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const subscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .filter((q) => q.eq(q.field("isActive"), true))
+      .collect();
+
+    return subscriptions;
+  },
+});
+
+export const getCurrentDeviceSubscription = query({
+  args: {
+    endpoint: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      return null;
+    }
+
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return null;
+    }
+
+    // Use by_user index and filter by endpoint since endpoint might be optional during migration
+    const subscription = await ctx.db
+      .query("pushSubscriptions")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("endpoint"), args.endpoint),
+          q.eq(q.field("isActive"), true)
+        )
+      )
       .first();
 
     return subscription;
@@ -391,25 +471,60 @@ export const removePushSubscriptionByEndpoint = mutation({
     }
 
     // Find the subscription by endpoint for this user
-    const subscriptions = await ctx.db
+    const subscription = await ctx.db
       .query("pushSubscriptions")
       .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .collect();
+      .filter((q) => q.eq(q.field("endpoint"), args.endpoint))
+      .first();
 
-    for (const sub of subscriptions) {
-      try {
-        const subscriptionData = JSON.parse(sub.subscription);
-        if (subscriptionData.endpoint === args.endpoint) {
-          await ctx.db.delete(sub._id);
-          return { success: true };
-        }
-      } catch (error) {
-        console.error("Error parsing subscription data:", error);
-        // Continue to next subscription
-      }
+    if (!subscription) {
+      throw new Error("Subscription not found");
     }
 
-    throw new Error("Subscription not found");
+    // Mark as inactive instead of deleting to maintain history
+    await ctx.db.patch(subscription._id, {
+      isActive: false,
+      lastUsed: Date.now(),
+    });
+
+    return { success: true };
+  },
+});
+
+export const cleanupInactiveSubscriptions = mutation({
+  args: {
+    olderThanDays: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Unauthorized");
+    }
+
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const cutoffTime =
+      Date.now() - (args.olderThanDays || 30) * 24 * 60 * 60 * 1000;
+
+    const inactiveSubscriptions = await ctx.db
+      .query("pushSubscriptions")
+      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .filter((q) =>
+        q.and(
+          q.eq(q.field("isActive"), false),
+          q.lt(q.field("lastUsed"), cutoffTime)
+        )
+      )
+      .collect();
+
+    for (const subscription of inactiveSubscriptions) {
+      await ctx.db.delete(subscription._id);
+    }
+
+    return { cleaned: inactiveSubscriptions.length };
   },
 });
 
@@ -558,3 +673,4 @@ export const createTestNotificationWithPush = mutation({
     return notificationId;
   },
 });
+  
