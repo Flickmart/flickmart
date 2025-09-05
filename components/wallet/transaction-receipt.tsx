@@ -4,12 +4,10 @@ import { format } from 'date-fns';
 import {
   ArrowDownLeft,
   ArrowUpRight,
-  CheckCircle,
-  Clock,
   Download,
   RotateCcw,
   Share,
-  XCircle,
+  X,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
@@ -26,6 +24,7 @@ interface TransactionReceiptProps {
   user: Doc<'users'>;
   handlePaystackSuccess: (response: { reference: string }) => Promise<void>;
   handlePaystackClose: () => void;
+  onClose?: () => void;
 }
 
 export function TransactionReceipt({
@@ -33,6 +32,7 @@ export function TransactionReceipt({
   user,
   handlePaystackSuccess,
   handlePaystackClose,
+  onClose,
 }: TransactionReceiptProps) {
   const [isDownloading, setIsDownloading] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
@@ -190,6 +190,17 @@ export function TransactionReceipt({
 
   return (
     <div className="relative">
+      {/* Close Button */}
+      {onClose && (
+        <Button
+          className="absolute right-4 top-4 z-20 h-8 w-8 rounded-full bg-white/90 p-0 shadow-lg hover:bg-white"
+          onClick={onClose}
+          variant="ghost"
+        >
+          <X className="h-4 w-4 text-gray-600" />
+        </Button>
+      )}
+      
       <div
         className="relative z-10 space-y-2 bg-white px-6"
         id="capture_div"
