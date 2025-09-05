@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
-import { createContext, useContext, useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
+import { useUser } from '@clerk/nextjs';
+import { useMutation, useQuery } from 'convex/react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
 
 interface PushNotificationContextType {
   isSupported: boolean;
@@ -22,7 +22,7 @@ export function usePushNotifications() {
   const context = useContext(PushNotificationContext);
   if (!context) {
     throw new Error(
-      "usePushNotifications must be used within PushNotificationProvider"
+      'usePushNotifications must be used within PushNotificationProvider'
     );
   }
   return context;
@@ -52,8 +52,8 @@ export function PushNotificationProvider({
 
   // Check if push notifications are supported
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const supported = "serviceWorker" in navigator && "PushManager" in window;
+    if (typeof window !== 'undefined') {
+      const supported = 'serviceWorker' in navigator && 'PushManager' in window;
       setIsSupported(supported);
 
       if (supported) {
@@ -68,16 +68,16 @@ export function PushNotificationProvider({
   // Prompt for permission immediately when user visits (if not already asked)
   useEffect(() => {
     const promptForNotifications = async () => {
-      if (!isSupported || !user || isLoading) return;
+      if (!(isSupported && user) || isLoading) return;
 
       // Only prompt if permission hasn't been asked before and user is not subscribed on this device
-      if (permission === "default" && !isSubscribed) {
+      if (permission === 'default' && !isSubscribed) {
         // Small delay to ensure page is loaded
         setTimeout(async () => {
           try {
             await promptForPermission();
           } catch (error) {
-            console.log("User declined notification permission:", error);
+            console.log('User declined notification permission:', error);
           }
         }, 2000); // 2 second delay
       }
@@ -88,7 +88,7 @@ export function PushNotificationProvider({
 
   const checkSubscriptionStatus = async () => {
     try {
-      if (!("serviceWorker" in navigator) || !user) {
+      if (!('serviceWorker' in navigator && user)) {
         setIsLoading(false);
         return;
       }
@@ -97,7 +97,7 @@ export function PushNotificationProvider({
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        console.error("Service worker registration not available");
+        console.error('Service worker registration not available');
         setIsLoading(false);
         return;
       }
@@ -114,7 +114,7 @@ export function PushNotificationProvider({
 
       setIsLoading(false);
     } catch (error) {
-      console.error("Error checking subscription status:", error);
+      console.error('Error checking subscription status:', error);
       setIsLoading(false);
     }
   };
@@ -122,47 +122,47 @@ export function PushNotificationProvider({
   const promptForPermission = async (): Promise<boolean> => {
     try {
       if (!isSupported) {
-        throw new Error("Push notifications are not supported");
+        throw new Error('Push notifications are not supported');
       }
 
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
-      if (permission === "granted") {
+      if (permission === 'granted') {
         return await subscribe();
       }
 
       return false;
     } catch (error) {
-      console.error("Error requesting permission:", error);
+      console.error('Error requesting permission:', error);
       throw error;
     }
   };
 
   const subscribe = async (): Promise<boolean> => {
     try {
-      if (!isSupported || !user) {
+      if (!(isSupported && user)) {
         throw new Error(
-          "Cannot subscribe: not supported or user not logged in"
+          'Cannot subscribe: not supported or user not logged in'
         );
       }
 
-      if (permission !== "granted") {
+      if (permission !== 'granted') {
         const newPermission = await Notification.requestPermission();
         setPermission(newPermission);
 
-        if (newPermission !== "granted") {
-          throw new Error("Permission denied");
+        if (newPermission !== 'granted') {
+          throw new Error('Permission denied');
         }
       }
 
       // Register service worker
-      const registration = await navigator.serviceWorker.register("/sw.js");
+      const registration = await navigator.serviceWorker.register('/sw.js');
       await navigator.serviceWorker.ready;
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        throw new Error("Service worker registration failed");
+        throw new Error('Service worker registration failed');
       }
 
       // Subscribe to push notifications
@@ -175,7 +175,7 @@ export function PushNotificationProvider({
 
       // Detect device information
       const deviceInfo = {
-        platform: navigator.platform || "Unknown",
+        platform: navigator.platform || 'Unknown',
         browser: getBrowserInfo(),
         deviceType: getDeviceType(),
       };
@@ -189,27 +189,27 @@ export function PushNotificationProvider({
 
       console.log(
         result.isNew
-          ? "✅ New device subscription created"
-          : "🔄 Existing device subscription updated"
+          ? '✅ New device subscription created'
+          : '🔄 Existing device subscription updated'
       );
 
       setIsSubscribed(true);
       return true;
     } catch (error) {
-      console.error("Error subscribing to push notifications:", error);
+      console.error('Error subscribing to push notifications:', error);
       throw error;
     }
   };
 
   const unsubscribe = async (): Promise<boolean> => {
     try {
-      if (!("serviceWorker" in navigator)) return false;
+      if (!('serviceWorker' in navigator)) return false;
 
       const registration = await navigator.serviceWorker.ready;
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        throw new Error("Service worker registration not available");
+        throw new Error('Service worker registration not available');
       }
 
       const subscription = await registration.pushManager.getSubscription();
@@ -223,7 +223,7 @@ export function PushNotificationProvider({
       // First unsubscribe from the browser
       const browserUnsubscribed = await subscription.unsubscribe();
       if (!browserUnsubscribed) {
-        throw new Error("Failed to unsubscribe from browser");
+        throw new Error('Failed to unsubscribe from browser');
       }
 
       // Then remove the subscription record from backend
@@ -233,7 +233,7 @@ export function PushNotificationProvider({
         });
       } catch (backendError) {
         console.error(
-          "Error removing subscription from backend:",
+          'Error removing subscription from backend:',
           backendError
         );
         // Re-throw to let caller handle the error
@@ -248,7 +248,7 @@ export function PushNotificationProvider({
       setIsSubscribed(false);
       return true;
     } catch (error) {
-      console.error("Error unsubscribing from push notifications:", error);
+      console.error('Error unsubscribing from push notifications:', error);
       throw error;
     }
   };
@@ -272,8 +272,8 @@ export function PushNotificationProvider({
 
 // Helper function to convert VAPID key
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -288,19 +288,23 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 function getBrowserInfo(): string {
   const userAgent = navigator.userAgent;
 
-  if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
-    return "Chrome";
-  } else if (userAgent.includes("Firefox")) {
-    return "Firefox";
-  } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-    return "Safari";
-  } else if (userAgent.includes("Edg")) {
-    return "Edge";
-  } else if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
-    return "Opera";
+  if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+    return 'Chrome';
+  }
+  if (userAgent.includes('Firefox')) {
+    return 'Firefox';
+  }
+  if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+    return 'Safari';
+  }
+  if (userAgent.includes('Edg')) {
+    return 'Edge';
+  }
+  if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+    return 'Opera';
   }
 
-  return "Unknown";
+  return 'Unknown';
 }
 
 // Helper function to detect device type
@@ -308,14 +312,15 @@ function getDeviceType(): string {
   const userAgent = navigator.userAgent;
 
   if (/tablet|ipad|playbook|silk/i.test(userAgent)) {
-    return "Tablet";
-  } else if (
+    return 'Tablet';
+  }
+  if (
     /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
       userAgent
     )
   ) {
-    return "Mobile";
+    return 'Mobile';
   }
 
-  return "Desktop";
+  return 'Desktop';
 }

@@ -1,12 +1,12 @@
-"use node";
+'use node';
 
-import { v } from "convex/values";
-import { api } from "./_generated/api";
-import { action } from "./_generated/server";
+import { v } from 'convex/values';
+import { api } from './_generated/api';
+import { action } from './_generated/server';
 
 export const sendPushNotification = action({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     title: v.string(),
     body: v.string(),
     data: v.optional(v.any()),
@@ -23,7 +23,7 @@ export const sendPushNotification = action({
     failed: number;
     total: number;
   }> => {
-    console.log("📱 Sending push notification to user:", args.userId);
+    console.log('📱 Sending push notification to user:', args.userId);
 
     // Get all active push subscriptions for the user
     const subscriptions = await ctx.runQuery(
@@ -34,7 +34,7 @@ export const sendPushNotification = action({
     );
 
     if (!subscriptions || subscriptions.length === 0) {
-      console.log("❌ No push subscriptions found for user:", args.userId);
+      console.log('❌ No push subscriptions found for user:', args.userId);
       return { success: false, sent: 0, failed: 0, total: 0 };
     }
 
@@ -51,8 +51,8 @@ export const sendPushNotification = action({
     const payload = JSON.stringify({
       title: args.title,
       body: args.body,
-      icon: args.icon || "/icon-192x192.png",
-      badge: args.badge || "/badge-72x72.png",
+      icon: args.icon || '/icon-192x192.png',
+      badge: args.badge || '/badge-72x72.png',
       data: {
         ...args.data,
         url: args.url,
@@ -60,27 +60,27 @@ export const sendPushNotification = action({
       },
       actions: [
         {
-          action: "view",
-          title: "View",
+          action: 'view',
+          title: 'View',
         },
         {
-          action: "close",
-          title: "Close",
+          action: 'close',
+          title: 'Close',
         },
       ],
     });
 
     // Import web-push dynamically to avoid issues with server-side rendering
-    const webpush = require("web-push");
+    const webpush = require('web-push');
 
     // Configure VAPID keys
     webpush.setVapidDetails(
-      "mailto:ebukaj665@gmail.com",
+      'mailto:ebukaj665@gmail.com',
       process.env.VAPID_PUBLIC_KEY!,
       process.env.VAPID_PRIVATE_KEY!
     );
 
-    console.log("🔑 VAPID keys configured");
+    console.log('🔑 VAPID keys configured');
 
     let sentCount = 0;
     let failedCount = 0;
@@ -89,7 +89,7 @@ export const sendPushNotification = action({
     for (const subscription of subscriptions) {
       try {
         console.log(
-          `📤 Sending to device: ${subscription.deviceInfo?.platform || "Unknown"} - ${subscription.deviceInfo?.browser || "Unknown"}`
+          `📤 Sending to device: ${subscription.deviceInfo?.platform || 'Unknown'} - ${subscription.deviceInfo?.browser || 'Unknown'}`
         );
 
         await webpush.sendNotification(
@@ -97,7 +97,7 @@ export const sendPushNotification = action({
           payload
         );
 
-        console.log("✅ Push notification sent successfully to device");
+        console.log('✅ Push notification sent successfully to device');
         sentCount++;
 
         // Update last used timestamp
@@ -108,8 +108,8 @@ export const sendPushNotification = action({
           }
         );
       } catch (error: any) {
-        console.error("❌ Push notification failed for device:", error);
-        console.error("Error details:", {
+        console.error('❌ Push notification failed for device:', error);
+        console.error('Error details:', {
           statusCode: error.statusCode,
           body: error.body,
           headers: error.headers,
@@ -119,14 +119,14 @@ export const sendPushNotification = action({
 
         // Mark subscription as inactive for invalid subscriptions
         if (error.statusCode === 410 || error.statusCode === 404) {
-          console.log("🗑️ Marking invalid subscription as inactive");
+          console.log('🗑️ Marking invalid subscription as inactive');
           try {
             await ctx.runMutation(api.notifications.removePushSubscription, {
               subscriptionId: subscription._id,
             });
           } catch (removeError) {
             console.error(
-              "Failed to remove invalid subscription:",
+              'Failed to remove invalid subscription:',
               removeError
             );
           }

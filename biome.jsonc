@@ -1,6 +1,13 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
-  "extends": [
-    "ultracite"
-  ]
+  "extends": ["ultracite"],
+  "linter": {
+    "rules": {
+      // Turn off or reduce severity of strict rules:
+      "noAutofocus": "off",
+      "noUnusedVariables": "warn",
+      "noConsole": "warn"
+      // You can add more rules here as needed
+    }
+  }
 }
