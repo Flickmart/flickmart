@@ -26,6 +26,11 @@ export default function TransactionDetails({
 }: TransactionDetailsProps) {
   const [open, setOpen] = useState(false);
 
+
+  const onClose  = ()=>{
+    setOpen(false)
+  }
+
   return (
     <div className="w-full overflow-auto">
       <Sheet onOpenChange={setOpen} open={open}>
@@ -84,6 +89,7 @@ export default function TransactionDetails({
               handlePaystackSuccess={handlePaystackSuccess}
               transaction={transaction}
               user={user}
+              onClose={onClose}
             />
           </div>
         </SheetContent>
