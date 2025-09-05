@@ -431,12 +431,11 @@ export const addBookmark = mutation({
 
     const wishListed = await ctx.db
       .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("type"), args.type)
-        )
+      .withIndex("by_product_user_type", (q) =>
+        q
+          .eq("productId", args.productId)
+          .eq("userId", user._id)
+          .eq("type", args.type)
       )
       .first();
 
@@ -458,7 +457,10 @@ export const addBookmark = mutation({
 });
 
 export const getSavedOrWishlistProduct = query({
-  args: { productId: v.id("product"), type: v.string() },
+  args: {
+    productId: v.id("product"),
+    type: v.union(v.literal("saved"), v.literal("wishlist")),
+  },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
@@ -479,12 +481,11 @@ export const getSavedOrWishlistProduct = query({
     }
     const saved = await ctx.db
       .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("productId"), product._id),
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("type"), args.type)
-        )
+      .withIndex("by_product_user_type", (q) =>
+        q
+          .eq("productId", product._id)
+          .eq("userId", user._id)
+          .eq("type", args.type)
       )
       .first();
     return { success: true, error: null, data: saved };
@@ -502,11 +503,8 @@ export const getAllSavedOrWishlist = query({
     }
     const saved = await ctx.db
       .query("bookmarks")
-      .filter((q) =>
-        q.and(
-          q.eq(q.field("userId"), user._id),
-          q.eq(q.field("type"), args.type)
-        )
+      .withIndex("by_user_type", (q) =>
+        q.eq("userId", user._id).eq("type", args.type)
       )
       .collect();
 
