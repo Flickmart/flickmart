@@ -8,7 +8,6 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Bell, BellOff, Smartphone, AlertCircle } from "lucide-react";
 import { DeviceSubscriptions } from "./DeviceSubscriptions";
-import { PushNotificationTest } from "./PushNotificationTest";
 import { toast } from "sonner";
 
 export function NotificationSettings() {
@@ -130,9 +129,6 @@ export function NotificationSettings() {
 
       {/* All Devices */}
       <DeviceSubscriptions />
-
-      {/* Test Notifications */}
-      <PushNotificationTest />
     </div>
   );
 }

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import MobileNav from "@/components/MobileNav";
 import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
-import { PushNotificationTest } from "@/components/notifications/PushNotificationTest";
+
 import MiniListings from "@/components/settings/MiniListings";
 import RecentListings from "@/components/settings/RecentListings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -204,8 +204,6 @@ export default function PublicProfile() {
             {/* Push Notifications */}
             <PushNotificationSetup />
 
-            {/* Test Component (Development Only) */}
-            <PushNotificationTest />
           </div>
         </div>
       </div>
