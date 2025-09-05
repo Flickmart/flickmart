@@ -1,13 +1,14 @@
 import useUserAgent from "@/hooks/useUserAgent";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
 import React, { useEffect, useState } from "react";
 import { setCookie, getCookie } from "cookies-next";
+import AddToMobileChrome from "./AddToMobileChrome";
 // Dynamically Import
-const ModuleLoading = () => <p className=" text-white font-bold">Loading...</p>;
+// const ModuleLoading = () => <p className=" text-white font-bold">Loading...</p>;
 
-const AddToMobileChrome = dynamic(() => import("./AddToMobileChrome"), {
-  loading: () => <ModuleLoading />,
-});
+// const AddToMobileChrome = dynamic(() => import("./AddToMobileChrome"), {
+//   loading: () => <ModuleLoading />,
+// });
 
 const COOKIE_NAME = "addToHomeScreenPrompt";
 
@@ -47,8 +48,8 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     const handler = (e: Event) => {
+      console.log("the event object", e);
       e.preventDefault();
-      console.log("not defined", e);
       setDeferredPrompt(e);
       setIsVisible(true); // show button when prompt is available
     };

@@ -19,7 +19,7 @@ export default function AddToMobileChrome(props: Props) {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="bg-white flex justify-between px-6 items-center h-28 m-4 rounded-xl w-full lg:w-2/4 relative"
+      className="bg-white flex justify-between px-6 items-center h-28 my-4 mx-2 rounded-xl w-full lg:w-2/4 relative"
     >
       {/* <div
         onClick={closePrompt}
@@ -32,9 +32,9 @@ export default function AddToMobileChrome(props: Props) {
       </div>
       <Button
         onClick={handleInstallClick}
-        className="capitalize !p-6 mt-1 text-base font-semibold"
+        className="capitalize lg:!p-6 mt-1 text-sm lg:text-base font-semibold"
       >
-        install flickmart
+        install app
       </Button>
     </div>
   );
