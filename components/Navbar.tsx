@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   SignedIn,
@@ -6,8 +6,8 @@ import {
   SignInButton,
   SignOutButton,
   useUser,
-} from '@clerk/nextjs';
-import { useQuery } from 'convex/react';
+} from "@clerk/nextjs";
+import { useQuery } from "convex/react";
 import {
   Bell,
   ChevronDown,
@@ -21,12 +21,12 @@ import {
   Store,
   User,
   Wallet,
-} from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import type React from 'react';
-import { useState } from 'react';
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,19 +34,19 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet';
-import { api } from '@/convex/_generated/api';
-import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
-import { Button } from './ui/button';
-
+} from "@/components/ui/sheet";
+import { api } from "@/convex/_generated/api";
+import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
+import Logo from "./multipage/Logo";
 
 export default function Navbar({ children }: { children?: React.ReactNode }) {
   const { isSignedIn, isLoaded, user } = useUser();
@@ -55,7 +55,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
     useQuery(api.notifications.getUnreadNotifications) || [];
   const wishlistLength =
     useQuery(api.product.getAllSavedOrWishlist, {
-      type: 'wishlist',
+      type: "wishlist",
     })?.data?.length || 0;
 
   const userStore = useQuery(api.store.getStoresByUserId);
@@ -65,28 +65,18 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
   return (
     <header
       className={cn(
-        'sticky top-0 z-30 w-full shadow-black/20 shadow-sm',
-        { 'lg:py-2': pathname !== '/' },
+        "sticky top-0 z-30 w-full shadow-black/20 shadow-sm",
+        { "lg:py-2": pathname !== "/" },
         {
-          'hidden bg-white sm:block': pathname !== '/',
-          'bg-flickmartLight': pathname === '/',
+          "hidden bg-white sm:block": pathname !== "/",
+          "bg-flickmartLight": pathname === "/",
         }
       )}
     >
-      
       <div className="mx-auto w-[95%] py-1">
         <div className="flex w-full items-center justify-between">
-          <Link className="flex items-center gap-1" href={'/'}>
-            <Image
-              alt=""
-              className="h-12 w-12"
-              height={500}
-              src="/flickmart-logo.svg"
-              width={500}
-            />
-            <h1 className="pt-1 font-bold text-xl">
-              Flick<span className="text-flickmart">Mart</span>
-            </h1>
+          <Link className="flex items-center gap-1" href={"/"}>
+            <Logo />
           </Link>
           {children}
           <div className="hidden items-center gap-8 lg:flex">
@@ -96,22 +86,22 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             >
               <Link
                 className={cn({
-                  'rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                    pathname !== '/',
+                  "rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]":
+                    pathname !== "/",
                 })}
                 href="/chat"
               >
                 <MessageSquareText
                   className={cn({
-                    'size-[30px] stroke-[1.5]': pathname === '/',
-                    'size-[25px] stroke-[1.5]': pathname !== '/',
+                    "size-[30px] stroke-[1.5]": pathname === "/",
+                    "size-[25px] stroke-[1.5]": pathname !== "/",
                   })}
                 />
               </Link>
               <Link
                 className={cn({
-                  'rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]':
-                    pathname !== '/',
+                  "rounded-full bg-white p-[10px] shadow-[0_5px_5px_#00000050]":
+                    pathname !== "/",
                 })}
                 href="/notifications"
               >
@@ -123,8 +113,8 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                   )}
                   <Bell
                     className={cn({
-                      'size-[30px] stroke-[1.5]': pathname === '/',
-                      'size-[25px] stroke-[1.5]': pathname !== '/',
+                      "size-[30px] stroke-[1.5]": pathname === "/",
+                      "size-[25px] stroke-[1.5]": pathname !== "/",
                     })}
                   />
                 </div>
@@ -197,7 +187,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem asChild className="w-full">
                       <SignOutButton
-                        signOutOptions={{ redirectUrl: '/sign-in' }}
+                        signOutOptions={{ redirectUrl: "/sign-in" }}
                       >
                         <Button variant="ghost">
                           <LogOut className="size-4" />
@@ -221,7 +211,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             <button className="rounded-md bg-flickmart font-bold text-sm text-white">
               <Link
                 className="inline-block px-8 py-2"
-                href={userStore?.data ? '/post-ad' : '/create-store'}
+                href={userStore?.data ? "/post-ad" : "/create-store"}
               >
                 SELL
               </Link>
@@ -264,7 +254,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                     <div className="flex w-full flex-col font-medium">
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'/wallet'}
+                        href={"/wallet"}
                         onClick={() => setOpen(false)}
                       >
                         Wallet
@@ -278,14 +268,14 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       </Link>
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'#'}
+                        href={"#"}
                         onClick={() => setOpen(false)}
                       >
                         <span>About Us</span>
                       </Link>
                       <Link
                         className="border-[#E8ECEF] border-b py-4"
-                        href={'/contact'}
+                        href={"/contact"}
                         onClick={() => setOpen(false)}
                       >
                         Contact Us
@@ -317,7 +307,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
                       <div className="pt-5">
                         <SignedIn>
                           <SignOutButton
-                            signOutOptions={{ redirectUrl: '/sign-in' }}
+                            signOutOptions={{ redirectUrl: "/sign-in" }}
                           >
                             <button
                               className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"

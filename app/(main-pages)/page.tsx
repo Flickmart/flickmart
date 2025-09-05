@@ -12,7 +12,6 @@ import MobileNav from "@/components/MobileNav";
 import SearchBox from "@/components/SearchBox";
 import SearchOverlay from "@/components/SearchOverlay";
 import InstallPrompt from "@/components/InstallPrompt";
-// import { subscribeUser, unsubscribeUser, sendNotification } from "./actions";
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -48,7 +47,7 @@ export default function Home() {
 
   return (
     <>
-      {/* <InstallPrompt /> */}
+      <InstallPrompt />
       <MobileNav />
       <SearchOverlay open={searchOpen} openSearch={openSearch} />
       <SearchBox open={searchOpen} openSearch={openSearch} />
