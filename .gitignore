@@ -10,6 +10,11 @@
 !.yarn/releases
 !.yarn/versions
 
+
+.vscode
+.kiro
+.cursor
+
 # testing
 /coverage
 

@@ -133,7 +133,9 @@ export default defineSchema({
     timeStamp: v.string(),
     type: v.union(v.literal("saved"), v.literal("wishlist")),
     added: v.boolean(),
-  }),
+  })
+    .index("by_user_type", ["userId", "type"])
+    .index("by_product_user_type", ["productId", "userId", "type"]),
 
   conversations: defineTable({
     user1: v.id("users"),
