@@ -140,7 +140,7 @@ export default function PublicProfile() {
                   </Link>
                 </Button>
               </div>
-              <div className="space-y-4 rounded-lg bg-flickmart-chat-orange text-white p-2">
+              <div className="space-y-4 rounded-lg bg-primary text-white p-2">
                 <div className="flex justify-between items-center text-xs font-medium">
                   <span>Available Balance</span>
                   <div className="flex items-center">
@@ -152,7 +152,7 @@ export default function PublicProfile() {
                   <div className="flex items-center">
                     <h1 className="text-xl font-bold">₦500.00</h1><ChevronRight className="h-4 w-4" />
                   </div>
-                  <button className="text-[10px] bg-white text-flickmart-chat-orange rounded-full py-1 px-2">+ Add Money</button>
+                  <button className="text-[10px] bg-white text-primary rounded-full py-1 px-2">+ Add Money</button>
                 </div>
               </div>
               <p className="pt-1.5 text-muted-foreground text-sm">
