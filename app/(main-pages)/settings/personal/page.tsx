@@ -3,6 +3,7 @@ import { useQuery } from "convex/react";
 import {
   ArrowLeft,
   ChevronLeft,
+  ChevronRight,
   Mail,
   MapPin,
   Phone,
@@ -111,14 +112,18 @@ export default function PublicProfile() {
                     />
                   ) : null}
                 </div>
-                <span className="flex items-center gap-2 text-sm">
+                <span className="flex items-center gap-1 text-sm py-0.5">
                   <User className="h-5 w-5" />
                   {hasStore === 404 ? "Buyer" : "Seller"}
                 </span>
+                <div className="text-sm flex gap-2">
+                  <span>items for sale{' '}3</span>
+                  <span>items sold{' '}7</span>
+                </div>
               </div>
             </div>
             <div className="my-4 flex flex-col gap-2">
-              <span className="text-sm">Hey there i use Flickmart!</span>
+              <span className="text-sm">Hey, i buy and sell here!</span>
               <div className="mt-1.5 flex items-center gap-2">
                 <Button className="w-5/12">
                   <Link
@@ -134,6 +139,21 @@ export default function PublicProfile() {
                     <Wallet />
                   </Link>
                 </Button>
+              </div>
+              <div className="space-y-4 rounded-lg bg-flickmart-chat-orange text-white p-2">
+                <div className="flex justify-between items-center text-xs font-medium">
+                  <span>Available Balance</span>
+                  <div className="flex items-center">
+                    <span>Transaction History</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center">
+                    <h1 className="text-xl font-bold">₦500.00</h1><ChevronRight className="h-4 w-4" />
+                  </div>
+                  <button className="text-[10px] bg-white text-flickmart-chat-orange rounded-full py-1 px-2">+ Add Money</button>
+                </div>
               </div>
               <p className="pt-1.5 text-muted-foreground text-sm">
                 Member since{" "}
