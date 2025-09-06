@@ -58,7 +58,7 @@ export default function Footer() {
                     </h1>
                   </Link>
                 </AccordionTrigger>
-                <p className="mb-3 lg:mt-6">What you order is what you get.</p>
+                <p className="mb-3 lg:mt-6">One flick endless choices.</p>
               </article>
               <AccordionContent>
                 <article className="mb-3 flex w-full flex-col justify-between lg:mb-9 lg:hidden lg:w-6/12 lg:flex-row">
@@ -108,18 +108,18 @@ export default function Footer() {
                           width={30}
                         />
                       </Link>
-                      <Link className="group" href={'#'} target="_blank">
+                      <Link className="group" href={'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'} target="_blank">
                         <Image
-                          alt="Facebook"
+                          alt="X"
                           className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                           height={26}
                           src="/x.png"
                           width={26}
                         />
                       </Link>
-                      <Link className="group" href={'#'} target="_blank">
+                      <Link className="group" href={'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'} target="_blank">
                         <Image
-                          alt="Facebook"
+                          alt="Whatsapp"
                           className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                           height={30}
                           src="/wa.png"
@@ -152,18 +152,18 @@ export default function Footer() {
                     width={30}
                   />
                 </Link>
-                <Link className="group" href={'#'} target="_blank">
+                <Link className="group" href={'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'} target="_blank">
                   <Image
-                    alt="Facebook"
+                    alt="x"
                     className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                     height={26}
                     src="/x.png"
                     width={26}
                   />
                 </Link>
-                <Link className="group" href={'#'} target="_blank">
+                <Link className="group" href={'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'} target="_blank">
                   <Image
-                    alt="Facebook"
+                    alt="Whatsapp"
                     className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
                     height={30}
                     src="/wa.png"
