@@ -413,18 +413,31 @@ export const getConversations = query({
     if (!identity) {
       throw new Error("Unauthorized");
     }
-    const conversations = await ctx.db
+
+    // Use existing indexes to efficiently fetch conversations
+    // Get conversations where user is user1
+    const conversationsAsUser1 = await ctx.db
       .query("conversations")
-      .filter((q) =>
-        q.or(
-          q.eq(q.field("user1"), args.userId),
-          q.eq(q.field("user2"), args.userId)
-        )
-      )
+      .withIndex("byUser1Id", (q) => q.eq("user1", args.userId))
       .collect();
 
+    // Get conversations where user is user2
+    const conversationsAsUser2 = await ctx.db
+      .query("conversations")
+      .withIndex("byUser2Id", (q) => q.eq("user2", args.userId))
+      .collect();
+
+    // Combine and deduplicate conversations
+    const allConversations = [...conversationsAsUser1, ...conversationsAsUser2];
+
+    // Remove duplicates (shouldn't happen but safety check)
+    const uniqueConversations = allConversations.filter(
+      (conversation, index, self) =>
+        index === self.findIndex((c) => c._id === conversation._id)
+    );
+
     // Sort conversations by updatedAt (most recent message) in descending order
-    return conversations.sort(
+    return uniqueConversations.sort(
       (a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)
     );
   },
@@ -459,7 +472,6 @@ export const getMessages = query({
       .withIndex("by_conversationId", (q) =>
         q.eq("conversationId", args.conversationId)
       )
-      .filter((q) => q.eq(q.field("conversationId"), args.conversationId))
       .collect();
 
     const messagesWithProducts = await Promise.all(
@@ -499,7 +511,6 @@ export const getAllConversationsMessages = query({
         .withIndex("by_conversationId", (q) =>
           q.eq("conversationId", conversationId)
         )
-        .filter((q) => q.eq(q.field("conversationId"), conversationId))
         .collect();
 
       allMessages.push(...messages);
