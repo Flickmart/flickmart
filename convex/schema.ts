@@ -170,7 +170,10 @@ export default defineSchema({
     orderId: v.optional(v.id("orders")),
     transferAmount: v.optional(v.number()),
     currency: v.optional(v.string()),
-  }),
+  }).index("by_conversationId", ["conversationId"])
+  
+  
+  ,
   notifications: defineTable({
     title: v.string(),
     userId: v.id("users"),
