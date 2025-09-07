@@ -44,19 +44,19 @@ export default function SearchBox({
     <div className="flex w-full justify-center bg-flickmartLight pt-16 pb-8 text-base">
       <div className="flex w-11/12 flex-col items-center justify-center gap-5 lg:w-6/12">
         <div className="flex w-full items-center justify-center gap-2">
-          <span className="font-medium">Find anything in</span>
+          <span className="font-medium">Find anything on</span>
           <div className="flex items-center gap-1 rounded-md bg-black px-4 py-2 text-white">
             <MapPin className="h-4 w-4" />
             <Select onValueChange={(val) => setLocation(val)} value={location}>
               <SelectTrigger>
-                <SelectValue placeholder="All Nigeria" />
+                <SelectValue placeholder="All Campuses" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup className="capitalize">
                   <SelectLabel>location</SelectLabel>
-                  <SelectItem value="all">All</SelectItem>
-                  <SelectItem value="enugu">Enugu</SelectItem>
-                  <SelectItem value="nsukka">Nsukka</SelectItem>
+                  <SelectItem value="all">All Campuses</SelectItem>
+                  <SelectItem value="enugu">Enugu - UNEC</SelectItem>
+                  <SelectItem value="nsukka">Nsukka - UNN</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
