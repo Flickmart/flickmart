@@ -1,21 +1,23 @@
-import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import { internalMutation, mutation, query } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./users";
+/** biome-ignore-all lint/style/noMagicNumbers: its a simple value */
+import { v } from 'convex/values';
+import { internal } from './_generated/api';
+import type { Id } from './_generated/dataModel';
+import { internalMutation, mutation, query } from './_generated/server';
+import { getCurrentUserOrThrow } from './users';
 
 export const createWallet = mutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     balance: v.number(),
     currency: v.string(),
     status: v.union(
-      v.literal("active"),
-      v.literal("inactive"),
-      v.literal("blocked")
+      v.literal('active'),
+      v.literal('inactive'),
+      v.literal('blocked')
     ),
   },
   handler: async (ctx, args) => {
-    const wallet = await ctx.db.insert("wallets", args);
+    const wallet = await ctx.db.insert('wallets', args);
     return wallet;
   },
 });
@@ -28,33 +30,33 @@ export const getCurrentWallet = query({
         success: false,
         error: {
           status: 401,
-          message: "Authentication Required",
-          code: "USER_NOT_FOUND",
+          message: 'Authentication Required',
+          code: 'USER_NOT_FOUND',
         },
         data: null,
       };
     }
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .unique();
     return wallet;
   },
 });
 
 export const getWalletByUserId = query({
-  args: { userId: v.id("users") },
+  args: { userId: v.id('users') },
   handler: async (ctx, args) => {
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .unique();
     return wallet;
   },
 });
 
 export const getWalletByWalletId = query({
-  args: { walletId: v.id("wallets") },
+  args: { walletId: v.id('wallets') },
   handler: async (ctx, args) => {
     const wallet = await ctx.db.get(args.walletId);
     return wallet;
@@ -63,7 +65,7 @@ export const getWalletByWalletId = query({
 
 export const updateBalance = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     balance: v.number(), // Available balance
   },
   handler: async (ctx, args) => {
@@ -77,23 +79,23 @@ export const updateBalance = internalMutation({
 // PIN Management Functions (Internal mutations for HTTP actions)
 export const createPinInternal = internalMutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     hashedPin: v.string(),
   },
   handler: async (ctx, args) => {
     // Get user's wallet
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .unique();
 
     if (!wallet) {
-      throw new Error("Wallet not found. Please create a wallet first.");
+      throw new Error('Wallet not found. Please create a wallet first.');
     }
 
     // Check if PIN already exists
     if (wallet.pinHash) {
-      throw new Error("PIN already exists. Use change PIN instead.");
+      throw new Error('PIN already exists. Use change PIN instead.');
     }
 
     // Update wallet with PIN
@@ -105,28 +107,28 @@ export const createPinInternal = internalMutation({
       pinUpdatedAt: Date.now(),
     });
 
-    return { success: true, message: "PIN created successfully" };
+    return { success: true, message: 'PIN created successfully' };
   },
 });
 
 export const verifyPinInternal = internalMutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     pin: v.string(),
   },
   handler: async (ctx, args) => {
     // Get user's wallet
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .unique();
 
     if (!wallet) {
-      throw new Error("Wallet not found.");
+      throw new Error('Wallet not found.');
     }
 
     if (!wallet.pinHash) {
-      throw new Error("PIN not set. Please create a PIN first.");
+      throw new Error('PIN not set. Please create a PIN first.');
     }
 
     // Check if wallet is locked
@@ -145,7 +147,7 @@ export const verifyPinInternal = internalMutation({
 
 export const updatePinAttempts = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     attempts: v.number(),
     lockUntil: v.optional(v.number()),
   },
@@ -159,7 +161,7 @@ export const updatePinAttempts = internalMutation({
 
 export const resetPinAttempts = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.walletId, {
@@ -171,18 +173,18 @@ export const resetPinAttempts = internalMutation({
 
 export const changePinInternal = internalMutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     hashedPin: v.string(),
   },
   handler: async (ctx, args) => {
     // Get wallet
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
       .unique();
 
     if (!wallet) {
-      throw new Error("Wallet not found.");
+      throw new Error('Wallet not found.');
     }
 
     // Update wallet with new PIN
@@ -193,7 +195,7 @@ export const changePinInternal = internalMutation({
       pinUpdatedAt: Date.now(),
     });
 
-    return { success: true, message: "PIN changed successfully" };
+    return { success: true, message: 'PIN changed successfully' };
   },
 });
 
@@ -205,8 +207,8 @@ export const checkPinExists = query({
     }
 
     const wallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .unique();
 
     return {
@@ -221,9 +223,9 @@ export const checkPinExists = query({
 
 export const transferToUserWithEscrow = mutation({
   args: {
-    sellerId: v.id("users"),
+    sellerId: v.id('users'),
     amount: v.number(), // Amount in main currency (e.g., Naira), will be converted
-    productIds: v.array(v.id("product")),
+    productIds: v.array(v.id('product')),
   },
   handler: async (ctx, args) => {
     const buyer = await getCurrentUserOrThrow(ctx);
@@ -231,29 +233,29 @@ export const transferToUserWithEscrow = mutation({
     const { sellerId, productIds } = args;
 
     if (!buyer) {
-      throw new Error("Unauthroized");
+      throw new Error('Unauthroized');
     }
 
     if (buyer._id === sellerId) {
-      throw new Error("You cannot send money to yourself.");
+      throw new Error('You cannot send money to yourself.');
     }
 
     // 1. Get buyer and seller wallets
     const buyerWallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", buyer._id))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', buyer._id))
       .unique();
 
     if (!buyerWallet) {
-      throw new Error("Your wallet was not found. Please set one up first.");
+      throw new Error('Your wallet was not found. Please set one up first.');
     }
     if (buyerWallet.balance < amountInCents) {
-      throw new Error("Insufficient funds.");
+      throw new Error('Insufficient funds.');
     }
 
     const sellerWallet = await ctx.db
-      .query("wallets")
-      .withIndex("by_user", (q) => q.eq("userId", sellerId))
+      .query('wallets')
+      .withIndex('by_user', (q) => q.eq('userId', sellerId))
       .unique();
 
     if (!sellerWallet) {
@@ -265,7 +267,7 @@ export const transferToUserWithEscrow = mutation({
     const seller = await ctx.db.get(sellerId);
 
     if (!seller) {
-      throw new Error("Could not find seller to notify.");
+      throw new Error('Could not find seller to notify.');
     }
     // 2. Debit buyer's wallet
     await ctx.db.patch(buyerWallet._id, {
@@ -273,12 +275,12 @@ export const transferToUserWithEscrow = mutation({
     });
 
     // 3. Create an Order with multiple product IDs
-    const orderId = await ctx.db.insert("orders", {
+    const orderId = await ctx.db.insert('orders', {
       productIds,
       buyerId: buyer._id,
       sellerId,
       amount: amountInCents,
-      status: "in_escrow",
+      status: 'in_escrow',
       buyerConfirmedCompletion: false,
       sellerConfirmedCompletion: false,
       createdAt: Date.now(),
@@ -290,13 +292,13 @@ export const transferToUserWithEscrow = mutation({
     const reference = `FLK-TRO-${timestamp}-${randomStr}`;
 
     // 5. Create an Escrow record
-    await ctx.db.insert("escrows", {
+    await ctx.db.insert('escrows', {
       orderId,
       buyerId: buyer._id,
       sellerId,
       amount: amountInCents,
       currency: buyerWallet.currency,
-      status: "frozen",
+      status: 'frozen',
       reference: `escrow-${reference}`,
       createdAt: Date.now(),
     });
@@ -305,9 +307,9 @@ export const transferToUserWithEscrow = mutation({
     await ctx.runMutation(internal.transactions.create, {
       userId: buyer._id,
       walletId: buyerWallet._id,
-      type: "transfer_out",
+      type: 'transfer_out',
       amount: amountInCents,
-      status: "success",
+      status: 'success',
       reference,
       description: `Payment made to ${seller.name}`,
       metadata: {
@@ -320,22 +322,22 @@ export const transferToUserWithEscrow = mutation({
 
     // 7. Find or create conversation between buyer and seller
     const existingConversation = await ctx.db
-      .query("conversations")
+      .query('conversations')
       .filter((q) =>
         q.or(
           q.and(
-            q.eq(q.field("user1"), buyer._id),
-            q.eq(q.field("user2"), sellerId)
+            q.eq(q.field('user1'), buyer._id),
+            q.eq(q.field('user2'), sellerId)
           ),
           q.and(
-            q.eq(q.field("user1"), sellerId),
-            q.eq(q.field("user2"), buyer._id)
+            q.eq(q.field('user1'), sellerId),
+            q.eq(q.field('user2'), buyer._id)
           )
         )
       )
       .first();
 
-    let conversationId;
+    let conversationId: Id<'conversations'>;
     if (existingConversation) {
       conversationId = existingConversation._id;
     } else {
@@ -344,7 +346,7 @@ export const transferToUserWithEscrow = mutation({
       unreadCount[buyer._id] = 0;
       unreadCount[sellerId] = 1; // Seller has 1 unread message (the transfer message)
 
-      conversationId = await ctx.db.insert("conversations", {
+      conversationId = await ctx.db.insert('conversations', {
         user1: buyer._id,
         user2: sellerId,
         lastMessageId: undefined,
@@ -355,10 +357,10 @@ export const transferToUserWithEscrow = mutation({
     }
 
     // 8. Create transfer message in chat
-    const transferMessageId = await ctx.db.insert("message", {
+    const transferMessageId = await ctx.db.insert('message', {
       senderId: buyer._id,
       conversationId,
-      type: "transfer",
+      type: 'transfer',
       content: `Sent ${args.amount} ${buyerWallet.currency}`,
       orderId,
       transferAmount: amountInCents,
@@ -391,8 +393,8 @@ export const transferToUserWithEscrow = mutation({
 
     await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: sellerId,
-      type: "escrow_funded",
-      title: "Funds Received in Escrow",
+      type: 'escrow_funded',
+      title: 'Funds Received in Escrow',
       content: notificationContentForSeller,
       relatedId: orderId,
       link: `/orders/${orderId}`,
@@ -400,8 +402,8 @@ export const transferToUserWithEscrow = mutation({
     });
     await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: buyer._id,
-      type: "escrow_funded",
-      title: "Funds Sent to Escrow",
+      type: 'escrow_funded',
+      title: 'Funds Sent to Escrow',
       content: `You sent ${args.amount} ${buyerWallet.currency} to ${seller.name} for your order.`,
       relatedId: orderId,
       link: `/orders/${orderId}`,
@@ -414,7 +416,7 @@ export const transferToUserWithEscrow = mutation({
 
 export const updateRecipientCode = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     recipientCode: v.string(),
   },
   handler: async (ctx, args) => {
@@ -427,7 +429,7 @@ export const updateRecipientCode = internalMutation({
 
 export const updatePaystackCustomerId = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     customerId: v.string(),
   },
   handler: async (ctx, args) => {
@@ -440,17 +442,17 @@ export const updatePaystackCustomerId = internalMutation({
 
 export const attemptWithdrawal = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     amount: v.number(), // Amount in kobo
   },
   handler: async (ctx, args) => {
     const wallet = await ctx.db.get(args.walletId);
     if (!wallet) {
-      throw new Error("Wallet not found");
+      throw new Error('Wallet not found');
     }
 
     if (wallet.balance < args.amount) {
-      throw new Error("Insufficient funds");
+      throw new Error('Insufficient funds');
     }
 
     // Atomically deduct the balance
@@ -464,13 +466,13 @@ export const attemptWithdrawal = internalMutation({
 
 export const refundWithdrawal = internalMutation({
   args: {
-    walletId: v.id("wallets"),
+    walletId: v.id('wallets'),
     amount: v.number(), // Amount in kobo to refund
   },
   handler: async (ctx, args) => {
     const wallet = await ctx.db.get(args.walletId);
     if (!wallet) {
-      throw new Error("Wallet not found");
+      throw new Error('Wallet not found');
     }
 
     // Refund the amount back to wallet
