@@ -8,7 +8,23 @@
     "rules": {
       "complexity": {
         "noForEach": "off",
-        "useLiteralKeys": "off"
+        "useLiteralKeys": "off",
+        "noExcessiveCognitiveComplexity": {
+          "options": {
+            "maxAllowedComplexity": 21
+          }
+        }
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
+      },
+      "suspicious": {
+        "noConsole": {
+          "level": "off",
+          "options": {
+            "allow": ["assert", "error", "info", "warn"]
+          }
+        }
       },
       "nursery": {
         "useConsistentTypeDefinitions": "info"
