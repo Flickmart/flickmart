@@ -81,7 +81,7 @@ export default function ChatSidebar({
       <MobileNav />
       {/* Sidebar Header */}
       <div>
-        <div className="flex items-center justify-between px-3 py-2 md:mt-1">
+        <div className="flex items-center justify-between mt-5 px-3 py-2 md:mt-1">
           <div className="flex items-center">
             <h2 className="font-bold text-3xl text-flickmart md:text-xl">
               Chats
@@ -91,13 +91,13 @@ export default function ChatSidebar({
         </div>
 
         {/* Search */}
-        <div className="my-3 p-2 md:my-0">
+        <div className="my-3 px-3 py-2 md:my-0">
           <div className="relative">
             <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-gray-400" />
             <Input
-              className="rounded-lg bg-flickmart-chat-gray py-2 pl-9"
+              className="rounded-lg bg-flickmart-chat-gray py-4 pl-9"
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search"
+              placeholder="Search chats"
               ref={searchInputRef}
               value={searchQuery}
             />
@@ -119,7 +119,7 @@ export default function ChatSidebar({
           </button>
           <button
             className={cn(
-              "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm",
+              "rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm flex",
               activeFilter === "unread"
                 ? "border bg-[#FF810054] text-[#FF8100]"
                 : "text-gray-500 hover:text-[#FF8100]"
@@ -127,11 +127,7 @@ export default function ChatSidebar({
             onClick={() => setActiveFilter("unread")}
           >
             Unread
-            {totalUnread > 0 && (
-              <span className="absolute top-0 right-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-orange-500 px-1 text-white text-xs">
-                {totalUnread}
-              </span>
-            )}
+            {<span className="pl-1.5">{totalUnread}</span>}
           </button>
           <button
             className={cn(
