@@ -1,8 +1,8 @@
-import { v } from "convex/values";
-import { internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
-import { type MutationCtx, mutation, query } from "./_generated/server";
-import { getCurrentUser } from "./users";
+import { v } from 'convex/values';
+import { internal } from './_generated/api';
+import type { Doc, Id } from './_generated/dataModel';
+import { type MutationCtx, mutation, query } from './_generated/server';
+import { getCurrentUser } from './users';
 
 // Helper function to handle consolidated message notifications
 async function handleMessageNotification(
@@ -16,9 +16,9 @@ async function handleMessageNotification(
     senderImageUrl,
     timestamp,
   }: {
-    recipientId: Id<"users">;
-    senderId: Id<"users">;
-    conversationId: Id<"conversations">;
+    recipientId: Id<'users'>;
+    senderId: Id<'users'>;
+    conversationId: Id<'conversations'>;
     messageContent: string;
     senderName: string;
     senderImageUrl?: string;
@@ -27,13 +27,13 @@ async function handleMessageNotification(
 ) {
   // Check if there's already an unread message notification from this conversation
   const existingNotification = await ctx.db
-    .query("notifications")
-    .withIndex("byUserId", (q) => q.eq("userId", recipientId))
-    .filter((q: any) =>
+    .query('notifications')
+    .withIndex('byUserId', (q) => q.eq('userId', recipientId))
+    .filter((q) =>
       q.and(
-        q.eq(q.field("type"), "new_message"),
-        q.eq(q.field("isRead"), false),
-        q.eq(q.field("relatedId"), conversationId)
+        q.eq(q.field('type'), 'new_message'),
+        q.eq(q.field('isRead'), false),
+        q.eq(q.field('relatedId'), conversationId)
       )
     )
     .first();
@@ -60,28 +60,28 @@ async function handleMessageNotification(
     // Get the first unread message content for this conversation
     // Find the oldest unread message from the sender to this recipient
     const unreadMessages = await ctx.db
-      .query("message")
-      .filter((q: any) =>
+      .query('message')
+      .filter((q) =>
         q.and(
-          q.eq(q.field("conversationId"), conversationId),
-          q.eq(q.field("senderId"), senderId)
+          q.eq(q.field('conversationId'), conversationId),
+          q.eq(q.field('senderId'), senderId)
         )
       )
       .collect();
 
     // Filter messages that haven't been read by the recipient
     const actuallyUnreadMessages = unreadMessages.filter(
-      (msg: any) => !msg.readByUsers?.includes(recipientId)
+      (msg) => !msg.readByUsers?.includes(recipientId)
     );
 
     // Get the first unread message (oldest)
     const firstUnreadMessage = actuallyUnreadMessages.sort(
-      (a: any, b: any) => (a._creationTime || 0) - (b._creationTime || 0)
+      (a, b) => (a._creationTime || 0) - (b._creationTime || 0)
     )[0];
 
     // Use the first unread message content, or fallback to current message
     const firstMessageContent =
-      firstUnreadMessage?.content || messageContent || "New message";
+      firstUnreadMessage?.content || messageContent || 'New message';
 
     // Create a new notification with the first unread message content
     const titleText =
@@ -91,7 +91,7 @@ async function handleMessageNotification(
 
     await ctx.runMutation(internal.notifications.createNotificationWithPush, {
       userId: recipientId,
-      type: "new_message",
+      type: 'new_message',
       relatedId: conversationId, // Use conversationId for consolidation
       title: titleText,
       content: firstMessageContent, // This will be the first unread message
@@ -104,25 +104,25 @@ async function handleMessageNotification(
 
 export const startConversation = mutation({
   args: {
-    user1Id: v.id("users"),
-    user2Id: v.id("users"),
+    user1Id: v.id('users'),
+    user2Id: v.id('users'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
     const existingConversation = await ctx.db
-      .query("conversations")
+      .query('conversations')
       .filter((q) =>
         q.or(
           q.and(
-            q.eq(q.field("user1"), args.user1Id),
-            q.eq(q.field("user2"), args.user2Id)
+            q.eq(q.field('user1'), args.user1Id),
+            q.eq(q.field('user2'), args.user2Id)
           ),
           q.and(
-            q.eq(q.field("user1"), args.user2Id),
-            q.eq(q.field("user2"), args.user1Id)
+            q.eq(q.field('user1'), args.user2Id),
+            q.eq(q.field('user2'), args.user1Id)
           )
         )
       )
@@ -147,7 +147,7 @@ export const startConversation = mutation({
     unreadCount[args.user1Id] = 0;
     unreadCount[args.user2Id] = 0;
 
-    const conversationId = await ctx.db.insert("conversations", {
+    const conversationId = await ctx.db.insert('conversations', {
       user1: args.user1Id,
       user2: args.user2Id,
       lastMessageId: undefined,
@@ -161,37 +161,37 @@ export const startConversation = mutation({
 
 export const sendMessage = mutation({
   args: {
-    senderId: v.id("users"),
+    senderId: v.id('users'),
     content: v.optional(v.string()),
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
     images: v.optional(v.array(v.string())),
     type: v.optional(
       v.union(
-        v.literal("text"),
-        v.literal("product"),
-        v.literal("escrow"),
-        v.literal("transfer")
+        v.literal('text'),
+        v.literal('product'),
+        v.literal('escrow'),
+        v.literal('transfer')
       )
     ),
-    productId: v.optional(v.id("product")),
+    productId: v.optional(v.id('product')),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
     productImage: v.optional(v.string()),
     // Transfer-specific fields
-    orderId: v.optional(v.id("orders")),
+    orderId: v.optional(v.id('orders')),
     transferAmount: v.optional(v.number()),
     currency: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     // Get the conversation to find the recipient and update unread count
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error("Conversation not found");
+      throw new Error('Conversation not found');
     }
 
     // Get current timestamp
@@ -199,7 +199,7 @@ export const sendMessage = mutation({
     // await ctx.runMutation(internal.email.sendTestEmail)
 
     // Create the message with the sender already marked as having read it
-    const messageId = await ctx.db.insert("message", {
+    const messageId = await ctx.db.insert('message', {
       senderId: args.senderId,
       content: args.content,
       images: args.images || [],
@@ -250,8 +250,8 @@ export const sendMessage = mutation({
       recipientId,
       senderId: args.senderId,
       conversationId: args.conversationId,
-      messageContent: args.content || "",
-      senderName: sender?.name || "Someone",
+      messageContent: args.content || '',
+      senderName: sender?.name || 'Someone',
       senderImageUrl: sender?.imageUrl,
       timestamp: now,
     });
@@ -264,11 +264,11 @@ export const sendMessage = mutation({
         // so we catch and ignore errors if the call fails quickly.
 
         ctx.runMutation(internal.email.sendEmailNotification, {
-          username: sender?.name ?? "A customer",
-          subject: "You have a new chat message",
+          username: sender?.name ?? 'A customer',
+          subject: 'You have a new chat message',
           recipient: receiver?.email as string,
           ctaLink: `https://flickmart.app/chat/${args.conversationId}`,
-          messagePreview: args.content || "",
+          messagePreview: args.content || '',
         });
       } catch (_) {
         // Ignore email errors; chat message already persisted
@@ -281,22 +281,22 @@ export const sendMessage = mutation({
 
 export const markMessagesAsRead = mutation({
   args: {
-    userId: v.id("users"),
-    conversationId: v.id("conversations"),
+    userId: v.id('users'),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     // Get all unread messages in this conversation for this user
     const messages = await ctx.db
-      .query("message")
+      .query('message')
       .filter((q) =>
         q.and(
-          q.eq(q.field("conversationId"), args.conversationId),
-          q.neq(q.field("senderId"), args.userId)
+          q.eq(q.field('conversationId'), args.conversationId),
+          q.neq(q.field('senderId'), args.userId)
         )
       )
       .collect();
@@ -326,13 +326,13 @@ export const markMessagesAsRead = mutation({
 
     // Clear the consolidated message notification for this conversation
     const messageNotification = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', args.userId))
       .filter((q) =>
         q.and(
-          q.eq(q.field("type"), "new_message"),
-          q.eq(q.field("isRead"), false),
-          q.eq(q.field("relatedId"), args.conversationId)
+          q.eq(q.field('type'), 'new_message'),
+          q.eq(q.field('isRead'), false),
+          q.eq(q.field('relatedId'), args.conversationId)
         )
       )
       .first();
@@ -349,18 +349,18 @@ export const markMessagesAsRead = mutation({
 
 export const archiveConversation = mutation({
   args: {
-    userId: v.id("users"),
-    conversationId: v.id("conversations"),
+    userId: v.id('users'),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error("Conversation not found");
+      throw new Error('Conversation not found');
     }
 
     // Add this user to the archivedByUsers array if not already there
@@ -377,18 +377,18 @@ export const archiveConversation = mutation({
 
 export const unarchiveConversation = mutation({
   args: {
-    userId: v.id("users"),
-    conversationId: v.id("conversations"),
+    userId: v.id('users'),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error("Conversation not found");
+      throw new Error('Conversation not found');
     }
 
     // Remove this user from the archivedByUsers array
@@ -406,25 +406,25 @@ export const unarchiveConversation = mutation({
 
 export const getConversations = query({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     // Use existing indexes to efficiently fetch conversations
     // Get conversations where user is user1
     const conversationsAsUser1 = await ctx.db
-      .query("conversations")
-      .withIndex("byUser1Id", (q) => q.eq("user1", args.userId))
+      .query('conversations')
+      .withIndex('byUser1Id', (q) => q.eq('user1', args.userId))
       .collect();
 
     // Get conversations where user is user2
     const conversationsAsUser2 = await ctx.db
-      .query("conversations")
-      .withIndex("byUser2Id", (q) => q.eq("user2", args.userId))
+      .query('conversations')
+      .withIndex('byUser2Id', (q) => q.eq('user2', args.userId))
       .collect();
 
     // Combine and deduplicate conversations
@@ -445,17 +445,17 @@ export const getConversations = query({
 
 export const getConversation = query({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error("Conversation not found");
+      throw new Error('Conversation not found');
     }
 
     return conversation;
@@ -464,23 +464,23 @@ export const getConversation = query({
 
 export const getMessages = query({
   args: {
-    conversationId: v.id("conversations"),
+    conversationId: v.id('conversations'),
   },
   handler: async (ctx, args) => {
     const messages = await ctx.db
-      .query("message")
-      .withIndex("by_conversationId", (q) =>
-        q.eq("conversationId", args.conversationId)
+      .query('message')
+      .withIndex('by_conversationId', (q) =>
+        q.eq('conversationId', args.conversationId)
       )
       .collect();
 
     const messagesWithProducts = await Promise.all(
       messages.map(async (message) => {
-        if (message.type === "product" && message.productId) {
+        if (message.type === 'product' && message.productId) {
           const product = await ctx.db.get(message.productId);
           return { ...message, product };
         }
-        if (message.type === "transfer" && message.orderId) {
+        if (message.type === 'transfer' && message.orderId) {
           const order = await ctx.db.get(message.orderId);
           return { ...message, order };
         }
@@ -494,7 +494,7 @@ export const getMessages = query({
 
 export const getAllConversationsMessages = query({
   args: {
-    conversationIds: v.array(v.id("conversations")),
+    conversationIds: v.array(v.id('conversations')),
   },
   handler: async (ctx, args) => {
     if (args.conversationIds.length === 0) {
@@ -502,14 +502,14 @@ export const getAllConversationsMessages = query({
     }
 
     // Get all messages for all the specified conversations
-    const allMessages = [];
+    const allMessages: Doc<'message'>[] = [];
 
     // Process each conversation separately to avoid using .in() which is not available
     for (const conversationId of args.conversationIds) {
       const messages = await ctx.db
-        .query("message")
-        .withIndex("by_conversationId", (q) =>
-          q.eq("conversationId", conversationId)
+        .query('message')
+        .withIndex('by_conversationId', (q) =>
+          q.eq('conversationId', conversationId)
         )
         .collect();
 
@@ -518,11 +518,11 @@ export const getAllConversationsMessages = query({
 
     const messagesWithProducts = await Promise.all(
       allMessages.map(async (message) => {
-        if (message.type === "product" && message.productId) {
+        if (message.type === 'product' && message.productId) {
           const product = await ctx.db.get(message.productId);
           return { ...message, product };
         }
-        if (message.type === "transfer" && message.orderId) {
+        if (message.type === 'transfer' && message.orderId) {
           const order = await ctx.db.get(message.orderId);
           return { ...message, order };
         }
@@ -536,24 +536,24 @@ export const getAllConversationsMessages = query({
 
 export const editMessage = mutation({
   args: {
-    messageId: v.id("message"),
+    messageId: v.id('message'),
     content: v.string(),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const message = await ctx.db.get(args.messageId);
     if (!message) {
-      throw new Error("Message not found");
+      throw new Error('Message not found');
     }
 
     await ctx.db.patch(args.messageId, {
@@ -564,12 +564,12 @@ export const editMessage = mutation({
 
 export const deleteMessages = mutation({
   args: {
-    messageIds: v.array(v.id("message")),
+    messageIds: v.array(v.id('message')),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     try {
@@ -577,7 +577,7 @@ export const deleteMessages = mutation({
         args.messageIds.map((messageId) => ctx.db.delete(messageId))
       );
       return { success: true };
-    } catch (error) {
+    } catch {
       return { success: false };
     }
   },

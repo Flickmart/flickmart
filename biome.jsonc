@@ -1,4 +1,21 @@
 {
   "$schema": "https://biomejs.dev/schemas/2.2.2/schema.json",
-  "extends": ["ultracite"]
+  "extends": ["ultracite"],
+  "linter": {
+    "domains": {
+      "next": "recommended"
+    },
+    "rules": {
+      "complexity": {
+        "noForEach": "off",
+        "useLiteralKeys": "off"
+      },
+      "nursery": {
+        "useConsistentTypeDefinitions": "info"
+      }
+    }
+  },
+  "assist": {
+    "enabled": true
+  }
 }

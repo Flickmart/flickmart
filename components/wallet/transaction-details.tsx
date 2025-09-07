@@ -21,15 +21,14 @@ interface TransactionDetailsProps {
 export default function TransactionDetails({
   transaction,
   user,
-  handlePaystackSuccess,
+handlePaystackSuccess,
   handlePaystackClose,
 }: TransactionDetailsProps) {
   const [open, setOpen] = useState(false);
 
-
-  const onClose  = ()=>{
-    setOpen(false)
-  }
+  const onClose = () => {
+    setOpen(false);
+  };
 
   return (
     <div className="w-full overflow-auto">
@@ -87,9 +86,9 @@ export default function TransactionDetails({
             <TransactionReceipt
               handlePaystackClose={handlePaystackClose}
               handlePaystackSuccess={handlePaystackSuccess}
+              onClose={onClose}
               transaction={transaction}
               user={user}
-              onClose={onClose}
             />
           </div>
         </SheetContent>
