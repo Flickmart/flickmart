@@ -1,23 +1,17 @@
-import  usePresence  from '@convex-dev/presence/react';
+import usePresence from '@convex-dev/presence/react';
+import { useQuery } from 'convex/react';
 import { api } from '../convex/_generated/api';
-import { useAuth } from '@clerk/nextjs';
 
 export function useAppPresence() {
-  const { isSignedIn, userId } = useAuth();
-  
+  const user = useQuery(api.users.current);
+
   const presenceState = usePresence(
     api.presence,
     'app-wide',
-    userId || 'anonymous'
+    user?._id || 'anonymous'
   );
-
-  const onlineUsers = presenceState?.filter(p => p.userId !== userId) || [];
-  const isOnline = presenceState?.some(p => p.userId === userId) || false;
 
   return {
     presenceState,
-    onlineUsers,
-    isOnline,
-    totalOnlineUsers: presenceState?.length || 0,
   };
 }
