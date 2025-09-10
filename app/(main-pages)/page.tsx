@@ -11,7 +11,6 @@ import Slider from "@/components/home/Slider";
 import MobileNav from "@/components/MobileNav";
 import SearchBox from "@/components/SearchBox";
 import SearchOverlay from "@/components/SearchOverlay";
-import InstallPrompt from "@/components/InstallPrompt";
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -47,7 +46,6 @@ export default function Home() {
 
   return (
     <>
-      <InstallPrompt />
       <MobileNav />
       <SearchOverlay open={searchOpen} openSearch={openSearch} />
       <SearchBox open={searchOpen} openSearch={openSearch} />
