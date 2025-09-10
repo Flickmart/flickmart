@@ -52,7 +52,6 @@ export default function Home() {
 
   return (
     <>
-      <InstallPrompt />
       <MobileNav />
       <SearchOverlay open={searchOpen} openSearch={openSearch} />
       <SearchBox open={searchOpen} openSearch={openSearch} />
