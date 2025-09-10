@@ -140,7 +140,9 @@ export default function PublicProfile() {
                   </Link>
                 </Button>
               </div>
-              <div className="space-y-4 rounded-lg bg-primary text-white p-2">
+
+              {/* Remove demo wallet */}
+              {/* <div className="space-y-4 rounded-lg bg-primary text-white p-2">
                 <div className="flex justify-between items-center text-xs font-medium">
                   <span>Available Balance</span>
                   <div className="flex items-center">
@@ -154,7 +156,7 @@ export default function PublicProfile() {
                   </div>
                   <button className="text-[10px] bg-white text-primary rounded-full py-1 px-2">+ Add Money</button>
                 </div>
-              </div>
+              </div> */}
               <p className="pt-1.5 text-muted-foreground text-sm">
                 Member since{" "}
                 {user?._creationTime

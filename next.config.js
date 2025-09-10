@@ -6,10 +6,20 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-})
-
-
-
+  sw: 'sw-custom.js', // Use our custom service worker
+  runtimeCaching: [
+    {
+      urlPattern: /^https?.*/,
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: 'offlineCache',
+        expiration: {
+          maxEntries: 200,
+        },
+      },
+    },
+  ],
+});
 
 const baseConfig = {
   reactStrictMode: true,
@@ -42,7 +52,7 @@ const baseConfig = {
       },
     ],
   },
-  async rewrites() {
+  rewrites() {
     return [
       {
         source: '/ingest/static/:path*',
@@ -78,5 +88,4 @@ if (!process.env.TURBOPACK) {
   finalConfig = withSentryConfig(finalConfig, sentryOptions);
 }
 
-
-module.exports = withPWA(finalConfig)
+module.exports = withPWA(finalConfig);

@@ -1,5 +1,5 @@
 import { useQuery } from 'convex/react';
-import { ArrowRight, Banknote, LinkIcon } from 'lucide-react';
+import { ArrowRight, Banknote, Check, CheckCheck, LinkIcon, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -26,6 +26,7 @@ interface MessageBubbleProps {
   price?: number;
   image?: string;
   productId?: string;
+  isPending?: boolean;
   // Transfer-specific props
   orderId?: string;
   transferAmount?: number;
@@ -49,6 +50,7 @@ export default function MessageBubble({
   price = 0,
   image = '', // Default to empty string
   productId = '',
+  isPending = false,
   // Transfer-specific props
   orderId = '',
   transferAmount = 0,
@@ -202,17 +204,23 @@ export default function MessageBubble({
             <span className="text-[10px] opacity-70 md:text-[10px]">
               {timestamp}
             </span>
-            {/* {isUser && (
-              <span className="text-[10px] md:text-xs">
-                {status === "sent" && <Check className="h-4 w-4 inline" />}
-                {status === "delivered" && (
-                  <CheckCheck className="h-4 w-4 inline" />
-                )}
-                {status === "read" && (
-                  <CheckCheck className="h-4 w-4 inline text-blue-500" />
-                )}
-              </span>
-            )} */}
+            {isPending ? (
+              <Loader2 className="h-3 w-3 animate-spin text-gray-500" />
+            ) : (
+              isUser && (
+                <div className="flex items-center">
+                  {status === "sent" && (
+                    <Check className="h-3 w-3 text-gray-400" />
+                  )}
+                  {status === "delivered" && (
+                    <CheckCheck className="h-3 w-3 text-gray-400" />
+                  )}
+                  {status === "read" && (
+                    <CheckCheck className="h-3 w-3 text-blue-500" />
+                  )}
+                </div>
+              )
+            )}
           </div>
         )}
         {type === 'product' && (

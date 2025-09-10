@@ -1,11 +1,12 @@
-"use client";
+/** biome-ignore-all lint/style/noNonNullAssertion:The envs are constantn and would be made available always by vercel */
+'use client';
 
-import { ClerkProvider, useAuth } from "@clerk/nextjs";
-import { ConvexReactClient } from "convex/react";
-import { ConvexProviderWithClerk } from "convex/react-clerk";
-import { PostHogProvider } from "./PostHogProvider";
-import { AppPresenceProvider } from "./AppPresenceProvider";
-import { PushNotificationProvider } from "./PushNotificationProvider";
+import { ClerkProvider, useAuth } from '@clerk/nextjs';
+import { ConvexReactClient } from 'convex/react';
+import { ConvexProviderWithClerk } from 'convex/react-clerk';
+import { AppPresenceProvider } from './AppPresenceProvider';
+import { PostHogProvider } from './PostHogProvider';
+import { PushNotificationProvider } from './PushNotificationProvider';
 
 const convex = new ConvexReactClient(process.env.NEXT_PUBLIC_CONVEX_URL!);
 
@@ -17,7 +18,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       >
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
           <PushNotificationProvider>
-            <AppPresenceProvider>{children}</AppPresenceProvider>
+            <AppPresenceProvider />
+            {children}
           </PushNotificationProvider>
         </ConvexProviderWithClerk>
       </ClerkProvider>

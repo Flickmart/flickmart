@@ -51,6 +51,13 @@ export default function ConversationPage() {
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
   const [processedProductId, setProcessedProductId] =
     useState<Id<"product"> | null>(null);
+  const [pendingMessages, setPendingMessages] = useState<Array<{
+    id: string;
+    content: string;
+    images?: File[];
+    timestamp: Date;
+    isPending: boolean;
+  }>>([]);
 
   const conversationId = params?.conversationId as Id<"conversations">;
   const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
@@ -263,7 +270,7 @@ export default function ConversationPage() {
 
   // Format messages for the UI
   const formattedMessages = useMemo(() => {
-    return (messages || []).map((message) => {
+    const actualMessages = (messages || []).map((message) => {
       const role: "user" | "assistant" =
         message.senderId === user?._id ? "user" : "assistant";
 
@@ -294,10 +301,33 @@ export default function ConversationPage() {
         orderId: message.orderId,
         transferAmount: message.transferAmount,
         currency: message.currency,
-        // order: message.order
+        isPending: false,
       };
     });
-  }, [messages, user?._id]);
+
+    const pendingMessagesList = pendingMessages.map((msg) => ({
+      id: msg.id,
+      chatId: conversationId,
+      content: msg.content,
+      images: [], // Pending messages don't have URLs yet
+      role: "user" as const,
+      timestamp: msg.timestamp,
+      status: "sent" as const,
+      type: "text" as const,
+      title: "",
+      price: 0,
+      productImage: "",
+      productId: undefined,
+      orderId: undefined,
+      transferAmount: undefined,
+      currency: undefined,
+      isPending: true,
+    }));
+
+    return [...actualMessages, ...pendingMessagesList].sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+    );
+  }, [messages, user?._id, pendingMessages, conversationId]);
 
   const activeChatData = useMemo(
     () =>
@@ -326,23 +356,43 @@ export default function ConversationPage() {
     )
       return;
 
-    try {
-      // Reset typing status
-      setIsTyping(false);
-      updateTypingStatus({
-        userId: user._id,
-        isTyping: false,
-        conversationId: undefined,
-      });
+    // Create optimistic message ID
+    const optimisticMessageId = `pending-${Date.now()}-${Math.random()}`;
 
+    // Reset typing status
+    setIsTyping(false);
+    updateTypingStatus({
+      userId: user._id,
+      isTyping: false,
+      conversationId: undefined,
+    });
+
+    // Clear input immediately for better UX
+    const messageText = input;
+    const messageImages = [...selectedImages];
+    setInput("");
+    setSelectedImages([]);
+
+    // Add pending message to state
+    setPendingMessages(prev => [...prev, {
+      id: optimisticMessageId,
+      content: messageText,
+      images: messageImages,
+      timestamp: new Date(),
+      isPending: true,
+    }]);
+
+    try {
       let imageUrls: string[] | undefined = [];
-      if (selectedImages.length > 0) {
+      if (messageImages.length > 0) {
         try {
-          const res = await startUpload(selectedImages);
+          const res = await startUpload(messageImages);
           imageUrls = res?.map((file) => file.ufsUrl);
         } catch (error) {
           console.error("Failed to upload images:", error);
           toast.error("Failed to upload images");
+          // Remove pending message on image upload failure
+          setPendingMessages(prev => prev.filter(msg => msg.id !== optimisticMessageId));
           return;
         }
       }
@@ -350,17 +400,19 @@ export default function ConversationPage() {
       // Send message with text and/or images
       await sendMessage({
         senderId: user._id,
-        content: input,
+        content: messageText,
         conversationId,
         images: imageUrls,
         type: "text",
       });
 
-      setInput("");
-      setSelectedImages([]);
+      // Remove pending message on success
+      setPendingMessages(prev => prev.filter(msg => msg.id !== optimisticMessageId));
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
+      // Remove pending message on failure
+      setPendingMessages(prev => prev.filter(msg => msg.id !== optimisticMessageId));
     }
   };
 

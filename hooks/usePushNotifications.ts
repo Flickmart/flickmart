@@ -5,6 +5,7 @@ import { useMutation } from 'convex/react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
+import { getServiceWorkerRegistration } from '@/lib/serviceWorker';
 
 export function usePushNotifications() {
   const { user } = useUser();
@@ -24,7 +25,7 @@ export function usePushNotifications() {
       setPermission(Notification.permission);
       checkSubscriptionStatus();
     }
-  }, []);
+  });
 
   const checkSubscriptionStatus = async () => {
     try {
@@ -41,31 +42,11 @@ export function usePushNotifications() {
   };
 
   const registerServiceWorker = async () => {
-    if ('serviceWorker' in navigator) {
-      try {
-        // Check if already registered
-        let registration = await navigator.serviceWorker.getRegistration('/');
-
-        if (registration) {
-          console.log('✅ Service worker already registered');
-          // Force update check
-          registration.update();
-        } else {
-          console.log('📝 Registering new service worker...');
-          registration = await navigator.serviceWorker.register('/sw.js', {
-            scope: '/',
-            updateViaCache: 'none',
-          });
-        }
-
-        console.log('Service Worker registration:', registration);
-        return registration;
-      } catch (error) {
-        console.error('Service Worker registration failed:', error);
-        throw error;
-      }
+    const registration = await getServiceWorkerRegistration();
+    if (!registration) {
+      throw new Error('Service worker not available');
     }
-    throw new Error('Service Worker not supported');
+    return registration;
   };
 
   const subscribeToPush = async () => {
@@ -86,7 +67,8 @@ export function usePushNotifications() {
 
       console.log('🔔 Requesting notification permission...');
       // Request permission
-      const permission = await Notification.requestPermission();
+      // biome-ignore lint/nursery/noShadow: permission global dosent touvh this one 
+            const permission = await Notification.requestPermission();
       setPermission(permission);
 
       if (permission !== 'granted') {
@@ -126,9 +108,13 @@ export function usePushNotifications() {
       toast.success('Push notifications enabled successfully!');
 
       return subscription;
-    } catch (error: any) {
+    } catch (error) {
       console.error('❌ Failed to subscribe to push notifications:', error);
-      toast.error(error.message || 'Failed to enable push notifications');
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Failed to enable push notifications'
+      );
       throw error;
     }
   };
@@ -164,6 +150,7 @@ export function usePushNotifications() {
 
 // Helper function to convert VAPID key
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
+  // biome-ignore lint/style/noMagicNumbers: No need for extrapolation
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 

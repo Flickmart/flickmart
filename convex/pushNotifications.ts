@@ -1,3 +1,5 @@
+/** biome-ignore-all lint/style/noNonNullAssertion: <env woukld be available> */
+/** biome-ignore-all lint/style/noMagicNumbers: <constant numbrts> */
 'use node';
 
 import { v } from 'convex/values';
@@ -43,11 +45,6 @@ export const sendPushNotification = action({
       args.userId
     );
 
-    // Check if user allows notifications
-    const user = await ctx.runQuery(api.users.getById, {
-      userId: args.userId,
-    });
-
     const payload = JSON.stringify({
       title: args.title,
       body: args.body,
@@ -80,7 +77,6 @@ export const sendPushNotification = action({
       process.env.VAPID_PRIVATE_KEY!
     );
 
-    console.log('🔑 VAPID keys configured');
 
     let sentCount = 0;
     let failedCount = 0;
@@ -107,6 +103,7 @@ export const sendPushNotification = action({
             subscriptionId: subscription._id,
           }
         );
+      // biome-ignore lint/suspicious/noExplicitAny: <error is not typed>
       } catch (error: any) {
         console.error('❌ Push notification failed for device:', error);
         console.error('Error details:', {

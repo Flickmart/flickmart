@@ -5,7 +5,7 @@ import { setCookie, getCookie } from "cookies-next";
 import AddToMobileChrome from "./AddToMobileChrome";
 
 
-const COOKIE_NAME = "addToHomeScreenPrompt";
+const COOKIE_NAME = 'addToHomeScreenPrompt';
 
 export default function InstallPrompt({promptEvent}: {promptEvent: Event | null}) {
   const { isMobile, isStandalone, userAgent, isIOS } = useUserAgent();

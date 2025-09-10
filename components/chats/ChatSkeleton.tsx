@@ -3,7 +3,7 @@ import { Skeleton } from "../ui/skeleton";
 const ChatSkeleton = () => {
   return (
     <div className="md:bg-gray-100">
-      <div className="space-y-4 bg-white h-screen pt-2 md:w-[360px]">
+      <div className="space-y-4 bg-white h-screen pt-8 md:w-[360px]">
         <div className="px-3 mb-8 md:mb-6">
           <Skeleton className="h-8 w-20 bg-flickmart-chat-gray md:h-6 md:w-[52px]" />{" "}
           {/* "Chats" */}
