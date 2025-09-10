@@ -12,7 +12,6 @@ export default function AddToMobileChrome(props: Props) {
 
   return (
     <div
-      className="relative mx-2 my-4 flex h-28 w-full items-center justify-between rounded-xl bg-white px-6 lg:w-2/4"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
