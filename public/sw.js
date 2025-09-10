@@ -102,3 +102,56 @@ define(["./workbox-8817a5e5"], (workbox) => {
     "GET"
   );
 });
+
+
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  const title = data.title || 'Flickmart';
+  const options = {
+    body: data.body,
+    icon: '/icons/icon-192x192.png',
+    badge: '/icons/badge-72x72.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: '2',
+      url: data.url || '/',
+    },
+    actions: [
+      {
+        action: 'explore',
+        title: 'Explore',
+      },
+      {
+        action: 'close',
+        title: 'Close',
+      },
+    ],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  const notification = event.notification;
+  const action = event.action;
+
+  if (action === 'close') {
+    notification.close();
+  } else {
+    clients.openWindow(notification.data.url);
+    notification.close();
+  }
+});
+
+self.addEventListener('pushsubscriptionchange', (event) => {
+    console.log("Push subscription changed");
+    event.waitUntil(
+        self.registration.pushManager.subscribe({ userVisibleOnly: true })
+        .then((subscription) => {
+            console.log("New subscription: ", subscription);
+        })
+    );
+});
