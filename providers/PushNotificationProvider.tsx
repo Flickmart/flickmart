@@ -1,7 +1,9 @@
+/** biome-ignore-all lint/performance/useTopLevelRegex: <its just a side regex it won't chnage> */
+/** biome-ignore-all lint/style/noMagicNumbers: <small constants> */
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '@/convex/_generated/api';
 
@@ -67,8 +69,10 @@ export function PushNotificationProvider({
 
   // Prompt for permission immediately when user visits (if not already asked)
   useEffect(() => {
-    const promptForNotifications = async () => {
-      if (!(isSupported && user) || isLoading) return;
+    const promptForNotifications = () => {
+      if (!(isSupported && user) || isLoading) {
+        return;
+      }
 
       // Only prompt if permission hasn't been asked before and user is not subscribed on this device
       if (permission === 'default' && !isSubscribed) {
@@ -105,8 +109,6 @@ export function PushNotificationProvider({
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
-        // For now, just check if browser subscription exists
-        // We'll implement a more robust check later
         setIsSubscribed(true);
       } else {
         setIsSubscribed(false);
@@ -125,6 +127,7 @@ export function PushNotificationProvider({
         throw new Error('Push notifications are not supported');
       }
 
+      // biome-ignore lint/nursery/noShadow: <it dosent affect it>
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
@@ -156,9 +159,14 @@ export function PushNotificationProvider({
         }
       }
 
-      // Register service worker
-      const registration = await navigator.serviceWorker.register('/sw.js');
-      await navigator.serviceWorker.ready;
+      // Ensure service worker is registered
+      const { getServiceWorkerRegistration } = await import(
+        '@/lib/serviceWorker'
+      );
+      const registration = await getServiceWorkerRegistration();
+      if (!registration) {
+        throw new Error('Service worker not available');
+      }
 
       // Check if registration is valid before proceeding
       if (!registration) {
@@ -169,6 +177,7 @@ export function PushNotificationProvider({
       const subscription = await registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
+          // biome-ignore lint/style/noNonNullAssertion: <It woukd always be available i can asssert>
           process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
         ),
       });
@@ -203,7 +212,9 @@ export function PushNotificationProvider({
 
   const unsubscribe = async (): Promise<boolean> => {
     try {
-      if (!('serviceWorker' in navigator)) return false;
+      if (!('serviceWorker' in navigator)) {
+        return false;
+      }
 
       const registration = await navigator.serviceWorker.ready;
 

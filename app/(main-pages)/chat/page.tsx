@@ -5,16 +5,16 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import ChatSidebar from '@/components/chats/chat-sidebar';
-import Loader from '@/components/multipage/Loader';
 import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
+import { useAppPresence } from '@/hooks/useAppPresence';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
 type FilterType = 'all' | 'unread' | 'archived';
 
 export default function ChatPage() {
   const router = useRouter();
-  const { user, isLoading: authLoading, isAuthenticated } = useAuthUser();
+  const { user } = useAuthUser();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
   const [, setSidebarOpen] = useState(false);
@@ -23,6 +23,10 @@ export default function ChatPage() {
   const searchParams = new URLSearchParams(
     typeof window !== 'undefined' ? window.location.search : ''
   );
+  const { presenceState } = useAppPresence();
+
+  console.log('Presense state', presenceState);
+
   const vendorId = searchParams.get('vendorId') as Id<'users'> | null;
   const productId = searchParams.get('productId') as Id<'product'> | null;
 
@@ -66,66 +70,71 @@ export default function ChatPage() {
     conversationIds.length > 0 ? { conversationIds } : 'skip'
   );
 
+  // Helper function to format a single conversation
+  const formatConversation = (
+    conversation: Doc<'conversations'>,
+    currentUserId: Id<'users'>,
+    users: Doc<'users'>[],
+    messages: any[]
+  ) => {
+    const otherUserId =
+      conversation.user1 === currentUserId
+        ? conversation.user2
+        : conversation.user1;
+
+    const otherUser = users.find((u) => u?._id === otherUserId);
+
+    const conversationMessages = messages
+      .filter((msg) => msg.conversationId === conversation._id)
+      .sort((a, b) => b._creationTime - a._creationTime);
+
+    const lastMessage = conversationMessages[0] || null;
+    const containsImage = Boolean(lastMessage?.images?.length);
+
+    const lastMessageTime = lastMessage
+      ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
+          hour: 'numeric',
+          minute: '2-digit',
+        })
+      : '';
+
+    const isArchived = conversation.archivedByUsers?.includes(currentUserId);
+    const userUnreadCount =
+      conversation.unreadCount && currentUserId in conversation.unreadCount
+        ? conversation.unreadCount[currentUserId]
+        : 0;
+
+    const name =
+      otherUser?._id === currentUserId
+        ? 'Me'
+        : otherUser?.name || 'Unknown user';
+
+    return {
+      id: conversation._id,
+      name,
+      imageUrl: otherUser?.imageUrl || '',
+      lastMessage: lastMessage?.content ?? 'No messages yet',
+      containsImage,
+      time: lastMessageTime,
+      unread: userUnreadCount,
+      archived: isArchived,
+    };
+  };
+
   // Transform conversations data to match UI requirements
   const formattedConversations = useMemo(() => {
-    if (!(conversations && allUsers && allConversationMessages && user?._id))
-      return undefined;
+    if (!(conversations && allUsers && allConversationMessages && user?._id)) {
+      return;
+    }
 
-    return conversations.map((conversation) => {
-      // Determine the other participant (not the current user)
-      const otherUserId =
-        conversation.user1 === user._id
-          ? conversation.user2
-          : conversation.user1;
-
-      // Find user in our pre-fetched users
-      const otherUser = allUsers.find((u) => u?._id === otherUserId);
-
-      // Get last messages for this conversation
-      const conversationMessages = allConversationMessages
-        .filter((msg) => msg.conversationId === conversation._id)
-        .sort((a, b) => b._creationTime - a._creationTime);
-
-      // Get the last message
-      const lastMessage =
-        conversationMessages.length > 0 ? conversationMessages[0] : null;
-      const containsImage: boolean =
-        conversationMessages[0]?.images?.length &&
-        conversationMessages[0].images?.length > 0
-          ? true
-          : false;
-
-      // Format timestamp from the last message
-      const lastMessageTime = lastMessage
-        ? new Date(lastMessage._creationTime).toLocaleTimeString([], {
-            hour: 'numeric',
-            minute: '2-digit',
-          })
-        : '';
-
-      // Check if conversation is archived by this user
-      const isArchived = conversation.archivedByUsers?.includes(user._id);
-
-      // Get unread count for current user
-      const userUnreadCount =
-        conversation.unreadCount && user._id in conversation.unreadCount
-          ? conversation.unreadCount[user._id as string]
-          : 0;
-
-      const name =
-        otherUser?._id === user?._id ? 'Me' : otherUser?.name || 'Unknown user';
-
-      return {
-        id: conversation._id,
-        name,
-        imageUrl: otherUser?.imageUrl || '',
-        lastMessage: lastMessage?.content ?? 'No messages yet',
-        containsImage,
-        time: lastMessageTime,
-        unread: userUnreadCount,
-        archived: isArchived,
-      };
-    });
+    return conversations.map((conversation) =>
+      formatConversation(
+        conversation,
+        user._id,
+        allUsers,
+        allConversationMessages
+      )
+    );
   }, [conversations, allUsers, allConversationMessages, user?._id]);
 
   // Filter conversations based on the active filter
@@ -171,15 +180,7 @@ export default function ChatPage() {
 
           if (existingConv) {
             targetConversationId = existingConv._id;
-            console.log('Found existing conversation:', targetConversationId);
           } else {
-            // Create new conversation
-            console.log(
-              'Creating new conversation between',
-              user._id,
-              'and',
-              vendorId
-            );
             targetConversationId = await startConversation({
               user1Id: user._id,
               user2Id: vendorId,
@@ -257,11 +258,15 @@ export default function ChatPage() {
             Welcome to Chat
           </h2>
           <p className="text-gray-500">
-            {conversations === undefined
-              ? 'Loading conversations...'
-              : conversations.length === 0
-                ? 'No conversations yet. Start a new conversation!'
-                : 'Select a conversation to start chatting'}
+            {(() => {
+              if (conversations === undefined) {
+                return 'Loading conversations...';
+              }
+              if (conversations.length === 0) {
+                return 'No conversations yet.Click on "Chat Vendor" to start a new conversation!';
+              }
+              return 'Select a conversation to start chatting';
+            })()}
           </p>
         </div>
       </div>

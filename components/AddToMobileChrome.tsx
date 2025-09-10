@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react";
-import Logo from "./multipage/Logo";
-import { Button } from "./ui/button";
+import React, { useRef } from 'react';
+import Logo from './multipage/Logo';
+import { Button } from './ui/button';
 
 interface Props {
   closePrompt: () => void;
@@ -9,17 +9,17 @@ interface Props {
 }
 
 export default function AddToMobileChrome(props: Props) {
-  const { closePrompt, doNotShowAgain, handleInstallClick } = props;
+  const { handleInstallClick } = props;
 
   const installRef = useRef<HTMLButtonElement | null>(null);
 
   return (
     <div
+      className="relative mx-2 my-4 flex h-28 w-full items-center justify-between rounded-xl bg-white px-6 lg:w-2/4"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="bg-white flex justify-between px-6 items-center h-28 my-4 mx-2 rounded-xl w-full lg:w-2/4 relative"
     >
       {/* <div
         onClick={closePrompt}
@@ -31,8 +31,8 @@ export default function AddToMobileChrome(props: Props) {
         <Logo />
       </div>
       <Button
+        className="lg:!p-6 mt-1 font-semibold text-sm capitalize lg:text-base"
         onClick={handleInstallClick}
-        className="capitalize lg:!p-6 mt-1 text-sm lg:text-base font-semibold"
       >
         install app
       </Button>

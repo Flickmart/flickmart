@@ -1,31 +1,31 @@
-import { v } from "convex/values";
-import { api } from "./_generated/api";
-import { internalMutation, mutation, query } from "./_generated/server";
-import { getCurrentUser } from "./users";
+import { v } from 'convex/values';
+import { api } from './_generated/api';
+import { internalMutation, mutation, query } from './_generated/server';
+import { getCurrentUser } from './users';
 
 export const createNotification = internalMutation({
   args: {
-    userId: v.optional(v.id("users")),
+    userId: v.optional(v.id('users')),
     type: v.union(
-      v.literal("new_message"),
-      v.literal("new_like"),
-      v.literal("new_comment"),
-      v.literal("new_sale"),
-      v.literal("advertisement"),
-      v.literal("reminder"),
-      v.literal("escrow_funded"),
-      v.literal("escrow_released"),
-      v.literal("completion_confirmed")
+      v.literal('new_message'),
+      v.literal('new_like'),
+      v.literal('new_comment'),
+      v.literal('new_sale'),
+      v.literal('advertisement'),
+      v.literal('reminder'),
+      v.literal('escrow_funded'),
+      v.literal('escrow_released'),
+      v.literal('completion_confirmed')
     ),
     relatedId: v.optional(
       v.union(
-        v.id("product"),
-        v.id("message"),
-        v.id("comments"),
-        v.id("store"),
-        v.id("conversations"),
-        v.id("orders"),
-        v.id("users")
+        v.id('product'),
+        v.id('message'),
+        v.id('comments'),
+        v.id('store'),
+        v.id('conversations'),
+        v.id('orders'),
+        v.id('users')
       )
     ),
     title: v.string(),
@@ -38,16 +38,16 @@ export const createNotification = internalMutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
-    const notificationId = await ctx.db.insert("notifications", {
+    const notificationId = await ctx.db.insert('notifications', {
       userId: args.userId ? args.userId : user._id,
       type: args.type,
       title: args.title,
@@ -66,18 +66,18 @@ export const createNotification = internalMutation({
 
 export const deleteNotification = mutation({
   args: {
-    notificationId: v.id("notifications"),
+    notificationId: v.id('notifications'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     await ctx.db.delete(args.notificationId);
@@ -86,12 +86,12 @@ export const deleteNotification = mutation({
 
 export const getNotifications = query({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
@@ -101,9 +101,9 @@ export const getNotifications = query({
     }
 
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
-      .order("desc")
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', args.userId))
+      .order('desc')
       .collect();
 
     return notifications;
@@ -112,20 +112,20 @@ export const getNotifications = query({
 
 export const updateNotification = mutation({
   args: {
-    notificationId: v.id("notifications"),
+    notificationId: v.id('notifications'),
     isRead: v.optional(v.boolean()),
     link: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Create a patch object with only the fields that are provided
@@ -160,12 +160,12 @@ export const getUnreadNotifications = query({
     // Get all notifications for the user and filter for unviewed ones
     // This handles both isViewed: false and isViewed: undefined (for existing notifications)
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
       .filter((q) =>
         q.or(
-          q.eq(q.field("isViewed"), false),
-          q.eq(q.field("isViewed"), undefined)
+          q.eq(q.field('isViewed'), false),
+          q.eq(q.field('isViewed'), undefined)
         )
       )
       .collect();
@@ -179,18 +179,18 @@ export const markAllNotificationsAsRead = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
       .collect();
 
     for (const notification of notifications) {
@@ -208,18 +208,18 @@ export const deleteAllNotifications = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
       .collect();
 
     for (const notification of notifications) {
@@ -232,24 +232,24 @@ export const deleteAllNotifications = mutation({
 
 export const getNotificationById = query({
   args: {
-    notificationId: v.id("notifications"),
+    notificationId: v.id('notifications'),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const notification = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
-      .filter((q) => q.eq(q.field("_id"), args.notificationId))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('_id'), args.notificationId))
       .first();
 
     return notification;
@@ -272,9 +272,9 @@ export const getUnreadNotificationsByReadStatus = query({
     // Get notifications that are actually unread (based on isRead field)
     // This is used for the "Unread" tab in the notifications page
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserIdAndIsRead", (q) =>
-        q.eq("userId", user._id).eq("isRead", false)
+      .query('notifications')
+      .withIndex('byUserIdAndIsRead', (q) =>
+        q.eq('userId', user._id).eq('isRead', false)
       )
       .collect();
 
@@ -287,24 +287,24 @@ export const markAllNotificationsAsViewed = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Mark all notifications as viewed (for count purposes) but not read
     // Only update notifications that are not already viewed
     const notifications = await ctx.db
-      .query("notifications")
-      .withIndex("byUserId", (q) => q.eq("userId", user._id))
+      .query('notifications')
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
       .filter((q) =>
         q.or(
-          q.eq(q.field("isViewed"), false),
-          q.eq(q.field("isViewed"), undefined)
+          q.eq(q.field('isViewed'), false),
+          q.eq(q.field('isViewed'), undefined)
         )
       )
       .collect();
@@ -334,12 +334,12 @@ export const savePushSubscription = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Parse subscription to get endpoint
@@ -347,19 +347,19 @@ export const savePushSubscription = mutation({
     try {
       subscriptionData = JSON.parse(args.subscription);
     } catch (error) {
-      throw new Error("Invalid subscription format");
+      throw new Error('Invalid subscription format');
     }
 
     const endpoint = subscriptionData.endpoint;
     if (!endpoint) {
-      throw new Error("Subscription missing endpoint");
+      throw new Error('Subscription missing endpoint');
     }
 
     // Check if this exact subscription already exists for this user
     const existing = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .filter((q) => q.eq(q.field("endpoint"), endpoint))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('endpoint'), endpoint))
       .first();
 
     if (existing) {
@@ -375,7 +375,7 @@ export const savePushSubscription = mutation({
     }
 
     // Save new subscription
-    const subscriptionId = await ctx.db.insert("pushSubscriptions", {
+    const subscriptionId = await ctx.db.insert('pushSubscriptions', {
       userId: user._id,
       subscription: args.subscription,
       endpoint,
@@ -392,13 +392,13 @@ export const savePushSubscription = mutation({
 
 export const getPushSubscription = query({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const subscription = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("isActive"), true))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .filter((q) => q.eq(q.field('isActive'), true))
       .first();
 
     return subscription;
@@ -407,13 +407,13 @@ export const getPushSubscription = query({
 
 export const getAllPushSubscriptions = query({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
   },
   handler: async (ctx, args) => {
     const subscriptions = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", args.userId))
-      .filter((q) => q.eq(q.field("isActive"), true))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', args.userId))
+      .filter((q) => q.eq(q.field('isActive'), true))
       .collect();
 
     return subscriptions;
@@ -437,12 +437,12 @@ export const getCurrentDeviceSubscription = query({
 
     // Use by_user index and filter by endpoint since endpoint might be optional during migration
     const subscription = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .filter((q) =>
         q.and(
-          q.eq(q.field("endpoint"), args.endpoint),
-          q.eq(q.field("isActive"), true)
+          q.eq(q.field('endpoint'), args.endpoint),
+          q.eq(q.field('isActive'), true)
         )
       )
       .first();
@@ -453,7 +453,7 @@ export const getCurrentDeviceSubscription = query({
 
 export const removePushSubscription = mutation({
   args: {
-    subscriptionId: v.id("pushSubscriptions"),
+    subscriptionId: v.id('pushSubscriptions'),
   },
   handler: async (ctx, args) => {
     await ctx.db.delete(args.subscriptionId);
@@ -467,18 +467,18 @@ export const removePushSubscriptionByEndpoint = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUser(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     // Find the subscription by endpoint for this user
     const subscription = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
-      .filter((q) => q.eq(q.field("endpoint"), args.endpoint))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('endpoint'), args.endpoint))
       .first();
 
     if (!subscription) {
-      throw new Error("Subscription not found");
+      throw new Error('Subscription not found');
     }
 
     // Mark as inactive instead of deleting to maintain history
@@ -498,24 +498,24 @@ export const cleanupInactiveSubscriptions = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     const cutoffTime =
       Date.now() - (args.olderThanDays || 30) * 24 * 60 * 60 * 1000;
 
     const inactiveSubscriptions = await ctx.db
-      .query("pushSubscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('pushSubscriptions')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .filter((q) =>
         q.and(
-          q.eq(q.field("isActive"), false),
-          q.lt(q.field("lastUsed"), cutoffTime)
+          q.eq(q.field('isActive'), false),
+          q.lt(q.field('lastUsed'), cutoffTime)
         )
       )
       .collect();
@@ -530,7 +530,7 @@ export const cleanupInactiveSubscriptions = mutation({
 
 export const updatePushSubscriptionLastUsed = mutation({
   args: {
-    subscriptionId: v.id("pushSubscriptions"),
+    subscriptionId: v.id('pushSubscriptions'),
   },
   handler: async (ctx, args) => {
     await ctx.db.patch(args.subscriptionId, {
@@ -542,27 +542,27 @@ export const updatePushSubscriptionLastUsed = mutation({
 // Enhanced notification creation that also sends push notifications
 export const createNotificationWithPush = internalMutation({
   args: {
-    userId: v.id("users"),
+    userId: v.id('users'),
     type: v.union(
-      v.literal("new_message"),
-      v.literal("new_like"),
-      v.literal("new_comment"),
-      v.literal("new_sale"),
-      v.literal("advertisement"),
-      v.literal("reminder"),
-      v.literal("escrow_funded"),
-      v.literal("escrow_released"),
-      v.literal("completion_confirmed")
+      v.literal('new_message'),
+      v.literal('new_like'),
+      v.literal('new_comment'),
+      v.literal('new_sale'),
+      v.literal('advertisement'),
+      v.literal('reminder'),
+      v.literal('escrow_funded'),
+      v.literal('escrow_released'),
+      v.literal('completion_confirmed')
     ),
     relatedId: v.optional(
       v.union(
-        v.id("product"),
-        v.id("message"),
-        v.id("comments"),
-        v.id("store"),
-        v.id("conversations"),
-        v.id("orders"),
-        v.id("users")
+        v.id('product'),
+        v.id('message'),
+        v.id('comments'),
+        v.id('store'),
+        v.id('conversations'),
+        v.id('orders'),
+        v.id('users')
       )
     ),
     title: v.string(),
@@ -573,7 +573,7 @@ export const createNotificationWithPush = internalMutation({
   },
   handler: async (ctx, args) => {
     // Create the notification
-    const notificationId = await ctx.db.insert("notifications", {
+    const notificationId = await ctx.db.insert('notifications', {
       userId: args.userId,
       type: args.type,
       title: args.title,
@@ -614,15 +614,15 @@ export const createNotificationWithPush = internalMutation({
 export const createTestNotificationWithPush = mutation({
   args: {
     type: v.union(
-      v.literal("new_message"),
-      v.literal("new_like"),
-      v.literal("new_comment"),
-      v.literal("new_sale"),
-      v.literal("advertisement"),
-      v.literal("reminder"),
-      v.literal("escrow_funded"),
-      v.literal("escrow_released"),
-      v.literal("completion_confirmed")
+      v.literal('new_message'),
+      v.literal('new_like'),
+      v.literal('new_comment'),
+      v.literal('new_sale'),
+      v.literal('advertisement'),
+      v.literal('reminder'),
+      v.literal('escrow_funded'),
+      v.literal('escrow_released'),
+      v.literal('completion_confirmed')
     ),
     title: v.string(),
     content: v.string(),
@@ -632,16 +632,16 @@ export const createTestNotificationWithPush = mutation({
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error("Unauthorized");
+      throw new Error('Unauthorized');
     }
 
     const user = await getCurrentUser(ctx);
     if (!user) {
-      throw new Error("User not found");
+      throw new Error('User not found');
     }
 
     // Create the notification
-    const notificationId = await ctx.db.insert("notifications", {
+    const notificationId = await ctx.db.insert('notifications', {
       userId: user._id,
       type: args.type,
       title: args.title,
@@ -673,4 +673,3 @@ export const createTestNotificationWithPush = mutation({
     return notificationId;
   },
 });
-  
