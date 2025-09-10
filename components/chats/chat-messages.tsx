@@ -25,6 +25,8 @@ interface Message {
   orderId?: string;
   transferAmount?: number;
   currency?: string;
+  isPending?: boolean;
+  status?: 'sent' | 'delivered' | 'read';
 }
 
 interface ChatMessagesProps {
@@ -158,6 +160,7 @@ export default function ChatMessages({
                 id={message.id}
                 image={message.productImage}
                 images={message.images}
+                isPending={message.isPending}
                 isUser={message.role === "user"}
                 key={message.id}
                 message={message.content}
@@ -166,7 +169,7 @@ export default function ChatMessages({
                 productId={message.productId}
                 selectedMessages={selectedMessages}
                 selectionMode={selectionMode}
-                status={message.role === "user" ? "sent" : undefined}
+                status={message.role === "user" ? message.status : undefined}
                 timestamp={message.timestamp.toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
