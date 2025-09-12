@@ -41,7 +41,7 @@ export async function shareProduct({
   const shareData = {
     title: title || 'Check out this product',
     text:
-      description?.substring(0, 200) + '...' ||
+      description?.substring(0, 200) + '...\n' ||
       'Check out this product on Flickmart',
     url: url || `https://flickmart.app/product/${productId}`,
   };

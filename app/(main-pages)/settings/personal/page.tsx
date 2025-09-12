@@ -166,7 +166,7 @@ export default function PublicProfile() {
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
-                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? wallet.balance.toFixed(2) : "0.00"}</h1><ChevronRight className="h-4 w-4" />
+                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? (wallet.balance / 100).toFixed(2) : "0.00"}</h1><ChevronRight className="h-4 w-4" />
                   </div>
                   <Link href={"/wallet?action=open_dialog"}  className="text-[10px] bg-white text-primary rounded-full py-1.5 font-semibold px-2">+ Add Money</Link>
                 </div>
