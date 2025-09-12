@@ -140,8 +140,8 @@ export default function PublicProfile() {
                   navigator.share({
                     title: `Share Profile - ${user?.username}`,
                     text: 'Check out my profile!',
-                    // url: `https://flickmart.app/business/${user?._id}`,
-                    url: `http://localhost:3001/business/${user?._id}`,
+                    url: `https://flickmart.app/business/${user?._id}`,
+                    // url: `http://localhost:3001/business/${user?._id}`,
                   }).then(() => {
                     console.log('Shared successfully');
                   }).catch((error) => {
@@ -157,7 +157,7 @@ export default function PublicProfile() {
 
               {/* Remove demo wallet */}
               <Link className="min-h-full" href={"/wallet"}>
-              <div className="flex flex-col gap-2 rounded-lg bg-primary text-white px-4  py-4">
+              <div className="flex flex-col gap-2 rounded-lg bg-primary text-white px-4  py-4 pt-2">
                 <div className="flex justify-between  items-center text-xs font-medium">
                   <span>Available Balance</span>
                   <Link className="flex items-center py-2 " href={"/wallet?action=show_history"}>
@@ -167,7 +167,7 @@ export default function PublicProfile() {
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
-                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? wallet.balance : "0.00"}</h1><ChevronRight className="h-4 w-4" />
+                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? wallet.balance.toFixed(2) : "0.00"}</h1><ChevronRight className="h-4 w-4" />
                   </div>
                   <Link href={"/wallet?action=open_dialog"}  className="text-[10px] bg-white text-primary rounded-full py-1.5 font-semibold px-2">+ Add Money</Link>
                 </div>
