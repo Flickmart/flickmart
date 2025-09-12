@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter} from "next/navigation";
+import { useParams, useRouter} from "next/navigation";
 import { useState } from "react";
 import MobileNav from "@/components/MobileNav";
 import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
@@ -39,24 +39,26 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 // This would typically come from an API or database
 
 export default function PublicProfile() {
-
-  const { user, isLoading } = useAuthUser();
+  // const {  isLoading } = useAuthUser();
+  const { userId } = useParams()
+  const user = useQuery(api.users.current, {userId: userId? userId as Id<"users"> : undefined});
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
   const router = useRouter();
-  const store = useQuery(api.store.getStoresByUserId);
-  const hasStore = store?.error?.status;
-  const wallet = useQuery(api.wallet.getCurrentWallet)
+  const store = useQuery(api.store.getExternalUserStore, {userId: userId? userId as Id<"users"> : undefined});
+  const hasStore = store && "error" in store && store?.error?.status;
   const productsByUser = useQuery(api.product.getByUserId, {userId: user?._id})
 
 
+
+
   // Get Wallet Balance
-  if (isLoading) {
-    return (
-      <div className="grid h-screen place-items-center">
-        <div className="h-32 w-32 animate-spin rounded-full border-flickmart border-b-2" />
-      </div>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div className="grid h-screen place-items-center">
+  //       <div className="h-32 w-32 animate-spin rounded-full border-flickmart border-b-2" />
+  //     </div>
+  //   );
+  // }
 
   function updateUserProductsLength(length: number) {
     setUserProductsLength(length);
@@ -65,23 +67,6 @@ export default function PublicProfile() {
     <>
       <MobileNav />
       <div className="w-full">
-        <div className="flex items-center gap-2 px-4 text-gray-600 shadow-md">
-          <ChevronLeft
-            className="size-7 cursor-pointer rounded-full transition-all duration-300 hover:bg-gray-200"
-            onClick={() => router.back()}
-          />
-          <Breadcrumb className="bg-white py-7 pl-2">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <Link href="/settings">Settings</Link>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Personal</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
         <div className="min-h-screen bg-gray-50/50 px-4 pt-4 pb-10 lg:p-8">
           <div className="mx-auto max-w-5xl">
             {/* Header */}
@@ -127,52 +112,6 @@ export default function PublicProfile() {
             </div>
             <div className="my-4 flex flex-col gap-2">
               <span className="text-sm">{user?.description}</span>
-              <div className="mt-1.5 flex items-center gap-2">
-                <Button className="w-2/4">
-                  <Link
-                    className="size-full"
-                    href={"/settings/personal/update"}
-                  >
-                    Edit Profile
-                  </Link>
-                </Button>
-                <Button onClick={()=> {
-                  navigator.share({
-                    title: `Share Profile - ${user?.username}`,
-                    text: 'Check out my profile!',
-                    // url: `https://flickmart.app/business/${user?._id}`,
-                    url: `http://localhost:3001/business/${user?._id}`,
-                  }).then(() => {
-                    console.log('Shared successfully');
-                  }).catch((error) => {
-                    console.error('Error sharing:', error);
-                  });
-                }} className="w-2/4">Share Profile</Button>
-                {/* <Button className="w-2/10">
-                  <Link className="size-full" href={"/wallet"}>
-                    <Wallet />
-                  </Link>
-                </Button> */}
-              </div>
-
-              {/* Remove demo wallet */}
-              <Link className="min-h-full" href={"/wallet"}>
-              <div className="flex flex-col gap-2 rounded-lg bg-primary text-white px-4  py-4">
-                <div className="flex justify-between  items-center text-xs font-medium">
-                  <span>Available Balance</span>
-                  <Link className="flex items-center py-2 " href={"/wallet?action=show_history"}>
-                    <span>Transaction History</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </div>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center">
-                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? wallet.balance : "0.00"}</h1><ChevronRight className="h-4 w-4" />
-                  </div>
-                  <Link href={"/wallet?action=open_dialog"}  className="text-[10px] bg-white text-primary rounded-full py-1.5 font-semibold px-2">+ Add Money</Link>
-                </div>
-              </div>
-              </Link>
               <p className="pt-1.5 text-muted-foreground text-sm">
                 Member since{" "}
                 {user?._creationTime
@@ -239,9 +178,6 @@ export default function PublicProfile() {
                 </div>
               </div>
             </div>
-            {/* Push Notifications */}
-            <PushNotificationSetup />
-
           </div>
         </div>
       </div>

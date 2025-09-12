@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import type { Doc } from '@/convex/_generated/dataModel';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
 
 // Type for the user document from Convex
 type ConvexUser = Doc<'users'>;
@@ -29,7 +29,7 @@ export function useAuthUser(options?: {
     options || {};
 
   const { isLoaded: clerkLoaded, isSignedIn } = useAuth();
-  const user = useQuery(api.users.current);
+  const user =useQuery(api.users.current, {});
   const router = useRouter();
   const hasRedirected = useRef(false);
   const toastShown = useRef(false);

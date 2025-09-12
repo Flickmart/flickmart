@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { Card } from "../ui/card";
+import { Button } from "../ui/button";
 
 export default function MiniListings({
   userId,
@@ -47,9 +48,11 @@ export default function MiniListings({
     <div className="">
       <div className="flex items-center justify-between">
         <h1 className="font-semibold text-lg">Recent Listings</h1>
-        <Link className="flex items-center text-gray-400 text-sm" href="">
-          {userProducts?.length || 0}
-          <ChevronRight />
+        <Link className="flex justify-end  text-sm" href="/settings/products">
+          <Button variant="link">
+            View all Products
+          </Button>
+          {/* <ChevronRight /> */}
         </Link>
       </div>
       <div className="mt-2 flex gap-3 overflow-auto">

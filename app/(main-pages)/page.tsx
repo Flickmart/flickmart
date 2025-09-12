@@ -8,7 +8,6 @@ import Categories from '@/components/home/Categories';
 import NewArrivals from '@/components/home/NewArrivals';
 import PopularSection from '@/components/home/PopularSection';
 import Slider from '@/components/home/Slider';
-import InstallPrompt from '@/components/InstallPrompt';
 import MobileNav from '@/components/MobileNav';
 import SearchBox from '@/components/SearchBox';
 import SearchOverlay from '@/components/SearchOverlay';

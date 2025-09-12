@@ -3,6 +3,7 @@ import useUserAgent from "@/hooks/useUserAgent";
 import React, { useEffect, useState } from "react";
 import { setCookie, getCookie } from "cookies-next";
 import AddToMobileChrome from "./AddToMobileChrome";
+import { usePathname } from "next/navigation";
 
 
 const COOKIE_NAME = 'addToHomeScreenPrompt';
@@ -10,6 +11,7 @@ const COOKIE_NAME = 'addToHomeScreenPrompt';
 export default function InstallPrompt({promptEvent}: {promptEvent: Event | null}) {
   const { isMobile, isStandalone, userAgent, isIOS } = useUserAgent();
   const [isVisible, setIsVisible] = useState(false);
+  const path = usePathname()
 
   // Close Prompt
   const closePrompt = () => {
@@ -48,7 +50,7 @@ export default function InstallPrompt({promptEvent}: {promptEvent: Event | null}
 
  
   
-  if (!isVisible) {
+  if (!isVisible || path !== '/') {
     return null;
   }
 

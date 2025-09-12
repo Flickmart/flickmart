@@ -98,9 +98,9 @@ export default function MobileNav() {
         >
           <div className="-top-10 absolute mx-6 flex flex-col items-center gap-1.5 rounded-full bg-white p-3">
             <div className="flex items-center justify-center rounded-full bg-flickmart p-5 text-white shadow-black/20 shadow-lg">
-              <Store className="h-5 w-5" />
+              <Store className="size-5" />
             </div>
-            <span className="duration-500 group-hover:text-flickmart">
+            <span className={`${pathname === "/post-ad" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}>
               Sell
             </span>
           </div>
@@ -130,10 +130,10 @@ export default function MobileNav() {
           href="settings/personal"
         >
           <UserRound
-            className={`${pathname === "/profile" ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/settings/personal" ? "text-flickmart" : "text-flickmart-gray"} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
-            className={`${pathname === "/profile" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
+            className={`${pathname === "/settings/personal" ? "text-flickmart" : ""} duration-500 group-hover:text-flickmart`}
           >
             Profile
           </span>

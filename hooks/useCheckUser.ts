@@ -11,7 +11,7 @@ interface UseCheckUserReturn {
 }
 
 export default function useCheckUser(): UseCheckUserReturn {
-  const user = useQuery(api.users.current);
+  const user =useQuery(api.users.current, {});
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const hasRedirected = useRef(false);

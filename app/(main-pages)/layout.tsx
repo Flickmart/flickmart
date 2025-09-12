@@ -6,6 +6,7 @@ import InstallPrompt from "@/components/InstallPrompt";
 
 const layout = ({ children }: { children: ReactNode }) => {
   const [deferredPrompt, setDeferredPrompt] = useState< Event | null>(null)
+
   useEffect(()=>{
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
