@@ -79,11 +79,11 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
           <div className="relative">
             <div className="-z-10 absolute inset-0 rounded-full" />
             <Image
-              alt={`${store.name}'s profile picture`}
+              alt={`${store?.name}'s profile picture`}
               className="size-[80px] rounded-full border-4 border-white object-cover shadow-lg"
               height={150}
               priority
-              src={`${store.image || 'placeholder.svg'}`}
+              src={`${store?.image || 'placeholder.svg'}`}
               width={150}
             />
           </div>
