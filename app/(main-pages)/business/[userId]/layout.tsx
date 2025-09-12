@@ -6,7 +6,8 @@ import { fetchQuery } from "convex/nextjs";
 
 // This would typically come from an API or database
 type Props = {
-  params: { userId: string };
+    children: React.ReactNode;
+    params: { userId: string }; 
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default function ProfileLayout({children}: {children: React.ReactNode}) {
+export default function ProfileLayout({children}: Props) {
   return (
     <>
       {children}
