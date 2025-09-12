@@ -69,7 +69,8 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
           pathname.includes("/categories") ||
           pathname.includes("/post-ad") ||
           pathname.includes("/sign-in") ||
-          pathname.includes("/business")
+          pathname.includes("/business") ||
+          pathname.includes("/vendors")
             ? router.push("/")
             : router.back()
         }

@@ -112,7 +112,7 @@ export default function ConversationPage() {
   // Fetch product data if productId is present
   const product = useQuery(
     api.product.getById,
-    productId ? { productId } : "skip"
+    { productId: productId ?  productId  : null }
   );
 
   // Function to send initial product message
