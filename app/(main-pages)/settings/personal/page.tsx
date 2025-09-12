@@ -138,7 +138,7 @@ export default function PublicProfile() {
                 <Button onClick={()=> {
                   navigator.share({
                     title: "Check out my profile!",
-                    text: "Discover my profile on Flickmart",
+                    text: "Discover my profile on Flickmart\n",
                     url: `https://flickmart.app/business/${user?._id}`,
                     // url: `http://localhost:3001/business/${user?._id}`,
                   }).then(() => {
