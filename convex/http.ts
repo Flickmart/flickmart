@@ -121,7 +121,7 @@ http.route({
 
     const { email, amount } = await request.json();
 
-    const user = await ctx.runQuery(api.users.current);
+    const user = await ctx.runQuery(api.users.current, {});
 
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
@@ -554,7 +554,7 @@ http.route({
       );
     }
 
-    const user = await ctx.runQuery(api.users.current);
+    const user = await ctx.runQuery(api.users.current, {});
     if (!user) {
       return new Response(JSON.stringify({ error: "User not found" }), {
         status: 404,
@@ -1349,7 +1349,7 @@ http.route({
     }
 
     try {
-      const user = await ctx.runQuery(api.users.current);
+      const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
         return new Response(JSON.stringify({ error: "User not found" }), {
           status: 404,
@@ -1409,7 +1409,7 @@ http.route({
     }
 
     try {
-      const user = await ctx.runQuery(api.users.current);
+      const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
         return new Response(JSON.stringify({ error: "User not found" }), {
           status: 404,
@@ -1524,7 +1524,7 @@ http.route({
     }
 
     try {
-      const user = await ctx.runQuery(api.users.current);
+      const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
         return new Response(JSON.stringify({ error: "User not found" }), {
           status: 404,
@@ -1610,7 +1610,7 @@ http.route({
 
     try {
       // First verify the PIN
-      const user = await ctx.runQuery(api.users.current);
+      const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
         return new Response(JSON.stringify({ error: "User not found" }), {
           status: 404,

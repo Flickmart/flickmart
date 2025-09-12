@@ -9,8 +9,11 @@ import {
 } from './_generated/server';
 
 export const current = query({
-  args: {},
-  handler: async (ctx) => {
+  args: { userId: v.optional(v.id('users')) },
+  handler: async (ctx, args) => {
+    if(args.userId){
+    return await ctx.db.get(args.userId);
+    }
     return await getCurrentUser(ctx);
   },
 });

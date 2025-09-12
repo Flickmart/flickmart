@@ -5,6 +5,7 @@ import WalletBalance from "./WalletBalance";
 import WalletActions from "./WalletActions";
 import TransactionHistory from "./TransactionHistory";
 import AccountVerificationDialog from "./AccountVerificationDialog";
+import { useSearchParams } from "next/navigation";
 
 interface WalletLayoutProps {
   user: Doc<"users">;
@@ -113,11 +114,13 @@ export default function WalletLayout({
   useNewAccount,
   setUseNewAccount,
 }: WalletLayoutProps) {
+  const searchParams = useSearchParams()
+  const action = searchParams.get("action")
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <Card className="rounded-none border-0 shadow-none">
+       {action !== "show_history" && <Card className="rounded-none border-0 shadow-none">
           <WalletHeader user={user} isMobile={true} />
           <WalletBalance
             balance={balance}
@@ -130,7 +133,7 @@ export default function WalletLayout({
             <WalletActions
               user={user}
               isMobile={true}
-              open={open}
+              open={action === "open_dialog" ? true : open}
               withdrawOpen={withdrawOpen}
               setOpen={setOpen}
               setWithdrawOpen={setWithdrawOpen}
@@ -171,8 +174,7 @@ export default function WalletLayout({
               setUseNewAccount={setUseNewAccount}
             />
           </WalletBalance>
-        </Card>
-
+        </Card>}
         <TransactionHistory
           transactions={transactions}
           activeTab={activeTab}

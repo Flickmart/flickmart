@@ -93,7 +93,7 @@ export default function SettingsPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const { isMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
-  const user = useQuery(api.users.current);
+  const user =useQuery(api.users.current, {});
 
   React.useEffect(() => {
     if (isMobile) {

@@ -44,10 +44,7 @@ export const getByUserId = query({
       }
 
       // Get all products for the user
-      const products = await ctx.db
-        .query("product")
-        .filter((q) => q.eq(q.field("userId"), args.userId || user._id))
-        .collect();
+      const products = await ctx.db.query("product").withIndex("by_userId", q => q.eq("userId", user._id)).collect()
 
       // Filter out any products that might be considered inactive
       // Since there's no explicit status field, we'll return all products
