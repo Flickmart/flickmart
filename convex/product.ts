@@ -1,6 +1,7 @@
 import { ConvexError, v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserOrThrow } from "./users";
+import { Id } from "./_generated/dataModel";
 
 export const errorObject = {
   status: 401,
@@ -34,17 +35,27 @@ export const getByUserId = query({
   handler: async (ctx, args) => {
     try {
       // Validate that the user exists
-      const user = await getCurrentUserOrThrow(ctx);
+      let user;
 
-      if (!user) {
-        throw new ConvexError({
-          message: "User not Found",
-          code: "USER_NOT_FOUND",
-        });
+      if (args.userId) {
+        user = await ctx.db.get(args.userId)
+      }else{
+        user = await getCurrentUserOrThrow(ctx);
+        if (!user) {
+          throw new ConvexError({
+            message: "User not Found",
+            code: "USER_NOT_FOUND",
+          });
+        }
       }
 
+    
+
       // Get all products for the user
-      const products = await ctx.db.query("product").withIndex("by_userId", q => q.eq("userId", user._id)).collect()
+      const products = await ctx.db.query("product").withIndex("by_userId", q => {
+        if (!user?._id) return q.eq("userId", "" as Id<"users">); // Handle undefined case with empty string ID
+        return q.eq("userId", user._id);
+      }).collect();
 
       // Filter out any products that might be considered inactive
       // Since there's no explicit status field, we'll return all products

@@ -34,6 +34,8 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
 
   } else if (action === "edit") {
     title = "Edit Ad";
+  }else if(pathname.includes("/business")){
+    title = "Profile"
   }
   const hiddenPaths = [
     "/notifications",
