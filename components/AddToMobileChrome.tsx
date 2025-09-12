@@ -16,7 +16,7 @@ export default function AddToMobileChrome(props: Props) {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="bg-white flex justify-between px-6 items-center h-20 my-4 mx-2 rounded-xl w-5/6 lg:w-2/4 relative"
+      className="bg-white flex justify-between px-6 items-center h-20 my-4 mx-2 rounded-xl w-full lg:w-2/4 relative"
     >
       {/* <div
         onClick={closePrompt}

@@ -39,7 +39,6 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 // This would typically come from an API or database
 
 export default function PublicProfile() {
-
   const { user, isLoading } = useAuthUser();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
   const router = useRouter();
@@ -110,7 +109,7 @@ export default function PublicProfile() {
                       alt="verified"
                       className=""
                       height={16}
-                      src="/vector.png"
+                      src="/Vector.png"
                       width={16}
                     />
                   ) : null}
@@ -138,8 +137,8 @@ export default function PublicProfile() {
                 </Button>
                 <Button onClick={()=> {
                   navigator.share({
-                    title: `Share Profile - ${user?.username}`,
-                    text: 'Check out my profile!',
+                    title: "Check out my profile!",
+                    text: "Discover my profile on Flickmart",
                     url: `https://flickmart.app/business/${user?._id}`,
                     // url: `http://localhost:3001/business/${user?._id}`,
                   }).then(() => {
