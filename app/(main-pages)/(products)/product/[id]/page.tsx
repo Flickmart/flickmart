@@ -156,21 +156,6 @@ export default function ProductPage() {
     );
   }
   return (
-    <>
-      <Head>
-        <title>{productData?.title}</title>
-        <meta name="description" content={productData?.description} />
-
-        {/* Open Graph tags for WhatsApp, Facebook, LinkedIn */}
-        <meta property="og:type" content="product" />
-        <meta property="og:title" content={productData?.title} />
-        <meta property="og:description" content={productData?.description} />
-        <meta property="og:image" content={productData?.images[0]} />
-        <meta
-          property="og:url"
-          content={`https://flickmart.app/product/${productData?._id ?? ""}`}
-        />
-      </Head>
       <Drawer>
         <div className="min-h-screen gap-x-6 space-y-7 bg-slate-100 lg:p-5">
           <div className="gap-5 space-y-3 lg:grid lg:grid-cols-2">
@@ -360,6 +345,5 @@ export default function ProductPage() {
           <SimilarAdverts productId={productId} />
         </div>
       </Drawer>
-    </>
   );
 }

@@ -144,7 +144,7 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             shareProduct({
               title: store.name || 'Check out this store',
               url: `https://flickmart.app/vendors/${user._id}`,
-              description: `Have you checked out ${user.name}'s store on Flickmart?`,
+              description: store.description ||`Have you checked out ${user.name}'s store on Flickmart?`,
             })
           }
           variant="outline"
