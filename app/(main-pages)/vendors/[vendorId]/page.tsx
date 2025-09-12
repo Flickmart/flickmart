@@ -66,8 +66,8 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const handleSearch = (value: string) => {
     setSearch(value);
   };
-  const firstName = user.name.split(' ')[0];
-  const lastName = user.name.split(' ')[1];
+  const firstName = store?.name?.split(' ')[0];
+  const lastName = store?.name?.split(' ')[1];
 
   return (
     <div className="p-4 lg:mx-auto lg:w-3/6">
@@ -79,11 +79,11 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
           <div className="relative">
             <div className="-z-10 absolute inset-0 rounded-full" />
             <Image
-              alt={`${user.name}'s profile picture`}
+              alt={`${store.name}'s profile picture`}
               className="size-[80px] rounded-full border-4 border-white object-cover shadow-lg"
               height={150}
               priority
-              src={`${user.imageUrl || 'placeholder.svg'}`}
+              src={`${store.image || 'placeholder.svg'}`}
               width={150}
             />
           </div>
