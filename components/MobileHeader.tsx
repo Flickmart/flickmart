@@ -68,7 +68,8 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
         onClick={() =>
           pathname.includes("/categories") ||
           pathname.includes("/post-ad") ||
-          pathname.includes("/sign-in")
+          pathname.includes("/sign-in") ||
+          pathname.includes("/business")
             ? router.push("/")
             : router.back()
         }
