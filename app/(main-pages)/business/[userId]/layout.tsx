@@ -7,11 +7,11 @@ import { fetchQuery } from "convex/nextjs";
 // This would typically come from an API or database
 type Props = {
     children: React.ReactNode;
-    params: { userId: string }; 
+    params: Promise<{ userId: string }>;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { userId } = params;
+  const { userId } = await params;
 
   // Fetch business from Convex
   const user = await fetchQuery(api.users.current, { userId: userId as Id<"users">  });
