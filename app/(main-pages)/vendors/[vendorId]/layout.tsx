@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   // Fetch Store from Convex
   const store = await fetchQuery(api.store.getExternalUserStore, { userId: vendorId as Id<"users"> });
-  const storeDefined = store && "name" in store? store : null;
+  const storeDefined = store && !("error" in store) && "name" in store? store : null;
 
   if (!storeDefined) {
     return {
