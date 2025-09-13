@@ -6,6 +6,7 @@ import WalletActions from "./WalletActions";
 import TransactionHistory from "./TransactionHistory";
 import AccountVerificationDialog from "./AccountVerificationDialog";
 import { useSearchParams } from "next/navigation";
+import MobileHeader from "../MobileHeader";
 
 interface WalletLayoutProps {
   user: Doc<"users">;

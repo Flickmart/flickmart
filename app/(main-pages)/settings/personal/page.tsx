@@ -204,7 +204,7 @@ export default function PublicProfile() {
                     <span>
                       {user?.contact?.phone || (
                         <i className="text-gray-400 text-sm">
-                          phone not provided
+                          --
                         </i>
                       )}
                     </span>
@@ -217,7 +217,7 @@ export default function PublicProfile() {
                     <span>
                       {user?.email || (
                         <i className="text-gray-400 text-sm">
-                          email not provided
+                          --
                         </i>
                       )}
                     </span>
@@ -230,7 +230,7 @@ export default function PublicProfile() {
                     <p>
                       {user?.contact?.address || (
                         <i className="text-gray-400 text-sm normal-case">
-                          location not provided
+                          --
                         </i>
                       )}
                     </p>

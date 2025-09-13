@@ -1,5 +1,4 @@
 "use client";
-
 import { ChevronLeft, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useState } from "react";
@@ -42,7 +41,7 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
     "/settings",
     "/chat",
     "/search",
-    "/wallet",
+    // "/wallet",
   ];
 
   const isHidden = () => {
