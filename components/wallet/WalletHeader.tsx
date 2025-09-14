@@ -2,6 +2,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CardHeader } from "@/components/ui/card";
 import { Bell, Headphones } from "lucide-react";
 import { type Doc } from "@/convex/_generated/dataModel";
+import Link from "next/link";
 
 interface WalletHeaderProps {
   user: Doc<"users">;
@@ -40,14 +41,14 @@ export default function WalletHeader({
             <p className="text-gray-500 text-sm">Welcome, let's make payment</p>
           </div>
         </div>
-        <div className="relative">
+        <Link href={'/contact'} className="relative">
           <IconComponent className={`${iconSize} text-gray-600`} />
           <div
             className={`-top-1 -right-1 absolute flex ${notificationSize} items-center justify-center rounded-full bg-red-500 text-white text-xs`}
           >
             <span className={notificationTextSize}>1</span>
           </div>
-        </div>
+        </Link>
       </div>
     </CardHeader>
   );
