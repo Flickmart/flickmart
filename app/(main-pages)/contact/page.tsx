@@ -3,9 +3,39 @@ import { ChevronRight, Mail, MapPinned } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useRef, useState } from 'react';
+import emailjs from '@emailjs/browser';
+import { toast } from 'sonner';
 
 export default function Contact() {
+  const form = useRef<HTMLFormElement | null>(null);
   const isMobile = useIsMobile();
+  const [loading, setLoading] = useState(false);
+
+  const sendEmail = async (e:React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!form.current) return;
+
+    setLoading(true);
+
+    try {
+      await emailjs.sendForm(
+        'service_mohe9sr',
+        'template_sk6vvs4',
+        form.current,
+        { publicKey: 'nHB5uJpaUsmzbJIJX' }
+      );
+
+      toast.success("Message sent successfully!");
+      form.current.reset(); // cleanup the form
+    } catch (error) {
+      console.error("FAILED...", error);
+      toast.error("Failed to send message. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="w-full text-center">
       <div className="mx-auto my-6 w-11/12">
@@ -19,7 +49,7 @@ export default function Contact() {
         </p>
       </div>
       <section className="mb-12 flex w-full flex-col gap-6 md:mx-auto md:w-11/12 md:flex-row">
-        <form className="mx-auto mt-6 w-11/12 flex-col justify-center gap-7 rounded-md border border-gray-300 p-4 md:mx-0 md:mt-0 md:w-6/12 lg:flex">
+        <form ref={form} onSubmit={sendEmail} className="mx-auto mt-6 w-11/12 flex-col justify-center gap-7 rounded-md border border-gray-300 p-4 md:mx-0 md:mt-0 md:w-6/12 lg:flex">
           <div className="mb-4 text-left">
             <h1 className="mb-2 font-bold text-3xl lg:text-6xl">
               <span className="text-flickmart">Get</span> in touch
@@ -35,6 +65,8 @@ export default function Contact() {
               id="name"
               placeholder="Fullname"
               type="text"
+              name="name"
+              required
             />
           </div>
           <div className="mt-4">
@@ -43,6 +75,8 @@ export default function Contact() {
               id="email"
               placeholder="Email"
               type="email"
+              name="email"
+              required
             />
           </div>
           <div className="mt-4">
@@ -50,14 +84,17 @@ export default function Contact() {
               className="w-full rounded-md border border-gray-300 p-2 py-3 leading-tight"
               id="message"
               placeholder="Your message..."
+              name="message"
+              required
               rows={isMobile ? 5 : 10}
             />
           </div>
           <button
-            className="mt-4 w-full rounded-md bg-flickmart px-4 py-4 text-white transition-all duration-300 hover:scale-105 lg:h-14"
+            className="mt-4 w-full rounded-md bg-flickmart px-4 py-4 text-white transition-all duration-300 hover:scale-105 lg:h-14 disabled:opacity-50"
             type="submit"
+            disabled={loading}
           >
-            Send Message
+            {loading ? "Sending..." : "Send Message"}
           </button>
         </form>
 
@@ -95,7 +132,7 @@ export default function Contact() {
                 </p>
                 <Link
                   className="mt-4 inline-block w-full rounded-md bg-flickmart-chat-orange px-4 py-3 font-medium text-sm text-white"
-                  href={'https://wa.me/phonenumber'}
+                  href={'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'}
                   target="_blank"
                 >
                   Chat With Us
