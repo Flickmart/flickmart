@@ -26,6 +26,9 @@ importers:
       '@convex-dev/resend':
         specifier: ^0.1.3
         version: 0.1.3(convex-helpers@0.1.99(@standard-schema/spec@1.0.0)(convex@1.25.4(@clerk/clerk-react@5.33.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.7.2)(zod@3.25.76))(convex@1.25.4(@clerk/clerk-react@5.33.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      '@emailjs/browser':
+        specifier: ^4.4.1
+        version: 4.4.1
       '@hookform/resolvers':
         specifier: ^3.10.0
         version: 3.10.0(react-hook-form@7.60.0(react@19.0.0))
@@ -973,6 +976,10 @@ packages:
     resolution: {integrity: sha512-zIRixbQeO6QniR0k2mwR7DmR2HO1w6+qQlzQ5nb8lyPyPgd1gV9wo/9yBeB6zRC+CGnxiUiYsRMamclVISuxLw==}
     peerDependencies:
       effect: ^3.16.8
+
+  '@emailjs/browser@4.4.1':
+    resolution: {integrity: sha512-DGSlP9sPvyFba3to2A50kDtZ+pXVp/0rhmqs2LmbMS3I5J8FSOgLwzY2Xb4qfKlOVHh29EAutLYwe5yuEZmEFg==}
+    engines: {node: '>=14.0.0'}
 
   '@emnapi/runtime@1.4.4':
     resolution: {integrity: sha512-hHyapA4A3gPaDCNfiqyZUStTMqIkKRshqPIuDOXv1hcBnD4U3l8cP0T1HMCfGRxQ6V64TGCcoswChANyOAwbQg==}
@@ -7202,6 +7209,8 @@ snapshots:
       find-my-way-ts: 0.1.6
       msgpackr: 1.11.4
       multipasta: 0.2.5
+
+  '@emailjs/browser@4.4.1': {}
 
   '@emnapi/runtime@1.4.4':
     dependencies:
