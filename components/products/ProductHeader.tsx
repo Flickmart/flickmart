@@ -81,7 +81,7 @@ export default function ProductHeader({
   };
 
   async function handleShare() {
-    shareProduct({ title, description, productId });
+    shareProduct({ title, description, productId, price });
   }
 
   return (
