@@ -25,12 +25,13 @@ if (!product) {
 }
 
 return {
-  title: `Check out this product i found on Flickmart: ${product.title}`,
+  title: product.title,
   description: product.description || "Check out this product on Flickmart.",
   openGraph: {
     title: `Check out this product i found on Flickmart: ${product.title}`,
     description: product.description || "Check out this product on Flickmart.",
     url: `https://flickmart.app/product/${id}`,
+    
     images: [
       {
         url: product.images[0] || "https://flickmart.app/icon512_maskable.png",
