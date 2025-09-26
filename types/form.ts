@@ -21,10 +21,13 @@ export type NameType =
   | 'negotiable'
   | 'condition'
   | 'description'
-  | 'price'
+  | 'originalPrice'
+  | "targetPrice"
+  | "targetPriceSecond"
   | 'store'
   | 'phone'
-  | 'plan';
+  | 'plan'
+  | "aiEnabled"
 
 export type FormType = UseFormReturn<{
   store: string;
@@ -35,7 +38,10 @@ export type FormType = UseFormReturn<{
   condition: 'brand new' | 'used';
   title: string;
   description: string;
-  price: number | string;
+  originalPrice?: number | string ;
+  targetPrice?: number | string ;
+  targetPriceSecond?: number | string ;
   phone: string;
   plan: 'free' | 'basic' | 'pro' | 'premium';
+  aiEnabled: boolean
 }>;

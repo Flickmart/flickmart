@@ -39,10 +39,12 @@ export default defineSchema({
   product: defineTable({
     userId: v.id("users"),
     title: v.string(),
-
     description: v.string(),
     images: v.array(v.string()),
     price: v.number(),
+    targetPrice: v.optional(v.number()),
+    targetPriceSecond: v.optional(v.number()),
+    aiEnabled: v.optional(v.boolean()),
     businessId: v.id("store"),
     category: v.string(),
     subcategory: v.optional(v.string()),
