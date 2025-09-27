@@ -248,6 +248,7 @@ export default function PostAdForm({
         price: Number(formData.originalPrice) || 0,
         targetPrice: Number(formData.targetPrice),
         targetPriceSecond: Number(formData.targetPriceSecond),
+        aiEnabled: formData.aiEnabled
       };
 
       action === "edit"
