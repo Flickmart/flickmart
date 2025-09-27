@@ -38,7 +38,7 @@ type SubmitType = SubmitHandler<{
   condition: "brand new" | "used";
   title: string;
   description: string;
-  originalPrice?: number | string;
+  price?: number | string;
   targetPrice?: number | string;
   targetPriceSecond?: number | string;
   store: string;
@@ -55,7 +55,7 @@ type ErrorType = SubmitErrorHandler<{
   condition: "brand new" | "used";
   title: string;
   description: string;
-  originalPrice?: number | string;
+  price?: number | string;
   targetPrice?: number | string;
   targetPriceSecond?: number | string;
   store: string;
@@ -83,7 +83,7 @@ const formSchema = z.object({
     .string()
     .min(30, { message: "Description is too short" })
     .max(900, { message: "Description cannot exceed 900 characters" }),
-  originalPrice: z.optional( z.union([
+  price: z.optional( z.union([
     z.string().refine((val) => +val !== 0, {
       message: "Price must be a valid number, price cannot be zero",
     }),
@@ -117,7 +117,7 @@ const formSchema = z.object({
   ]),
   aiEnabled: z.boolean(),
 }).superRefine((data, ctx) => {
-  const original = data.originalPrice != null ? +data.originalPrice : undefined;
+  const original = data.price != null ? +data.price : undefined;
   const target = data.targetPrice != null ? +data.targetPrice : undefined;
   const second = data.targetPriceSecond != null ? +data.targetPriceSecond : undefined;
 
@@ -164,7 +164,7 @@ export default function PostAdForm({
       negotiable: undefined,
       condition: undefined,
       description: "",
-      originalPrice: undefined,
+      price: undefined,
       targetPrice: undefined,
       targetPriceSecond: undefined,
       store: "",
@@ -195,7 +195,7 @@ export default function PostAdForm({
       form.setValue("condition", product.condition);
       form.setValue("title", product.title);
       form.setValue("description", product.description);
-      form.setValue("originalPrice", product.price);
+      form.setValue("price", product.price);
       form.setValue("store", product.store);
       form.setValue("phone", product.phone);
       form.setValue("plan", product.plan);
@@ -245,12 +245,13 @@ export default function PostAdForm({
         ...formData,
         businessId,
         images,
-        price: Number(formData.originalPrice) || 0,
+        price: Number(formData.price) || 0,
         targetPrice: Number(formData.targetPrice),
         targetPriceSecond: Number(formData.targetPriceSecond),
         aiEnabled: formData.aiEnabled
       };
 
+      console.log(modifiedObj)
       action === "edit"
         ? updateProduct({
             condition: modifiedObj.condition,
@@ -333,7 +334,7 @@ export default function PostAdForm({
           />
           <div>
             {/* Always There Price Field */}
-            <InputField form={form} name="originalPrice" type="numberField" />
+            <InputField form={form} name="price" type="numberField" />
 
             {/* Appears if product is negotiable */}
             <AnimatePresence>

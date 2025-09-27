@@ -21,7 +21,7 @@ export type NameType =
   | 'negotiable'
   | 'condition'
   | 'description'
-  | 'originalPrice'
+  | 'price'
   | "targetPrice"
   | "targetPriceSecond"
   | 'store'
@@ -38,7 +38,7 @@ export type FormType = UseFormReturn<{
   condition: 'brand new' | 'used';
   title: string;
   description: string;
-  originalPrice?: number | string ;
+  price?: number | string ;
   targetPrice?: number | string ;
   targetPriceSecond?: number | string ;
   phone: string;
