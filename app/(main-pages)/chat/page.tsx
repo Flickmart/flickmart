@@ -190,7 +190,7 @@ export default function ChatPage() {
 
           // Navigate to the conversation with product parameters
           router.replace(
-            `/chat/${targetConversationId}?productId=${productId}`
+            `/chat/${targetConversationId}?productId=${productId}&vendorId=${vendorId}`
           );
         } catch (error) {
           console.error('Failed to start conversation with vendor:', error);

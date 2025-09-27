@@ -211,6 +211,7 @@ export default function ProductPage() {
 
               {isMobile ? (
                 <ProductHeader
+                  aiEnabled= {productData?.aiEnabled ?? false}
                   description={productData?.description || ""}
                   location={productData?.location ?? ""}
                   price={productData?.price ?? 0}
@@ -258,6 +259,7 @@ export default function ProductPage() {
               ) : null}
               {isMobile ? null : (
                 <ProductHeader
+                  aiEnabled= {productData?.aiEnabled ?? false}
                   description={productData?.description ?? ""}
                   location={productData?.location ?? ""}
                   price={productData?.price ?? 0}

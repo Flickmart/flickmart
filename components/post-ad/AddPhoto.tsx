@@ -130,7 +130,7 @@ export default function AddPhoto({
 
   return (
     <div className="space-y-5 bg-inherit py-5 text-gray-500 text-xs capitalize lg:space-y-3 lg:text-sm">
-      <h3 className="font-medium text-xl">add photo</h3>
+      <h3 className="font-medium text-xl">add photos</h3>
       <p>The first picture would be the face of your advert</p>
       <div className="flex flex-wrap items-center space-x-3 overflow-x-auto">
         <div

@@ -197,7 +197,7 @@ export default function AdCharges({
             <DialogDescription>
               {action === "edit"
                 ? "You are about to update this ad, are you sure you want to proceed with this action?"
-                : "You are about to post an ad with {plan} plan. ₦{chargeAmount} will be deducted from your wallet."}
+                : `You are about to post an ad with ${plan} plan. ₦${chargeAmount} will be deducted from your wallet.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3">
