@@ -38,6 +38,17 @@ interface Message {
   order?: any;
 }
 
+ type NegotiableRequest = {
+  user_id: string;
+  seller_id: string;
+  product_name: string;
+  actual_price: number;
+  target_price: number;
+  last_price: number;
+  message: string;
+  response: string;
+};
+
 export default function ConversationPage() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -80,6 +91,9 @@ export default function ConversationPage() {
     conversationId ? { conversationId } : "skip"
   );
 
+
+
+
   // Fetch conversation details
   const conversation = useQuery(
     api.chat.getConversation,
@@ -115,6 +129,65 @@ export default function ConversationPage() {
     { productId: productId ?  productId  : null }
   );
 
+
+useEffect(()=>{
+  const lastMessageObj = messages?.at(-1); 
+  async function sendAIMessage(lastMessageFromBuyer: string){
+    try {
+      const body={
+      user_id: user?._id,
+      seller_id : vendorId,
+      product_name: product?.title,
+      actual_price: product?.price ?? 0,
+      target_price : product?.targetPrice ?? 0,
+      last_price: product?.targetPriceSecond ?? 0,
+      message: lastMessageFromBuyer
+    }
+    const response = await fetch("https://flickmart.lexrunit.com/negotiable", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+          "Prefer": "return=representation"
+      },
+      body: JSON.stringify(body)
+      
+    })
+          
+    // if(!response.ok){
+    //   throw Error("NKEM cannot respond at this time", {
+    //     cause: "AI_ERROR"
+    //   })
+    // }
+    
+    // Get response from AI
+    const {response: reply}: NegotiableRequest = await response.json()
+    console.log(reply)
+
+
+    // Send to database
+      await sendMessage({
+        senderId: vendorId as Id<"users">,
+        content: reply,
+        conversationId,
+        // images: imageUrls,
+        type: "text",
+      });
+    
+
+    }catch(err){
+      const error = err as Error
+      toast.error(error.message)
+    }
+  }
+
+  if(vendorId !== lastMessageObj?.senderId){
+    sendAIMessage(lastMessageObj?.content ?? "")
+  }else{
+    console.log("Not negotiable")
+  }
+  
+},[messages])        
+
   // Function to send initial product message
   const sendInitialProductMessage = useCallback(
     async (currentProductId: Id<"product">) => {
@@ -134,11 +207,14 @@ export default function ConversationPage() {
       }
 
       try {
+ 
         console.log("Sending product message:", {
           productId: currentProductId,
           productTitle: product.title,
           conversationId,
         });
+
+        
 
         await sendMessage({
           senderId: user._id,
@@ -153,8 +229,9 @@ export default function ConversationPage() {
         setProcessedProductId(currentProductId);
         console.log("Product message sent successfully");
       } catch (error) {
+        const err = error as Error
         console.error("Failed to send initial product message:", error);
-        toast.error("Failed to send message");
+        toast.error(err.cause === "AI_ERROR"?  err.message : "Failed to send message");
       }
     },
     [user?._id, processedProductId, sendMessage, product, conversationId]
@@ -221,6 +298,8 @@ export default function ConversationPage() {
     api.presence.getUserOnlineStatus,
     otherUserId ? { userId: otherUserId } : "skip"
   );
+
+
 
   console.log("otherUserId:", otherUserId);
   console.log("otherUserOnlineStatus:", otherUserOnlineStatus);
