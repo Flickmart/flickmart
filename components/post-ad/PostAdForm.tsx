@@ -116,7 +116,27 @@ const formSchema = z.object({
     z.literal("premium"),
   ]),
   aiEnabled: z.boolean(),
-});
+}).superRefine((data, ctx) => {
+  const original = data.originalPrice != null ? +data.originalPrice : undefined;
+  const target = data.targetPrice != null ? +data.targetPrice : undefined;
+  const second = data.targetPriceSecond != null ? +data.targetPriceSecond : undefined;
+
+  if (original !== undefined && target !== undefined && target > original) {
+    ctx.addIssue({
+      path: ["targetPrice"],
+      code: z.ZodIssueCode.custom,
+      message: "First bargain price cannot be more than original price",
+    });
+  }
+
+  if (target !== undefined && original !== undefined && second !== undefined && (second > target || second > original)) {
+    ctx.addIssue({
+      path: ["targetPriceSecond"],
+      code: z.ZodIssueCode.custom,
+      message: "Second bargain price cannot be more than first bargain price or original price",
+    });
+  }
+});;
 
 export default function PostAdForm({
   clear,
@@ -285,7 +305,7 @@ export default function PostAdForm({
             <Switch value={form.watch("aiEnabled") ? "true" : "false"} id="ai" 
               onClick={() => {
               form.setValue("aiEnabled", !form.getValues("aiEnabled"))
-              toast.success(`NKEM has been ${form.watch("aiEnabled") ? "disabled" : "enabled"} for this product`)
+              toast.success(`NKEM has been ${!form.watch("aiEnabled") ? "disabled" : "enabled"} for this product`)
               }}
             />
           </div>

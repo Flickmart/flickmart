@@ -66,13 +66,13 @@ export default function AdCharges({
 
   const handlePostAdClick = async () => {
     if (!images.length) {
-      toast.error('Please add at least one image');
+      toast.error('Please add at least two images');
       return;
     }
     // First validate the form
     const isValid = await formTrigger();
     if (!isValid) {
-      toast.error('Please fill in all required fields');
+      toast.error('Please properly fill in all fields');
       return;
     }
 

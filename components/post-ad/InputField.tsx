@@ -12,8 +12,8 @@ type FieldType = {
 };
 
 const priceType = {
-  originalPrice: "Original price",
-  targetPrice: "First Bargain Price ",
+  originalPrice: "Original price*",
+  targetPrice: "First Bargain Price*",
   targetPriceSecond: "Second Bargain Price (Optional)"
 }
 export default function InputField({
