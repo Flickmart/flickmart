@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: http://flickmart.app
+
+# Sitemaps
+Sitemap: http://flickmart.app/sitemap.xml

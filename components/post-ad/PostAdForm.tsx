@@ -4,7 +4,7 @@ import { Separator } from "@radix-ui/react-select";
 import { useMutation } from "@tanstack/react-query";
 import { useMutation as useMutationConvex, useQuery } from "convex/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import type React from "react";
+import React from "react";
 import { useEffect, useState } from "react";
 
 import {
@@ -25,6 +25,10 @@ import AdPromotion from "./AdPromotion";
 import CategorySheet from "./CategorySheet";
 import InputField from "./InputField";
 import Selector from "./Selector";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
+import { AnimatePresence, motion } from "motion/react";
+import { opacity } from "html2canvas/dist/types/css/property-descriptors/opacity";
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -34,10 +38,13 @@ type SubmitType = SubmitHandler<{
   condition: "brand new" | "used";
   title: string;
   description: string;
-  price: number | string;
+  originalPrice?: number | string;
+  targetPrice?: number | string;
+  targetPriceSecond?: number | string;
   store: string;
   phone: string;
   plan: "free" | "basic" | "pro" | "premium";
+  aiEnabled: boolean
 }>;
 
 type ErrorType = SubmitErrorHandler<{
@@ -48,24 +55,16 @@ type ErrorType = SubmitErrorHandler<{
   condition: "brand new" | "used";
   title: string;
   description: string;
-  price: number | string;
+  originalPrice?: number | string;
+  targetPrice?: number | string;
+  targetPriceSecond?: number | string;
   store: string;
   phone: string;
   plan: "free" | "basic" | "pro" | "premium";
+  aiEnabled: boolean
 }>;
 
-const categories = [
-  "vehicles",
-  "homes",
-  "food",
-  "mobiles",
-  "appliances",
-  "fashion",
-  "electronics",
-  "pets",
-  "beauty",
-  "services",
-];
+
 const location = ["enugu", "nsukka"];
 const returnable = ["yes", "no"];
 const condition = ["brand new", "used"];
@@ -84,15 +83,30 @@ const formSchema = z.object({
     .string()
     .min(30, { message: "Description is too short" })
     .max(900, { message: "Description cannot exceed 900 characters" }),
-  price: z.union([
+  originalPrice: z.optional( z.union([
     z.string().refine((val) => +val !== 0, {
       message: "Price must be a valid number, price cannot be zero",
     }),
-
     z.number({
       required_error: "Price is required",
     }),
-  ]),
+  ])),
+  targetPrice: z.optional( z.union([
+    z.string().refine((val) => +val !== 0, {
+      message: "Price must be a valid number, price cannot be zero",
+    }),
+    z.number({
+      required_error: "Price is required",
+    }),
+  ])),
+  targetPriceSecond: z.optional( z.union([
+    z.string().refine((val) => +val !== 0, {
+      message: "Price must be a valid number, price cannot be zero",
+    }),
+    z.number({
+      required_error: "Price is required",
+    }),
+  ])),
   store: z.string(),
   phone: z.string(),
   plan: z.union([
@@ -101,6 +115,7 @@ const formSchema = z.object({
     z.literal("pro"),
     z.literal("premium"),
   ]),
+  aiEnabled: z.boolean(),
 });
 
 export default function PostAdForm({
@@ -129,10 +144,13 @@ export default function PostAdForm({
       negotiable: undefined,
       condition: undefined,
       description: "",
-      price: undefined,
+      originalPrice: undefined,
+      targetPrice: undefined,
+      targetPriceSecond: undefined,
       store: "",
       phone: "",
       plan: "pro",
+      aiEnabled: false
     },
   });
   const { images } = useOthersStore((state) => state);
@@ -157,7 +175,7 @@ export default function PostAdForm({
       form.setValue("condition", product.condition);
       form.setValue("title", product.title);
       form.setValue("description", product.description);
-      form.setValue("price", product.price);
+      form.setValue("originalPrice", product.price);
       form.setValue("store", product.store);
       form.setValue("phone", product.phone);
       form.setValue("plan", product.plan);
@@ -202,12 +220,14 @@ export default function PostAdForm({
         return;
       }
 
-      postToastId = toast.info("Posting Ad...");
+      postToastId = toast.info("Posting Ad...", {duration: 1000});
       const modifiedObj = {
         ...formData,
         businessId,
         images,
-        price: +formData.price,
+        price: Number(formData.originalPrice) || 0,
+        targetPrice: Number(formData.targetPrice),
+        targetPriceSecond: Number(formData.targetPriceSecond),
       };
 
       action === "edit"
@@ -247,7 +267,7 @@ export default function PostAdForm({
       e.preventDefault();
     }
   };
-
+  console.log(form.watch("aiEnabled"))
   return (
     <Form {...form}>
       <form
@@ -255,9 +275,22 @@ export default function PostAdForm({
         onKeyDown={handleKeyPress}
         onSubmit={form.handleSubmit(onSubmit, onError)}
       >
-        <div className="w-full space-y-5 bg-inherit px-5 py-10 lg:w-3/4 lg:p-10">
+        <div className="w-full space-y-5 bg-inherit px-5 pt-10 lg:w-3/4 lg:p-10">
           <CategorySheet form={form} name="category" />
           <CategorySheet form={form} name="subcategory" />
+          {/* <Separator className="h-5 w-full bg-gray-100" /> */}
+        {/* <div className="w-full  space-y-5 bg-inherit px-5 lg:w-3/4 lg:space-y-6 lg:px-10"> */}
+          <div className="flex h-6 pt-6 items-center justify-between">
+            <Label className="font-bold text-gray-600 text-sm" htmlFor="ai">Enable NKEM for this product</Label>
+            <Switch value={form.watch("aiEnabled") ? "true" : "false"} id="ai" 
+              onClick={() => {
+              form.setValue("aiEnabled", !form.getValues("aiEnabled"))
+              toast.success(`NKEM has been ${form.watch("aiEnabled") ? "disabled" : "enabled"} for this product`)
+              }}
+            />
+          </div>
+          <p className="font-light text-justify text-gray-400 text-sm">NKEM is our AI model designed to make life easier for you by selling and negotiating prices with buyers even when you are offline</p> 
+        {/* </div> */}
           <AddPhoto
             clear={clear}
             isSubmitted={isSubmitted}
@@ -277,6 +310,23 @@ export default function PostAdForm({
             name="negotiable"
             options={returnable}
           />
+          <div>
+            {/* Always There Price Field */}
+            <InputField form={form} name="originalPrice" type="numberField" />
+
+            {/* Appears if product is negotiable */}
+            <AnimatePresence>
+              {form.watch("negotiable") === true &&
+                <motion.div 
+                initial={{opacity: 0, y: 100}} 
+                animate= {{opacity: 1, y: 0, transition: {duration: 0.5, delay:0.2, ease: "easeInOut",  type: "tween"}}}
+                exit={{ opacity: 0 , y: 100}}>
+                  <InputField form={form} name="targetPrice" type="numberField" />
+                  <InputField form={form} name="targetPriceSecond" type="numberField" />
+                </motion.div>
+              }
+            </AnimatePresence>
+          </div>
           <Selector form={form} name="condition" options={condition} />
           <InputField
             form={form}
@@ -285,7 +335,6 @@ export default function PostAdForm({
             textAreaLength={textAreaLength}
             type="textArea"
           />
-          <InputField form={form} name="price" type="numberField" />
         </div>
 
         <Separator className="h-5 w-full bg-gray-100" />
@@ -304,6 +353,7 @@ export default function PostAdForm({
             val={userStore?.phone}
           />
         </div>
+      
 
         <Separator className="h-5 w-full bg-gray-100" />
 
