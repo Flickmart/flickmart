@@ -128,7 +128,9 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
-                    <p className="truncate text-gray-500 text-sm">offline</p>
+                   <p className="truncate text-blue-500 text-sm">
+                      NKEM Ai
+                    </p>
                   )}
                 </div>
               )}
