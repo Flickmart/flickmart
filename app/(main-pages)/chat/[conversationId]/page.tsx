@@ -130,6 +130,11 @@ export default function ConversationPage() {
     { productId: productId !== "null" ?  productId  : null }
   );
 
+  // Store in Local Storage
+  typeof vendorId === "string" && localStorage.setItem("vendorId", vendorId as string)
+
+  const vendorIdLocalStorage=  localStorage.getItem("vendorId")
+
 
 useEffect(()=>{
   const lastMessageObj = messages?.at(-1); 
@@ -167,7 +172,7 @@ useEffect(()=>{
 
     // Send to database
       await sendMessage({
-        senderId: vendorId as Id<"users">,
+        senderId: vendorIdLocalStorage as Id<"users">,
         content: reply,
         conversationId,
         type: "text",
@@ -176,7 +181,7 @@ useEffect(()=>{
 
     }catch(err){
       const error = err as Error
-      toast.error(error.message)
+      // toast.error(error.message)
     }
   }
 
@@ -243,7 +248,7 @@ useEffect(()=>{
       console.log("Sending initial product message for product:", productId);
       sendInitialProductMessage(productId);
       // Clean URL
-      // router.replace(`/chat/${conversationId}`);
+      router.replace(`/chat/${conversationId}`);
     }
   }, [
     productId,
