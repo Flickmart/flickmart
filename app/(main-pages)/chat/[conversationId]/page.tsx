@@ -73,6 +73,7 @@ export default function ConversationPage() {
   const conversationId = params?.conversationId as Id<"conversations">;
   const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
   const productId = searchParams?.get("productId") as Id<"product"> | null;
+  
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -169,7 +170,6 @@ useEffect(()=>{
         senderId: vendorId as Id<"users">,
         content: reply,
         conversationId,
-        // images: imageUrls,
         type: "text",
       });
     
@@ -243,7 +243,7 @@ useEffect(()=>{
       console.log("Sending initial product message for product:", productId);
       sendInitialProductMessage(productId);
       // Clean URL
-      router.replace(`/chat/${conversationId}`);
+      // router.replace(`/chat/${conversationId}`);
     }
   }, [
     productId,

@@ -85,10 +85,10 @@ export default function AdCharges({
       toast.error('Please log in to post an ad');
       return;
     }
-    if (action === "edit" || plan === "free") {
+    if (action === "edit" && plan === "free") {
       await formSubmit();
       setShowChargeDialog(false);
-      router.push("/settings/products");
+      action === "edit" &&  router.push("/settings/products");
       return;
     }
 
