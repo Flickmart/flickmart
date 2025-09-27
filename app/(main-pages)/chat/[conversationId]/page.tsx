@@ -136,6 +136,119 @@ export default function ConversationPage() {
   const vendorIdLocalStorage=  localStorage.getItem("vendorId")
 
 
+  // Function to send initial product message
+  const sendInitialProductMessage = useCallback(
+    async (currentProductId: Id<"product">) => {
+      if (
+        !user?._id ||
+        processedProductId === currentProductId ||
+        !product ||
+        !conversationId
+      ) {
+        console.log("Skipping product message send:", {
+          hasUser: !!user?._id,
+          alreadyProcessed: processedProductId === currentProductId,
+          hasProduct: !!product,
+          hasConversation: !!conversationId,
+        });
+        return;
+      }
+
+      try {
+ 
+        console.log("Sending product message:", {
+          productId: currentProductId,
+          productTitle: product.title,
+          conversationId,
+        });
+
+        
+
+        await sendMessage({
+          senderId: user._id,
+          conversationId,
+          type: "product",
+          productId: currentProductId,
+          price: product?.price,
+          title: product?.title,
+          productImage: product?.images?.[0],
+          content: `Hey i'm interested in this product, ${product?.title} is it still available?`,
+        });
+        setProcessedProductId(currentProductId);
+        console.log("Product message sent successfully");
+      } catch (error) {
+        const err = error as Error
+        console.error("Failed to send initial product message:", error);
+        toast.error(err.cause === "AI_ERROR"?  err.message : "Failed to send message");
+      }
+    },
+    [user?._id, processedProductId, sendMessage, product, conversationId]
+  );
+
+  // Handle product message when productId is present
+  useEffect(() => {
+    if (productId && product && processedProductId !== productId) {
+      console.log("Sending initial product message for product:", productId);
+      sendInitialProductMessage(productId);
+      // Clean URL
+      // router.replace(`/chat/${conversationId}`);
+    }
+  }, [
+    productId,
+    product,
+    processedProductId,
+    sendInitialProductMessage,
+    router,
+    conversationId,
+  ]);
+
+  // Mark messages as read when the conversation is viewed
+  useEffect(() => {
+    const markAsRead = async () => {
+      if (conversationId && user?._id) {
+        try {
+          await markMessagesAsRead({
+            userId: user._id,
+            conversationId,
+          });
+        } catch (error) {
+          console.error("Failed to mark messages as read:", error);
+        }
+      }
+    };
+
+    markAsRead();
+  }, [conversationId, user?._id, markMessagesAsRead, messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  // Determine if the other user is typing
+  const otherUserIsTyping = useMemo(() => {
+    if (!(user?._id && conversationTypingStatus && conversationId))
+      return false;
+
+    const otherUser =
+      conversationTypingStatus.user1.userId === user._id
+        ? conversationTypingStatus.user2
+        : conversationTypingStatus.user1;
+
+    return otherUser.isTyping;
+  }, [user?._id, conversationTypingStatus, conversationId]);
+
+  // Get other user's online status using the new presence system
+  const otherUserOnlineStatus = useQuery(
+    api.presence.getUserOnlineStatus,
+    otherUserId ? { userId: otherUserId } : "skip"
+  );
+
+
+  
 useEffect(()=>{
   const lastMessageObj = messages?.at(-1); 
   async function sendAIMessage(lastMessageFromBuyer: string){
@@ -193,116 +306,6 @@ useEffect(()=>{
   
 },[messages])        
 
-  // Function to send initial product message
-  const sendInitialProductMessage = useCallback(
-    async (currentProductId: Id<"product">) => {
-      if (
-        !user?._id ||
-        processedProductId === currentProductId ||
-        !product ||
-        !conversationId
-      ) {
-        console.log("Skipping product message send:", {
-          hasUser: !!user?._id,
-          alreadyProcessed: processedProductId === currentProductId,
-          hasProduct: !!product,
-          hasConversation: !!conversationId,
-        });
-        return;
-      }
-
-      try {
- 
-        console.log("Sending product message:", {
-          productId: currentProductId,
-          productTitle: product.title,
-          conversationId,
-        });
-
-        
-
-        await sendMessage({
-          senderId: user._id,
-          conversationId,
-          type: "product",
-          productId: currentProductId,
-          price: product?.price,
-          title: product?.title,
-          productImage: product?.images?.[0],
-          content: `Hey i'm interested in this product, ${product?.title} is it still available?`,
-        });
-        setProcessedProductId(currentProductId);
-        console.log("Product message sent successfully");
-      } catch (error) {
-        const err = error as Error
-        console.error("Failed to send initial product message:", error);
-        toast.error(err.cause === "AI_ERROR"?  err.message : "Failed to send message");
-      }
-    },
-    [user?._id, processedProductId, sendMessage, product, conversationId]
-  );
-
-  // Handle product message when productId is present
-  useEffect(() => {
-    if (productId && product && processedProductId !== productId) {
-      console.log("Sending initial product message for product:", productId);
-      sendInitialProductMessage(productId);
-      // Clean URL
-      router.replace(`/chat/${conversationId}`);
-    }
-  }, [
-    productId,
-    product,
-    processedProductId,
-    sendInitialProductMessage,
-    router,
-    conversationId,
-  ]);
-
-  // Mark messages as read when the conversation is viewed
-  useEffect(() => {
-    const markAsRead = async () => {
-      if (conversationId && user?._id) {
-        try {
-          await markMessagesAsRead({
-            userId: user._id,
-            conversationId,
-          });
-        } catch (error) {
-          console.error("Failed to mark messages as read:", error);
-        }
-      }
-    };
-
-    markAsRead();
-  }, [conversationId, user?._id, markMessagesAsRead, messages]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  // Determine if the other user is typing
-  const otherUserIsTyping = useMemo(() => {
-    if (!(user?._id && conversationTypingStatus && conversationId))
-      return false;
-
-    const otherUser =
-      conversationTypingStatus.user1.userId === user._id
-        ? conversationTypingStatus.user2
-        : conversationTypingStatus.user1;
-
-    return otherUser.isTyping;
-  }, [user?._id, conversationTypingStatus, conversationId]);
-
-  // Get other user's online status using the new presence system
-  const otherUserOnlineStatus = useQuery(
-    api.presence.getUserOnlineStatus,
-    otherUserId ? { userId: otherUserId } : "skip"
-  );
 
 
 
