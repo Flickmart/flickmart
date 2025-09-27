@@ -131,9 +131,9 @@ export default function ConversationPage() {
   );
 
   // Store in Local Storage
-  typeof vendorId === "string" && localStorage.setItem("vendorId", vendorId as string)
+  // typeof vendorId === "string" && localStorage.setItem("vendorId", vendorId as string)
 
-  const vendorIdLocalStorage=  localStorage.getItem("vendorId")
+  // const vendorIdLocalStorage=  localStorage.getItem("vendorId")
 
 
   // Function to send initial product message
@@ -285,7 +285,7 @@ useEffect(()=>{
 
     // Send to database
       await sendMessage({
-        senderId: vendorIdLocalStorage as Id<"users">,
+        senderId: vendorId as Id<"users">,
         content: reply,
         conversationId,
         type: "text",
