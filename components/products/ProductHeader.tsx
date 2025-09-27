@@ -1,13 +1,11 @@
-import { Check, Copy, ExternalLink, MapPin, MessageCircle } from 'lucide-react';
+import { ExternalLink, MapPin, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React from 'react';
 import { toast } from 'sonner';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { initialChat, shareProduct } from '@/utils/helpers';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+
 
 export default function ProductHeader({
   location,
@@ -17,6 +15,7 @@ export default function ProductHeader({
   userId,
   productId,
   description,
+  aiEnabled
 }: {
   location: string;
   title: string;
@@ -25,6 +24,7 @@ export default function ProductHeader({
   userId: Id<'users'>;
   productId: Id<'product'>;
   description: string;
+  aiEnabled: boolean
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
@@ -92,7 +92,10 @@ export default function ProductHeader({
           {location}, <span className="normal-case">{timeSince()}</span>
         </span>
       </div>
-      <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>
+      <div className='flex justify-between items-center'>
+        <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>
+       { aiEnabled && <span className='text-xs px-2.5 font-semibold text-gray-700 py-1 rounded-2xl bg-green-200'>NKEM Assisted</span>}
+      </div>
       <div className="flex items-center space-x-3">
         <span className="inline-block font-extrabold text-flickmart-chat-orange text-lg tracking-wider">
           &#8358;{price.toLocaleString()}
@@ -107,8 +110,6 @@ export default function ProductHeader({
           {' '}
           <MessageCircle /> Chat vendor
         </button>
-        {/* <Dialog> */}
-        {/* <DialogTrigger asChild> */}
         <button
           className="flex w-2/4 items-center justify-center gap-2 rounded-md border border-flickmart-chat-orange p-2 px-3 font-medium text-flickmart-chat-orange lg:w-1/4"
           onClick={handleShare}

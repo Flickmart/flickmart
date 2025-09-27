@@ -66,13 +66,13 @@ export default function AdCharges({
 
   const handlePostAdClick = async () => {
     if (!images.length) {
-      toast.error('Please add at least one image');
+      toast.error('Please add at least two images');
       return;
     }
     // First validate the form
     const isValid = await formTrigger();
     if (!isValid) {
-      toast.error('Please fill in all required fields');
+      toast.error('Please properly fill in all fields');
       return;
     }
 
@@ -197,7 +197,7 @@ export default function AdCharges({
             <DialogDescription>
               {action === "edit"
                 ? "You are about to update this ad, are you sure you want to proceed with this action?"
-                : "You are about to post an ad with {plan} plan. ₦{chargeAmount} will be deducted from your wallet."}
+                : `You are about to post an ad with ${plan} plan. ₦${chargeAmount} will be deducted from your wallet.`}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3">
