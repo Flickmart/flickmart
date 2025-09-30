@@ -129,7 +129,7 @@ export default function ChatHeader({
                     </p>
                   ) : (
                    <p className="truncate text-blue-500 text-sm">
-                      NKEM AI
+                      offline
                     </p>
                   )}
                 </div>

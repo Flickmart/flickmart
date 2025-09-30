@@ -249,62 +249,62 @@ export default function ConversationPage() {
 
 
   
-useEffect(()=>{
-  const lastMessageObj = messages?.at(-1); 
-  async function sendAIMessage(lastMessageFromBuyer: string){
-    try {
-      const body={
-      user_id: user?._id,
-      seller_id : vendorId,
-      product_name: product?.title,
-      actual_price: product?.price ?? 0,
-      target_price : product?.targetPrice ?? 0,
-      last_price: product?.targetPriceSecond ?? 0,
-      message: lastMessageFromBuyer
-    }
-    const response = await fetch("https://flickmart.lexrunit.com/negotiable", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-          "Prefer": "return=representation"
-      },
-      body: JSON.stringify(body)
+// useEffect(()=>{
+//   const lastMessageObj = messages?.at(-1); 
+//   async function sendAIMessage(lastMessageFromBuyer: string){
+//     try {
+//       const body={
+//       user_id: user?._id,
+//       seller_id : vendorId,
+//       product_name: product?.title,
+//       actual_price: product?.price ?? 0,
+//       target_price : product?.targetPrice ?? 0,
+//       last_price: product?.targetPriceSecond ?? 0,
+//       message: lastMessageFromBuyer
+//     }
+//     const response = await fetch("https://flickmart.lexrunit.com/negotiable", {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//           "Prefer": "return=representation"
+//       },
+//       body: JSON.stringify(body)
       
-    })
+//     })
           
-    // if(!response.ok){
-    //   throw Error("NKEM cannot respond at this time", {
-    //     cause: "AI_ERROR"
-    //   })
-    // }
+//     // if(!response.ok){
+//     //   throw Error("NKEM cannot respond at this time", {
+//     //     cause: "AI_ERROR"
+//     //   })
+//     // }
     
-    // Get response from AI
-    const {response: reply}: NegotiableRequest = await response.json()
-    console.log(reply)
+//     // Get response from AI
+//     const {response: reply}: NegotiableRequest = await response.json()
+//     console.log(reply)
 
 
-    // Send to database
-      await sendMessage({
-        senderId: vendorId as Id<"users">,
-        content: reply,
-        conversationId,
-        type: "text",
-      });
+//     // Send to database
+//       await sendMessage({
+//         senderId: vendorId as Id<"users">,
+//         content: reply,
+//         conversationId,
+//         type: "text",
+//       });
     
 
-    }catch(err){
-      const error = err as Error
-      // toast.error(error.message)
-    }
-  }
+//     }catch(err){
+//       const error = err as Error
+//       // toast.error(error.message)
+//     }
+//   }
 
-  if(vendorId !== lastMessageObj?.senderId){
-    sendAIMessage(lastMessageObj?.content ?? "")
-  }else{
-    console.log("Not negotiable")
-  }
+//   if(vendorId !== lastMessageObj?.senderId){
+//     sendAIMessage(lastMessageObj?.content ?? "")
+//   }else{
+//     console.log("Not negotiable")
+//   }
   
-},[messages])        
+// },[messages])        
 
 
 

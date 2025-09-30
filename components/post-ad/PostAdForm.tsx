@@ -302,7 +302,7 @@ export default function PostAdForm({
           <CategorySheet form={form} name="subcategory" />
           {/* <Separator className="h-5 w-full bg-gray-100" /> */}
         {/* <div className="w-full  space-y-5 bg-inherit px-5 lg:w-3/4 lg:space-y-6 lg:px-10"> */}
-          <div className="flex h-6 pt-6 items-center justify-between">
+          {/* <div className="flex h-6 pt-6 items-center justify-between">
             <Label className="font-bold text-gray-600 text-sm" htmlFor="ai">Enable NKEM for this product</Label>
             <Switch value={form.watch("aiEnabled") ? "true" : "false"} id="ai" 
               onClick={() => {
@@ -310,8 +310,8 @@ export default function PostAdForm({
               toast.success(`NKEM has been ${!form.watch("aiEnabled") ? "disabled" : "enabled"} for this product`)
               }}
             />
-          </div>
-          <p className="font-light text-justify text-gray-400 text-sm">NKEM is our AI model designed to make life easier for you by selling and negotiating prices with buyers even when you are offline</p> 
+          </div> */}
+          {/* <p className="font-light text-justify text-gray-400 text-sm">NKEM is our AI model designed to make life easier for you by selling and negotiating prices with buyers even when you are offline</p>  */}
         {/* </div> */}
           <AddPhoto
             clear={clear}
@@ -332,12 +332,12 @@ export default function PostAdForm({
             name="negotiable"
             options={returnable}
           />
-          <div>
-            {/* Always There Price Field */}
             <InputField form={form} name="price" type="numberField" />
+          {/* <div> */}
+            {/* Always There Price Field */}
 
             {/* Appears if product is negotiable */}
-            <AnimatePresence>
+            {/* <AnimatePresence>
               {form.watch("negotiable") === true &&
                 <motion.div 
                 initial={{opacity: 0, y: 100}} 
@@ -348,7 +348,7 @@ export default function PostAdForm({
                 </motion.div>
               }
             </AnimatePresence>
-          </div>
+          </div> */}
           <Selector form={form} name="condition" options={condition} />
           <InputField
             form={form}

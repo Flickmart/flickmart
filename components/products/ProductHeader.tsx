@@ -92,10 +92,10 @@ export default function ProductHeader({
           {location}, <span className="normal-case">{timeSince()}</span>
         </span>
       </div>
-      <div className='flex justify-between items-center'>
+      {/* <div className='flex justify-between items-center'> */}
         <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>
-       { aiEnabled && <span className='text-xs px-2.5 font-semibold text-gray-700 py-1 rounded-2xl bg-green-200'>NKEM Assisted</span>}
-      </div>
+       {/* { aiEnabled && <span className='text-xs px-2.5 font-semibold text-gray-700 py-1 rounded-2xl bg-green-200'>NKEM Assisted</span>} */}
+      {/* </div> */}
       <div className="flex items-center space-x-3">
         <span className="inline-block font-extrabold text-flickmart-chat-orange text-lg tracking-wider">
           &#8358;{price.toLocaleString()}
