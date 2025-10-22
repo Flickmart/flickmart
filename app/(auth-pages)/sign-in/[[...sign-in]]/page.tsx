@@ -1,30 +1,30 @@
-'use client';
-import { useSignIn, useUser } from '@clerk/nextjs';
-import type { OAuthStrategy } from '@clerk/types';
-import { zodResolver } from '@hookform/resolvers/zod';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import CustomInput from '@/components/auth/CustomInput';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+"use client";
+import { useSignIn, useUser } from "@clerk/nextjs";
+import type { OAuthStrategy } from "@clerk/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import CustomInput from "@/components/auth/CustomInput";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormLabel,
-} from '@/components/ui/form';
+} from "@/components/ui/form";
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Invalid email address' }),
+  email: z.string().email({ message: "Invalid email address" }),
   password: z
-    .string({ required_error: 'password is required' })
-    .min(8, { message: 'Password must be at least 8 characters' }),
+    .string({ required_error: "password is required" })
+    .min(8, { message: "Password must be at least 8 characters" }),
   rememberMe: z.boolean().default(false).optional(),
 });
 
@@ -37,24 +37,25 @@ export default function SignIn() {
   // If user is already signed in, redirect to home
   useEffect(() => {
     if (isSignedIn) {
-      router.push('/');
+      router.push("/");
     }
   }, [isSignedIn, router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
       rememberMe: false,
     },
   });
+  const callbackURL = useSearchParams().get("callback") || "/";
   const signInWith = (strategy: OAuthStrategy) => {
     return signIn
       ?.authenticateWithRedirect({
         strategy,
-        redirectUrl: '/sign-up/sso-callback',
-        redirectUrlComplete: '/',
+        redirectUrl: "/sign-up/sso-callback",
+        redirectUrlComplete: callbackURL,
       })
       .then((res) => {})
       .catch((err: any) => {
@@ -76,15 +77,15 @@ export default function SignIn() {
         password: values.password,
       });
 
-      if (result.status === 'complete') {
+      if (result.status === "complete") {
         // Set the user session active
         await setActive({ session: result.createdSessionId });
-        router.push('/');
+        router.replace(callbackURL);
       } else {
-        toast.error('Sign in failed. Please check your credentials.');
+        toast.error("Sign in failed. Please check your credentials.");
       }
     } catch (err: any) {
-      toast.error(err.errors?.[0]?.message || 'Sign in failed');
+      toast.error(err.errors?.[0]?.message || "Sign in failed");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -151,11 +152,11 @@ export default function SignIn() {
                   disabled={isLoading}
                   type="submit"
                 >
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
                 <Button
                   className="!bg-white mt-8 h-12 w-full border-2 border-flickmart font-medium text-base text-flickmart duration-300 hover:bg-flickmart"
-                  onClick={() => signInWith('oauth_google')}
+                  onClick={() => signInWith("oauth_google")}
                   type="button"
                   variant="secondary"
                 >
@@ -172,7 +173,7 @@ export default function SignIn() {
             </form>
           </Form>
           <p className="text-center font-light text-flickmart-gray">
-            Don't have an account yet?{' '}
+            Don't have an account yet?{" "}
             <Link
               className="font-medium text-flickmart capitalize hover:underline"
               href="/sign-up"

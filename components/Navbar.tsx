@@ -79,7 +79,7 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
             <Logo />
           </Link>
           {children}
-          <div className="hidden items-center gap-8 lg:flex">
+          <div className="hidden items-center gap-5 lg:flex">
             <div
               className="relative flex items-center gap-3"
               tabIndex={0} // Makes it focusable
@@ -200,12 +200,17 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
               )}
               {!isLoaded && <Loader2 className="h-8 w-8 animate-spin" />}
               {isLoaded && !isSignedIn && (
-                <Link
-                  className="font-medium text-flickmart hover:underline"
-                  href="/sign-in"
+                <button
+                  type="button"
+                  className="bg-black py-[7px] px-5 rounded-full text-white hover:text-flickmart"
                 >
-                  Sign in
-                </Link>
+                  <Link
+                    className="font-semibold text-sm"
+                    href="/sign-in"
+                  >
+                    Sign in
+                  </Link>
+                </button>
               )}
             </div>
             <button className="rounded-md bg-flickmart font-bold text-sm text-white">
@@ -217,120 +222,137 @@ export default function Navbar({ children }: { children?: React.ReactNode }) {
               </Link>
             </button>
           </div>
-          <Sheet onOpenChange={setOpen} open={open}>
-            <SheetTrigger asChild>
-              <div className="relative lg:hidden">
-                {unreadNotifications.length > 0 && (
-                  <div className="-top-0 -right-0 absolute flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-white text-xs" />
-                )}
-                <Menu
-                  absoluteStrokeWidth
-                  className="h-8 w-8"
-                  size={32}
-                  strokeWidth={2}
-                />
-              </div>
-            </SheetTrigger>
-            <SheetContent className="p-0" side="top">
-              <div className="inset-0 z-30 h-screen w-full bg-white">
-                <div className="mx-auto h-full w-[95%]">
-                  <SheetHeader>
-                    <div className="flex w-full items-center justify-between py-1">
-                      <div className="flex items-center gap-1">
-                        <Image
-                          alt=""
-                          className="h-12 w-12"
-                          height={500}
-                          src="/flickmart-logo.svg"
-                          width={500}
-                        />
-                        <SheetTitle className="pt-1 font-bold text-xl">
-                          Flick<span className="text-flickmart">Mart</span>
-                        </SheetTitle>
+          {/* If user is signed in, display the menu button. Else, display the sign in button */}
+          {!isLoaded ? (
+            <Loader2 className="h-8 w-8 animate-spin lg:hidden" />
+          ) : !isSignedIn ? (
+            <button
+              type="button"
+              className="bg-black py-2 px-5 rounded-full lg:hidden text-white hover:text-flickmart"
+            >
+              <Link
+                className="font-semibold text-sm"
+                href="/sign-in"
+              >
+                Sign in
+              </Link>
+            </button>
+          ) : (
+            <Sheet onOpenChange={setOpen} open={open}>
+              <SheetTrigger className="cursor-pointer" asChild>
+                <div className="relative lg:hidden">
+                  {unreadNotifications.length > 0 && (
+                    <div className="-top-0 -right-0 absolute flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-white text-xs" />
+                  )}
+                  <Menu
+                    absoluteStrokeWidth
+                    className="h-8 w-8"
+                    size={32}
+                    strokeWidth={2}
+                  />
+                </div>
+              </SheetTrigger>
+              <SheetContent className="p-0" side="top">
+                <div className="inset-0 z-30 h-screen w-full bg-white">
+                  <div className="mx-auto h-full w-[95%]">
+                    <SheetHeader>
+                      <div className="flex w-full items-center justify-between py-1">
+                        <div className="flex items-center gap-1">
+                          <Image
+                            alt=""
+                            className="h-12 w-12"
+                            height={500}
+                            src="/flickmart-logo.svg"
+                            width={500}
+                          />
+                          <SheetTitle className="pt-1 font-bold text-xl">
+                            Flick<span className="text-flickmart">Mart</span>
+                          </SheetTitle>
+                        </div>
                       </div>
-                    </div>
-                  </SheetHeader>
-                  <div className="flex h-4/6 w-full flex-col justify-between">
-                    <div className="flex w-full flex-col font-medium">
-                      <Link
-                        className="border-[#E8ECEF] border-b py-4"
-                        href={"/wallet"}
-                        onClick={() => setOpen(false)}
-                      >
-                        Wallet
-                      </Link>
-                      <Link
-                        className="border-[#E8ECEF] border-b py-4"
-                        href="/settings"
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>Settings</span>
-                      </Link>
-                      <Link
-                        className="border-[#E8ECEF] border-b py-4"
-                        href={"#"}
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>About Us</span>
-                      </Link>
-                      <Link
-                        className="border-[#E8ECEF] border-b py-4"
-                        href={"/contact"}
-                        onClick={() => setOpen(false)}
-                      >
-                        Contact Us
-                      </Link>
-                    </div>
-                    <div className="text-[#6C7275]">
-                      <Link
-                        className="flex items-center justify-between border-[#E8ECEF] border-b py-4"
-                        href="/notifications"
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>Notification</span>
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black px-1.5 py-0.5 text-[10px] text-white">
-                          <span className="mt-0.5">
-                            {unreadNotifications.length}
+                    </SheetHeader>
+                    <div className="flex h-4/6 w-full flex-col justify-between">
+                      <div className="flex w-full flex-col font-medium">
+                        <Link
+                          className="border-[#E8ECEF] border-b py-4"
+                          href={"/wallet"}
+                          onClick={() => setOpen(false)}
+                        >
+                          Wallet
+                        </Link>
+                        <Link
+                          className="border-[#E8ECEF] border-b py-4"
+                          href="/settings"
+                          onClick={() => setOpen(false)}
+                        >
+                          <span>Settings</span>
+                        </Link>
+                        <Link
+                          className="border-[#E8ECEF] border-b py-4"
+                          href={"#"}
+                          onClick={() => setOpen(false)}
+                        >
+                          <span>About Us</span>
+                        </Link>
+                        <Link
+                          className="border-[#E8ECEF] border-b py-4"
+                          href={"/contact"}
+                          onClick={() => setOpen(false)}
+                        >
+                          Contact Us
+                        </Link>
+                      </div>
+                      <div className="text-[#6C7275]">
+                        <Link
+                          className="flex items-center justify-between border-[#E8ECEF] border-b py-4"
+                          href="/notifications"
+                          onClick={() => setOpen(false)}
+                        >
+                          <span>Notification</span>
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black px-1.5 py-0.5 text-[10px] text-white">
+                            <span className="mt-0.5">
+                              {unreadNotifications.length}
+                            </span>
                           </span>
-                        </span>
-                      </Link>
-                      <Link
-                        className="flex items-center justify-between border-[#E8ECEF] border-b py-4"
-                        href="/saved?wishlist=true"
-                        onClick={() => setOpen(false)}
-                      >
-                        <span>Wishlist</span>
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black px-1.5 py-0.5 text-[10px] text-white">
-                          <span className="mt-[1px]">{wishlistLength}</span>
-                        </span>
-                      </Link>
-                      <div className="pt-5">
-                        <SignedIn>
-                          <SignOutButton
-                            signOutOptions={{ redirectUrl: "/sign-in" }}
-                          >
-                            <button
-                              className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
-                              onClick={() => setOpen(false)}
+                        </Link>
+                        <Link
+                          className="flex items-center justify-between border-[#E8ECEF] border-b py-4"
+                          href="/saved?wishlist=true"
+                          onClick={() => setOpen(false)}
+                        >
+                          <span>Wishlist</span>
+                          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-black px-1.5 py-0.5 text-[10px] text-white">
+                            <span className="mt-[1px]">{wishlistLength}</span>
+                          </span>
+                        </Link>
+                        <div className="pt-5">
+                          <SignedIn>
+                            <SignOutButton
+                              signOutOptions={{ redirectUrl: "/sign-in" }}
                             >
-                              Logout
-                            </button>
-                          </SignOutButton>
-                        </SignedIn>
-                        <SignedOut>
-                          <Link href="/sign-in">
-                            <button className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105">
-                              Sign in
-                            </button>
-                          </Link>
-                        </SignedOut>
+                              <button
+                                className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
+                                onClick={() => setOpen(false)}
+                              >
+                                Logout
+                              </button>
+                            </SignOutButton>
+                          </SignedIn>
+                          <SignedOut>
+                            <Link href="/sign-in">
+                              <button className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105">
+                                Sign in
+                              </button>
+                            </Link>
+                          </SignedOut>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+              </SheetContent>
+            </Sheet>
+          )}
         </div>
       </div>
     </header>

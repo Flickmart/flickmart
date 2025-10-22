@@ -8,6 +8,7 @@ import { useAuthUser } from '@/hooks/useAuthUser';
 import ChatInput from '../chats/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
+import { useRouter } from 'next/navigation';
 
 export default function CommentContent({
   productId,
@@ -21,11 +22,13 @@ export default function CommentContent({
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
+  const router = useRouter()
 
   function handleComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isAuthenticated) {
       toast.error('Please sign in to perform this action');
+      router.push("/sign-in?callback=/product/" + productId);
       setInput('');
       return;
     }
