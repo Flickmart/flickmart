@@ -22,15 +22,15 @@ class ServiceWorkerManager {
 
   async register(
     swUrl: string,
-    options: ServiceWorkerRegistrationOptions = {}
+    options: ServiceWorkerRegistrationOptions = {},
   ): Promise<ServiceWorkerRegistration | null> {
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-      console.warn('Service Worker not supported');
+    if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+      console.warn("Service Worker not supported");
       return null;
     }
 
     if (this.registration || this.isRegistering) {
-      console.log('Service Worker already registered or registering');
+      console.log("Service Worker already registered or registering");
       return this.registration;
     }
 
@@ -48,12 +48,12 @@ class ServiceWorkerManager {
       this.registration = registration;
 
       // Handle updates
-      registration.addEventListener('updatefound', () => {
+      registration.addEventListener("updatefound", () => {
         const newWorker = registration.installing;
         if (newWorker) {
-          newWorker.addEventListener('statechange', () => {
+          newWorker.addEventListener("statechange", () => {
             if (
-              newWorker.state === 'installed' &&
+              newWorker.state === "installed" &&
               navigator.serviceWorker.controller
             ) {
               options.onUpdate?.(registration);
@@ -67,10 +67,10 @@ class ServiceWorkerManager {
         options.onSuccess?.(registration);
       }
 
-      console.log('Service Worker registered:', registration);
+      console.log("Service Worker registered:", registration);
       return registration;
     } catch (error) {
-      console.error('Service Worker registration failed:', error);
+      console.error("Service Worker registration failed:", error);
       options.onError?.(error as Error);
       return null;
     } finally {
@@ -79,19 +79,25 @@ class ServiceWorkerManager {
   }
 
   async unregisterOldServiceWorkers(): Promise<void> {
-    if (!('serviceWorker' in navigator)) return;
+    if (!("serviceWorker" in navigator)) return;
 
     try {
       const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((reg) => reg.unregister()));
-      console.log('Unregistered old service workers');
+      // Only unregister service workers with different scopes to preserve existing push subscriptions
+      const currentScope = window.location.origin + "/";
+      await Promise.all(
+        registrations
+          .filter((reg) => reg.scope !== currentScope)
+          .map((reg) => reg.unregister()),
+      );
+      console.log("Unregistered old service workers with different scopes");
     } catch (error) {
-      console.error('Error unregistering old service workers:', error);
+      console.error("Error unregistering old service workers:", error);
     }
   }
 
   async getRegistration(): Promise<ServiceWorkerRegistration | null> {
-    if (!('serviceWorker' in navigator)) return null;
+    if (!("serviceWorker" in navigator)) return null;
 
     if (this.registration) return this.registration;
 
@@ -106,7 +112,7 @@ class ServiceWorkerManager {
       await this.registration.update();
       return this.registration;
     } catch (error) {
-      console.error('Service Worker update failed:', error);
+      console.error("Service Worker update failed:", error);
       return null;
     }
   }
@@ -118,17 +124,17 @@ class ServiceWorkerManager {
       const result = await this.registration.unregister();
       if (result) {
         this.registration = null;
-        console.log('Service Worker unregistered');
+        console.log("Service Worker unregistered");
       }
       return result;
     } catch (error) {
-      console.error('Service Worker unregistration failed:', error);
+      console.error("Service Worker unregistration failed:", error);
       return false;
     }
   }
 
   isSupported(): boolean {
-    return typeof window !== 'undefined' && 'serviceWorker' in navigator;
+    return typeof window !== "undefined" && "serviceWorker" in navigator;
   }
 }
 
