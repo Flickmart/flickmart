@@ -1,24 +1,28 @@
-import { v } from "convex/values";
-import { internalMutation, mutation, query } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./users";
+import { v } from 'convex/values';
+import { internalMutation, mutation, query } from './_generated/server';
+import { getCurrentUserOrThrow } from './users';
 
 // Get all bank accounts for current user
 export const getUserBankAccounts = query({
   handler: async (ctx) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     const bankAccounts = await ctx.db
-      .query("bankAccounts")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('bankAccounts')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .collect();
 
     return bankAccounts.sort((a, b) => {
       // Default account first, then by creation date
-      if (a.isDefault && !b.isDefault) return -1;
-      if (!a.isDefault && b.isDefault) return 1;
+      if (a.isDefault && !b.isDefault) {
+        return -1;
+      }
+      if (!a.isDefault && b.isDefault) {
+        return 1;
+      }
       return b.createdAt - a.createdAt;
     });
   },
@@ -26,16 +30,16 @@ export const getUserBankAccounts = query({
 
 // Get bank account by ID
 export const getBankAccountById = query({
-  args: { bankAccountId: v.id("bankAccounts") },
+  args: { bankAccountId: v.id('bankAccounts') },
   handler: async (ctx, { bankAccountId }) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     const bankAccount = await ctx.db.get(bankAccountId);
     if (!bankAccount || bankAccount.userId !== user._id) {
-      throw new Error("Bank account not found");
+      throw new Error('Bank account not found');
     }
 
     return bankAccount;
@@ -55,13 +59,13 @@ export const createBankAccount = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     // Get existing accounts to check for defaults and count
     const existingAccounts = await ctx.db
-      .query("bankAccounts")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('bankAccounts')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .collect();
 
     // If this is set as default, unset other defaults
@@ -76,7 +80,7 @@ export const createBankAccount = mutation({
     // If this is the first account, make it default
     const isFirstAccount = existingAccounts.length === 0;
 
-    const bankAccountId = await ctx.db.insert("bankAccounts", {
+    const bankAccountId = await ctx.db.insert('bankAccounts', {
       userId: user._id,
       accountNumber: args.accountNumber,
       accountName: args.accountName,
@@ -95,14 +99,18 @@ export const createBankAccount = mutation({
 // Update bank account (mainly for adding recipient code after verification)
 export const updateBankAccount = internalMutation({
   args: {
-    bankAccountId: v.id("bankAccounts"),
+    bankAccountId: v.id('bankAccounts'),
     recipientCode: v.optional(v.string()),
     isVerified: v.optional(v.boolean()),
   },
   handler: async (ctx, { bankAccountId, recipientCode, isVerified }) => {
     const updates: any = {};
-    if (recipientCode !== undefined) updates.recipientCode = recipientCode;
-    if (isVerified !== undefined) updates.isVerified = isVerified;
+    if (recipientCode !== undefined) {
+      updates.recipientCode = recipientCode;
+    }
+    if (isVerified !== undefined) {
+      updates.isVerified = isVerified;
+    }
 
     await ctx.db.patch(bankAccountId, updates);
     return bankAccountId;
@@ -111,23 +119,23 @@ export const updateBankAccount = internalMutation({
 
 // Set default bank account
 export const setDefaultBankAccount = mutation({
-  args: { bankAccountId: v.id("bankAccounts") },
+  args: { bankAccountId: v.id('bankAccounts') },
   handler: async (ctx, { bankAccountId }) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     // Verify the account belongs to the user
     const bankAccount = await ctx.db.get(bankAccountId);
     if (!bankAccount || bankAccount.userId !== user._id) {
-      throw new Error("Bank account not found");
+      throw new Error('Bank account not found');
     }
 
     // Unset all other defaults
     const allAccounts = await ctx.db
-      .query("bankAccounts")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('bankAccounts')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .collect();
 
     for (const account of allAccounts) {
@@ -142,27 +150,27 @@ export const setDefaultBankAccount = mutation({
 
 // Delete bank account
 export const deleteBankAccount = mutation({
-  args: { bankAccountId: v.id("bankAccounts") },
+  args: { bankAccountId: v.id('bankAccounts') },
   handler: async (ctx, { bankAccountId }) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw new Error("User not authenticated");
+      throw new Error('User not authenticated');
     }
 
     // Verify the account belongs to the user
     const bankAccount = await ctx.db.get(bankAccountId);
     if (!bankAccount || bankAccount.userId !== user._id) {
-      throw new Error("Bank account not found");
+      throw new Error('Bank account not found');
     }
 
     // Check if there are other accounts
     const allAccounts = await ctx.db
-      .query("bankAccounts")
-      .withIndex("by_user", (q) => q.eq("userId", user._id))
+      .query('bankAccounts')
+      .withIndex('by_user', (q) => q.eq('userId', user._id))
       .collect();
 
     if (allAccounts.length === 1) {
-      throw new Error("Cannot delete the only bank account");
+      throw new Error('Cannot delete the only bank account');
     }
 
     // If deleting default account, set another as default

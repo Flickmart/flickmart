@@ -2,11 +2,6 @@ import { Search } from 'lucide-react';
 import { useState } from 'react';
 
 import { Label } from '@/components/ui/label';
-import {
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarInput,
-} from '@/components/ui/sidebar';
 import { Input } from '../ui/input';
 
 interface SearchFormProps extends React.ComponentProps<'form'> {

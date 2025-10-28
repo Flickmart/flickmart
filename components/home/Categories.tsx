@@ -1,4 +1,3 @@
-import React from 'react';
 import { categoryItems } from '@/utils/constants';
 import CategoryItem from './CategoryItem';
 import Container from './Container';

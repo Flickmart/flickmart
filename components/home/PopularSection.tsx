@@ -1,7 +1,7 @@
 'use client';
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { api } from '@/convex/_generated/api';
 import { useIsMobile } from '@/hooks/use-mobile';
 import ProductCard from '../multipage/ProductCard';
@@ -42,7 +42,7 @@ export default function PopularSection() {
                 </div>
               ))
             : popular?.data?.length
-              ? popular?.data.map((product, index) => (
+              ? popular?.data.map((product, _index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}
@@ -51,7 +51,7 @@ export default function PopularSection() {
                     />
                   </Link>
                 ))
-              : all?.map((product, index) => (
+              : all?.map((product, _index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}

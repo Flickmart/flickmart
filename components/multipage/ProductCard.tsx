@@ -1,6 +1,4 @@
-import { Bookmark } from "lucide-react";
-import Image from "next/image";
-import React from "react";
+import Image from 'next/image';
 
 export default function ProductCard({
   image,
@@ -21,10 +19,10 @@ export default function ProductCard({
       </span> */}
       {image ? (
         <Image
-          alt={title || ""}
+          alt={title || ''}
           className="h-48 rounded-md object-cover object-top p-0.5 lg:h-48"
           height={500}
-          src={image || ""}
+          src={image || ''}
           width={500}
         />
       ) : null}

@@ -3,7 +3,6 @@ import { useMutation, useQuery } from 'convex/react';
 import {
   ArrowLeft,
   Bookmark,
-  ChevronDown,
   ChevronRight,
   LayoutGrid,
   LayoutPanelLeft,
@@ -15,7 +14,6 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useReducer, useState } from 'react';
 import { SyncLoader } from 'react-spinners';
 import { toast } from 'sonner';
-import CategoryItem from '@/components/CategoryItem';
 import Filters from '@/components/Filters';
 import SearchInput from '@/components/SearchInput';
 import SearchOverlay from '@/components/SearchOverlay';
@@ -32,20 +30,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarTrigger,
   useSidebar,
@@ -54,12 +41,12 @@ import { api } from '@/convex/_generated/api';
 import type { Doc } from '@/convex/_generated/dataModel';
 import { useFilters } from '@/hooks/useFilters';
 
-interface FilterObjectType {
+type FilterObjectType = {
   min: number;
   max: number;
   location: string;
   priceRange: string;
-}
+};
 
 const subCategories = {
   vehicles: ['car', 'motorcycle', 'tricycle', 'buses'],
@@ -92,7 +79,7 @@ const subCategories = {
   pets: ['dogs', 'cats', 'pets accessories'],
 };
 
-const brandsOrSubCat = {
+const _brandsOrSubCat = {
   fashion: [
     {
       label: "men's cloth",
@@ -180,7 +167,7 @@ function reducer(
 export default function DetailedCategoryPage() {
   const params = useParams();
   const slug = params.slug as string;
-  const subCatItems = subCategories[slug as keyof typeof subCategories]?.map(
+  const _subCatItems = subCategories[slug as keyof typeof subCategories]?.map(
     (title) => ({ title })
   );
   const saveProduct = useMutation(api.product.addBookmark);
@@ -196,7 +183,7 @@ export default function DetailedCategoryPage() {
     ...filterState,
     query: query || '',
     type: 'search',
-  }) as Array<Doc<'product'>>;
+  }) as Doc<'product'>[];
 
   const router = useRouter();
 

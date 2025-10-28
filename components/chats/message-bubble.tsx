@@ -1,15 +1,21 @@
 import { useQuery } from 'convex/react';
-import { ArrowRight, Banknote, Check, CheckCheck, LinkIcon, Loader2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Banknote,
+  Check,
+  CheckCheck,
+  LinkIcon,
+  Loader2,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { PhotoView } from 'react-photo-view';
-import { Card, CardContent } from '@/components/ui/card';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 
-interface MessageBubbleProps {
+type MessageBubbleProps = {
   id: string;
   message: string;
   images?: string[];
@@ -31,7 +37,7 @@ interface MessageBubbleProps {
   orderId?: string;
   transferAmount?: number;
   currency?: string;
-}
+};
 
 export default function MessageBubble({
   message,
@@ -57,7 +63,7 @@ export default function MessageBubble({
   currency = '',
 }: MessageBubbleProps) {
   const [touchTimer, setTouchTimer] = useState<NodeJS.Timeout | null>(null);
-  const [touchStartTime, setTouchStartTime] = useState<number>(0);
+  const [_touchStartTime, setTouchStartTime] = useState<number>(0);
 
   const order = useQuery(
     api.orders.getOrderById,
@@ -68,7 +74,7 @@ export default function MessageBubble({
       : 'skip'
   );
 
-  const handleTouchStart = () => {
+  const _handleTouchStart = () => {
     setTouchStartTime(Date.now());
     const timer = setTimeout(() => {
       handleLongPress(id);
@@ -76,7 +82,7 @@ export default function MessageBubble({
     setTouchTimer(timer);
   };
 
-  const handleTouchEnd = () => {
+  const _handleTouchEnd = () => {
     if (touchTimer) {
       clearTimeout(touchTimer);
       setTouchTimer(null);
@@ -111,10 +117,10 @@ export default function MessageBubble({
     >
       <div
         className={cn(
-          "max-w-[85%] xs:max-w-[80%] sm:max-w-[75%] lg:max-w-[65%] rounded-xl p-2 sm:px-3",
+          'max-w-[85%] xs:max-w-[80%] rounded-xl p-2 sm:max-w-[75%] sm:px-3 lg:max-w-[65%]',
           isUser
-            ? "bg-light-orange rounded-br-none text-black/80"
-            : "bg-gray-300/80 text-foreground rounded-bl-none text-black",
+            ? 'rounded-br-none bg-light-orange text-black/80'
+            : 'rounded-bl-none bg-gray-300/80 text-black text-foreground',
           selectedMessages.includes(id) &&
             'border-2 border-orange-400 bg-orange-200',
           images.length > 0 && 'rounded-br-lg rounded-bl-lg py-0',
@@ -209,13 +215,13 @@ export default function MessageBubble({
             ) : (
               isUser && (
                 <div className="flex items-center">
-                  {status === "sent" && (
+                  {status === 'sent' && (
                     <Check className="h-3 w-3 text-gray-400" />
                   )}
-                  {status === "delivered" && (
+                  {status === 'delivered' && (
                     <CheckCheck className="h-3 w-3 text-gray-400" />
                   )}
-                  {status === "read" && (
+                  {status === 'read' && (
                     <CheckCheck className="h-3 w-3 text-blue-500" />
                   )}
                 </div>
@@ -248,14 +254,14 @@ export default function MessageBubble({
   );
 }
 
-interface ProductChatMessageProps {
+type ProductChatMessageProps = {
   productImage: string;
   productTitle: string;
   message: string;
   productPrice: number;
   productId: string;
   isUser: boolean;
-}
+};
 
 export function ProductChatMessage({
   productImage,
@@ -269,7 +275,7 @@ export function ProductChatMessage({
     <Link href={`/product/${productId}`}>
       <div className="flex justify-end">
         <div
-          className={`max-w-[280px] sm:max-w-xs ${isUser ? "bg-light-orange" : "bg-gray-300/80"}`}
+          className={`max-w-[280px] sm:max-w-xs ${isUser ? 'bg-light-orange' : 'bg-gray-300/80'}`}
         >
           {/* Product Details Section - Highlighted */}
           <div className="mb-2 flex items-center gap-2 rounded-lg bg-[#f58225] p-2 text-white sm:mb-3 sm:gap-3 sm:p-3">
@@ -300,14 +306,14 @@ export function ProductChatMessage({
   );
 }
 
-interface TransferChatMessageProps {
+type TransferChatMessageProps = {
   transferAmount: number;
   currency: string;
   orderId: string;
   order?: any;
   timestamp?: string;
   isUser: boolean; // true if current user is the sender
-}
+};
 
 export function TransferChatMessage({
   transferAmount,
@@ -372,7 +378,6 @@ export function TransferChatMessage({
           timestampColor: 'text-orange-500',
           description: 'Transaction disputed',
         };
-      case 'in_escrow':
       default:
         return {
           label: 'In Escrow',

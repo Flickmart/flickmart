@@ -11,17 +11,17 @@ import { TransactionReceipt } from './transaction-receipt';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { formatAmount } from './transaction-utils';
 
-interface TransactionDetailsProps {
+type TransactionDetailsProps = {
   transaction: Doc<'transactions'>;
   user: Doc<'users'>;
   handlePaystackSuccess: (response: { reference: string }) => Promise<void>;
   handlePaystackClose: () => void;
-}
+};
 
 export default function TransactionDetails({
   transaction,
   user,
-handlePaystackSuccess,
+  handlePaystackSuccess,
   handlePaystackClose,
 }: TransactionDetailsProps) {
   const [open, setOpen] = useState(false);

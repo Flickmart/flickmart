@@ -1,5 +1,4 @@
 'use client';
-import { ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -12,7 +11,7 @@ import {
 } from './ui/accordion';
 
 export default function Footer() {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [_isExpanded, setIsExpanded] = useState(false);
   const pathname = usePathname();
 
   // Pages where Footer should not be shown
@@ -33,7 +32,7 @@ export default function Footer() {
     return null; // Don't render any component
   }
 
-  const toggleExpanded = () => {
+  const _toggleExpanded = () => {
     setIsExpanded((prev) => !prev);
   };
 
@@ -108,7 +107,13 @@ export default function Footer() {
                           width={30}
                         />
                       </Link>
-                      <Link className="group" href={'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'} target="_blank">
+                      <Link
+                        className="group"
+                        href={
+                          'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'
+                        }
+                        target="_blank"
+                      >
                         <Image
                           alt="X"
                           className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
@@ -117,7 +122,13 @@ export default function Footer() {
                           width={26}
                         />
                       </Link>
-                      <Link className="group" href={'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'} target="_blank">
+                      <Link
+                        className="group"
+                        href={
+                          'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'
+                        }
+                        target="_blank"
+                      >
                         <Image
                           alt="Whatsapp"
                           className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
@@ -152,7 +163,13 @@ export default function Footer() {
                     width={30}
                   />
                 </Link>
-                <Link className="group" href={'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'} target="_blank">
+                <Link
+                  className="group"
+                  href={
+                    'https://x.com/flickmartoffici?t=AgS5yr88yB9zhhAAVg7h6A&s=09'
+                  }
+                  target="_blank"
+                >
                   <Image
                     alt="x"
                     className="h-6 w-6 transition-all duration-500 group-hover:scale-105"
@@ -161,7 +178,13 @@ export default function Footer() {
                     width={26}
                   />
                 </Link>
-                <Link className="group" href={'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'} target="_blank">
+                <Link
+                  className="group"
+                  href={
+                    'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'
+                  }
+                  target="_blank"
+                >
                   <Image
                     alt="Whatsapp"
                     className="h-6 w-6 transition-all duration-500 group-hover:scale-105"

@@ -41,7 +41,7 @@ export function useFilters() {
             minPrice,
             maxPrice,
           };
-          !maxPrice && delete filter.maxPrice;
+          !maxPrice && filter.maxPrice = undefined;
 
           return setFilterState(filter);
         }

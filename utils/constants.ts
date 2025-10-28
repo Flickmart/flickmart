@@ -1,7 +1,7 @@
-interface CategoryObj {
+type CategoryObj = {
   categoryName: string;
-}
-export const categoryItems: Array<CategoryObj> = [
+};
+export const categoryItems: CategoryObj[] = [
   { categoryName: 'vehicles' },
   { categoryName: 'homes' },
   { categoryName: 'food' },

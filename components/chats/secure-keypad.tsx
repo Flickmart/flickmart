@@ -24,23 +24,25 @@ type AuthStep =
   | 'PIN_VERIFICATION'
   | 'TRANSFER_COMPLETE';
 
-interface SecurityState {
+type SecurityState = {
   pinAttempts: number;
   maxPinAttempts: number;
   isLocked: boolean;
   lockoutTime?: number;
-}
+};
 
-interface SecureKeyPadProps {
+type SecureKeyPadProps = {
   sellerId: Id<'users'>;
-}
+};
 
 export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   const [currentStep, setCurrentStep] = useState<AuthStep>('AMOUNT_ENTRY');
   const [amount, setAmount] = useState('');
   const [displayAmount, setDisplayAmount] = useState('');
   const [pin, setPin] = useState('');
-  const [createdOrderId, setCreatedOrderId] = useState<Id<'orders'> | null>(null);
+  const [createdOrderId, setCreatedOrderId] = useState<Id<'orders'> | null>(
+    null
+  );
 
   const [isPinError, setIsPinError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -72,7 +74,9 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
     const checkPinExists = async () => {
       try {
         const token = await getToken({ template: 'convex' });
-        if (!token) return;
+        if (!token) {
+          return;
+        }
 
         const response = await fetch(
           `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/wallet/pin/check`,
@@ -204,9 +208,13 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   };
 
   const formatAmount = (value: string) => {
-    if (!value) return '';
+    if (!value) {
+      return '';
+    }
     const num = Number.parseFloat(value);
-    if (isNaN(num)) return '';
+    if (Number.isNaN(num)) {
+      return '';
+    }
     return num.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -266,7 +274,9 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
 
   const handlePinComplete = useCallback(
     async (enteredPin: string) => {
-      if (securityState.isLocked || isLoading) return;
+      if (securityState.isLocked || isLoading) {
+        return;
+      }
 
       setIsLoading(true);
       setIsPinError(false);
@@ -325,7 +335,7 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
           if (data.error.includes('Incorrect PIN')) {
             // Extract remaining attempts from error message
             const match = data.error.match(/(\d+) attempts remaining/);
-            const remainingAttempts = match ? Number.parseInt(match[1]) : 0;
+            const remainingAttempts = match ? Number.parseInt(match[1], 10) : 0;
             const newAttempts =
               securityState.maxPinAttempts - remainingAttempts;
 
@@ -419,7 +429,9 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
   };
 
   const handleCreatePin = async (newPin: string, confirmPin: string) => {
-    if (isLoading) return;
+    if (isLoading) {
+      return;
+    }
 
     // Validate PIN
     const pinError = validatePin(newPin);
@@ -694,8 +706,8 @@ export default function SecureKeypad({ sellerId }: SecureKeyPadProps) {
       <TransferComplete
         calculatedTotal={calculatedTotal}
         displayAmount={displayAmount}
-        orderId={createdOrderId ?? undefined}
         onBack={handleBack}
+        orderId={createdOrderId ?? undefined}
         selectedProductsCount={selectedProducts.length}
       />
     );

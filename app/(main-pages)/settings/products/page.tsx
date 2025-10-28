@@ -1,9 +1,8 @@
-"use client";
+'use client';
 
-import clsx from "clsx";
-import { useMutation, useQuery } from "convex/react";
+import clsx from 'clsx';
+import { useMutation, useQuery } from 'convex/react';
 import {
-  ArrowLeft,
   ChevronLeft,
   EllipsisVertical,
   Eye,
@@ -13,25 +12,24 @@ import {
   ThumbsUp,
   Trash,
   X,
-} from "lucide-react";
-import { motion } from "motion/react";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { ClipLoader } from "react-spinners";
-import { toast } from "sonner";
-import AnimatedSearchBar from "@/components/AnimatedSearchBar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { ClipLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import AnimatedSearchBar from '@/components/AnimatedSearchBar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Button } from "@/components/ui/button";
+} from '@/components/ui/breadcrumb';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -40,30 +38,29 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
+} from '@/components/ui/dialog';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
-import { useSidebar } from "@/components/ui/sidebar";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+} from '@/components/ui/dropdown-menu';
+import { Separator } from '@/components/ui/separator';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 
 export default function ProductsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const userStore = useQuery(api.store.getStoresByUserId);
   const products = useQuery(api.product.getByBusinessId, {
-    businessId: userStore?.data?._id as Id<"store">,
+    businessId: userStore?.data?._id as Id<'store'>,
   });
   const [userProducts, setUserProducts] = useState(products);
   const deleteProduct = useMutation(api.product.remove);
   const formatDesc = (desc: string) => {
     if (desc.length > 50) {
-      return desc.slice(0, 50).trim() + "...";
+      return `${desc.slice(0, 50).trim()}...`;
     }
     return desc;
   };
@@ -85,17 +82,17 @@ export default function ProductsPage() {
     {
       icon: ThumbsUp,
       number: analyticsObj?.likes,
-      title: "likes",
+      title: 'likes',
     },
     {
       icon: Eye,
       number: analyticsObj?.views,
-      title: "views",
+      title: 'views',
     },
     {
       icon: ThumbsDown,
       number: analyticsObj?.dislikes,
-      title: "dislikes",
+      title: 'dislikes',
     },
   ];
   useEffect(() => {
@@ -138,17 +135,17 @@ export default function ProductsPage() {
       <div className="flex flex-col gap-7 p-4 lg:px-10">
         <div
           className={clsx(
-            "relative flex h-20 items-center justify-between sm:h-32",
+            'relative flex h-20 items-center justify-between sm:h-32',
             {
-              "!justify-end": isExpanded,
+              '!justify-end': isExpanded,
             }
           )}
         >
           <div
             className={clsx(
-              "relative flex flex-grow items-center gap-3 transition-opacity duration-300",
+              'relative flex flex-grow items-center gap-3 transition-opacity duration-300',
               {
-                "opacity-0 lg:flex": isExpanded,
+                'opacity-0 lg:flex': isExpanded,
               }
             )}
           >
@@ -161,9 +158,9 @@ export default function ProductsPage() {
               )}
               <AvatarFallback>
                 {userStore?.data?.name
-                  ?.split(" ")
+                  ?.split(' ')
                   .map((item) => item[0]?.toUpperCase())
-                  .join(" ")}
+                  .join(' ')}
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col gap-1 text-black/60">
@@ -201,7 +198,7 @@ export default function ProductsPage() {
               <item.icon size={28} />
               <div className="flex flex-col items-center">
                 <span className="font-semibold text-xl">
-                  {item.number ?? "--"}
+                  {item.number ?? '--'}
                 </span>
                 <span className="text-xs">{item.title}</span>
               </div>
@@ -333,7 +330,7 @@ export default function ProductsPage() {
                                     productId: product._id,
                                   });
                                   toast.success(
-                                    "Product deleted successfully..."
+                                    'Product deleted successfully...'
                                   );
                                   setDeleteDialog(false);
                                 } catch (err) {
@@ -346,7 +343,7 @@ export default function ProductsPage() {
                               {isDeleting ? (
                                 <ClipLoader color="#ffffff" size={20} />
                               ) : (
-                                "Yes, Delete"
+                                'Yes, Delete'
                               )}
                             </Button>
                           </DialogFooter>

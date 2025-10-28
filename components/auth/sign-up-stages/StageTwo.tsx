@@ -55,7 +55,9 @@ const StageTwo = ({
   });
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -88,7 +90,9 @@ const StageTwo = ({
   };
 
   const resendCode = async () => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     try {
       setIsSending(true);

@@ -1,13 +1,9 @@
 'use client';
 import { useQuery } from 'convex/react';
-import Image from 'next/image';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
 import Loader from '@/components/multipage/Loader';
 import SubcategoryItem from '@/components/post-ad/SubcategoryItem';
 import { api } from '@/convex/_generated/api';
-import { useProductsByCategoryOrSubCategory } from '@/hooks/useProdByCat';
 
 export default function Subcategories() {
   const searchParams = useSearchParams();

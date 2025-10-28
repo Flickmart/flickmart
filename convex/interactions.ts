@@ -4,7 +4,7 @@ import { mutation, query } from './_generated/server';
 import { getCurrentUserOrThrow } from './users';
 
 // Gather and store User Interaction Data
-// biome-ignore lint/correctness/noUnusedVariables: Nnamdi created this so he would decide if to remove it or not 
+// biome-ignore lint/correctness/noUnusedVariables: Nnamdi created this so he would decide if to remove it or not
 const storeUsageData = mutation({
   args: {
     productId: v.id('product'),

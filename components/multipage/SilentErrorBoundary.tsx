@@ -1,5 +1,5 @@
 'use client';
-import React, { type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 
 export default function SilentErrorBoundary({
@@ -9,7 +9,7 @@ export default function SilentErrorBoundary({
 }) {
   return (
     <ErrorBoundary
-      fallbackRender={(props: FallbackProps) => {
+      fallbackRender={(_props: FallbackProps) => {
         return <p>please login</p>;
       }}
     >

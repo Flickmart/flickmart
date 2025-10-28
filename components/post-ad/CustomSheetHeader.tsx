@@ -1,5 +1,4 @@
 import { ChevronLeft } from 'lucide-react';
-import React from 'react';
 import { SheetHeader, SheetTitle } from '../ui/sheet';
 
 export default function CustomSheetHeader({

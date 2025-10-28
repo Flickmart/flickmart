@@ -1,4 +1,3 @@
-import React from 'react';
 import type { FormType, NameType } from '@/types/form';
 import { FormField } from '../ui/form';
 import {
@@ -17,7 +16,7 @@ export default function Selector({
   className = '',
 }: {
   name: NameType;
-  options: Array<string>;
+  options: string[];
   label?: string;
   form: FormType;
   className?: string;

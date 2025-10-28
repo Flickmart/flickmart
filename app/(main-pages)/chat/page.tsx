@@ -45,8 +45,12 @@ export default function ChatPage() {
 
     // Add other users from conversations
     conversations?.forEach((conversation) => {
-      if (conversation.user1 !== user?._id) ids.add(conversation.user1);
-      if (conversation.user2 !== user?._id) ids.add(conversation.user2);
+      if (conversation.user1 !== user?._id) {
+        ids.add(conversation.user1);
+      }
+      if (conversation.user2 !== user?._id) {
+        ids.add(conversation.user2);
+      }
     });
 
     return Array.from(ids);

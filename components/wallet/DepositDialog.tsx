@@ -1,12 +1,12 @@
 import {
-  ArrowDownToLine,
-  RefreshCw,
-  Banknote,
   AlertCircle,
+  ArrowDownToLine,
+  Banknote,
+  RefreshCw,
   X,
-} from "lucide-react";
-import dynamic from "next/dynamic";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { toast } from 'sonner';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -27,14 +28,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { type Doc } from "@/convex/_generated/dataModel";
-import { toast } from "sonner";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { Doc } from '@/convex/_generated/dataModel';
 
 const PaystackButton = dynamic(
-  () => import("react-paystack").then((mod) => mod.PaystackButton),
+  () => import('react-paystack').then((mod) => mod.PaystackButton),
   {
     ssr: false,
     loading: () => (
@@ -48,15 +48,15 @@ const PaystackButton = dynamic(
   }
 );
 
-interface PaystackConfig {
+type PaystackConfig = {
   email: string;
   amount: number;
   publicKey: string;
   reference: string;
-}
+};
 
-interface DepositDialogProps {
-  user: Doc<"users">;
+type DepositDialogProps = {
+  user: Doc<'users'>;
   open: boolean;
   setOpen: (open: boolean) => void;
   amount: number;
@@ -75,7 +75,7 @@ interface DepositDialogProps {
   buttonTextSize: string;
   iconSize: string;
   buttonGap: string;
-}
+};
 
 export default function DepositDialog({
   user,
@@ -100,19 +100,19 @@ export default function DepositDialog({
 }: DepositDialogProps) {
   // Ensure the Paystack public key is set
   if (!process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY) {
-    console.error("Paystack public key is not configured");
+    console.error('Paystack public key is not configured');
     // TODO: Show a user-friendly error message here
     return null;
   }
 
   // Ensure we have an email for the current user
   if (!user?.email) {
-    console.error("User email is required for payment processing");
-    toast.error("User email is required for payment processing");
+    console.error('User email is required for payment processing');
+    toast.error('User email is required for payment processing');
     return null;
   }
 
-  const MAX_AMOUNT = 10000000; // 10 million Naira
+  const MAX_AMOUNT = 10_000_000; // 10 million Naira
   const roundedAmount = Math.round(amount * 100) / 100; // Round to 2 decimal places
 
   const paystackConfig: PaystackConfig = {
@@ -134,15 +134,15 @@ export default function DepositDialog({
             Deposit
           </Button>
         </DialogTrigger>
-        <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader className="text-center pb-4">
+        <DialogContent className="max-h-[90vh] w-[95vw] max-w-[500px] overflow-y-auto">
+          <DialogHeader className="pb-4 text-center">
             <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-orange-100 sm:h-12 sm:w-12">
               <Banknote className="h-5 w-5 text-orange-600 sm:h-6 sm:w-6" />
             </div>
-            <DialogTitle className="text-lg font-semibold sm:text-xl">
+            <DialogTitle className="font-semibold text-lg sm:text-xl">
               Deposit Money
             </DialogTitle>
-            <DialogDescription className="text-sm text-gray-600">
+            <DialogDescription className="text-gray-600 text-sm">
               Deposit money into your wallet using a bank transfer or card
               payment.
             </DialogDescription>
@@ -150,26 +150,26 @@ export default function DepositDialog({
 
           {/* Error Display - Prominent placement right after header */}
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 sm:p-4 mb-4">
+            <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4">
               <div className="flex items-start gap-2 sm:gap-3">
-                <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
                 <div className="flex-1">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-red-800">
+                    <span className="font-medium text-red-800 text-sm">
                       Payment Error
                     </span>
                     <button
-                      type="button"
-                      onClick={() => setError(null)}
                       className="text-red-400 hover:text-red-600"
+                      onClick={() => setError(null)}
+                      type="button"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="mt-1 text-sm text-red-700 break-words">
+                  <p className="mt-1 break-words text-red-700 text-sm">
                     {error}
                   </p>
-                  <p className="mt-2 text-xs text-red-600">
+                  <p className="mt-2 text-red-600 text-xs">
                     Please check your payment details and try again. If the
                     problem persists, contact support.
                   </p>
@@ -182,25 +182,25 @@ export default function DepositDialog({
             {/* Amount Section */}
             <div className="space-y-2 sm:space-y-3">
               <Label
+                className="font-medium text-gray-700 text-sm"
                 htmlFor="deposit-amount"
-                className="text-sm font-medium text-gray-700"
               >
                 Amount to Deposit
               </Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <span className="-translate-y-1/2 absolute top-1/2 left-3 text-gray-500">
                   ₦
                 </span>
                 <Input
+                  className="pl-8 font-semibold text-base sm:text-lg"
                   id="deposit-amount"
+                  min="0"
                   name="deposit-amount"
-                  className="pl-8 text-base font-semibold sm:text-lg"
-                  placeholder="0.00"
                   onChange={(e) => {
-                    const parsedValue = parseFloat(e.target.value);
+                    const parsedValue = Number.parseFloat(e.target.value);
 
-                    if (!isFinite(parsedValue)) {
-                      setError("Please enter a valid amount");
+                    if (!Number.isFinite(parsedValue)) {
+                      setError('Please enter a valid amount');
                       return;
                     }
 
@@ -208,13 +208,13 @@ export default function DepositDialog({
                     setAmount(String(clampedValue));
                     setError(null);
                   }}
-                  type="number"
-                  min="0"
+                  placeholder="0.00"
                   step="0.01"
+                  type="number"
                 />
               </div>
               {amount > 0 && (
-                <p className="text-xs text-gray-500">
+                <p className="text-gray-500 text-xs">
                   You'll be redirected to a secure payment gateway to complete
                   your deposit
                 </p>
@@ -222,11 +222,11 @@ export default function DepositDialog({
             </div>
           </div>
 
-          <DialogFooter className="flex-col gap-2 sm:flex-row sm:gap-3 pt-4">
+          <DialogFooter className="flex-col gap-2 pt-4 sm:flex-row sm:gap-3">
             {paystackReference ? (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="w-full sm:w-auto">
+                  <Button className="w-full sm:w-auto" variant="outline">
                     Cancel
                   </Button>
                 </AlertDialogTrigger>
@@ -242,7 +242,7 @@ export default function DepositDialog({
                     <AlertDialogCancel>No, continue payment</AlertDialogCancel>
                     <AlertDialogAction
                       onClick={() => {
-                        setPaystackReference("");
+                        setPaystackReference('');
                         setIsPaystackModalOpen(false);
                         setOpen(false);
                       }}
@@ -254,7 +254,7 @@ export default function DepositDialog({
               </AlertDialog>
             ) : (
               <DialogClose asChild>
-                <Button variant="outline" className="w-full sm:w-auto">
+                <Button className="w-full sm:w-auto" variant="outline">
                   Cancel
                 </Button>
               </DialogClose>
@@ -277,10 +277,10 @@ export default function DepositDialog({
               </PaystackButton>
             ) : (
               <Button
-                className={`flex items-center justify-center gap-2 w-full sm:w-auto ${
+                className={`flex w-full items-center justify-center gap-2 sm:w-auto ${
                   isFormValid
-                    ? "bg-orange-500 text-white hover:bg-orange-600"
-                    : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                    : 'cursor-not-allowed bg-gray-300 text-gray-500'
                 }`}
                 disabled={!isFormValid || isInitializing}
                 onClick={handleInitializePayment}

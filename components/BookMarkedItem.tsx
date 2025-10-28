@@ -3,7 +3,6 @@ import { useMutation } from 'convex/react';
 import {
   EllipsisVertical,
   ImageIcon,
-  ImageOff,
   MapPin,
   MessageSquareText,
   Share,

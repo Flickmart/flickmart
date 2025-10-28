@@ -1,14 +1,14 @@
-import { useUser } from "@clerk/nextjs";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useUser } from '@clerk/nextjs';
+import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
 const StageThree = () => {
   const [redirectTimer, setRedirectTimer] = useState(5);
   const router = useRouter();
   const { user } = useUser();
-  const callbackURL = useSearchParams().get("callback") || "/";
+  const callbackURL = useSearchParams().get('callback') || '/';
   useEffect(() => {
     const interval = setInterval(() => {
       if (redirectTimer <= 0) {
@@ -35,7 +35,7 @@ const StageThree = () => {
         width={132}
       />
       <h3 className="mt-10 mb-7 text-3xl md:text-4xl">
-        {user?.firstName ? user.firstName : "Your"} account has been created
+        {user?.firstName ? user.firstName : 'Your'} account has been created
       </h3>
       <h2 className="mb-32 font-light text-sm md:text-base">
         Welcome to flickmart, where possibility meets passion.
@@ -48,7 +48,7 @@ const StageThree = () => {
         Get started
       </Button>
       <p className="mt-5">
-        You will be redirected in{" "}
+        You will be redirected in{' '}
         <span className="text-flickmart">{redirectTimer} seconds...</span>
       </p>
     </main>

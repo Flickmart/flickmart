@@ -4,12 +4,12 @@ import type { ReactNode } from 'react';
 import Loader from '@/components/multipage/Loader';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
-interface ProtectedRouteProps {
+type ProtectedRouteProps = {
   children: ReactNode;
   redirectTo?: string;
   fallback?: ReactNode;
   requireAuth?: boolean;
-}
+};
 
 /**
  * Component that protects routes requiring authentication

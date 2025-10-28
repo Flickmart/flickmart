@@ -2,6 +2,7 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { useMutation, useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 import { toast } from 'sonner';
@@ -17,20 +18,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from '../ui/dialog';
-import { useRouter } from 'next/navigation';
 
-
-
-interface AdChargesProps {
+type AdChargesProps = {
   plan: 'free' | 'basic' | 'pro' | 'premium';
   isPending: boolean;
   formTrigger: () => Promise<boolean>;
   formSubmit: () => Promise<void>;
-  images: Array<string>;
+  images: string[];
   adId: Id<'product'> | undefined;
   basicDuration: number;
   action?: string;
-}
+};
 
 export default function AdCharges({
   plan,
@@ -85,10 +83,10 @@ export default function AdCharges({
       toast.error('Please log in to post an ad');
       return;
     }
-    if (action === "edit" || plan === "free") {
+    if (action === 'edit' || plan === 'free') {
       await formSubmit();
       setShowChargeDialog(false);
-      action === "edit" &&  router.push("/settings/products");
+      action === 'edit' && router.push('/settings/products');
       return;
     }
 
@@ -145,7 +143,7 @@ export default function AdCharges({
       } else {
         toast.error(data.message || 'Payment failed');
       }
-    } catch (error) {
+    } catch (_error) {
       toast.error('Error processing payment');
     } finally {
       setIsProcessing(false);
@@ -156,7 +154,7 @@ export default function AdCharges({
   return (
     <>
       <div className="w-full space-y-4">
-        {action === "edit" ? null : (
+        {action === 'edit' ? null : (
           <>
             <div className="flex items-center justify-between">
               <span className="text-gray-600">
@@ -180,8 +178,8 @@ export default function AdCharges({
         >
           {isPending || isProcessing ? (
             <ClipLoader color="#ffffff" />
-          ) : action === "edit" ? (
-            "Update Ad"
+          ) : action === 'edit' ? (
+            'Update Ad'
           ) : (
             'Post Ad'
           )}
@@ -192,11 +190,11 @@ export default function AdCharges({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {action === "edit" ? "Confirm Update" : "Confirm Ad Posting"}
+              {action === 'edit' ? 'Confirm Update' : 'Confirm Ad Posting'}
             </DialogTitle>
             <DialogDescription>
-              {action === "edit"
-                ? "You are about to update this ad, are you sure you want to proceed with this action?"
+              {action === 'edit'
+                ? 'You are about to update this ad, are you sure you want to proceed with this action?'
                 : `You are about to post an ad with ${plan} plan. ₦${chargeAmount} will be deducted from your wallet.`}
             </DialogDescription>
           </DialogHeader>
@@ -215,8 +213,8 @@ export default function AdCharges({
             >
               {isProcessing ? (
                 <ClipLoader color="#ffffff" size={20} />
-              ) : action === "edit" ? (
-                "Update Ad"
+              ) : action === 'edit' ? (
+                'Update Ad'
               ) : (
                 'Confirm & Post'
               )}

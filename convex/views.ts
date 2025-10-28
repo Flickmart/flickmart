@@ -1,15 +1,15 @@
-import { v } from "convex/values";
-import { mutation } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./users";
+import { v } from 'convex/values';
+import { mutation } from './_generated/server';
+import { getCurrentUserOrThrow } from './users';
 
 const errorObj = {
-  message: "Could not retrieve user, try logging in",
+  message: 'Could not retrieve user, try logging in',
   status: 401,
-  code: "USER_NOT_FOUND",
+  code: 'USER_NOT_FOUND',
 };
 export const createView = mutation({
   args: {
-    productId: v.id("product"),
+    productId: v.id('product'),
   },
   handler: async (ctx, args) => {
     try {
@@ -17,16 +17,16 @@ export const createView = mutation({
       const user = await getCurrentUserOrThrow(ctx);
 
       if (!user) {
-        throw Error("Could not retrieve user, try logging in");
+        throw new Error('Could not retrieve user, try logging in');
       }
       // Check if Product exists
       const product = await ctx.db.get(args.productId);
       if (!product) {
-        throw Error("product not found");
+        throw new Error('product not found');
       }
 
       if (user?._id === product.userId) {
-        throw Error(
+        throw new Error(
           "views from your own account do not count toward your product's view count."
         );
       }
@@ -35,7 +35,7 @@ export const createView = mutation({
       await ctx.db.patch(product._id, { views: (product.views ?? 0) + 1 });
 
       //   create a view record
-      const viewId = await ctx.db.insert("views", {
+      const viewId = await ctx.db.insert('views', {
         userId: user?._id ?? null,
         productId: args.productId,
         viewed: true,

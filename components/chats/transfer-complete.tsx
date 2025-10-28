@@ -1,17 +1,16 @@
 'use client';
 
 import Link from 'next/link';
-import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SecurityHeader } from './security-header';
 
-interface TransferCompleteProps {
+type TransferCompleteProps = {
   displayAmount: string;
   selectedProductsCount: number;
   calculatedTotal: number;
   onBack: () => void;
   orderId?: string;
-}
+};
 
 export function TransferComplete({
   displayAmount,
@@ -22,7 +21,9 @@ export function TransferComplete({
 }: TransferCompleteProps) {
   const formatAmount = (value: string | number) => {
     const num = typeof value === 'string' ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return '0.00';
+    if (Number.isNaN(num)) {
+      return '0.00';
+    }
     return num.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -131,8 +132,8 @@ export function TransferComplete({
               <Link href={`/orders/${orderId}`}>
                 <Button
                   className="w-full rounded-lg py-3 font-medium"
-                  variant="outline"
                   type="button"
+                  variant="outline"
                 >
                   Check now
                 </Button>

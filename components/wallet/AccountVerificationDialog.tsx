@@ -1,15 +1,15 @@
 import {
-  RefreshCw,
-  Building2,
-  User,
-  CreditCard,
-  AlertTriangle,
-  CheckCircle2,
-  Banknote,
   AlertCircle,
+  AlertTriangle,
+  Banknote,
+  Building2,
+  CheckCircle2,
+  CreditCard,
+  RefreshCw,
+  User,
   X,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -17,10 +17,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
 
-interface AccountVerificationDialogProps {
+type AccountVerificationDialogProps = {
   verifyDialogOpen: boolean;
   setVerifyDialogOpen: (open: boolean) => void;
   recipientDetails: any;
@@ -32,7 +32,7 @@ interface AccountVerificationDialogProps {
   handleWithdraw: () => void;
   error: string | null;
   setError: (error: string | null) => void;
-}
+};
 
 export default function AccountVerificationDialog({
   verifyDialogOpen,
@@ -52,45 +52,47 @@ export default function AccountVerificationDialog({
   )?.name;
 
   return (
-    <Dialog 
+    <Dialog
       onOpenChange={(open) => {
         if (!open) {
           setError(null);
         }
         setVerifyDialogOpen(open);
-      }} 
+      }}
       open={verifyDialogOpen}
     >
-      <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center pb-4">
-          <DialogTitle className="text-lg font-semibold sm:text-xl">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-[500px] overflow-y-auto">
+        <DialogHeader className="pb-4 text-center">
+          <DialogTitle className="font-semibold text-lg sm:text-xl">
             Confirm Withdrawal
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
+          <DialogDescription className="text-gray-600 text-sm">
             Please review the details below before confirming your withdrawal
           </DialogDescription>
         </DialogHeader>
 
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3 sm:p-4 mb-4">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4">
             <div className="flex items-start gap-2 sm:gap-3">
-              <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-red-800">Withdrawal Error</span>
+                  <span className="font-medium text-red-800 text-sm">
+                    Withdrawal Error
+                  </span>
                   <button
-                    type="button"
-                    onClick={() => setError(null)}
                     className="text-red-400 hover:text-red-600"
+                    onClick={() => setError(null)}
+                    type="button"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-red-700 break-words">
-                  {error}
-                </p>
-                <div className="mt-2 text-xs text-red-600 space-y-1">
-                  <p className="mt-1">If the problem persists, contact support.</p>
+                <p className="mt-1 break-words text-red-700 text-sm">{error}</p>
+                <div className="mt-2 space-y-1 text-red-600 text-xs">
+                  <p className="mt-1">
+                    If the problem persists, contact support.
+                  </p>
                 </div>
               </div>
             </div>
@@ -101,58 +103,58 @@ export default function AccountVerificationDialog({
           <div className="space-y-4 sm:space-y-6">
             {/* Details Section */}
             <div className="space-y-3 sm:space-y-4">
-              <h3 className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+              <h3 className="flex items-center gap-2 font-semibold text-gray-800 text-sm">
                 <User className="h-4 w-4" />
                 Recipient Information
               </h3>
 
               <div className="grid gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 bg-gray-50 sm:gap-3 sm:p-3">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 sm:gap-3 sm:p-3">
                   <Banknote
-                    className="h-4 w-4 text-gray-500 flex-shrink-0"
                     aria-hidden="true"
+                    className="h-4 w-4 flex-shrink-0 text-gray-500"
                   />
-                  <div className="flex-1 min-w-0">
-                    <Label className="text-xs font-medium text-gray-500">
+                  <div className="min-w-0 flex-1">
+                    <Label className="font-medium text-gray-500 text-xs">
                       Amount
                     </Label>
-                    <div className="text-md font-bold text-green-600 truncate">
+                    <div className="truncate font-bold text-green-600 text-md">
                       ₦{amount.toLocaleString()}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 bg-gray-50 sm:gap-3 sm:p-3">
-                  <Building2 className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <Label className="text-xs font-medium text-gray-500">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 sm:gap-3 sm:p-3">
+                  <Building2 className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="min-w-0 flex-1">
+                    <Label className="font-medium text-gray-500 text-xs">
                       Bank Name
                     </Label>
-                    <div className="text-sm font-medium text-gray-900 truncate">
+                    <div className="truncate font-medium text-gray-900 text-sm">
                       {selectedBankName}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 bg-gray-50 sm:gap-3 sm:p-3">
-                  <User className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <Label className="text-xs font-medium text-gray-500">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 sm:gap-3 sm:p-3">
+                  <User className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="min-w-0 flex-1">
+                    <Label className="font-medium text-gray-500 text-xs">
                       Account Name
                     </Label>
-                    <div className="text-sm font-medium text-gray-900 truncate">
+                    <div className="truncate font-medium text-gray-900 text-sm">
                       {recipientDetails.account_name}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 p-2 rounded-lg border border-gray-200 bg-gray-50 sm:gap-3 sm:p-3">
-                  <CreditCard className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <Label className="text-xs font-medium text-gray-500">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-2 sm:gap-3 sm:p-3">
+                  <CreditCard className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <div className="min-w-0 flex-1">
+                    <Label className="font-medium text-gray-500 text-xs">
                       Account Number
                     </Label>
-                    <div className="text-sm font-medium text-gray-900 font-mono">
+                    <div className="font-medium font-mono text-gray-900 text-sm">
                       {accountNumber}
                     </div>
                   </div>
@@ -161,14 +163,14 @@ export default function AccountVerificationDialog({
             </div>
 
             {/* Warning */}
-            <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 sm:p-4">
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-3 sm:p-4">
               <div className="flex items-start gap-2 sm:gap-3">
-                <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
                 <div>
-                  <h4 className="text-sm font-medium text-amber-800">
+                  <h4 className="font-medium text-amber-800 text-sm">
                     Important
                   </h4>
-                  <p className="text-xs text-amber-700 mt-1">
+                  <p className="mt-1 text-amber-700 text-xs">
                     Please ensure all details are correct. Withdrawals cannot be
                     cancelled once processed.
                   </p>
@@ -178,21 +180,21 @@ export default function AccountVerificationDialog({
           </div>
         )}
 
-        <DialogFooter className="flex-col gap-2 sm:flex-row sm:gap-3 pt-4">
+        <DialogFooter className="flex-col gap-2 pt-4 sm:flex-row sm:gap-3">
           <Button
+            className="w-full sm:w-auto"
+            disabled={isWithdrawing}
             onClick={() => {
               setError(null);
               setVerifyDialogOpen(false);
             }}
             variant="outline"
-            className="w-full sm:w-auto"
-            disabled={isWithdrawing}
           >
             Cancel
           </Button>
 
           <Button
-            className="flex items-center justify-center gap-2 w-full sm:w-auto bg-orange-500 text-white hover:bg-orange-600"
+            className="flex w-full items-center justify-center gap-2 bg-orange-500 text-white hover:bg-orange-600 sm:w-auto"
             disabled={isWithdrawing}
             onClick={handleWithdraw}
           >

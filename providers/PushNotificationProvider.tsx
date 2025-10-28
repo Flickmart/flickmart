@@ -1,13 +1,13 @@
 /** biome-ignore-all lint/performance/useTopLevelRegex: <its just a side regex it won't chnage> */
 /** biome-ignore-all lint/style/noMagicNumbers: <small constants> */
-"use client";
+'use client';
 
-import { useUser } from "@clerk/nextjs";
-import { useMutation, useQuery } from "convex/react";
-import { createContext, useContext, useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
+import { useUser } from '@clerk/nextjs';
+import { useMutation, useQuery } from 'convex/react';
+import { createContext, useContext, useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
 
-interface PushNotificationContextType {
+type PushNotificationContextType = {
   isSupported: boolean;
   permission: NotificationPermission | null;
   isSubscribed: boolean;
@@ -15,7 +15,7 @@ interface PushNotificationContextType {
   promptForPermission: () => Promise<boolean>;
   subscribe: () => Promise<boolean>;
   unsubscribe: () => Promise<boolean>;
-}
+};
 
 const PushNotificationContext =
   createContext<PushNotificationContextType | null>(null);
@@ -24,15 +24,15 @@ export function usePushNotifications() {
   const context = useContext(PushNotificationContext);
   if (!context) {
     throw new Error(
-      "usePushNotifications must be used within PushNotificationProvider",
+      'usePushNotifications must be used within PushNotificationProvider'
     );
   }
   return context;
 }
 
-interface PushNotificationProviderProps {
+type PushNotificationProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function PushNotificationProvider({
   children,
@@ -40,12 +40,12 @@ export function PushNotificationProvider({
   const { user } = useUser();
   const [isSupported, setIsSupported] = useState(false);
   const [permission, setPermission] = useState<NotificationPermission | null>(
-    null,
+    null
   );
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [validatingEndpoint, setValidatingEndpoint] = useState<string | null>(
-    null,
+    null
   );
   const [validationPromise, setValidationPromise] = useState<{
     resolve: (value: boolean) => void;
@@ -53,14 +53,14 @@ export function PushNotificationProvider({
   } | null>(null);
 
   const savePushSubscription = useMutation(
-    api.notifications.savePushSubscription,
+    api.notifications.savePushSubscription
   );
   const removePushSubscriptionByEndpoint = useMutation(
-    api.notifications.removePushSubscriptionByEndpoint,
+    api.notifications.removePushSubscriptionByEndpoint
   );
   const getCurrentDeviceSubscription = useQuery(
     api.notifications.getCurrentDeviceSubscription,
-    validatingEndpoint ? { endpoint: validatingEndpoint } : "skip",
+    validatingEndpoint ? { endpoint: validatingEndpoint } : 'skip'
   );
 
   // Handle validation query response
@@ -78,22 +78,22 @@ export function PushNotificationProvider({
 
         if (!dbSubscription) {
           console.log(
-            "No active subscription found in database for endpoint:",
-            validatingEndpoint,
+            'No active subscription found in database for endpoint:',
+            validatingEndpoint
           );
           isValid = false;
-        } else if (!dbSubscription.isActive) {
+        } else if (dbSubscription.isActive) {
           console.log(
-            "Subscription found but is inactive for endpoint:",
-            validatingEndpoint,
-          );
-          isValid = false;
-        } else {
-          console.log(
-            "Subscription validation successful for endpoint:",
-            validatingEndpoint,
+            'Subscription validation successful for endpoint:',
+            validatingEndpoint
           );
           isValid = true;
+        } else {
+          console.log(
+            'Subscription found but is inactive for endpoint:',
+            validatingEndpoint
+          );
+          isValid = false;
         }
 
         // Resolve the promise with the validation result
@@ -108,8 +108,8 @@ export function PushNotificationProvider({
 
   // Check if push notifications are supported
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const supported = "serviceWorker" in navigator && "PushManager" in window;
+    if (typeof window !== 'undefined') {
+      const supported = 'serviceWorker' in navigator && 'PushManager' in window;
       setIsSupported(supported);
 
       if (supported) {
@@ -132,13 +132,13 @@ export function PushNotificationProvider({
       }
 
       // Only prompt if permission hasn't been asked before and user is not subscribed on this device
-      if (permission === "default" && !isSubscribed) {
+      if (permission === 'default' && !isSubscribed) {
         // Small delay to ensure page is loaded
         setTimeout(async () => {
           try {
             await promptForPermission();
           } catch (error) {
-            console.log("User declined notification permission:", error);
+            console.log('User declined notification permission:', error);
           }
         }, 2000); // 2 second delay
       }
@@ -149,34 +149,34 @@ export function PushNotificationProvider({
 
   const cleanupInvalidSubscription = async (
     subscription: PushSubscription,
-    reason: string,
+    reason: string
   ): Promise<void> => {
     try {
       console.log(
         `Cleaning up invalid subscription (${reason}):`,
-        subscription.endpoint,
+        subscription.endpoint
       );
       await subscription.unsubscribe();
-      console.log("Successfully cleaned up invalid browser subscription");
+      console.log('Successfully cleaned up invalid browser subscription');
     } catch (unsubscribeError) {
       console.error(
-        "Failed to unsubscribe from invalid subscription:",
-        unsubscribeError,
+        'Failed to unsubscribe from invalid subscription:',
+        unsubscribeError
       );
     }
   };
 
   const validateSubscription = async (
-    subscription: PushSubscription,
+    subscription: PushSubscription
   ): Promise<boolean> => {
     try {
       if (!subscription?.endpoint) {
-        console.warn("Subscription validation failed: no endpoint");
+        console.warn('Subscription validation failed: no endpoint');
         return false;
       }
 
       const endpoint = subscription.endpoint;
-      console.log("Validating subscription for endpoint:", endpoint);
+      console.log('Validating subscription for endpoint:', endpoint);
 
       // Create a promise that will be resolved by the useEffect
       const validationPromise = new Promise<boolean>((resolve) => {
@@ -189,7 +189,7 @@ export function PushNotificationProvider({
 
       return isValid;
     } catch (error) {
-      console.error("Error validating subscription:", error);
+      console.error('Error validating subscription:', error);
       setValidationPromise(null);
       setValidatingEndpoint(null);
       return false;
@@ -198,55 +198,55 @@ export function PushNotificationProvider({
 
   const checkSubscriptionStatus = async () => {
     try {
-      if (!("serviceWorker" in navigator && user)) {
+      if (!('serviceWorker' in navigator && user)) {
         console.log(
-          "Push notifications not supported or user not authenticated",
+          'Push notifications not supported or user not authenticated'
         );
         setIsLoading(false);
         return;
       }
 
-      console.log("Checking subscription status for user:", user.id);
+      console.log('Checking subscription status for user:', user.id);
 
       const registration = await navigator.serviceWorker.ready;
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        console.error("Service worker registration not available");
+        console.error('Service worker registration not available');
         setIsLoading(false);
         return;
       }
 
-      console.log("Service worker is ready, checking push subscription...");
+      console.log('Service worker is ready, checking push subscription...');
 
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
         console.log(
-          "Found browser subscription for endpoint:",
-          subscription.endpoint,
+          'Found browser subscription for endpoint:',
+          subscription.endpoint
         );
 
         // Validate subscription exists in database and is active
         const isValid = await validateSubscription(subscription);
         setIsSubscribed(isValid);
 
-        if (!isValid) {
+        if (isValid) {
+          console.log('Subscription validated successfully');
+        } else {
           await cleanupInvalidSubscription(
             subscription,
-            "exists in browser but not in database",
+            'exists in browser but not in database'
           );
-        } else {
-          console.log("Subscription validated successfully");
         }
       } else {
-        console.log("No browser subscription found");
+        console.log('No browser subscription found');
         setIsSubscribed(false);
       }
 
       setIsLoading(false);
     } catch (error) {
-      console.error("Error checking subscription status:", error);
+      console.error('Error checking subscription status:', error);
       setIsLoading(false);
       setIsSubscribed(false);
     }
@@ -255,20 +255,20 @@ export function PushNotificationProvider({
   const promptForPermission = async (): Promise<boolean> => {
     try {
       if (!isSupported) {
-        throw new Error("Push notifications are not supported");
+        throw new Error('Push notifications are not supported');
       }
 
       // biome-ignore lint/nursery/noShadow: <it dosent affect it>
       const permission = await Notification.requestPermission();
       setPermission(permission);
 
-      if (permission === "granted") {
+      if (permission === 'granted') {
         return await subscribe();
       }
 
       return false;
     } catch (error) {
-      console.error("Error requesting permission:", error);
+      console.error('Error requesting permission:', error);
       throw error;
     }
   };
@@ -277,31 +277,31 @@ export function PushNotificationProvider({
     try {
       if (!(isSupported && user)) {
         throw new Error(
-          "Cannot subscribe: not supported or user not logged in",
+          'Cannot subscribe: not supported or user not logged in'
         );
       }
 
-      if (permission !== "granted") {
+      if (permission !== 'granted') {
         const newPermission = await Notification.requestPermission();
         setPermission(newPermission);
 
-        if (newPermission !== "granted") {
-          throw new Error("Permission denied");
+        if (newPermission !== 'granted') {
+          throw new Error('Permission denied');
         }
       }
 
       // Ensure service worker is registered
       const { getServiceWorkerRegistration } = await import(
-        "@/lib/serviceWorker"
+        '@/lib/serviceWorker'
       );
       const registration = await getServiceWorkerRegistration();
       if (!registration) {
-        throw new Error("Service worker not available");
+        throw new Error('Service worker not available');
       }
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        throw new Error("Service worker registration failed");
+        throw new Error('Service worker registration failed');
       }
 
       // Subscribe to push notifications
@@ -309,13 +309,13 @@ export function PushNotificationProvider({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(
           // biome-ignore lint/style/noNonNullAssertion: <It woukd always be available i can asssert>
-          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
         ),
       });
 
       // Detect device information
       const deviceInfo = {
-        platform: navigator.platform || "Unknown",
+        platform: navigator.platform || 'Unknown',
         browser: getBrowserInfo(),
         deviceType: getDeviceType(),
       };
@@ -329,21 +329,21 @@ export function PushNotificationProvider({
 
       console.log(
         result.isNew
-          ? "✅ New device subscription created"
-          : "🔄 Existing device subscription updated",
+          ? '✅ New device subscription created'
+          : '🔄 Existing device subscription updated'
       );
 
       setIsSubscribed(true);
       return true;
     } catch (error) {
-      console.error("Error subscribing to push notifications:", error);
+      console.error('Error subscribing to push notifications:', error);
       throw error;
     }
   };
 
   const unsubscribe = async (): Promise<boolean> => {
     try {
-      if (!("serviceWorker" in navigator)) {
+      if (!('serviceWorker' in navigator)) {
         return false;
       }
 
@@ -351,7 +351,7 @@ export function PushNotificationProvider({
 
       // Check if registration is valid before proceeding
       if (!registration) {
-        throw new Error("Service worker registration not available");
+        throw new Error('Service worker registration not available');
       }
 
       const subscription = await registration.pushManager.getSubscription();
@@ -365,7 +365,7 @@ export function PushNotificationProvider({
       // First unsubscribe from the browser
       const browserUnsubscribed = await subscription.unsubscribe();
       if (!browserUnsubscribed) {
-        throw new Error("Failed to unsubscribe from browser");
+        throw new Error('Failed to unsubscribe from browser');
       }
 
       // Then remove the subscription record from backend
@@ -375,8 +375,8 @@ export function PushNotificationProvider({
         });
       } catch (backendError) {
         console.error(
-          "Error removing subscription from backend:",
-          backendError,
+          'Error removing subscription from backend:',
+          backendError
         );
         // Re-throw to let caller handle the error
         const errorMessage =
@@ -390,7 +390,7 @@ export function PushNotificationProvider({
       setIsSubscribed(false);
       return true;
     } catch (error) {
-      console.error("Error unsubscribing from push notifications:", error);
+      console.error('Error unsubscribing from push notifications:', error);
       throw error;
     }
   };
@@ -414,8 +414,8 @@ export function PushNotificationProvider({
 
 // Helper function to convert VAPID key
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -430,23 +430,23 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
 function getBrowserInfo(): string {
   const userAgent = navigator.userAgent;
 
-  if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
-    return "Chrome";
+  if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) {
+    return 'Chrome';
   }
-  if (userAgent.includes("Firefox")) {
-    return "Firefox";
+  if (userAgent.includes('Firefox')) {
+    return 'Firefox';
   }
-  if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
-    return "Safari";
+  if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+    return 'Safari';
   }
-  if (userAgent.includes("Edg")) {
-    return "Edge";
+  if (userAgent.includes('Edg')) {
+    return 'Edge';
   }
-  if (userAgent.includes("Opera") || userAgent.includes("OPR")) {
-    return "Opera";
+  if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+    return 'Opera';
   }
 
-  return "Unknown";
+  return 'Unknown';
 }
 
 // Helper function to detect device type
@@ -454,15 +454,15 @@ function getDeviceType(): string {
   const userAgent = navigator.userAgent;
 
   if (/tablet|ipad|playbook|silk/i.test(userAgent)) {
-    return "Tablet";
+    return 'Tablet';
   }
   if (
     /mobile|iphone|ipod|android|blackberry|opera|mini|windows\sce|palm|smartphone|iemobile/i.test(
-      userAgent,
+      userAgent
     )
   ) {
-    return "Mobile";
+    return 'Mobile';
   }
 
-  return "Desktop";
+  return 'Desktop';
 }

@@ -1,14 +1,9 @@
-import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
-import Image from 'next/image';
-import React, { useState } from 'react';
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
 import type { FormType, NameType } from '@/types/form';
 import { categoryItems } from '@/utils/constants';
 import { FormField } from '../ui/form';
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '../ui/sheet';
+import { Sheet, SheetContent, SheetTrigger } from '../ui/sheet';
 import CustomSheetHeader from './CustomSheetHeader';
 import SheetItems from './SheetItems';
 import SubcategorySheet from './SubcategorySheet';
