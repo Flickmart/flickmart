@@ -22,9 +22,12 @@ export type NameType =
   | 'condition'
   | 'description'
   | 'price'
+  | "targetPrice"
+  | "targetPriceSecond"
   | 'store'
   | 'phone'
-  | 'plan';
+  | 'plan'
+  | "aiEnabled"
 
 export type FormType = UseFormReturn<{
   store: string;
@@ -35,7 +38,10 @@ export type FormType = UseFormReturn<{
   condition: 'brand new' | 'used';
   title: string;
   description: string;
-  price: number | string;
+  price?: number | string ;
+  targetPrice?: number | string ;
+  targetPriceSecond?: number | string ;
   phone: string;
   plan: 'free' | 'basic' | 'pro' | 'premium';
+  aiEnabled: boolean
 }>;

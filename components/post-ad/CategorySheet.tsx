@@ -7,8 +7,6 @@ import { FormField } from '../ui/form';
 import {
   Sheet,
   SheetContent,
-  SheetHeader,
-  SheetTitle,
   SheetTrigger,
 } from '../ui/sheet';
 import CustomSheetHeader from './CustomSheetHeader';

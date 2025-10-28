@@ -1,5 +1,4 @@
 "use client";
-
 import { ChevronLeft, Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { type ReactNode, useState } from "react";
@@ -34,13 +33,15 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
 
   } else if (action === "edit") {
     title = "Edit Ad";
+  }else if(pathname.includes("/business")){
+    title = "Profile"
   }
   const hiddenPaths = [
     "/notifications",
     "/settings",
     "/chat",
     "/search",
-    "/wallet",
+    // "/wallet",
   ];
 
   const isHidden = () => {
@@ -66,7 +67,9 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
         onClick={() =>
           pathname.includes("/categories") ||
           pathname.includes("/post-ad") ||
-          pathname.includes("/sign-in")
+          pathname.includes("/sign-in") ||
+          pathname.includes("/business") ||
+          pathname.includes("/vendors")
             ? router.push("/")
             : router.back()
         }

@@ -160,10 +160,10 @@ export default function ChatPage() {
   // Handle vendor chat initiation
   useEffect(() => {
     const initVendorChat = async () => {
-      if (vendorId && user?._id && productId) {
+      if (vendorId && (user?._id || productId)) {
         try {
           // Validate that vendorId is different from current user
-          if (vendorId === user._id) {
+          if (vendorId === user?._id) {
             toast.error('Cannot start conversation with yourself');
             router.replace('/chat');
             return;
@@ -172,8 +172,8 @@ export default function ChatPage() {
           // Check if conversation already exists
           const existingConv = conversations?.find(
             (conv) =>
-              (conv.user1 === vendorId && conv.user2 === user._id) ||
-              (conv.user1 === user._id && conv.user2 === vendorId)
+              (conv.user1 === vendorId && conv.user2 === user?._id) ||
+              (conv.user1 === user?._id && conv.user2 === vendorId)
           );
 
           let targetConversationId: Id<'conversations'>;
@@ -182,7 +182,7 @@ export default function ChatPage() {
             targetConversationId = existingConv._id;
           } else {
             targetConversationId = await startConversation({
-              user1Id: user._id,
+              user1Id: user?._id as Id<'users'>,
               user2Id: vendorId,
             });
             console.log('Created new conversation:', targetConversationId);
@@ -190,7 +190,7 @@ export default function ChatPage() {
 
           // Navigate to the conversation with product parameters
           router.replace(
-            `/chat/${targetConversationId}?productId=${productId}`
+            `/chat/${targetConversationId}?productId=${productId}&vendorId=${vendorId}`
           );
         } catch (error) {
           console.error('Failed to start conversation with vendor:', error);

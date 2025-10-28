@@ -11,6 +11,11 @@ type FieldType = {
   type?: "textField" | "textArea" | "numberField";
 };
 
+const priceType = {
+  originalPrice: "Original price*",
+  targetPrice: "First Bargain Price*",
+  targetPriceSecond: "Second Bargain Price (Optional)"
+}
 export default function InputField({
   val,
   disabled,
@@ -62,7 +67,7 @@ export default function InputField({
                     <Input
                       className="lg:!text-lg w-full rounded-lg border border-gray-300 py-7 text-lg placeholder:text-gray-500 placeholder:capitalize lg:py-9"
                       disabled={disabled}
-                      placeholder={`${name === "phone" ? "08123456789" : `${name}*`}`}
+                      placeholder={`${name === "phone" ? "08123456789" : Object.entries(priceType).find(([key, value]) => key === name)?.[1] || `${name}*`}`}
                       required
                       type={type === "numberField" ? "number" : undefined}
                       {...field}
@@ -82,7 +87,7 @@ export default function InputField({
                       }}
                       placeholder={`${name}*`}
                       required
-                      rows={7}
+                      rows={8}
                       {...field}
                       value={val || value}
                     />

@@ -21,7 +21,7 @@ import { api } from "@/convex/_generated/api";
 export default function NotificationsPage() {
   const { isMobile } = useSidebar();
   const router = useRouter();
-  const user = useQuery(api.users.current);
+  const user =useQuery(api.users.current, {});
   const [emailNotification, setEmailNotification] = useState(
     user?.allowNotifications
   );

@@ -174,7 +174,7 @@ export const getStoreByUserId = query({
 
 export const getExternalUserStore = query({
   args: {
-    userId: v.id("users"),
+    userId: v.optional(v.id("users")),
   },
   handler: async (ctx, args) => {
     const errorObject = {
@@ -187,16 +187,15 @@ export const getExternalUserStore = query({
       },
     };
     // Check if user Exists
-    const user = await ctx.db.get(args.userId);
-    if (!user) {
-      return errorObject;
-    }
-
-    const store = await ctx.db
+    if (args.userId) {
+      const store = await ctx.db
       .query("store")
-      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId!))
       .first();
 
-    return store;
+      return store;
+    }else{
+      return errorObject;
+    }
   },
 });

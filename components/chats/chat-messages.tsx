@@ -2,9 +2,7 @@ import { TriangleAlert } from 'lucide-react';
 import {
   type Dispatch,
   type SetStateAction,
-  useEffect,
   useRef,
-  useState,
 } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import MessageBubble from './message-bubble';

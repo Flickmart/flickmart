@@ -1,13 +1,10 @@
-import { Check, Copy, ExternalLink, MapPin, MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
-import { toast } from 'sonner';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useAuthUser } from '@/hooks/useAuthUser';
-import { initialChat, shareProduct } from '@/utils/helpers';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
+import { ExternalLink, MapPin, MessageCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React from "react";
+import { toast } from "sonner";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useAuthUser } from "@/hooks/useAuthUser";
+import { initialChat, shareProduct } from "@/utils/helpers";
 
 export default function ProductHeader({
   location,
@@ -17,14 +14,16 @@ export default function ProductHeader({
   userId,
   productId,
   description,
+  aiEnabled,
 }: {
   location: string;
   title: string;
   price: number;
   timestamp: string;
-  userId: Id<'users'>;
-  productId: Id<'product'>;
+  userId: Id<"users">;
+  productId: Id<"product">;
   description: string;
+  aiEnabled: boolean;
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
@@ -42,34 +41,35 @@ export default function ProductHeader({
 
   const timeSince = () => {
     let value = 0;
-    let timeSpan = '';
+    let timeSpan = "";
     if (monthsAgo) {
       value = monthsAgo;
-      timeSpan = 'month';
+      timeSpan = "month";
     } else if (weeksAgo) {
       value = weeksAgo;
-      timeSpan = 'week';
+      timeSpan = "week";
     } else if (daysAgo) {
       value = daysAgo;
-      timeSpan = 'day';
+      timeSpan = "day";
     } else if (hoursAgo) {
       value = hoursAgo;
-      timeSpan = 'hour';
+      timeSpan = "hour";
     } else if (minsAgo) {
       value = minsAgo;
-      timeSpan = 'min';
+      timeSpan = "min";
     }
     if (value > 1) {
-      timeSpan += 's';
+      timeSpan += "s";
     }
     return value && timeSpan
       ? `${value} ${timeSpan} ago`
-      : 'less than a minute ago';
+      : "less than a minute ago";
   };
 
   const handleChat = () => {
     if (!isAuthenticated) {
-      toast.error('Please sign in to perform this action');
+      router.push("/sign-in?callback=/product/" + productId);
+      toast.error("Please sign in to perform this action");
       return;
     }
     initialChat({
@@ -81,7 +81,7 @@ export default function ProductHeader({
   };
 
   async function handleShare() {
-    shareProduct({ title, description, productId });
+    shareProduct({ title, description, productId, price });
   }
 
   return (
@@ -92,7 +92,10 @@ export default function ProductHeader({
           {location}, <span className="normal-case">{timeSince()}</span>
         </span>
       </div>
+      {/* <div className='flex justify-between items-center'> */}
       <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>
+      {/* { aiEnabled && <span className='text-xs px-2.5 font-semibold text-gray-700 py-1 rounded-2xl bg-green-200'>NKEM Assisted</span>} */}
+      {/* </div> */}
       <div className="flex items-center space-x-3">
         <span className="inline-block font-extrabold text-flickmart-chat-orange text-lg tracking-wider">
           &#8358;{price.toLocaleString()}
@@ -104,16 +107,14 @@ export default function ProductHeader({
           className="flex w-2/4 items-center justify-center gap-2 rounded-md bg-flickmart-chat-orange p-2 px-3 font-medium lg:w-1/4"
           onClick={handleChat}
         >
-          {' '}
+          {" "}
           <MessageCircle /> Chat vendor
         </button>
-        {/* <Dialog> */}
-        {/* <DialogTrigger asChild> */}
         <button
           className="flex w-2/4 items-center justify-center gap-2 rounded-md border border-flickmart-chat-orange p-2 px-3 font-medium text-flickmart-chat-orange lg:w-1/4"
           onClick={handleShare}
         >
-          {' '}
+          {" "}
           <ExternalLink /> Share
         </button>
       </div>

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter} from "next/navigation";
 import { useState } from "react";
 import MobileNav from "@/components/MobileNav";
 import { PushNotificationSetup } from "@/components/notifications/PushNotificationSetup";
@@ -40,12 +40,15 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 
 export default function PublicProfile() {
   const { user, isLoading } = useAuthUser();
-  // const params = useParams();
   const [userProductsLength, setUserProductsLength] = useState<number>(0);
   const router = useRouter();
   const store = useQuery(api.store.getStoresByUserId);
   const hasStore = store?.error?.status;
+  const wallet = useQuery(api.wallet.getCurrentWallet)
+  const productsByUser = useQuery(api.product.getByUserId, {userId: user?._id})
 
+
+  // Get Wallet Balance
   if (isLoading) {
     return (
       <div className="grid h-screen place-items-center">
@@ -57,7 +60,6 @@ export default function PublicProfile() {
   function updateUserProductsLength(length: number) {
     setUserProductsLength(length);
   }
-
   return (
     <>
       <MobileNav />
@@ -83,7 +85,7 @@ export default function PublicProfile() {
           <div className="mx-auto max-w-5xl">
             {/* Header */}
             <span className="font-semibold text-lg">
-              {user?.username || "lotanna567"}
+              {user?.username || "--"}
             </span>
             <div className="my-3 flex items-center gap-2">
               <div>
@@ -97,17 +99,17 @@ export default function PublicProfile() {
                   </AvatarFallback>
                 </Avatar>
               </div>
-              <div>
+              <div className="space-y-1">
                 <div className="flex items-center gap-1">
                   <h1 className="min-w-10 font-semibold text-base capitalize">
-                    {user?.name || "Lotanna Stores"}
+                    {user?.name || "--"}
                   </h1>
                   {user?.verified ? (
                     <Image
                       alt="verified"
                       className=""
                       height={16}
-                      src="/vector.png"
+                      src="/Vector.png"
                       width={16}
                     />
                   ) : null}
@@ -117,15 +119,15 @@ export default function PublicProfile() {
                   {hasStore === 404 ? "Buyer" : "Seller"}
                 </span>
                 <div className="text-sm flex gap-2">
-                  <span>items for sale{' '}3</span>
-                  <span>items sold{' '}7</span>
+                  <span>Items for sale{' '}{productsByUser?.length}</span>
+                  <span>Items sold{' '}0</span>
                 </div>
               </div>
             </div>
             <div className="my-4 flex flex-col gap-2">
-              <span className="text-sm">Hey, i buy and sell here!</span>
+              <span className="text-sm">{user?.description}</span>
               <div className="mt-1.5 flex items-center gap-2">
-                <Button className="w-5/12">
+                <Button className="w-2/4">
                   <Link
                     className="size-full"
                     href={"/settings/personal/update"}
@@ -133,30 +135,43 @@ export default function PublicProfile() {
                     Edit Profile
                   </Link>
                 </Button>
-                <Button className="w-5/12">Share Profile</Button>
-                <Button className="w-2/10">
+                <Button onClick={()=> {
+                  navigator.share({
+                    title: "Check out my profile!",
+                    text: "Discover my profile on Flickmart\n",
+                    url: `https://flickmart.app/business/${user?._id}`,
+                    // url: `http://localhost:3001/business/${user?._id}`,
+                  }).then(() => {
+                    console.log('Shared successfully');
+                  }).catch((error) => {
+                    console.error('Error sharing:', error);
+                  });
+                }} className="w-2/4">Share Profile</Button>
+                {/* <Button className="w-2/10">
                   <Link className="size-full" href={"/wallet"}>
                     <Wallet />
                   </Link>
-                </Button>
+                </Button> */}
               </div>
 
               {/* Remove demo wallet */}
-              {/* <div className="space-y-4 rounded-lg bg-primary text-white p-2">
-                <div className="flex justify-between items-center text-xs font-medium">
+              <Link className="min-h-full" href={"/wallet"}>
+              <div className="flex flex-col gap-2 rounded-lg bg-primary text-white px-4  py-4 pt-2">
+                <div className="flex justify-between  items-center text-xs font-medium">
                   <span>Available Balance</span>
-                  <div className="flex items-center">
+                  <Link className="flex items-center py-2 " href={"/wallet?action=show_history"}>
                     <span>Transaction History</span>
                     <ChevronRight className="h-4 w-4" />
-                  </div>
+                  </Link>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex items-center">
-                    <h1 className="text-xl font-bold">₦500.00</h1><ChevronRight className="h-4 w-4" />
+                    <h1 className="text-xl font-bold">₦ {wallet && "balance" in wallet ? (wallet.balance / 100).toFixed(2) : "0.00"}</h1><ChevronRight className="h-4 w-4" />
                   </div>
-                  <button className="text-[10px] bg-white text-primary rounded-full py-1 px-2">+ Add Money</button>
+                  <Link href={"/wallet?action=open_dialog"}  className="text-[10px] bg-white text-primary rounded-full py-1.5 font-semibold px-2">+ Add Money</Link>
                 </div>
-              </div> */}
+              </div>
+              </Link>
               <p className="pt-1.5 text-muted-foreground text-sm">
                 Member since{" "}
                 {user?._creationTime
@@ -189,7 +204,7 @@ export default function PublicProfile() {
                     <span>
                       {user?.contact?.phone || (
                         <i className="text-gray-400 text-sm">
-                          phone not provided
+                          --
                         </i>
                       )}
                     </span>
@@ -202,7 +217,7 @@ export default function PublicProfile() {
                     <span>
                       {user?.email || (
                         <i className="text-gray-400 text-sm">
-                          email not provided
+                          --
                         </i>
                       )}
                     </span>
@@ -215,7 +230,7 @@ export default function PublicProfile() {
                     <p>
                       {user?.contact?.address || (
                         <i className="text-gray-400 text-sm normal-case">
-                          location not provided
+                          --
                         </i>
                       )}
                     </p>
