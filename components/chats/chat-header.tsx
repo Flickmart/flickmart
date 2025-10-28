@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 
-interface ChatHeaderProps {
+type ChatHeaderProps = {
   toggleSidebar: () => void;
   activeChatData: {
     name: string;
@@ -23,7 +23,7 @@ interface ChatHeaderProps {
   selectedMessages: string[];
   setSelectedMessages: Dispatch<SetStateAction<string[]>>;
   vendorId: Id<'users'>;
-}
+};
 
 export default function ChatHeader({
   toggleSidebar,
@@ -40,7 +40,7 @@ export default function ChatHeader({
 }: ChatHeaderProps) {
   const deleteMessages = useMutation(api.chat.deleteMessages);
 
-  const handleProfileToggle = () => {
+  const _handleProfileToggle = () => {
     // setShowProfile(!showProfile);
   };
   const toggleSelectionMode = () => {
@@ -64,24 +64,22 @@ export default function ChatHeader({
   if (selectionMode) {
     return (
       <div className="z-50 flex items-center justify-between bg-flickmart/70 p-3 text-white">
-        <>
-          <Button
-            className="text-white hover:bg-flickmart/90"
-            onClick={toggleSelectionMode}
-            variant="ghost"
-          >
-            Cancel
-          </Button>
-          <span>{selectedMessages.length} selected</span>
-          <Button
-            className="text-white hover:bg-flickmart/90"
-            disabled={selectedMessages.length === 0}
-            onClick={handleDeleteMessages}
-            variant="ghost"
-          >
-            <Trash2 size={20} />
-          </Button>
-        </>
+        <Button
+          className="text-white hover:bg-flickmart/90"
+          onClick={toggleSelectionMode}
+          variant="ghost"
+        >
+          Cancel
+        </Button>
+        <span>{selectedMessages.length} selected</span>
+        <Button
+          className="text-white hover:bg-flickmart/90"
+          disabled={selectedMessages.length === 0}
+          onClick={handleDeleteMessages}
+          variant="ghost"
+        >
+          <Trash2 size={20} />
+        </Button>
       </div>
     );
   }
@@ -97,7 +95,7 @@ export default function ChatHeader({
         <ChevronLeft className="h-6 w-6 text-black" />
       </Button>
 
-      <Link href={'/vendors/' + vendorId}>
+      <Link href={`/vendors/${vendorId}`}>
         <div
           className="flex flex-1 cursor-pointer items-center rounded-md p-2 transition-colors hover:bg-gray-100"
           // onClick={handleProfileToggle}
@@ -128,9 +126,7 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
-                   <p className="truncate text-blue-500 text-sm">
-                      offline
-                    </p>
+                    <p className="truncate text-blue-500 text-sm">offline</p>
                   )}
                 </div>
               )}

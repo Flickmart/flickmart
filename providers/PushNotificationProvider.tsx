@@ -7,7 +7,7 @@ import { useMutation, useQuery } from "convex/react";
 import { createContext, useContext, useEffect, useState } from "react";
 import { api } from "@/convex/_generated/api";
 
-interface PushNotificationContextType {
+type PushNotificationContextType = {
   isSupported: boolean;
   permission: NotificationPermission | null;
   isSubscribed: boolean;
@@ -15,7 +15,7 @@ interface PushNotificationContextType {
   promptForPermission: () => Promise<boolean>;
   subscribe: () => Promise<boolean>;
   unsubscribe: () => Promise<boolean>;
-}
+};
 
 const PushNotificationContext =
   createContext<PushNotificationContextType | null>(null);
@@ -30,9 +30,9 @@ export function usePushNotifications() {
   return context;
 }
 
-interface PushNotificationProviderProps {
+type PushNotificationProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function PushNotificationProvider({
   children,
@@ -82,18 +82,18 @@ export function PushNotificationProvider({
             validatingEndpoint,
           );
           isValid = false;
-        } else if (!dbSubscription.isActive) {
-          console.log(
-            "Subscription found but is inactive for endpoint:",
-            validatingEndpoint,
-          );
-          isValid = false;
-        } else {
+        } else if (dbSubscription.isActive) {
           console.log(
             "Subscription validation successful for endpoint:",
             validatingEndpoint,
           );
           isValid = true;
+        } else {
+          console.log(
+            "Subscription found but is inactive for endpoint:",
+            validatingEndpoint,
+          );
+          isValid = false;
         }
 
         // Resolve the promise with the validation result
@@ -222,22 +222,17 @@ export function PushNotificationProvider({
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
-        console.log(
-          "Found browser subscription for endpoint:",
-          subscription.endpoint,
-        );
-
         // Validate subscription exists in database and is active
         const isValid = await validateSubscription(subscription);
         setIsSubscribed(isValid);
 
-        if (!isValid) {
+        if (isValid) {
+          console.log("Subscription validated successfully");
+        } else {
           await cleanupInvalidSubscription(
             subscription,
             "exists in browser but not in database",
           );
-        } else {
-          console.log("Subscription validated successfully");
         }
       } else {
         console.log("No browser subscription found");
@@ -329,8 +324,8 @@ export function PushNotificationProvider({
 
       console.log(
         result.isNew
-          ? "✅ New device subscription created"
-          : "🔄 Existing device subscription updated",
+          ? " New device subscription created"
+          : " Existing device subscription updated",
       );
 
       setIsSubscribed(true);

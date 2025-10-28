@@ -49,7 +49,7 @@ export default function ResetPassword() {
     return () => clearTimeout(timer);
   }, [router, setLoadingStatus]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = (_values: z.infer<typeof formSchema>) => {
     router.push('/');
   };
 

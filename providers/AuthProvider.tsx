@@ -1,20 +1,20 @@
 'use client';
 
-import React, { createContext, type ReactNode, useContext } from 'react';
+import { createContext, type ReactNode, useContext } from 'react';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
-interface AuthContextType {
+type AuthContextType = {
   user: any;
   isLoading: boolean;
   isAuthenticated: boolean;
   isError: boolean;
-}
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-interface AuthProviderProps {
+type AuthProviderProps = {
   children: ReactNode;
-}
+};
 
 /**
  * Auth provider that manages user authentication state globally

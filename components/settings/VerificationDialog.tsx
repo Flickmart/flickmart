@@ -4,7 +4,7 @@ import type {
   SessionVerificationLevel,
   SessionVerificationResource,
 } from '@clerk/types';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MoonLoader } from 'react-spinners';
 import { toast } from 'sonner';
 import { Button } from '../ui/button';
@@ -16,14 +16,13 @@ import {
   DialogTitle,
 } from '../ui/dialog';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 
-interface VerificationType {
+type VerificationType = {
   onDialogClose: () => void;
   onComplete: () => void;
   onCancel: () => void;
   level: SessionVerificationLevel | undefined;
-}
+};
 
 export default function VerificationComponent({
   onDialogClose,
@@ -86,7 +85,7 @@ export default function VerificationComponent({
       toast.success('Account verified successfully');
       onComplete();
       onDialogClose();
-    } catch (err) {
+    } catch (_err) {
       // Any error that occurs during verification
       toast.error('Error verifying session');
     } finally {

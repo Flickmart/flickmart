@@ -6,7 +6,9 @@ export default async function ProtectedPage() {
   // Authentication has been removed
   const { user } = useUser();
 
-  if (!user) return <SignIn />;
+  if (!user) {
+    return <SignIn />;
+  }
 
   return (
     <div className="flex w-full flex-1 flex-col gap-12">

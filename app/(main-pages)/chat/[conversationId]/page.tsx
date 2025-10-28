@@ -36,9 +36,9 @@ interface Message {
   transferAmount?: number;
   currency?: string;
   order?: any;
-}
+};
 
- type NegotiableRequest = {
+type NegotiableRequest = {
   user_id: string;
   seller_id: string;
   product_name: string;
@@ -93,9 +93,6 @@ export default function ConversationPage() {
     conversationId ? { conversationId } : 'skip'
   );
 
-
-
-
   // Fetch conversation details
   const conversation = useQuery(
     api.chat.getConversation,
@@ -128,16 +125,14 @@ export default function ConversationPage() {
   );
 
   // Fetch product data if productId is present
-  const product = useQuery(
-    api.product.getById,
-    { productId: productId !== "null" ?  productId  : null }
-  );
+  const product = useQuery(api.product.getById, {
+    productId: productId !== 'null' ? productId : null,
+  });
 
   // Store in Local Storage
   // typeof vendorId === "string" && localStorage.setItem("vendorId", vendorId as string)
 
   // const vendorIdLocalStorage=  localStorage.getItem("vendorId")
-
 
   // Function to send initial product message
   const sendInitialProductMessage = useCallback(
@@ -163,8 +158,6 @@ export default function ConversationPage() {
           productTitle: product.title,
           conversationId,
         });
-
-        
 
         await sendMessage({
           senderId: user._id,

@@ -1,27 +1,27 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery } from "convex/react";
-import { ChevronLeft } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { NotificationSettings } from "@/components/notifications/NotificationSettings";
+import { useMutation, useQuery } from 'convex/react';
+import { ChevronLeft } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { NotificationSettings } from '@/components/notifications/NotificationSettings';
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { Separator } from "@/components/ui/separator";
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar";
-import { Switch } from "@/components/ui/switch";
-import { api } from "@/convex/_generated/api";
+} from '@/components/ui/breadcrumb';
+import { Separator } from '@/components/ui/separator';
+import { SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
+import { Switch } from '@/components/ui/switch';
+import { api } from '@/convex/_generated/api';
 
 export default function NotificationsPage() {
   const { isMobile } = useSidebar();
   const router = useRouter();
-  const user =useQuery(api.users.current, {});
+  const user = useQuery(api.users.current, {});
   const [emailNotification, setEmailNotification] = useState(
     user?.allowNotifications
   );
@@ -31,12 +31,10 @@ export default function NotificationsPage() {
     <div className="flex w-full flex-col">
       <header className="flex h-20 shrink-0 items-center px-4 shadow-md">
         {isMobile ? (
-          <>
-            <ChevronLeft
-              className="size-7 cursor-pointer"
-              onClick={() => router.back()}
-            />
-          </>
+          <ChevronLeft
+            className="size-7 cursor-pointer"
+            onClick={() => router.back()}
+          />
         ) : (
           <SidebarTrigger className="-ml-1" />
         )}

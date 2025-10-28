@@ -2,14 +2,14 @@ import { type MouseEvent, type TouchEvent, useCallback, useRef } from 'react';
 
 type PressEvent = MouseEvent | TouchEvent;
 
-interface LongPressOptions {
+type LongPressOptions = {
   onStart?: (event: PressEvent) => void;
   onFinish?: (event: PressEvent) => void;
   onCancel?: (event: PressEvent) => void;
   threshold?: number;
-}
+};
 
-interface LongPressResult {
+type LongPressResult = {
   onMouseDown: (e: MouseEvent) => void;
   onMouseMove: (e: MouseEvent) => void;
   onMouseUp: (e: MouseEvent) => void;
@@ -17,7 +17,7 @@ interface LongPressResult {
   onTouchStart: (e: TouchEvent) => void;
   onTouchMove: (e: TouchEvent) => void;
   onTouchEnd: (e: TouchEvent) => void;
-}
+};
 
 /**
  * Custom hook for detecting long press events, similar to @uidotdev/usehooks implementation
@@ -46,7 +46,9 @@ const useLongPress = (
       const point = 'touches' in event ? event.touches[0] : event;
       startPosRef.current = { x: point.clientX, y: point.clientY };
 
-      if (isPressed.current) return;
+      if (isPressed.current) {
+        return;
+      }
 
       isPressed.current = true;
       onStart(event);
@@ -62,7 +64,9 @@ const useLongPress = (
 
   const cancel = useCallback(
     (event: PressEvent) => {
-      if (!isPressed.current) return;
+      if (!isPressed.current) {
+        return;
+      }
 
       isPressed.current = false;
       if (timerRef.current) {
@@ -76,7 +80,9 @@ const useLongPress = (
 
   const handleMove = useCallback(
     (event: PressEvent) => {
-      if (!isPressed.current) return;
+      if (!isPressed.current) {
+        return;
+      }
 
       // Check if the movement is significant enough to cancel
       const point = 'touches' in event ? event.touches[0] : event;
@@ -93,7 +99,9 @@ const useLongPress = (
 
   const handleEnd = useCallback(
     (event: PressEvent) => {
-      if (!isPressed.current) return;
+      if (!isPressed.current) {
+        return;
+      }
 
       isPressed.current = false;
       if (timerRef.current) {

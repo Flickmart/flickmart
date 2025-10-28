@@ -1,7 +1,6 @@
 'use client';
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
 import { api } from '@/convex/_generated/api';
 import { useIsMobile } from '@/hooks/use-mobile';
 import ProductCard from '../multipage/ProductCard';
@@ -9,7 +8,7 @@ import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
 
 export default function BestSellers() {
-  const recommendation = useQuery(api.product.getRecommendations, {});
+  const _recommendation = useQuery(api.product.getRecommendations, {});
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
   const personalized = useQuery(api.interactions.getPersonalizedProducts);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAuth } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
 import {
   AlertCircle,

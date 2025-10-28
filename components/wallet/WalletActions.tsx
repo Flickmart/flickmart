@@ -1,9 +1,9 @@
-import { type Doc } from "@/convex/_generated/dataModel";
-import DepositDialog from "./DepositDialog";
-import WithdrawDialog from "./WithdrawDialog";
+import type { Doc } from '@/convex/_generated/dataModel';
+import DepositDialog from './DepositDialog';
+import WithdrawDialog from './WithdrawDialog';
 
-interface WalletActionsProps {
-  user: Doc<"users">;
+type WalletActionsProps = {
+  user: Doc<'users'>;
   isMobile?: boolean;
   open: boolean;
   withdrawOpen: boolean;
@@ -45,7 +45,7 @@ interface WalletActionsProps {
   setSaveNewAccount: (save: boolean) => void;
   useNewAccount: boolean;
   setUseNewAccount: (use: boolean) => void;
-}
+};
 
 export default function WalletActions({
   user,
@@ -90,69 +90,69 @@ export default function WalletActions({
   useNewAccount,
   setUseNewAccount,
 }: WalletActionsProps) {
-  const buttonHeight = isMobile ? "h-12" : "h-16";
-  const buttonTextSize = isMobile ? "text-base" : "text-lg";
-  const iconSize = isMobile ? "h-5 w-5" : "h-6 w-6";
-  const buttonGap = isMobile ? "gap-2" : "gap-3";
+  const buttonHeight = isMobile ? 'h-12' : 'h-16';
+  const buttonTextSize = isMobile ? 'text-base' : 'text-lg';
+  const iconSize = isMobile ? 'h-5 w-5' : 'h-6 w-6';
+  const buttonGap = isMobile ? 'gap-2' : 'gap-3';
 
   return (
     <div className="grid grid-cols-2 gap-4">
       <DepositDialog
-        user={user}
-        open={open}
-        setOpen={setOpen}
         amount={Number(amount)}
-        setAmount={setAmount}
-        error={error}
-        setError={setError}
-        isInitializing={isInitializing}
-        isPaystackModalOpen={isPaystackModalOpen}
-        paystackReference={paystackReference}
-        setPaystackReference={setPaystackReference}
-        setIsPaystackModalOpen={setIsPaystackModalOpen}
-        handleInitializePayment={handleInitializePayment}
-        handlePaystackSuccess={handlePaystackSuccess}
-        handlePaystackClose={handlePaystackClose}
+        buttonGap={buttonGap}
         buttonHeight={buttonHeight}
         buttonTextSize={buttonTextSize}
+        error={error}
+        handleInitializePayment={handleInitializePayment}
+        handlePaystackClose={handlePaystackClose}
+        handlePaystackSuccess={handlePaystackSuccess}
         iconSize={iconSize}
-        buttonGap={buttonGap}
+        isInitializing={isInitializing}
+        isPaystackModalOpen={isPaystackModalOpen}
+        open={open}
+        paystackReference={paystackReference}
+        setAmount={setAmount}
+        setError={setError}
+        setIsPaystackModalOpen={setIsPaystackModalOpen}
+        setOpen={setOpen}
+        setPaystackReference={setPaystackReference}
+        user={user}
       />
 
       <WithdrawDialog
-        withdrawOpen={withdrawOpen}
-        setWithdrawOpen={setWithdrawOpen}
-        amount={Number(amount)}
-        setAmount={setAmount}
-        error={error}
-        setError={setError}
-        banks={banks}
-        selectedBank={selectedBank}
-        setSelectedBank={setSelectedBank}
-        accountNumber={accountNumber}
-        setAccountNumber={setAccountNumber}
         accountName={accountName}
+        accountNumber={accountNumber}
+        amount={Number(amount)}
+        bankAccounts={bankAccounts}
+        banks={banks}
+        buttonGap={buttonGap}
+        buttonHeight={buttonHeight}
+        buttonTextSize={buttonTextSize}
+        error={error}
+        handleContinueToConfirmation={handleContinueToConfirmation}
+        handleWithdraw={handleWithdraw}
+        iconSize={iconSize}
         isLoadingBanks={isLoadingBanks}
         isVerifyingAccount={isVerifyingAccount}
         isWithdrawing={isWithdrawing}
-        verifyAccount={verifyAccount}
-        handleWithdraw={handleWithdraw}
-        handleContinueToConfirmation={handleContinueToConfirmation}
         recipientDetails={recipientDetails}
-        verifyDialogOpen={verifyDialogOpen}
-        setVerifyDialogOpen={setVerifyDialogOpen}
-        bankAccounts={bankAccounts}
-        selectedBankAccountId={selectedBankAccountId}
-        setSelectedBankAccountId={setSelectedBankAccountId}
         saveNewAccount={saveNewAccount}
-        setSaveNewAccount={setSaveNewAccount}
-        useNewAccount={useNewAccount}
-        setUseNewAccount={setUseNewAccount}
-        buttonHeight={buttonHeight}
-        buttonTextSize={buttonTextSize}
-        iconSize={iconSize}
+        selectedBank={selectedBank}
+        selectedBankAccountId={selectedBankAccountId}
         setAccountName={setAccountName}
-        buttonGap={buttonGap}
+        setAccountNumber={setAccountNumber}
+        setAmount={setAmount}
+        setError={setError}
+        setSaveNewAccount={setSaveNewAccount}
+        setSelectedBank={setSelectedBank}
+        setSelectedBankAccountId={setSelectedBankAccountId}
+        setUseNewAccount={setUseNewAccount}
+        setVerifyDialogOpen={setVerifyDialogOpen}
+        setWithdrawOpen={setWithdrawOpen}
+        useNewAccount={useNewAccount}
+        verifyAccount={verifyAccount}
+        verifyDialogOpen={verifyDialogOpen}
+        withdrawOpen={withdrawOpen}
       />
     </div>
   );

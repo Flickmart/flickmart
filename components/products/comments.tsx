@@ -9,17 +9,17 @@ import {
 } from '@/components/ui/drawer';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-interface CommentDrawerProps {
+type CommentDrawerProps = {
   isOpen: boolean;
   onClose: () => void;
-}
+};
 
-interface Comment {
+type Comment = {
   id: number;
   author: string;
   avatar: string;
   text: string;
-}
+};
 
 const comments: Comment[] = [
   {

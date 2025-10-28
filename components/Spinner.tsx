@@ -1,9 +1,9 @@
 import type React from 'react';
 
-interface SpinnerProps {
+type SpinnerProps = {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
-}
+};
 
 export const Spinner: React.FC<SpinnerProps> = ({
   size = 'md',

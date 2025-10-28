@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
 import {
-  ArrowUpFromLine,
-  RefreshCw,
-  Building2,
-  CreditCard,
   AlertCircle,
+  ArrowUpFromLine,
+  Building2,
   CheckCircle2,
-  X,
+  CreditCard,
   Plus,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
+  RefreshCw,
+  X,
+} from 'lucide-react';
+import { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   Dialog,
   DialogClose,
@@ -19,22 +20,21 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
-export interface BankAccount {
+export type BankAccount = {
   _id: string;
   bankName: string;
   accountName: string;
   accountNumber: string;
   isDefault?: boolean;
   isVerified?: boolean;
-}
+};
 
-interface EnhancedWithdrawDialogProps {
+type EnhancedWithdrawDialogProps = {
   withdrawOpen: boolean;
   setWithdrawOpen: (open: boolean) => void;
   amount: number;
@@ -69,7 +69,7 @@ interface EnhancedWithdrawDialogProps {
   buttonTextSize: string;
   iconSize: string;
   buttonGap: string;
-}
+};
 
 export default function WithdrawDialog({
   withdrawOpen,
@@ -138,7 +138,7 @@ export default function WithdrawDialog({
     setWithdrawOpen(open);
     if (!open) {
       // Clear amount when dialog is closed
-      setAmount("0");
+      setAmount('0');
       setError(null);
     }
   };
@@ -153,34 +153,34 @@ export default function WithdrawDialog({
           Withdraw
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-[500px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center pb-4">
-          <DialogTitle className="text-lg font-semibold sm:text-xl">
+      <DialogContent className="max-h-[90vh] w-[95vw] max-w-[500px] overflow-y-auto">
+        <DialogHeader className="pb-4 text-center">
+          <DialogTitle className="font-semibold text-lg sm:text-xl">
             Withdraw Money
           </DialogTitle>
-          <DialogDescription className="text-sm text-gray-600">
+          <DialogDescription className="text-gray-600 text-sm">
             Transfer funds from your wallet to your bank account securely
           </DialogDescription>
         </DialogHeader>
 
         {error && (
-          <div className="rounded-lg bg-red-50 border border-red-200 p-3 sm:p-4 mb-4">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 sm:p-4">
             <div className="flex items-start gap-2 sm:gap-3">
-              <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
               <div className="flex-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-red-800">
+                  <span className="font-medium text-red-800 text-sm">
                     Withdrawal Error
                   </span>
                   <button
-                    type="button"
-                    onClick={() => setError(null)}
                     className="text-red-400 hover:text-red-600"
+                    onClick={() => setError(null)}
+                    type="button"
                   >
                     <X className="h-4 w-4" />
                   </button>
                 </div>
-                <p className="mt-1 text-sm text-red-700 break-words">{error}</p>
+                <p className="mt-1 break-words text-red-700 text-sm">{error}</p>
               </div>
             </div>
           </div>
@@ -190,32 +190,32 @@ export default function WithdrawDialog({
           {/* Amount Section */}
           <div className="space-y-2 sm:space-y-3">
             <Label
+              className="font-medium text-gray-700 text-sm"
               htmlFor="withdraw-amount"
-              className="text-sm font-medium text-gray-700"
             >
               Amount to Withdraw
             </Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+              <span className="-translate-y-1/2 absolute top-1/2 left-3 text-gray-500">
                 ₦
               </span>
               <Input
+                className="pl-8 font-semibold text-base sm:text-lg"
                 id="withdraw-amount"
+                min="0"
                 name="withdraw-amount"
-                className="pl-8 text-base font-semibold sm:text-lg"
-                placeholder="0.00"
-                value={isValidAmount ? amount.toString() : ""}
                 onChange={(e) => {
                   setAmount(e.target.value);
                   setError(null);
                 }}
-                type="number"
-                min="0"
+                placeholder="0.00"
                 step="0.01"
+                type="number"
+                value={isValidAmount ? amount.toString() : ''}
               />
             </div>
             {isValidAmount && (
-              <p className="text-xs text-gray-500">
+              <p className="text-gray-500 text-xs">
                 Available balance will be updated after successful withdrawal
               </p>
             )}
@@ -223,7 +223,7 @@ export default function WithdrawDialog({
 
           {/* Bank Account Selection */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium text-gray-700">
+            <Label className="font-medium text-gray-700 text-sm">
               Select Withdrawal Method
             </Label>
 
@@ -231,8 +231,8 @@ export default function WithdrawDialog({
               <div className="space-y-2">
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="use-saved-account"
                     checked={!useNewAccount}
+                    id="use-saved-account"
                     onCheckedChange={(checked) => {
                       setUseNewAccount(!checked);
                       if (checked && bankAccounts.length > 0) {
@@ -246,14 +246,14 @@ export default function WithdrawDialog({
                           setSelectedBankAccountId(bankAccounts[0]._id);
                         }
                       } else {
-                        setSelectedBankAccountId("");
+                        setSelectedBankAccountId('');
                       }
                       setError(null);
                     }}
                   />
                   <Label
+                    className="cursor-pointer text-sm"
                     htmlFor="use-saved-account"
-                    className="text-sm cursor-pointer"
                   >
                     Use saved bank account
                   </Label>
@@ -263,13 +263,13 @@ export default function WithdrawDialog({
                   <div className="ml-6 space-y-2">
                     {bankAccounts.map((account) => (
                       <div
-                        key={account._id}
                         className={cn(
-                          "flex items-center space-x-2 cursor-pointer p-3 rounded-lg border transition-colors",
+                          'flex cursor-pointer items-center space-x-2 rounded-lg border p-3 transition-colors',
                           selectedBankAccountId === account._id
-                            ? "border-orange-500 bg-orange-50"
-                            : "border-gray-200 hover:bg-gray-50"
+                            ? 'border-orange-500 bg-orange-50'
+                            : 'border-gray-200 hover:bg-gray-50'
                         )}
+                        key={account._id}
                         onClick={() => {
                           setSelectedBankAccountId(account._id);
                           setError(null);
@@ -281,21 +281,21 @@ export default function WithdrawDialog({
                             if (checked) {
                               setSelectedBankAccountId(account._id);
                             } else {
-                              setSelectedBankAccountId("");
+                              setSelectedBankAccountId('');
                             }
                             setError(null);
                           }}
                         />
                         <Building2 className="h-4 w-4 text-gray-400" />
                         <div className="flex-1">
-                          <div className="text-sm font-medium">
+                          <div className="font-medium text-sm">
                             {account.bankName}
                           </div>
-                          <div className="text-xs text-gray-500">
+                          <div className="text-gray-500 text-xs">
                             {account.accountName} • ****
                             {account.accountNumber.slice(-4)}
                             {account.isDefault && (
-                              <span className="ml-2 text-orange-600 font-medium">
+                              <span className="ml-2 font-medium text-orange-600">
                                 Default
                               </span>
                             )}
@@ -313,12 +313,12 @@ export default function WithdrawDialog({
 
             <div className="flex items-center space-x-2">
               <Checkbox
-                id="use-new-account"
                 checked={useNewAccount}
+                id="use-new-account"
                 onCheckedChange={(checked) => {
                   setUseNewAccount(checked as boolean);
                   if (checked) {
-                    setSelectedBankAccountId("");
+                    setSelectedBankAccountId('');
                   } else if (bankAccounts.length > 0) {
                     // Auto-select default or first account when switching back to saved accounts
                     const defaultAccount = bankAccounts.find(
@@ -335,8 +335,8 @@ export default function WithdrawDialog({
               />
               <Plus className="h-4 w-4 text-gray-500" />
               <Label
+                className="cursor-pointer text-sm"
                 htmlFor="use-new-account"
-                className="text-sm cursor-pointer"
               >
                 Add new bank account
               </Label>
@@ -349,23 +349,23 @@ export default function WithdrawDialog({
               {/* Bank Selection */}
               <div className="space-y-2 sm:space-y-3">
                 <Label
+                  className="font-medium text-gray-700 text-sm"
                   htmlFor="bank-select"
-                  className="text-sm font-medium text-gray-700"
                 >
                   Select Bank
                 </Label>
                 {isLoadingBanks ? (
                   <div className="flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-3 sm:p-4">
                     <RefreshCw className="h-4 w-4 animate-spin text-orange-500 sm:h-5 sm:w-5" />
-                    <span className="ml-2 text-sm text-gray-600 sm:ml-3">
+                    <span className="ml-2 text-gray-600 text-sm sm:ml-3">
                       Loading banks...
                     </span>
                   </div>
                 ) : (
                   <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Building2 className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-gray-400" />
                     <select
-                      className="flex h-10 w-full rounded-lg border border-gray-200 bg-white pl-10 pr-4 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 sm:h-12"
+                      className="flex h-10 w-full rounded-lg border border-gray-200 bg-white pr-4 pl-10 text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 sm:h-12"
                       id="bank-select"
                       onChange={(e) => {
                         setSelectedBank(e.target.value);
@@ -387,34 +387,34 @@ export default function WithdrawDialog({
               {/* Account Number */}
               <div className="space-y-2 sm:space-y-3">
                 <Label
+                  className="font-medium text-gray-700 text-sm"
                   htmlFor="account-number"
-                  className="text-sm font-medium text-gray-700"
                 >
                   Account Number
                 </Label>
                 <div className="relative">
-                  <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <CreditCard className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 text-gray-400" />
                   <Input
+                    className="pl-10"
                     id="account-number"
                     maxLength={10}
                     name="account-number"
-                    className="pl-10"
-                    placeholder="Enter 10-digit account number"
                     onChange={(e) => {
-                      setAccountNumber(e.target.value.replace(/\D/g, ""));
+                      setAccountNumber(e.target.value.replace(/\D/g, ''));
                       setError(null);
                     }}
+                    placeholder="Enter 10-digit account number"
                     type="text"
                     value={accountNumber}
                   />
                 </div>
                 {accountNumber.length > 0 && accountNumber.length < 10 && (
-                  <p className="text-xs text-orange-600">
+                  <p className="text-orange-600 text-xs">
                     Account number must be 10 digits
                   </p>
                 )}
                 {accountNumber.length === 10 && (
-                  <p className="text-xs text-green-600 flex items-center gap-1">
+                  <p className="flex items-center gap-1 text-green-600 text-xs">
                     <CheckCircle2 className="h-3 w-3" />
                     Valid account number format
                   </p>
@@ -423,15 +423,15 @@ export default function WithdrawDialog({
 
               {/* Account Name Display */}
               {accountName && (
-                <div className="rounded-lg bg-green-50 border border-green-200 p-3 sm:p-4">
+                <div className="rounded-lg border border-green-200 bg-green-50 p-3 sm:p-4">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-green-600" />
-                    <span className="text-sm font-medium text-green-800">
+                    <span className="font-medium text-green-800 text-sm">
                       Account Verified
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-green-700">
-                    Account Name:{" "}
+                  <p className="mt-1 text-green-700 text-sm">
+                    Account Name:{' '}
                     <span className="font-semibold">{accountName}</span>
                   </p>
                 </div>
@@ -441,15 +441,15 @@ export default function WithdrawDialog({
               {accountName && (
                 <div className="flex items-center space-x-2">
                   <Checkbox
-                    id="save-account"
                     checked={saveNewAccount}
+                    id="save-account"
                     onCheckedChange={(checked) =>
                       setSaveNewAccount(checked as boolean)
                     }
                   />
                   <Label
+                    className="cursor-pointer text-gray-700 text-sm"
                     htmlFor="save-account"
-                    className="text-sm text-gray-700 cursor-pointer"
                   >
                     Save this account for future withdrawals
                   </Label>
@@ -459,9 +459,9 @@ export default function WithdrawDialog({
           )}
         </div>
 
-        <DialogFooter className="flex-col gap-2 sm:flex-row sm:gap-3 pt-4">
+        <DialogFooter className="flex-col gap-2 pt-4 sm:flex-row sm:gap-3">
           <DialogClose asChild>
-            <Button variant="outline" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto" variant="outline">
               Cancel
             </Button>
           </DialogClose>
@@ -469,10 +469,10 @@ export default function WithdrawDialog({
           {useNewAccount ? (
             <Button
               className={cn(
-                "flex items-center justify-center gap-2 w-full sm:w-auto",
+                'flex w-full items-center justify-center gap-2 sm:w-auto',
                 isFormValid
-                  ? "bg-orange-500 text-white hover:bg-orange-600"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-500'
               )}
               disabled={!isFormValid || isVerifyingAccount}
               onClick={
@@ -499,10 +499,10 @@ export default function WithdrawDialog({
           ) : (
             <Button
               className={cn(
-                "flex items-center justify-center gap-2 w-full sm:w-auto",
+                'flex w-full items-center justify-center gap-2 sm:w-auto',
                 isFormValid
-                  ? "bg-orange-500 text-white hover:bg-orange-600"
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                  ? 'bg-orange-500 text-white hover:bg-orange-600'
+                  : 'cursor-not-allowed bg-gray-300 text-gray-500'
               )}
               disabled={!isFormValid || isWithdrawing}
               onClick={handleWithdraw}

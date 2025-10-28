@@ -39,7 +39,7 @@ import { api } from '@/convex/_generated/api';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { cn } from '@/lib/utils';
 
-export interface Notification {
+export type Notification = {
   icon: string;
   text: string;
   time: string;
@@ -48,7 +48,7 @@ export interface Notification {
   link?: string;
   imageUrl?: string;
   type?: string;
-}
+};
 
 const getIconForType = (type: string) => {
   switch (type) {
@@ -142,7 +142,7 @@ const Page = () => {
           }
         : 'skip'
     ) || [];
-  const unreadNotifications =
+  const _unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const unreadNotificationsByReadStatus =
     useQuery(api.notifications.getUnreadNotificationsByReadStatus) || [];
@@ -215,7 +215,9 @@ const Page = () => {
 
   // Group notifications by day (today, yesterday, older)
   const groupedNotifications = (() => {
-    if (!filteredNotifications) return {};
+    if (!filteredNotifications) {
+      return {};
+    }
 
     const now = new Date();
     const today = new Date(

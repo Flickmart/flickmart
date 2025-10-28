@@ -1,15 +1,14 @@
-import { useQuery } from "convex/react";
-import Image from "next/image";
-import React from "react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
+import { useQuery } from 'convex/react';
+import Image from 'next/image';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 
-interface NewArrivalsProp {
+type NewArrivalsProp = {
   image: string;
   name: string;
   price: number;
-  productId: Id<"product">;
-}
+  productId: Id<'product'>;
+};
 
 export default function NewArrivalItem({
   image,
@@ -19,7 +18,7 @@ export default function NewArrivalItem({
 }: NewArrivalsProp) {
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: "saved",
+    type: 'saved',
   });
   if (saved?.error && saved.data === null) {
     console.log(saved.error.message);
@@ -36,11 +35,11 @@ export default function NewArrivalItem({
             alt={name}
             className="size-full object-cover"
             height={500}
-            src={image || "/no-image.png"}
+            src={image || '/no-image.png'}
             width={500}
           />
         </div>
-        <div className="flex h-1/4 gap-2 w-full flex-col px-4 py-6 font-semibold text-[13px]">
+        <div className="flex h-1/4 w-full flex-col gap-2 px-4 py-6 font-semibold text-[13px]">
           <span className="">{name}</span>
           <span>&#8358;{price.toLocaleString()}</span>
         </div>

@@ -3,10 +3,10 @@
 import { ArrowLeft, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface SecurityHeaderProps {
+type SecurityHeaderProps = {
   showBackButton?: boolean;
   onBack?: () => void;
-}
+};
 
 export function SecurityHeader({
   showBackButton = false,

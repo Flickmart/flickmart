@@ -5,7 +5,7 @@ import { Spinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
-interface ChatInputProps {
+type ChatInputProps = {
   input: string;
   setInput: (input: string) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -13,7 +13,7 @@ interface ChatInputProps {
   setSelectedImages?: React.Dispatch<React.SetStateAction<File[]>>;
   isUploading?: boolean;
   extraIcons?: boolean;
-}
+};
 
 export default function ChatInput({
   input,
@@ -39,7 +39,9 @@ export default function ChatInput({
   };
 
   const removeImage = (index: number) => {
-    if (!setSelectedImages) return;
+    if (!setSelectedImages) {
+      return;
+    }
     setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 

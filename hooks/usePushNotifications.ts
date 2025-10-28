@@ -67,8 +67,8 @@ export function usePushNotifications() {
 
       console.log('🔔 Requesting notification permission...');
       // Request permission
-      // biome-ignore lint/nursery/noShadow: permission global dosent touvh this one 
-            const permission = await Notification.requestPermission();
+      // biome-ignore lint/nursery/noShadow: permission global dosent touvh this one
+      const permission = await Notification.requestPermission();
       setPermission(permission);
 
       if (permission !== 'granted') {

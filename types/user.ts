@@ -1,12 +1,12 @@
-export interface SessionType {
+export type SessionType = {
   access_token?: string;
   expires_at?: number;
   expires_in?: number;
   refresh_token?: string;
   token_type?: string;
-}
+};
 
-export interface UserType {
+export type UserType = {
   created_at?: string;
   id?: string;
   email?: string;
@@ -14,9 +14,9 @@ export interface UserType {
   is_anonymous?: boolean;
   last_sign_in_at?: string;
   phone?: string;
-}
+};
 
-export interface UserStore {
+export type UserStore = {
   session: SessionType;
   user: UserType;
   /**
@@ -25,4 +25,4 @@ export interface UserStore {
    */
   updateUserInfo: (user: UserType) => void;
   createSession: (sessionObj: SessionType) => void;
-}
+};

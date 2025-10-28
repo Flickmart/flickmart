@@ -64,7 +64,9 @@ export function SettingsSidebar({ className, onClick }: SidebarProps) {
 
   const handleItemClick = (link: string) => {
     router.push(link);
-    if (onClick) onClick();
+    if (onClick) {
+      onClick();
+    }
   };
 
   return (

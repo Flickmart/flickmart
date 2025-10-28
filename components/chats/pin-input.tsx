@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ShieldCheck } from "lucide-react";
+import { ShieldCheck } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/button';
 
-interface PinInputProps {
+type PinInputProps = {
   onPinComplete: (pin: string) => void;
   onPinChange: (pin: string) => void;
   maxLength?: number;
   isError?: boolean;
   disabled?: boolean;
-}
+};
 
 export function PinInput({
   onPinComplete,
@@ -19,10 +19,12 @@ export function PinInput({
   isError = false,
   disabled = false,
 }: PinInputProps) {
-  const [pin, setPin] = useState("");
+  const [pin, setPin] = useState('');
 
   const handleNumberClick = (number: string) => {
-    if (disabled || pin.length >= maxLength) return;
+    if (disabled || pin.length >= maxLength) {
+      return;
+    }
 
     const newPin = pin + number;
     setPin(newPin);
@@ -34,24 +36,28 @@ export function PinInput({
   };
 
   const handleBackspace = () => {
-    if (disabled) return;
+    if (disabled) {
+      return;
+    }
     const newPin = pin.slice(0, -1);
     setPin(newPin);
     onPinChange(newPin);
   };
 
   const handleClear = () => {
-    if (disabled) return;
-    setPin("");
-    onPinChange("");
+    if (disabled) {
+      return;
+    }
+    setPin('');
+    onPinChange('');
   };
 
   // Reset pin on error
   useEffect(() => {
     if (isError) {
       const timer = setTimeout(() => {
-        setPin("");
-        onPinChange("");
+        setPin('');
+        onPinChange('');
       }, 1000);
       return () => clearTimeout(timer);
     }
@@ -64,21 +70,21 @@ export function PinInput({
         <div className="flex gap-3">
           {Array.from({ length: maxLength }).map((_, index) => (
             <div
-              className={`h-10 w-10 flex items-center justify-center rounded-lg border-2 transition-all duration-200 ${
+              className={`flex h-10 w-10 items-center justify-center rounded-lg border-2 transition-all duration-200 ${
                 index < pin.length
                   ? isError
-                    ? "border-red-500"
-                    : "border-blue-500"
-                  : "border-gray-300"
-              } ${isError && index < pin.length ? "animate-pulse" : ""}`}
+                    ? 'border-red-500'
+                    : 'border-blue-500'
+                  : 'border-gray-300'
+              } ${isError && index < pin.length ? 'animate-pulse' : ''}`}
               key={index}
             >
               {index < pin.length && (
                 <span
-                  className={`block h-2 w-2 rounded-full ${
-                    isError ? "bg-red-500" : "bg-black"
-                  }`}
                   aria-label="Entered digit"
+                  className={`block h-2 w-2 rounded-full ${
+                    isError ? 'bg-red-500' : 'bg-black'
+                  }`}
                 />
               )}
             </div>
@@ -88,7 +94,7 @@ export function PinInput({
 
       {/* Numeric Keypad */}
       <div className="w-full bg-[#F5F5F5] pt-2">
-        <span className="flex items-center justify-center w-full gap-2 text-xs p-1">
+        <span className="flex w-full items-center justify-center gap-2 p-1 text-xs">
           <ShieldCheck className="size-4 text-flickmart" /> Flickmart Secure
           numeric Keypad
         </span>
@@ -117,7 +123,7 @@ export function PinInput({
           <Button
             className="h-12 rounded-md border-0 bg-white font-medium text-gray-900 text-xl shadow-sm hover:bg-gray-50 md:h-16 md:text-2xl"
             disabled={disabled}
-            onClick={() => handleNumberClick("0")}
+            onClick={() => handleNumberClick('0')}
             variant="secondary"
           >
             0

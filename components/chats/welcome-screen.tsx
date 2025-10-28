@@ -3,9 +3,9 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 
-interface WelcomeScreenProps {
+type WelcomeScreenProps = {
   onOpenSidebar: () => void;
-}
+};
 
 export default function WelcomeScreen({ onOpenSidebar }: WelcomeScreenProps) {
   return (

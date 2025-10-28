@@ -1,14 +1,14 @@
-"use client";
-import imageCompression from "browser-image-compression";
-import { Plus, Upload, X } from "lucide-react";
-import Image from "next/image";
-import type React from "react";
-import { useEffect, useRef, useState } from "react";
-import { MoonLoader } from "react-spinners";
-import { toast } from "sonner";
-import { useUpload } from "@/hooks/useUpload";
-import { useOthersStore } from "@/store/useOthersStore";
-import { deleteUploadThing } from "@/app/action/delete-uploadthing";
+'use client';
+import imageCompression from 'browser-image-compression';
+import { Plus, Upload, X } from 'lucide-react';
+import Image from 'next/image';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { MoonLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import { deleteUploadThing } from '@/app/action/delete-uploadthing';
+import { useUpload } from '@/hooks/useUpload';
+import { useOthersStore } from '@/store/useOthersStore';
 
 export default function AddPhoto({
   isSubmitted,
@@ -22,12 +22,12 @@ export default function AddPhoto({
   setClear: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
-  const [fileName, setFileName] = useState<Array<string>>([]);
+  const [fileName, setFileName] = useState<string[]>([]);
   const [filePath, setFilePath] = useState<Array<string | null>>([]);
   const storeImage = useOthersStore((state) => state.storeImage);
   const imagesKey = useOthersStore((state) => state.images);
-  const [error, setError] = useState<string>("");
-  const [imageFilesArr, setImageFilesArr] = useState<Array<File>>([]);
+  const [error, setError] = useState<string>('');
+  const [imageFilesArr, setImageFilesArr] = useState<File[]>([]);
   const { startUpload, isUploading, isError, setIsError } = useUpload();
 
   const handleBtnClick = () => {
@@ -49,7 +49,7 @@ export default function AddPhoto({
     }
     let toastId: ReturnType<typeof toast.loading>;
     if (isUploading) {
-      toastId = toast.loading("Uploading Images...");
+      toastId = toast.loading('Uploading Images...');
     }
     return () => {
       if (toastId) {
@@ -71,9 +71,9 @@ export default function AddPhoto({
       files.length + imagesKey.length < 2 ||
       files.length + imagesKey.length > 5
     ) {
-      setError("*You must add between 2 and 5 images.");
+      setError('*You must add between 2 and 5 images.');
     } else {
-      setError("");
+      setError('');
 
       try {
         // Convert FileList to File array
@@ -99,7 +99,7 @@ export default function AddPhoto({
         ];
 
         if (images.length > 5) {
-          toast.error("Image length exceeded, You can only upload 5 images");
+          toast.error('Image length exceeded, You can only upload 5 images');
           return;
         }
         if (images) {
@@ -113,14 +113,14 @@ export default function AddPhoto({
   const handleImageRemove = async (index: number) => {
     const newFilePath = filePath.filter((_, i) => i !== index);
     const newFileName = fileName.filter((_, i) => i !== index);
-    const loadingId = toast.loading("Deleting Image...");
+    const loadingId = toast.loading('Deleting Image...');
 
     const u = new URL(imagesKey[index]);
-    const key = u.pathname.split("/").pop()!; // e.g. "abc123_image.jpg"
+    const key = u.pathname.split('/').pop()!; // e.g. "abc123_image.jpg"
     const response = await deleteUploadThing(key);
     if (response.ok) {
       toast.dismiss(loadingId);
-      toast.success("Image deleted successfully");
+      toast.success('Image deleted successfully');
     }
 
     setFilePath(newFilePath);
@@ -134,7 +134,7 @@ export default function AddPhoto({
       <p>The first picture would be the face of your advert</p>
       <div className="flex flex-wrap items-center space-x-3 overflow-x-auto">
         <div
-          className={`cursor-pointer ${isUploading ? "bg-flickmart/20" : "bg-flickmart hover:bg-flickmart/80"} flex h-14 w-20 items-center justify-center rounded-lg duration-200`}
+          className={`cursor-pointer ${isUploading ? 'bg-flickmart/20' : 'bg-flickmart hover:bg-flickmart/80'} flex h-14 w-20 items-center justify-center rounded-lg duration-200`}
           onClick={handleBtnClick}
         >
           <button
@@ -143,7 +143,7 @@ export default function AddPhoto({
             type="button"
           >
             <Plus
-              className={`p-1 ${isUploading ? "text-flickmart/20" : "text-flickmart"}`}
+              className={`p-1 ${isUploading ? 'text-flickmart/20' : 'text-flickmart'}`}
             />
             <input
               accept=".jpg, .png"
@@ -173,7 +173,7 @@ export default function AddPhoto({
                   ) : (
                     <>
                       <X
-                        className="absolute top-1 transition-all duration-300 hover:text-white hover:bg-orange-400 rounded-full right-1 z-20 cursor-pointer p-0.5"
+                        className="absolute top-1 right-1 z-20 cursor-pointer rounded-full p-0.5 transition-all duration-300 hover:bg-orange-400 hover:text-white"
                         onClick={() => handleImageRemove(index)}
                       />
                       {isError ? (

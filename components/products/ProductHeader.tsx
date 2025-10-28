@@ -1,10 +1,9 @@
-import { ExternalLink, MapPin, MessageCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import React from "react";
-import { toast } from "sonner";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { initialChat, shareProduct } from "@/utils/helpers";
+import { ExternalLink, MapPin, MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { initialChat, shareProduct } from '@/utils/helpers';
 
 export default function ProductHeader({
   location,
@@ -20,8 +19,8 @@ export default function ProductHeader({
   title: string;
   price: number;
   timestamp: string;
-  userId: Id<"users">;
-  productId: Id<"product">;
+  userId: Id<'users'>;
+  productId: Id<'product'>;
   description: string;
   aiEnabled: boolean;
 }) {
@@ -41,35 +40,35 @@ export default function ProductHeader({
 
   const timeSince = () => {
     let value = 0;
-    let timeSpan = "";
+    let timeSpan = '';
     if (monthsAgo) {
       value = monthsAgo;
-      timeSpan = "month";
+      timeSpan = 'month';
     } else if (weeksAgo) {
       value = weeksAgo;
-      timeSpan = "week";
+      timeSpan = 'week';
     } else if (daysAgo) {
       value = daysAgo;
-      timeSpan = "day";
+      timeSpan = 'day';
     } else if (hoursAgo) {
       value = hoursAgo;
-      timeSpan = "hour";
+      timeSpan = 'hour';
     } else if (minsAgo) {
       value = minsAgo;
-      timeSpan = "min";
+      timeSpan = 'min';
     }
     if (value > 1) {
-      timeSpan += "s";
+      timeSpan += 's';
     }
     return value && timeSpan
       ? `${value} ${timeSpan} ago`
-      : "less than a minute ago";
+      : 'less than a minute ago';
   };
 
   const handleChat = () => {
     if (!isAuthenticated) {
-      router.push("/sign-in?callback=/product/" + productId);
-      toast.error("Please sign in to perform this action");
+      router.push(`/sign-in?callback=/product/${productId}`);
+      toast.error('Please sign in to perform this action');
       return;
     }
     initialChat({
@@ -107,14 +106,14 @@ export default function ProductHeader({
           className="flex w-2/4 items-center justify-center gap-2 rounded-md bg-flickmart-chat-orange p-2 px-3 font-medium lg:w-1/4"
           onClick={handleChat}
         >
-          {" "}
+          {' '}
           <MessageCircle /> Chat vendor
         </button>
         <button
           className="flex w-2/4 items-center justify-center gap-2 rounded-md border border-flickmart-chat-orange p-2 px-3 font-medium text-flickmart-chat-orange lg:w-1/4"
           onClick={handleShare}
         >
-          {" "}
+          {' '}
           <ExternalLink /> Share
         </button>
       </div>

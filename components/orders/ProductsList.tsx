@@ -2,13 +2,12 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Spinner } from '@/components/Spinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { Id } from '@/convex/_generated/dataModel';
 
 // TypeScript interfaces
-interface Product {
+type Product = {
   _id: Id<'product'>;
   title: string;
   description: string;
@@ -16,13 +15,13 @@ interface Product {
   price: number;
   category: string;
   condition: 'brand new' | 'used';
-}
+};
 
-interface ProductsListProps {
+type ProductsListProps = {
   products: Product[] | undefined;
   isLoading?: boolean;
   error?: string;
-}
+};
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {

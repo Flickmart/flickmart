@@ -20,12 +20,12 @@ if (!self.define) {
   let nextDefineUri;
 
   const singleRequire = (uri, parentUri) => {
-    uri = new URL(uri + ".js", parentUri).href;
+    uri = new URL(`${uri}.js`, parentUri).href;
     return (
       registry[uri] ||
       new Promise((resolve) => {
-        if ("document" in self) {
-          const script = document.createElement("script");
+        if ('document' in self) {
+          const script = document.createElement('script');
           script.src = uri;
           script.onload = resolve;
           document.head.appendChild(script);
@@ -47,7 +47,7 @@ if (!self.define) {
   self.define = (depsNames, factory) => {
     const uri =
       nextDefineUri ||
-      ("document" in self ? document.currentScript.src : "") ||
+      ('document' in self ? document.currentScript.src : '') ||
       location.href;
     if (registry[uri]) {
       // Module is already loading or loaded.
@@ -68,21 +68,21 @@ if (!self.define) {
     });
   };
 }
-define(["./workbox-8817a5e5"], (workbox) => {
+define(['./workbox-8817a5e5'], (workbox) => {
   importScripts();
   self.skipWaiting();
   workbox.clientsClaim();
   workbox.registerRoute(
-    "/",
+    '/',
     new workbox.NetworkFirst({
-      cacheName: "start-url",
+      cacheName: 'start-url',
       plugins: [
         {
           cacheWillUpdate: async ({ request, response, event, state }) => {
-            if (response && response.type === "opaqueredirect") {
+            if (response && response.type === 'opaqueredirect') {
               return new Response(response.body, {
                 status: 200,
-                statusText: "OK",
+                statusText: 'OK',
                 headers: response.headers,
               });
             }
@@ -91,18 +91,17 @@ define(["./workbox-8817a5e5"], (workbox) => {
         },
       ],
     }),
-    "GET"
+    'GET'
   );
   workbox.registerRoute(
     /.*/i,
     new workbox.NetworkOnly({
-      cacheName: "dev",
+      cacheName: 'dev',
       plugins: [],
     }),
-    "GET"
+    'GET'
   );
 });
-
 
 self.addEventListener('push', (event) => {
   const data = event.data.json();
@@ -129,9 +128,7 @@ self.addEventListener('push', (event) => {
     ],
   };
 
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
+  event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', (event) => {
@@ -147,11 +144,12 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 self.addEventListener('pushsubscriptionchange', (event) => {
-    console.log("Push subscription changed");
-    event.waitUntil(
-        self.registration.pushManager.subscribe({ userVisibleOnly: true })
-        .then((subscription) => {
-            console.log("New subscription: ", subscription);
-        })
-    );
+  console.log('Push subscription changed');
+  event.waitUntil(
+    self.registration.pushManager
+      .subscribe({ userVisibleOnly: true })
+      .then((subscription) => {
+        console.log('New subscription: ', subscription);
+      })
+  );
 });

@@ -1,13 +1,12 @@
 import { AlertTriangle } from 'lucide-react';
-import React from 'react';
 import { Button } from '@/components/ui/button';
 
-interface ErrorMessageProps {
+type ErrorMessageProps = {
   title: string;
   description: string;
   errorCode?: string;
   onReset?: () => void; // Add optional onReset prop
-}
+};
 
 const ErrorMessage = ({
   title,

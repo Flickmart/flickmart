@@ -28,7 +28,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
 // Types
-interface OrderDisplay {
+type OrderDisplay = {
   _id: Id<'orders'>;
   productIds: Id<'product'>[];
   buyerId: Id<'users'>;
@@ -42,7 +42,7 @@ interface OrderDisplay {
   buyerName?: string;
   sellerName?: string;
   userRole: 'buyer' | 'seller';
-}
+};
 
 // Helper functions
 const formatDate = (timestamp: number): string => {
@@ -246,7 +246,9 @@ export default function OrdersPage() {
 
   // Filter and sort orders
   const filteredAndSortedOrders = useMemo(() => {
-    if (!(orders && Array.isArray(orders))) return [];
+    if (!(orders && Array.isArray(orders))) {
+      return [];
+    }
 
     const filtered = orders.filter((order: OrderDisplay) => {
       const matchesSearch =

@@ -3,14 +3,14 @@
 import { PinInput } from './pin-input';
 import { SecurityHeader } from './security-header';
 
-interface SecurityState {
+type SecurityState = {
   pinAttempts: number;
   maxPinAttempts: number;
   isLocked: boolean;
   lockoutTime?: number;
-}
+};
 
-interface PinVerificationProps {
+type PinVerificationProps = {
   displayAmount: string;
   selectedProductsCount: number;
   calculatedTotal: number;
@@ -22,7 +22,7 @@ interface PinVerificationProps {
   onBack: () => void;
   onPinChange: (pin: string) => void;
   onPinComplete: (pin: string) => void;
-}
+};
 
 export function PinVerification({
   displayAmount,
@@ -37,9 +37,11 @@ export function PinVerification({
   onPinChange,
   onPinComplete,
 }: PinVerificationProps) {
-  const formatAmount = (value: string | number) => {
+  const _formatAmount = (value: string | number) => {
     const num = typeof value === 'string' ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return '0.00';
+    if (Number.isNaN(num)) {
+      return '0.00';
+    }
     return num.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -53,7 +55,7 @@ export function PinVerification({
       {/* Content area that takes remaining space */}
       <div className="flex flex-1 flex-col">
         {/* Top content */}
-        <div className="flex flex-1 flex-col pt-6 justify-center">
+        <div className="flex flex-1 flex-col justify-center pt-6">
           <div className="mx-auto mb-6 max-w-md text-center">
             <h1 className="font-semibold text-2xl text-gray-900">
               Enter Payment PIN

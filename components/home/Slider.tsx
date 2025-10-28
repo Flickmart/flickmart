@@ -1,25 +1,20 @@
-"use client";
+'use client';
 
-// import { addCategories } from "@/utils/addCategory";
-import { useMutation } from "convex/react";
-import React, { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { useRef } from 'react';
 import {
   Carousel,
-  type CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
-import { api } from "@/convex/_generated/api";
-import useSlider from "@/hooks/useSlider";
+} from '@/components/ui/carousel';
+import useSlider from '@/hooks/useSlider';
 
 export default function Slider() {
   const banners = [
-    "flick-ban-5.jpg",
-    "flick-ban-6.jpg",
-    "flick-ban-7.jpg",
-    "flick-ban-3.jpg",
-    "flick-ban-4.jpg",
+    'flick-ban-5.jpg',
+    'flick-ban-6.jpg',
+    'flick-ban-7.jpg',
+    'flick-ban-3.jpg',
+    'flick-ban-4.jpg',
   ];
   const { setApi } = useSlider();
   const catRef = useRef<HTMLDivElement>(null);
@@ -52,7 +47,7 @@ export default function Slider() {
             <CarouselItem key={index}>
               <div
                 className={
-                  "flex h-32 items-end justify-center space-y-2.5 bg-center bg-cover bg-no-repeat p-7 pb-2 text-gray-200 capitalize lg:min-h-60 lg:space-y-7 lg:px-5 lg:py-3"
+                  'flex h-32 items-end justify-center space-y-2.5 bg-center bg-cover bg-no-repeat p-7 pb-2 text-gray-200 capitalize lg:min-h-60 lg:space-y-7 lg:px-5 lg:py-3'
                 }
                 style={{
                   backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/${img})`,

@@ -1,6 +1,5 @@
 import { useMutation, useQuery } from 'convex/react';
 import { Camera, Loader2 } from 'lucide-react';
-import Image from 'next/image';
 import { type ChangeEvent, type Dispatch, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -13,12 +12,13 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
   const userStore = useQuery(api.store.getStoresByUserId);
   const mutate = useMutation(api.store.addImage);
 
-
   const { startUpload } = useUploadThing('imageUploader');
 
   const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
+    if (!file) {
+      return;
+    }
 
     try {
       setIsUploading(true);
@@ -79,9 +79,7 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
               width={60}
             />
             <AvatarFallback className="bg-[#38CB89] font-medium text-5xl text-white uppercase">
-              {userStore && userStore?.data && userStore?.data?.name
-                ? userStore?.data?.name.charAt(0)
-                : 'U'}
+              {userStore?.data?.name ? userStore?.data?.name.charAt(0) : 'U'}
             </AvatarFallback>
           </Avatar>
           {isUploading && (
@@ -93,7 +91,7 @@ const StageThree = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
             <Camera color="white" size={15} />
           </span>
         </div>
-        {userStore && userStore?.data && userStore?.data.image && (
+        {userStore?.data?.image && (
           <button
             className="mt-4 font-semibold text-flickmart text-sm hover:underline disabled:cursor-not-allowed disabled:opacity-50"
             disabled={isUploading}

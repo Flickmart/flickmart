@@ -197,7 +197,7 @@
     @apply bg-background text-foreground;
   }
 }
-@layer utilities{
+@layer utilities {
   .error-check{
     @apply border-4 border-red-500
   }

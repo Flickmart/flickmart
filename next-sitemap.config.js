@@ -1,4 +1,4 @@
-module.exports ={
-    siteUrl: "http://flickmart.app",
-    generateRobotsTxt: true
-}
+module.exports = {
+  siteUrl: 'http://flickmart.app',
+  generateRobotsTxt: true,
+};

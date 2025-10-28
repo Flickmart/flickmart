@@ -4,10 +4,10 @@ import type { ComponentType } from 'react';
 import Loader from '@/components/multipage/Loader';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
-interface WithAuthOptions {
+type WithAuthOptions = {
   redirectTo?: string;
   loadingComponent?: ComponentType;
-}
+};
 
 /**
  * Higher-order component that wraps pages requiring authentication

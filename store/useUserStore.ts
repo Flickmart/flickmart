@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import type { UserStore } from '@/types/user';
 
-const useUserStore = create<UserStore>((set, get) => ({
+const useUserStore = create<UserStore>((set, _get) => ({
   session: {
     access_token: '',
     expires_at: 0,

@@ -2,17 +2,11 @@
 
 import { useQuery } from 'convex/react';
 import { formatDistanceToNow } from 'date-fns';
-import {
-  ChevronLeft,
-  ChevronRight,
-  MessageSquare,
-  Search,
-  Share2,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, MessageSquare, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { use, useEffect, useState } from 'react';
+import { use, useState } from 'react';
 import Loader from '@/components/multipage/Loader';
 import ProductCard from '@/components/multipage/ProductCard';
 import { Button } from '@/components/ui/button';
@@ -46,10 +40,10 @@ const VendorProfile = ({
 export default VendorProfile;
 
 // Profile content component to share between mobile and desktop views
-interface ProfileContentProps {
+type ProfileContentProps = {
   user: Doc<'users'>;
   store: Doc<'store'>;
-}
+};
 
 const ProfileContent = ({ user, store }: ProfileContentProps) => {
   const [search, setSearch] = useState('');
@@ -144,7 +138,9 @@ const ProfileContent = ({ user, store }: ProfileContentProps) => {
             shareProduct({
               title: store.name || 'Check out this store',
               url: `https://flickmart.app/vendors/${user._id}`,
-              description: store.description ||`Have you checked out ${user.name}'s store on Flickmart?`,
+              description:
+                store.description ||
+                `Have you checked out ${user.name}'s store on Flickmart?`,
             })
           }
           variant="outline"
