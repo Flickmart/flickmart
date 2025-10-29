@@ -1,38 +1,38 @@
-import { useState } from "react";
-import type { MobileFilterType } from "@/types/filters";
+import { useState } from 'react';
+import type { MobileFilterType } from '@/types/filters';
 
 export function useFilters() {
   const [filterState, setFilterState] = useState<MobileFilterType>({
-    category: "",
-    location: "",
+    category: '',
+    location: '',
     minPrice: 0,
   });
   return {
     filterState,
     handleFilterState(val: string, label: string, resetQuery?: () => void) {
-      const value = val === "all" ? "" : val;
+      const value = val === 'all' ? '' : val;
       switch (label) {
-        case "category":
+        case 'category':
           resetQuery?.();
           return setFilterState({
             ...filterState,
             category: value,
           });
-        case "location":
+        case 'location':
           return setFilterState({ ...filterState, location: value });
         default: {
           let minPrice = 0;
           let maxPrice = 0;
-          if (value === "below 100k") {
+          if (value === 'below 100k') {
             minPrice = 0;
             maxPrice = 10 ** 5 - 1;
-          } else if (value === "100k - 500k") {
+          } else if (value === '100k - 500k') {
             minPrice = 10 ** 5;
             maxPrice = 5 * 10 ** 5 - 1;
-          } else if (value === "500k - 1.5m") {
+          } else if (value === '500k - 1.5m') {
             minPrice = 5 * 10 ** 5;
             maxPrice = 1.5 * 10 ** 6 - 1;
-          } else if (value === "1.5m - 3.5m") {
+          } else if (value === '1.5m - 3.5m') {
             minPrice = 1.5 * 10 ** 6;
             maxPrice = 3.5 * 10 ** 6;
           }
