@@ -1,16 +1,16 @@
-import { TriangleAlert } from 'lucide-react';
-import { type Dispatch, type SetStateAction, useRef } from 'react';
-import { PhotoProvider } from 'react-photo-view';
-import MessageBubble from './message-bubble';
+import { TriangleAlert } from "lucide-react";
+import { type Dispatch, type SetStateAction, useRef } from "react";
+import { PhotoProvider } from "react-photo-view";
+import MessageBubble from "./message-bubble";
 
 type Message = {
   id: string;
   chatId: string;
   content: string;
   images?: string[];
-  role: 'user' | 'assistant';
+  role: "user" | "assistant";
   timestamp: Date;
-  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer';
+  type?: "text" | "product" | "image" | "escrow" | "transfer";
   title?: string;
   price?: number;
   productImage?: string;
@@ -20,7 +20,7 @@ type Message = {
   transferAmount?: number;
   currency?: string;
   isPending?: boolean;
-  status?: 'sent' | 'delivered' | 'read';
+  status?: "sent" | "delivered" | "read";
 };
 
 type ChatMessagesProps = {
@@ -59,13 +59,13 @@ export default function ChatMessages({
   // Toggle message selection
   const toggleMessageSelection = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== 'user') {
+    if (!message || message.role !== "user") {
       return;
     }
 
     if (selectedMessages.includes(messageId)) {
       const newSelectedMessages = selectedMessages.filter(
-        (id) => id !== messageId
+        (id) => id !== messageId,
       );
       setSelectedMessages(newSelectedMessages);
       if (newSelectedMessages.length === 0) {
@@ -79,7 +79,7 @@ export default function ChatMessages({
   // Handle long press to enter selection mode
   const handleLongPress = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== 'user') {
+    if (!message || message.role !== "user") {
       return;
     }
 
@@ -93,7 +93,7 @@ export default function ChatMessages({
   const groupMessagesByDate = (messages: Message[]) => {
     // Sort messages by timestamp (oldest first)
     const sortedMessages = [...messages].sort(
-      (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
     );
 
     const today = new Date();
@@ -109,15 +109,15 @@ export default function ChatMessages({
 
       // Determine date label
       if (msgDate.toDateString() === today.toDateString()) {
-        dateLabel = 'Today';
+        dateLabel = "Today";
       } else if (msgDate.toDateString() === yesterday.toDateString()) {
-        dateLabel = 'Yesterday';
+        dateLabel = "Yesterday";
       } else {
-        dateLabel = msgDate.toLocaleDateString('en-US', {
-          weekday: 'long',
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
+        dateLabel = msgDate.toLocaleDateString("en-US", {
+          weekday: "long",
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
       }
 

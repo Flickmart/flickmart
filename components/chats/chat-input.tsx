@@ -1,9 +1,9 @@
-import { Camera, Paperclip, Send, X } from 'lucide-react';
-import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { Spinner } from '@/components/Spinner';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Camera, Paperclip, Send, X } from "lucide-react";
+import Image from "next/image";
+import { useEffect, useState } from "react";
+import { Spinner } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 type ChatInputProps = {
   input: string;
@@ -83,7 +83,7 @@ export default function ChatInput({
             </label>
             <input
               accept="image/*"
-              capture={isMobile ? 'environment' : undefined}
+              capture={isMobile ? "environment" : undefined}
               className="hidden"
               id="open-camera"
               onChange={handleFileChange}
