@@ -2,7 +2,7 @@ define(['exports'], (exports) => {
   // @ts-expect-error
   try {
     self['workbox:core:6.5.4'] && _();
-  } catch (e) {}
+  } catch (_e) {}
 
   /*
       Copyright 2019 Google LLC
@@ -513,7 +513,7 @@ define(['exports'], (exports) => {
   // @ts-expect-error
   try {
     self['workbox:routing:6.5.4'] && _();
-  } catch (e) {}
+  } catch (_e) {}
 
   /*
       Copyright 2018 Google LLC
@@ -817,7 +817,7 @@ define(['exports'], (exports) => {
           ); // TypeScript
           event.waitUntil(requestPromises);
           // If a MessageChannel was used, reply to the message on success.
-          if (event.ports && event.ports[0]) {
+          if (event.ports?.[0]) {
             void requestPromises.then(() => event.ports[0].postMessage(true));
           }
         }
@@ -856,7 +856,7 @@ define(['exports'], (exports) => {
         sameOrigin,
         url,
       });
-      let handler = route && route.handler;
+      let handler = route?.handler;
       const debugMessages = [];
       if (handler) {
         debugMessages.push(['Found a route to handle this request:', route]);
@@ -908,7 +908,7 @@ define(['exports'], (exports) => {
         responsePromise = Promise.reject(err);
       }
       // Get route's catch handler, if it exists
-      const catchHandler = route && route.catchHandler;
+      const catchHandler = route?.catchHandler;
       if (
         responsePromise instanceof Promise &&
         (this._catchHandler || catchHandler)
@@ -1230,7 +1230,7 @@ define(['exports'], (exports) => {
   // @ts-expect-error
   try {
     self['workbox:strategies:6.5.4'] && _();
-  } catch (e) {}
+  } catch (_e) {}
 
   /*
       Copyright 2018 Google LLC
@@ -1346,12 +1346,7 @@ define(['exports'], (exports) => {
       return cache.match(request, matchOptions);
     }
     // Otherwise, match by comparing keys
-    const keysOptions = Object.assign(
-      { ...matchOptions },
-      {
-        ignoreSearch: true,
-      }
-    );
+    const keysOptions = { ...matchOptions, ignoreSearch: true };
     const cacheKeys = await cache.keys(request, keysOptions);
     for (const cacheKey of cacheKeys) {
       const strippedCacheKeyURL = stripParams(cacheKey.url, ignoreParams);
@@ -1631,12 +1626,7 @@ define(['exports'], (exports) => {
       let cachedResponse;
       const { cacheName, matchOptions } = this._strategy;
       const effectiveRequest = await this.getCacheKey(request, 'read');
-      const multiMatchOptions = Object.assign(
-        { ...matchOptions },
-        {
-          cacheName,
-        }
-      );
+      const multiMatchOptions = { ...matchOptions, cacheName };
       cachedResponse = await caches.match(effectiveRequest, multiMatchOptions);
       if (cachedResponse) {
         logger.debug(`Found a cached response in '${cacheName}'.`);
@@ -1839,12 +1829,7 @@ define(['exports'], (exports) => {
         if (typeof plugin[name] === 'function') {
           const state = this._pluginStateMap.get(plugin);
           const statefulCallback = (param) => {
-            const statefulParam = Object.assign(
-              { ...param },
-              {
-                state,
-              }
-            );
+            const statefulParam = { ...param, state };
             // TODO(philipwalton): not sure why `any` is needed. It seems like
             // this should work with `as WorkboxPluginCallbackParam[C]`.
             return plugin[name](statefulParam);
@@ -2137,7 +2122,7 @@ define(['exports'], (exports) => {
       let error;
       try {
         response = await responseDone;
-      } catch (error) {
+      } catch (_error) {
         // Ignore errors, as response errors should be caught via the `response`
         // promise above. The `done` promise will only throw for errors in
         // promises passed to `handler.waitUntil()`.
@@ -2388,7 +2373,7 @@ define(['exports'], (exports) => {
         response = await handler.cacheMatch(request);
         if (response) {
           logs.push(
-            `Found a cached response in the '${this.cacheName}'` + ' cache.'
+            `Found a cached response in the '${this.cacheName}' cache.`
           );
         } else {
           logs.push(`No response found in the '${this.cacheName}' cache.`);

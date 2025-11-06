@@ -1,11 +1,9 @@
 'use client';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery } from 'convex/react';
 import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect } from 'react';
 import * as z from 'zod';
 import Loader from '@/components/multipage/Loader';
 import BusinessSettings from '@/components/settings/business';
@@ -16,9 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
-import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { useSidebar } from '@/components/ui/sidebar';
 import { api } from '@/convex/_generated/api';
 
 const businessFormSchema = z.object({

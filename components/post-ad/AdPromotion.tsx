@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import type { FormType } from '@/types/form';
 
 const adStructure = [
@@ -24,10 +24,18 @@ export default function AdPromotion({
 
   const handlePlan = (index: number) => {
     let plan: 'free' | 'basic' | 'pro' | 'premium' = 'pro';
-    if (index === 0) plan = 'free';
-    if (index === 1) plan = 'basic';
-    if (index === 2) plan = 'pro';
-    if (index === 3) plan = 'premium';
+    if (index === 0) {
+      plan = 'free';
+    }
+    if (index === 1) {
+      plan = 'basic';
+    }
+    if (index === 2) {
+      plan = 'pro';
+    }
+    if (index === 3) {
+      plan = 'premium';
+    }
 
     if (activePlan === plan) {
       setActivePlan(null);
@@ -65,6 +73,7 @@ export default function AdPromotion({
               {item.duration.map((duration, index) => {
                 return (
                   <span
+                    className={`cursor-pointer rounded-2xl border border-flickmartLight px-5 py-2 text-sm ${basicDuration === duration || (values.plan === item.type && item.type !== 'basic') ? 'border-none bg-flickmart text-white transition-all duration-300' : ''}`}
                     key={index}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -85,9 +94,6 @@ export default function AdPromotion({
                         );
                       }
                     }}
-                 
-                    className={`rounded-2xl cursor-pointer   px-5 py-2 border-flickmartLight border text-sm ${basicDuration === duration || (values.plan === item.type && item.type !== "basic") ? "transition-all duration-300 bg-flickmart text-white border-none" : ""}`}
-
                   >
                     {duration} {item.type === 'premium' ? 'month' : 'days'}
                   </span>

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import type { Dispatch } from 'react';
 import { type FieldErrors, useForm } from 'react-hook-form';
@@ -49,7 +49,7 @@ const formSchema = z.object({
     });
 
     // when it's good
-    if (phone && phone.isValid()) {
+    if (phone?.isValid()) {
       return phone.number;
     }
 

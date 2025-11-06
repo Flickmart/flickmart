@@ -1,13 +1,9 @@
 import { TriangleAlert } from 'lucide-react';
-import {
-  type Dispatch,
-  type SetStateAction,
-  useRef,
-} from 'react';
+import { type Dispatch, type SetStateAction, useRef } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import MessageBubble from './message-bubble';
 
-interface Message {
+type Message = {
   id: string;
   chatId: string;
   content: string;
@@ -25,15 +21,15 @@ interface Message {
   currency?: string;
   isPending?: boolean;
   status?: 'sent' | 'delivered' | 'read';
-}
+};
 
-interface ChatMessagesProps {
+type ChatMessagesProps = {
   messages: Message[];
   selectionMode: boolean;
   setSelectionMode: Dispatch<SetStateAction<boolean>>;
   selectedMessages: string[];
   setSelectedMessages: Dispatch<SetStateAction<string[]>>;
-}
+};
 
 export default function ChatMessages({
   messages,
@@ -42,7 +38,7 @@ export default function ChatMessages({
   setSelectedMessages,
   selectedMessages,
 }: ChatMessagesProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const _messagesEndRef = useRef<HTMLDivElement>(null);
 
   // const scrollToBottom = () => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,7 +59,9 @@ export default function ChatMessages({
   // Toggle message selection
   const toggleMessageSelection = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== 'user') return;
+    if (!message || message.role !== 'user') {
+      return;
+    }
 
     if (selectedMessages.includes(messageId)) {
       const newSelectedMessages = selectedMessages.filter(
@@ -81,7 +79,9 @@ export default function ChatMessages({
   // Handle long press to enter selection mode
   const handleLongPress = (messageId: string) => {
     const message = messages.find((msg) => msg.id === messageId);
-    if (!message || message.role !== 'user') return;
+    if (!message || message.role !== 'user') {
+      return;
+    }
 
     if (!selectionMode) {
       setSelectionMode(true);
@@ -159,7 +159,7 @@ export default function ChatMessages({
                 image={message.productImage}
                 images={message.images}
                 isPending={message.isPending}
-                isUser={message.role === "user"}
+                isUser={message.role === 'user'}
                 key={message.id}
                 message={message.content}
                 orderId={message.orderId}
@@ -167,10 +167,10 @@ export default function ChatMessages({
                 productId={message.productId}
                 selectedMessages={selectedMessages}
                 selectionMode={selectionMode}
-                status={message.role === "user" ? message.status : undefined}
+                status={message.role === 'user' ? message.status : undefined}
                 timestamp={message.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
+                  hour: '2-digit',
+                  minute: '2-digit',
                 })}
                 title={message.title}
                 toggleMessageSelection={toggleMessageSelection}

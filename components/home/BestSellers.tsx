@@ -9,7 +9,7 @@ import { Skeleton } from "../ui/skeleton";
 import Container from "./Container";
 
 export default function BestSellers() {
-  const recommendation = useQuery(api.product.getRecommendations, {});
+  const _recommendation = useQuery(api.product.getRecommendations, {});
   const all = useQuery(api.product.getAll, { limit: 10 });
   const isMobile = useIsMobile();
   const personalized = useQuery(api.interactions.getPersonalizedProducts);

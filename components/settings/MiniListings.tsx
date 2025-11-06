@@ -1,21 +1,19 @@
-import { useQuery } from "convex/react";
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import React, { useEffect } from "react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { Card } from "../ui/card";
-import { Button } from "../ui/button";
-import { usePathname } from "next/navigation";
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { Button } from '../ui/button';
 
 export default function MiniListings({
   userId,
   updateLength,
 }: {
-  userId: Id<"users">;
+  userId: Id<'users'>;
   updateLength: (Length: number) => void;
 }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   const userProducts = useQuery(api.product.getByUserId, {
     userId,
   });
@@ -30,10 +28,10 @@ export default function MiniListings({
       <div className="space-y-2">
         <div className="h-5 w-32 animate-pulse rounded bg-gray-200" />
         <div className="grid grid-cols-3 gap-2">
-          {[...Array(3)].map((_, i) => (
+          {[...new Array(3)].map((_, i) => (
             <div
-              key={i}
               className="h-28 w-full animate-pulse rounded bg-gray-200"
+              key={i}
             />
           ))}
         </div>
@@ -50,12 +48,12 @@ export default function MiniListings({
     <div className="">
       <div className="flex items-center justify-between">
         <h1 className="font-semibold text-lg">Recent Listings</h1>
-        {pathname.includes("/business") ? null : <Link className="flex justify-end  text-sm" href="/settings/products">
-          <Button variant="link">
-            View all Products
-          </Button>
-          {/* <ChevronRight /> */}
-        </Link>}
+        {pathname.includes('/business') ? null : (
+          <Link className="flex justify-end text-sm" href="/settings/products">
+            <Button variant="link">View all Products</Button>
+            {/* <ChevronRight /> */}
+          </Link>
+        )}
       </div>
       <div className="mt-2 flex gap-3 overflow-auto">
         {userProducts
@@ -63,7 +61,7 @@ export default function MiniListings({
           .reverse()
           .map((listing) => (
             <Link
-              className=" !w-2/3"
+              className="!w-2/3"
               href={`/product/${listing._id}`}
               key={listing._id}
             >
@@ -71,14 +69,14 @@ export default function MiniListings({
                 <img
                   alt={listing.title}
                   className="h-24 w-full object-cover"
-                  src={listing.images[0] || "/placeholder.svg"}
+                  src={listing.images[0] || '/placeholder.svg'}
                 />
                 <div className="space-y-0.5 px-1.5 py-1.5">
                   <h3 className="truncate font-semibold text-[10px]">
                     {listing.title}
                   </h3>
                   <p className="font-semibold text-[8px] text-flickmart">
-                    &#8358;{listing.price.toLocaleString("en-US")}
+                    &#8358;{listing.price.toLocaleString('en-US')}
                   </p>
                 </div>
               </div>

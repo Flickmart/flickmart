@@ -4,7 +4,7 @@
 
 import type { Id } from '@/convex/_generated/dataModel';
 
-export interface User {
+export type User = {
   _id: Id<'users'>;
   name: string;
   email: string;
@@ -16,20 +16,22 @@ export interface User {
     address?: string;
   };
   _creationTime: number;
-}
+};
 
 /**
  * Type guard to check if user is properly loaded
  */
 export function isUserLoaded(user: any): user is User {
-  return user !== null && user !== undefined && user._id;
+  return user?._id;
 }
 
 /**
  * Get user display name with fallback
  */
 export function getUserDisplayName(user: User | null | undefined): string {
-  if (!user) return 'Unknown User';
+  if (!user) {
+    return 'Unknown User';
+  }
   return user.name || user.username || 'User';
 }
 
@@ -37,7 +39,9 @@ export function getUserDisplayName(user: User | null | undefined): string {
  * Get user initials for avatar fallback
  */
 export function getUserInitials(user: User | null | undefined): string {
-  if (!user?.name) return 'U';
+  if (!user?.name) {
+    return 'U';
+  }
   return user.name
     .split(' ')
     .map((n) => n[0])
@@ -50,7 +54,9 @@ export function getUserInitials(user: User | null | undefined): string {
  * Check if user has completed profile setup
  */
 export function isProfileComplete(user: User | null | undefined): boolean {
-  if (!user) return false;
+  if (!user) {
+    return false;
+  }
   return !!(user.name && user.email);
 }
 
@@ -58,7 +64,9 @@ export function isProfileComplete(user: User | null | undefined): boolean {
  * Format user join date
  */
 export function formatJoinDate(user: User | null | undefined): string {
-  if (!user?._creationTime) return '';
+  if (!user?._creationTime) {
+    return '';
+  }
   return new Date(user._creationTime).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

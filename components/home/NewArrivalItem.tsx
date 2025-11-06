@@ -1,12 +1,11 @@
 import { useQuery } from "convex/react";
 import Image from "next/image";
-import React from "react";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { MapPin } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface NewArrivalsProp {
+type NewArrivalsProp = {
   image: string;
   name: string;
   price: number;
@@ -27,7 +26,7 @@ export default function NewArrivalItem({
 }: NewArrivalsProp) {
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: "saved",
+    type: 'saved',
   });
   if (saved?.error && saved.data === null) {
     console.log(saved.error.message);
@@ -76,7 +75,7 @@ export default function NewArrivalItem({
             alt={name}
             className="size-full object-cover"
             height={500}
-            src={image || "/no-image.png"}
+            src={image || '/no-image.png'}
             width={500}
           />
         </div>

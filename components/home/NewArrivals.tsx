@@ -2,7 +2,6 @@
 import { useQuery } from "convex/react";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 import { api } from "@/convex/_generated/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "../ui/skeleton";

@@ -11,12 +11,16 @@ import ProductItem from './product-item';
 
 // Levenshtein distance function for fuzzy matching
 function levenshteinDistance(str1: string, str2: string): number {
-  const matrix = Array(str2.length + 1)
+  const matrix = new Array(str2.length + 1)
     .fill(null)
-    .map(() => Array(str1.length + 1).fill(null));
+    .map(() => new Array(str1.length + 1).fill(null));
 
-  for (let i = 0; i <= str1.length; i++) matrix[0][i] = i;
-  for (let j = 0; j <= str2.length; j++) matrix[j][0] = j;
+  for (let i = 0; i <= str1.length; i++) {
+    matrix[0][i] = i;
+  }
+  for (let j = 0; j <= str2.length; j++) {
+    matrix[j][0] = j;
+  }
 
   for (let j = 1; j <= str2.length; j++) {
     for (let i = 1; i <= str1.length; i++) {
@@ -55,7 +59,7 @@ function hasSimilarWords(
   );
 }
 
-interface ProductSelectionScreenProps {
+type ProductSelectionScreenProps = {
   products: Doc<'product'>[] | null;
   selectedProducts: Id<'product'>[];
   onProductToggle: (productId: Id<'product'>) => void;
@@ -63,7 +67,7 @@ interface ProductSelectionScreenProps {
   onContinue: () => void;
   calculatedTotal: number;
   seller: Doc<'users'> | null;
-}
+};
 
 export default function ProductSelectionScreen({
   products,
@@ -76,7 +80,7 @@ export default function ProductSelectionScreen({
 }: ProductSelectionScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const formatAmount = (amount: number) => {
+  const _formatAmount = (amount: number) => {
     return amount.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

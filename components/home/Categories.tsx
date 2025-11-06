@@ -1,7 +1,6 @@
-import React from "react";
-import { categoryItems } from "@/utils/constants";
-import CategoryItem from "./CategoryItem";
-import Container from "./Container";
+import { categoryItems } from '@/utils/constants';
+import CategoryItem from './CategoryItem';
+import Container from './Container';
 
 export default function Categories() {
   return (

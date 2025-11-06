@@ -1,21 +1,20 @@
-import type { WebhookEvent } from "@clerk/backend";
-import { httpRouter } from "convex/server";
-import { Webhook } from "svix";
-import { api, internal } from "./_generated/api";
-import type { Id } from "./_generated/dataModel";
-import { httpAction } from "./_generated/server";
-import { resend } from "./email";
-import { getCurrentUserOrThrow } from "./users";
+import type { WebhookEvent } from '@clerk/backend';
+import { httpRouter } from 'convex/server';
+import { Webhook } from 'svix';
+import { api, internal } from './_generated/api';
+import type { Id } from './_generated/dataModel';
+import { httpAction } from './_generated/server';
+import { resend } from './email';
 
 const http = httpRouter();
 
 // CORS configuration
 const ALLOWED_ORIGINS = [
-  "http://localhost:3000",
-  "http://localhost:3001",
-  "https://flickmart.app",
-  "https://flickmart-demo.vercel.app",
-  "https://strong-turtle-928.convex.site", // Add your Convex domain
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://flickmart.app',
+  'https://flickmart-demo.vercel.app',
+  'https://strong-turtle-928.convex.site', // Add your Convex domain
 ];
 
 function getCorsHeaders(origin?: string | null) {
@@ -23,43 +22,43 @@ function getCorsHeaders(origin?: string | null) {
     origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
 
   return new Headers({
-    "Access-Control-Allow-Origin": allowedOrigin,
-    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Max-Age": "86400",
-    Vary: "Origin",
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
   });
 }
 
 function getJsonHeaders(origin?: string | null) {
   const corsHeaders = getCorsHeaders(origin);
-  corsHeaders.set("Content-Type", "application/json");
+  corsHeaders.set('Content-Type', 'application/json');
   return corsHeaders;
 }
 
 http.route({
-  path: "/clerk-users-webhook",
-  method: "POST",
+  path: '/clerk-users-webhook',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
     const event = await validateRequest(request);
     if (!event) {
-      return new Response("Error occured", { status: 400 });
+      return new Response('Error occured', { status: 400 });
     }
     switch (event.type) {
-      case "user.created": // intentional fallthrough
-      case "user.updated":
+      case 'user.created': // intentional fallthrough
+      case 'user.updated':
         await ctx.runMutation(internal.users.upsertFromClerk, {
           data: event.data,
         });
         break;
 
-      case "user.deleted": {
+      case 'user.deleted': {
         const clerkUserId = event.data.id!;
         await ctx.runMutation(internal.users.deleteFromClerk, { clerkUserId });
         break;
       }
       default:
-        console.log("Ignored Clerk webhook event", event.type);
+        console.log('Ignored Clerk webhook event', event.type);
     }
 
     return new Response(null, { status: 200 });
@@ -69,15 +68,15 @@ http.route({
 async function validateRequest(req: Request): Promise<WebhookEvent | null> {
   const payloadString = await req.text();
   const svixHeaders = {
-    "svix-id": req.headers.get("svix-id")!,
-    "svix-timestamp": req.headers.get("svix-timestamp")!,
-    "svix-signature": req.headers.get("svix-signature")!,
+    'svix-id': req.headers.get('svix-id')!,
+    'svix-timestamp': req.headers.get('svix-timestamp')!,
+    'svix-signature': req.headers.get('svix-signature')!,
   };
   const wh = new Webhook(process.env.CLERK_WEBHOOK_SECRET!);
   try {
     return wh.verify(payloadString, svixHeaders) as unknown as WebhookEvent;
   } catch (error) {
-    console.error("Error verifying webhook event", error);
+    console.error('Error verifying webhook event', error);
     return null;
   }
 }
@@ -85,16 +84,16 @@ async function validateRequest(req: Request): Promise<WebhookEvent | null> {
 // Wallet and wallet related http
 
 http.route({
-  path: "/paystack/initialize",
-  method: "OPTIONS",
+  path: '/paystack/initialize',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -105,15 +104,15 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/initialize",
-  method: "POST",
+  path: '/paystack/initialize',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -124,7 +123,7 @@ http.route({
     const user = await ctx.runQuery(api.users.current, {});
 
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
+      return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404,
         headers: getJsonHeaders(origin),
       });
@@ -137,7 +136,7 @@ http.route({
 
     if (!wallet) {
       return new Response(
-        JSON.stringify({ error: "Wallet not found. Please contact support." }),
+        JSON.stringify({ error: 'Wallet not found. Please contact support.' }),
         {
           status: 404,
           headers: getJsonHeaders(origin),
@@ -150,17 +149,17 @@ http.route({
 
     // If no customer ID exists, create a customer first
     if (!customerId) {
-      const customerResponse = await fetch("https://api.paystack.co/customer", {
-        method: "POST",
+      const customerResponse = await fetch('https://api.paystack.co/customer', {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email,
-          first_name: user.name.split(" ")[0] || user.name,
-          last_name: user.name.split(" ").slice(1).join(" ") || "",
-          phone: user.contact?.phone || "",
+          first_name: user.name.split(' ')[0] || user.name,
+          last_name: user.name.split(' ').slice(1).join(' ') || '',
+          phone: user.contact?.phone || '',
         }),
       });
 
@@ -187,12 +186,12 @@ http.route({
     }
 
     const response = await fetch(
-      "https://api.paystack.co/transaction/initialize",
+      'https://api.paystack.co/transaction/initialize',
       {
-        method: "POST",
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email,
@@ -207,7 +206,7 @@ http.route({
         const reference = await ctx.runAction(
           api.actions.generateTransactionReference,
           {
-            type: "funding",
+            type: 'funding',
           }
         );
         await ctx.runMutation(internal.transactions.create, {
@@ -216,18 +215,18 @@ http.route({
           paystackReference: data.data.reference,
           reference,
           amount: amount * 100,
-          status: "pending",
-          type: "funding",
-          description: "Money is being deposited into the users wallet",
+          status: 'pending',
+          type: 'funding',
+          description: 'Money is being deposited into the users wallet',
         });
         return new Response(JSON.stringify(data), {
           status: 200,
           headers: getJsonHeaders(origin),
         });
       } catch (error) {
-        console.error("Failed to create transaction:", error);
+        console.error('Failed to create transaction:', error);
         return new Response(
-          JSON.stringify({ error: "Failed to create transaction record" }),
+          JSON.stringify({ error: 'Failed to create transaction record' }),
           {
             status: 500,
             headers: getJsonHeaders(origin),
@@ -243,16 +242,16 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/verify",
-  method: "OPTIONS",
+  path: '/paystack/verify',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -263,10 +262,10 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/verify",
-  method: "POST",
+  path: '/paystack/verify',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
 
     try {
       // Parse request body draw error handling
@@ -274,8 +273,8 @@ http.route({
       try {
         requestBody = await request.json();
       } catch (error) {
-        console.error("Failed to parse request body:", error);
-        return new Response(JSON.stringify({ error: "Invalid request body" }), {
+        console.error('Failed to parse request body:', error);
+        return new Response(JSON.stringify({ error: 'Invalid request body' }), {
           status: 400,
           headers: getJsonHeaders(origin),
         });
@@ -284,10 +283,10 @@ http.route({
       const { reference, userId } = requestBody;
 
       // Validate reference
-      if (!reference || typeof reference !== "string") {
+      if (!reference || typeof reference !== 'string') {
         return new Response(
           JSON.stringify({
-            error: "Reference is required and must be a string",
+            error: 'Reference is required and must be a string',
           }),
           {
             status: 400,
@@ -297,17 +296,17 @@ http.route({
       }
 
       // Log the request for debugging
-      console.log("Paystack verify request:", { reference, userId });
+      console.log('Paystack verify request:', { reference, userId });
       console.log(
-        "Paystack secret key configured:",
+        'Paystack secret key configured:',
         !!process.env.PAYSTACK_SECRET_KEY
       );
 
       // Check if PAYSTACK_SECRET_KEY is configured
       if (!process.env.PAYSTACK_SECRET_KEY) {
-        console.error("PAYSTACK_SECRET_KEY is not configured");
+        console.error('PAYSTACK_SECRET_KEY is not configured');
         return new Response(
-          JSON.stringify({ error: "Server configuration error" }),
+          JSON.stringify({ error: 'Server configuration error' }),
           {
             status: 500,
             headers: getJsonHeaders(origin),
@@ -316,28 +315,28 @@ http.route({
       }
 
       // Call Paystack API
-      console.log("Calling Paystack API with reference:", reference);
+      console.log('Calling Paystack API with reference:', reference);
       const paystackUrl = `https://api.paystack.co/transaction/verify/${reference}`;
-      console.log("Paystack URL:", paystackUrl);
+      console.log('Paystack URL:', paystackUrl);
 
       const response = await fetch(paystackUrl, {
-        method: "GET",
+        method: 'GET',
         headers: { Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}` },
       });
 
-      console.log("Paystack response status:", response.status);
+      console.log('Paystack response status:', response.status);
       // console.log('Paystack response headers:', Object.fromEntries(response.headers.entries()));
 
       if (!response.ok) {
         console.error(
-          "Paystack API error:",
+          'Paystack API error:',
           response.status,
           response.statusText
         );
         const errorData = await response.json().catch(() => ({}));
         return new Response(
           JSON.stringify({
-            error: "Paystack API error",
+            error: 'Paystack API error',
             details: errorData,
             status: response.status,
           }),
@@ -349,13 +348,13 @@ http.route({
       }
 
       const data = await response.json();
-      console.log("Paystack verify response:", data);
+      console.log('Paystack verify response:', data);
 
       // Check if Paystack API call was successful
       if (!data.status) {
         return new Response(
           JSON.stringify({
-            error: "Paystack API error",
+            error: 'Paystack API error',
             details: data,
           }),
           {
@@ -367,9 +366,9 @@ http.route({
 
       // Handle different transaction statuses
       const transactionStatus = data.data.status;
-      console.log("Transaction status:", transactionStatus);
+      console.log('Transaction status:', transactionStatus);
 
-      if (transactionStatus === "success") {
+      if (transactionStatus === 'success') {
         const transaction = await ctx.runQuery(
           api.transactions.getByPaystackReference,
           {
@@ -379,7 +378,7 @@ http.route({
 
         if (!transaction) {
           return new Response(
-            JSON.stringify({ error: "Transaction not found in database" }),
+            JSON.stringify({ error: 'Transaction not found in database' }),
             {
               status: 404,
               headers: getJsonHeaders(origin),
@@ -387,10 +386,10 @@ http.route({
           );
         }
 
-        if (transaction && transaction.status !== "success") {
+        if (transaction && transaction.status !== 'success') {
           await ctx.runMutation(internal.transactions.updateTransaction, {
             transactionId: transaction._id,
-            status: "success",
+            status: 'success',
             bank: data.data.authorization?.bank,
             last4: data.data.authorization?.last4,
             cardType: data.data.authorization?.card_type,
@@ -416,14 +415,14 @@ http.route({
           headers: getJsonHeaders(origin),
         });
       }
-      if (transactionStatus === "abandoned") {
+      if (transactionStatus === 'abandoned') {
         // Handle abandoned transactions
-        console.log("Transaction was abandoned by user");
+        console.log('Transaction was abandoned by user');
         return new Response(
           JSON.stringify({
             ...data,
-            message: "Transaction was abandoned by user",
-            userMessage: "Payment was not completed. Please try again.",
+            message: 'Transaction was abandoned by user',
+            userMessage: 'Payment was not completed. Please try again.',
           }),
           {
             status: 200, // Return 200 but with clear message
@@ -431,14 +430,14 @@ http.route({
           }
         );
       }
-      if (transactionStatus === "failed") {
+      if (transactionStatus === 'failed') {
         // Handle failed transactions
-        console.log("Transaction failed");
+        console.log('Transaction failed');
         return new Response(
           JSON.stringify({
             ...data,
-            message: "Transaction failed",
-            userMessage: "Payment failed. Please try again.",
+            message: 'Transaction failed',
+            userMessage: 'Payment failed. Please try again.',
           }),
           {
             status: 200, // Return 200 but with clear message
@@ -446,14 +445,14 @@ http.route({
           }
         );
       }
-      if (transactionStatus === "pending") {
+      if (transactionStatus === 'pending') {
         // Handle pending transactions
-        console.log("Transaction is still pending");
+        console.log('Transaction is still pending');
         return new Response(
           JSON.stringify({
             ...data,
-            message: "Transaction is pending",
-            userMessage: "Payment is still being processed. Please wait.",
+            message: 'Transaction is pending',
+            userMessage: 'Payment is still being processed. Please wait.',
           }),
           {
             status: 200, // Return 200 but with clear message
@@ -462,12 +461,12 @@ http.route({
         );
       }
       // Handle other statuses
-      console.log("Transaction has unknown status:", transactionStatus);
+      console.log('Transaction has unknown status:', transactionStatus);
       return new Response(
         JSON.stringify({
           ...data,
           message: `Transaction status: ${transactionStatus}`,
-          userMessage: "Payment status unclear. Please contact support.",
+          userMessage: 'Payment status unclear. Please contact support.',
         }),
         {
           status: 200, // Return 200 but with clear message
@@ -475,11 +474,11 @@ http.route({
         }
       );
     } catch (error) {
-      console.error("Error in paystack verify:", error);
+      console.error('Error in paystack verify:', error);
       return new Response(
         JSON.stringify({
-          error: "Internal server error",
-          message: error instanceof Error ? error.message : "Unknown error",
+          error: 'Internal server error',
+          message: error instanceof Error ? error.message : 'Unknown error',
         }),
         {
           status: 500,
@@ -491,16 +490,16 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/withdraw",
-  method: "OPTIONS",
+  path: '/paystack/withdraw',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -511,15 +510,15 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/withdraw",
-  method: "POST",
+  path: '/paystack/withdraw',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -537,18 +536,18 @@ http.route({
 
     // Validate required fields
     if (!amount) {
-      return new Response(JSON.stringify({ error: "Amount is required" }), {
+      return new Response(JSON.stringify({ error: 'Amount is required' }), {
         status: 400,
         headers,
       });
     }
 
     // Either bankAccountId OR account details must be provided
-    if (!bankAccountId && (!accountNumber || !bankCode || !accountName)) {
+    if (!(bankAccountId || (accountNumber && bankCode && accountName))) {
       return new Response(
         JSON.stringify({
           error:
-            "Either select a saved account or provide complete account details",
+            'Either select a saved account or provide complete account details',
         }),
         { status: 400, headers }
       );
@@ -556,7 +555,7 @@ http.route({
 
     const user = await ctx.runQuery(api.users.current, {});
     if (!user) {
-      return new Response(JSON.stringify({ error: "User not found" }), {
+      return new Response(JSON.stringify({ error: 'User not found' }), {
         status: 404,
         headers,
       });
@@ -566,7 +565,7 @@ http.route({
       userId: user._id,
     });
     if (!wallet) {
-      return new Response(JSON.stringify({ error: "Wallet not found" }), {
+      return new Response(JSON.stringify({ error: 'Wallet not found' }), {
         status: 404,
         headers,
       });
@@ -574,7 +573,7 @@ http.route({
 
     // Validate withdrawal amount
     const MIN_WITHDRAWAL = 100 * 100; // ₦100 in kobo
-    const MAX_WITHDRAWAL = 1000000 * 100; // ₦1M in kobo
+    const MAX_WITHDRAWAL = 1_000_000 * 100; // ₦1M in kobo
     const amountInKobo = Math.round(amount * 100);
 
     if (amountInKobo < MIN_WITHDRAWAL) {
@@ -605,7 +604,7 @@ http.route({
     } catch (error) {
       return new Response(
         JSON.stringify({
-          error: error instanceof Error ? error.message : "Insufficient funds",
+          error: error instanceof Error ? error.message : 'Insufficient funds',
         }),
         { status: 400, headers }
       );
@@ -616,7 +615,7 @@ http.route({
     let finalAccountName: string;
     let finalBankCode: string;
     let finalBankName: string;
-    let bankAccountIdToUse: string | null = null;
+    let _bankAccountIdToUse: string | null = null;
 
     if (bankAccountId) {
       // Using saved bank account
@@ -635,26 +634,26 @@ http.route({
         });
 
         return new Response(
-          JSON.stringify({ error: "Bank account not found" }),
+          JSON.stringify({ error: 'Bank account not found' }),
           { status: 404, headers }
         );
       }
 
-      recipientCode = bankAccount.recipientCode || "";
+      recipientCode = bankAccount.recipientCode || '';
       finalAccountNumber = bankAccount.accountNumber;
       finalAccountName = bankAccount.accountName;
       finalBankCode = bankAccount.bankCode;
       finalBankName = bankAccount.bankName;
-      bankAccountIdToUse = bankAccountId;
+      _bankAccountIdToUse = bankAccountId;
 
       // If no recipient code, create one
       if (!recipientCode) {
         const recipientBody: any = {
-          type: "nuban",
+          type: 'nuban',
           name: finalAccountName,
           account_number: finalAccountNumber,
           bank_code: finalBankCode,
-          currency: "NGN",
+          currency: 'NGN',
         };
 
         if (wallet.paystackCustomerId) {
@@ -662,12 +661,12 @@ http.route({
         }
 
         const recipientRes = await fetch(
-          "https://api.paystack.co/transferrecipient",
+          'https://api.paystack.co/transferrecipient',
           {
-            method: "POST",
+            method: 'POST',
             headers: {
               Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify(recipientBody),
           }
@@ -684,7 +683,7 @@ http.route({
           return new Response(
             JSON.stringify({
               error:
-                "Failed to verify recipient details. Please check your account information.",
+                'Failed to verify recipient details. Please check your account information.',
             }),
             { status: 400, headers }
           );
@@ -704,15 +703,15 @@ http.route({
       finalAccountNumber = accountNumber!;
       finalAccountName = accountName!;
       finalBankCode = bankCode!;
-      finalBankName = bankName || "";
+      finalBankName = bankName || '';
 
       // Create recipient for new account
       const recipientBody: any = {
-        type: "nuban",
+        type: 'nuban',
         name: finalAccountName,
         account_number: finalAccountNumber,
         bank_code: finalBankCode,
-        currency: "NGN",
+        currency: 'NGN',
       };
 
       if (wallet.paystackCustomerId) {
@@ -720,12 +719,12 @@ http.route({
       }
 
       const recipientRes = await fetch(
-        "https://api.paystack.co/transferrecipient",
+        'https://api.paystack.co/transferrecipient',
         {
-          method: "POST",
+          method: 'POST',
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(recipientBody),
         }
@@ -742,7 +741,7 @@ http.route({
         return new Response(
           JSON.stringify({
             error:
-              "Failed to verify recipient details. Please check your account information.",
+              'Failed to verify recipient details. Please check your account information.',
           }),
           { status: 400, headers }
         );
@@ -753,7 +752,7 @@ http.route({
       // Save account if requested
       if (saveAccount) {
         try {
-          bankAccountIdToUse = await ctx.runMutation(
+          _bankAccountIdToUse = await ctx.runMutation(
             api.bankAccounts.createBankAccount,
             {
               accountNumber: finalAccountNumber,
@@ -765,30 +764,30 @@ http.route({
           );
         } catch (error) {
           // Don't fail withdrawal if saving account fails
-          console.error("Failed to save bank account:", error);
+          console.error('Failed to save bank account:', error);
         }
       }
     }
 
     // Initiate transfer
-    const transferRes = await fetch("https://api.paystack.co/transfer", {
-      method: "POST",
+    const transferRes = await fetch('https://api.paystack.co/transfer', {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        source: "balance",
+        source: 'balance',
         amount: amountInKobo,
         recipient: recipientCode,
-        reason: "Flickmart balance withdrawal",
+        reason: 'Flickmart balance withdrawal',
       }),
     });
 
     const transferData = await transferRes.json();
     console.log(transferData);
 
-    if (!transferData.status || !transferData.data) {
+    if (!(transferData.status && transferData.data)) {
       // Rollback the withdrawal since transfer failed
       await ctx.runMutation(internal.wallet.refundWithdrawal, {
         walletId: wallet._id,
@@ -798,7 +797,7 @@ http.route({
       return new Response(
         JSON.stringify({
           error:
-            "Transfer failed. Your funds have been refunded to your wallet.",
+            'Transfer failed. Your funds have been refunded to your wallet.',
         }),
         {
           status: 400,
@@ -810,7 +809,7 @@ http.route({
     // Save withdrawal transaction
     const reference = await ctx.runAction(
       api.actions.generateTransactionReference,
-      { type: "withdrawal" }
+      { type: 'withdrawal' }
     );
     await ctx.runMutation(internal.transactions.create, {
       userId: user._id,
@@ -818,9 +817,9 @@ http.route({
       paystackReference: transferData.data.reference,
       reference,
       amount: amountInKobo,
-      status: "pending",
-      type: "withdrawal",
-      description: "User withdrawal to bank account",
+      status: 'pending',
+      type: 'withdrawal',
+      description: 'User withdrawal to bank account',
     });
 
     // Balance already deducted atomically above - no need to deduct again
@@ -830,16 +829,16 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/list-banks",
-  method: "OPTIONS",
+  path: '/paystack/list-banks',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -851,17 +850,17 @@ http.route({
 
 // List Banks Route
 http.route({
-  path: "/paystack/list-banks",
-  method: "GET",
+  path: '/paystack/list-banks',
+  method: 'GET',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     try {
       // Get the user from the request
       const identity = await ctx.auth.getUserIdentity();
       if (!identity) {
-        return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
           status: 401,
           headers,
         });
@@ -869,12 +868,12 @@ http.route({
 
       // Fetch the list of banks from Paystack
       const response = await fetch(
-        "https://api.paystack.co/bank?country=nigeria",
+        'https://api.paystack.co/bank?country=nigeria',
         {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -883,15 +882,15 @@ http.route({
 
       if (!data.status) {
         return new Response(
-          JSON.stringify({ error: "Failed to fetch banks" }),
+          JSON.stringify({ error: 'Failed to fetch banks' }),
           { status: 400, headers }
         );
       }
 
       return new Response(JSON.stringify(data), { status: 200, headers });
     } catch (error) {
-      console.error("Error fetching banks:", error);
-      return new Response(JSON.stringify({ error: "Internal server error" }), {
+      console.error('Error fetching banks:', error);
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
         status: 500,
         headers,
       });
@@ -901,21 +900,21 @@ http.route({
 
 // Paystack Webhook Route
 http.route({
-  path: "/paystack/webhook",
-  method: "POST",
+  path: '/paystack/webhook',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
     // Paystack Verified IP IPs
-    const PAYSTACK_IPS = ["52.31.139.75", "52.49.173.169", "52.214.14.220"];
+    const PAYSTACK_IPS = ['52.31.139.75', '52.49.173.169', '52.214.14.220'];
 
     // Helper function to check IP
-    function isPaystackIP(ip: string): boolean {
+    function _isPaystackIP(ip: string): boolean {
       return PAYSTACK_IPS.includes(ip);
     }
 
     try {
       // Extract IP from request
-      const ipHeader = request.headers.get("x-forwarded-for") || "";
-      const ip = ipHeader.split(",")[0].trim();
+      const ipHeader = request.headers.get('x-forwarded-for') || '';
+      const _ip = ipHeader.split(',')[0].trim();
 
       // Verify IP (commented out for development, uncomment in production)
       // if (!isPaystackIP(ip)) {
@@ -927,10 +926,10 @@ http.route({
       const event = await request.json();
       console.log(event);
       // Verify signature
-      const paystackSignature = request.headers.get("x-paystack-signature");
+      const paystackSignature = request.headers.get('x-paystack-signature');
       if (!paystackSignature) {
-        console.error("No Paystack signature found");
-        return new Response("No signature", { status: 401 });
+        console.error('No Paystack signature found');
+        return new Response('No signature', { status: 401 });
       }
 
       const isValid = await ctx.runAction(api.actions.verifyPaystackWebhook, {
@@ -939,14 +938,14 @@ http.route({
       });
 
       if (!isValid) {
-        console.error("Invalid Paystack signature");
-        return new Response("Invalid signature", { status: 401 });
+        console.error('Invalid Paystack signature');
+        return new Response('Invalid signature', { status: 401 });
       }
 
       // Process event
-      if (event.event === "charge.success") {
-        console.log("succesful", event);
-        console.log("Processing charge.success event");
+      if (event.event === 'charge.success') {
+        console.log('succesful', event);
+        console.log('Processing charge.success event');
         const { reference, amount, customer } = event.data;
 
         // Find the transaction
@@ -957,10 +956,10 @@ http.route({
           }
         );
 
-        if (transaction && transaction.status !== "success") {
+        if (transaction && transaction.status !== 'success') {
           await ctx.runMutation(internal.transactions.updateTransaction, {
             transactionId: transaction._id,
-            status: "success",
+            status: 'success',
             bank: event.data.authorization.bank,
             last4: event.data.authorization.last4,
             cardType: event.data.authorization.card_type,
@@ -981,7 +980,7 @@ http.route({
             });
 
             // Save Paystack customer ID if available
-            if (customer && customer.id) {
+            if (customer?.id) {
               await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
                 walletId: wallet._id,
                 customerId: customer.id.toString(),
@@ -994,9 +993,9 @@ http.route({
             }
           }
         }
-      } else if (event.event === "transfer.success") {
+      } else if (event.event === 'transfer.success') {
         console.log(event);
-        console.log("Processing transfer.success event");
+        console.log('Processing transfer.success event');
         const { reference, amount } = event.data;
 
         // Find the withdrawal transaction
@@ -1007,17 +1006,17 @@ http.route({
           }
         );
 
-        if (transaction && transaction.status !== "success") {
+        if (transaction && transaction.status !== 'success') {
           await ctx.runMutation(internal.transactions.updateTransaction, {
             transactionId: transaction._id,
-            status: "success",
+            status: 'success',
             currency: event.data.currency,
             paystackFees: event.data.fees,
           });
         }
-      } else if (event.event === "transfer.failed") {
+      } else if (event.event === 'transfer.failed') {
         console.log(event);
-        console.log("Processing transfer.failed event");
+        console.log('Processing transfer.failed event');
         const { reference, amount } = event.data;
 
         // Find the withdrawal transaction
@@ -1028,10 +1027,10 @@ http.route({
           }
         );
 
-        if (transaction && transaction.status !== "failed") {
+        if (transaction && transaction.status !== 'failed') {
           await ctx.runMutation(internal.transactions.updateTransaction, {
             transactionId: transaction._id,
-            status: "failed",
+            status: 'failed',
             currency: event.data.currency,
             paystackFees: event.data.fees,
           });
@@ -1052,23 +1051,23 @@ http.route({
 
       return new Response(null, { status: 200 });
     } catch (error) {
-      console.error("Error processing Paystack webhook:", error);
-      return new Response("Internal server error", { status: 500 });
+      console.error('Error processing Paystack webhook:', error);
+      return new Response('Internal server error', { status: 500 });
     }
   }),
 });
 
 http.route({
-  path: "/paystack/verify-account",
-  method: "OPTIONS",
+  path: '/paystack/verify-account',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -1079,15 +1078,15 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/verify-account",
-  method: "POST",
+  path: '/paystack/verify-account',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1097,7 +1096,7 @@ http.route({
 
     if (!(account_number && bank_code)) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: 'Missing required fields' }),
         {
           status: 400,
           headers,
@@ -1109,10 +1108,10 @@ http.route({
       const response = await fetch(
         `https://api.paystack.co/bank/resolve?account_number=${account_number}&bank_code=${bank_code}`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
             Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
         }
       );
@@ -1121,15 +1120,15 @@ http.route({
 
       if (!data.status) {
         return new Response(
-          JSON.stringify({ error: data.message || "Failed to verify account" }),
+          JSON.stringify({ error: data.message || 'Failed to verify account' }),
           { status: 400, headers }
         );
       }
 
       return new Response(JSON.stringify(data), { status: 200, headers });
     } catch (error) {
-      console.error("Error verifying account:", error);
-      return new Response(JSON.stringify({ error: "Internal server error" }), {
+      console.error('Error verifying account:', error);
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
         status: 500,
         headers,
       });
@@ -1138,9 +1137,9 @@ http.route({
 });
 
 http.route({
-  path: "/paystack/transfer-webhook",
-  method: "POST",
-  handler: httpAction(async (ctx, request) => {
+  path: '/paystack/transfer-webhook',
+  method: 'POST',
+  handler: httpAction(async (_ctx, request) => {
     const event = await request.json();
 
     console.log(event);
@@ -1150,16 +1149,16 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/charge-ad",
-  method: "OPTIONS",
+  path: '/wallet/charge-ad',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = request.headers;
 
     if (
-      headers.get("Origin") !== null &&
-      headers.get("Access-Control-Request-Method") !== null &&
-      headers.get("Access-Control-Request-Headers") !== null
+      headers.get('Origin') !== null &&
+      headers.get('Access-Control-Request-Method') !== null &&
+      headers.get('Access-Control-Request-Headers') !== null
     ) {
       return new Response(null, {
         headers: getCorsHeaders(origin),
@@ -1170,15 +1169,15 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/charge-ad",
-  method: "POST",
+  path: '/wallet/charge-ad',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1188,7 +1187,7 @@ http.route({
 
     if (!(amount && plan && userId && walletId)) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields" }),
+        JSON.stringify({ error: 'Missing required fields' }),
         {
           status: 400,
           headers,
@@ -1203,7 +1202,7 @@ http.route({
       });
 
       if (!wallet) {
-        return new Response(JSON.stringify({ error: "Wallet not found" }), {
+        return new Response(JSON.stringify({ error: 'Wallet not found' }), {
           status: 404,
           headers,
         });
@@ -1211,7 +1210,7 @@ http.route({
 
       // Check if user has sufficient balance
       if (wallet.balance < amount * 100) {
-        return new Response(JSON.stringify({ error: "Insufficient balance" }), {
+        return new Response(JSON.stringify({ error: 'Insufficient balance' }), {
           status: 400,
           headers,
         });
@@ -1221,7 +1220,7 @@ http.route({
       const reference = await ctx.runAction(
         api.actions.generateTransactionReference,
         {
-          type: "ads_posting",
+          type: 'ads_posting',
         }
       );
 
@@ -1233,8 +1232,8 @@ http.route({
           walletId,
           reference,
           amount: amount * 100,
-          status: "success",
-          type: "ads_posting",
+          status: 'success',
+          type: 'ads_posting',
           description: `Payment for ${plan} ad posting plan`,
           metadata: {
             plan,
@@ -1251,7 +1250,7 @@ http.route({
       return new Response(
         JSON.stringify({
           status: true,
-          message: "Payment successful",
+          message: 'Payment successful',
           data: {
             transactionId,
             reference,
@@ -1262,8 +1261,8 @@ http.route({
         { status: 200, headers }
       );
     } catch (error) {
-      console.error("Error processing ad posting charge:", error);
-      return new Response(JSON.stringify({ error: "Internal server error" }), {
+      console.error('Error processing ad posting charge:', error);
+      return new Response(JSON.stringify({ error: 'Internal server error' }), {
         status: 500,
         headers,
       });
@@ -1274,23 +1273,23 @@ http.route({
 // PIN Management Endpoints
 
 http.route({
-  path: "/wallet/pin/check",
-  method: "OPTIONS",
+  path: '/wallet/pin/check',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 http.route({
-  path: "/wallet/pin/check",
-  method: "GET",
+  path: '/wallet/pin/check',
+  method: 'GET',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1309,24 +1308,24 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/pin/create",
-  method: "OPTIONS",
+  path: '/wallet/pin/create',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 
 http.route({
-  path: "/wallet/pin/create",
-  method: "POST",
+  path: '/wallet/pin/create',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1334,7 +1333,7 @@ http.route({
 
     const { pin } = await request.json();
     if (!pin) {
-      return new Response(JSON.stringify({ error: "PIN is required" }), {
+      return new Response(JSON.stringify({ error: 'PIN is required' }), {
         status: 400,
         headers,
       });
@@ -1343,7 +1342,7 @@ http.route({
     // Validate PIN format (6 digits)
     if (!/^\d{6}$/.test(pin)) {
       return new Response(
-        JSON.stringify({ error: "PIN must be exactly 6 digits" }),
+        JSON.stringify({ error: 'PIN must be exactly 6 digits' }),
         { status: 400, headers }
       );
     }
@@ -1351,7 +1350,7 @@ http.route({
     try {
       const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
-        return new Response(JSON.stringify({ error: "User not found" }), {
+        return new Response(JSON.stringify({ error: 'User not found' }), {
           status: 404,
           headers,
         });
@@ -1377,24 +1376,24 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/pin/verify",
-  method: "OPTIONS",
+  path: '/wallet/pin/verify',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 
 http.route({
-  path: "/wallet/pin/verify",
-  method: "POST",
+  path: '/wallet/pin/verify',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1402,7 +1401,7 @@ http.route({
 
     const { pin } = await request.json();
     if (!pin) {
-      return new Response(JSON.stringify({ error: "PIN is required" }), {
+      return new Response(JSON.stringify({ error: 'PIN is required' }), {
         status: 400,
         headers,
       });
@@ -1411,7 +1410,7 @@ http.route({
     try {
       const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
-        return new Response(JSON.stringify({ error: "User not found" }), {
+        return new Response(JSON.stringify({ error: 'User not found' }), {
           status: 404,
           headers,
         });
@@ -1445,7 +1444,7 @@ http.route({
           });
           return new Response(
             JSON.stringify({
-              error: "Too many failed attempts. Wallet locked for 5 minutes.",
+              error: 'Too many failed attempts. Wallet locked for 5 minutes.',
             }),
             { status: 400, headers }
           );
@@ -1468,7 +1467,7 @@ http.route({
       });
 
       return new Response(
-        JSON.stringify({ success: true, message: "PIN verified successfully" }),
+        JSON.stringify({ success: true, message: 'PIN verified successfully' }),
         {
           status: 200,
           headers,
@@ -1484,24 +1483,24 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/pin/change",
-  method: "OPTIONS",
+  path: '/wallet/pin/change',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 
 http.route({
-  path: "/wallet/pin/change",
-  method: "POST",
+  path: '/wallet/pin/change',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1510,7 +1509,7 @@ http.route({
     const { currentPin, newPin } = await request.json();
     if (!(currentPin && newPin)) {
       return new Response(
-        JSON.stringify({ error: "Both current PIN and new PIN are required" }),
+        JSON.stringify({ error: 'Both current PIN and new PIN are required' }),
         { status: 400, headers }
       );
     }
@@ -1518,7 +1517,7 @@ http.route({
     // Validate new PIN format
     if (!/^\d{6}$/.test(newPin)) {
       return new Response(
-        JSON.stringify({ error: "New PIN must be exactly 6 digits" }),
+        JSON.stringify({ error: 'New PIN must be exactly 6 digits' }),
         { status: 400, headers }
       );
     }
@@ -1526,7 +1525,7 @@ http.route({
     try {
       const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
-        return new Response(JSON.stringify({ error: "User not found" }), {
+        return new Response(JSON.stringify({ error: 'User not found' }), {
           status: 404,
           headers,
         });
@@ -1548,7 +1547,7 @@ http.route({
 
       if (!isCurrentPinValid) {
         return new Response(
-          JSON.stringify({ error: "Current PIN is incorrect" }),
+          JSON.stringify({ error: 'Current PIN is incorrect' }),
           { status: 400, headers }
         );
       }
@@ -1575,24 +1574,24 @@ http.route({
 });
 
 http.route({
-  path: "/wallet/transfer",
-  method: "OPTIONS",
+  path: '/wallet/transfer',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 
 http.route({
-  path: "/wallet/transfer",
-  method: "POST",
+  path: '/wallet/transfer',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1602,7 +1601,7 @@ http.route({
     if (!(sellerId && amount && pin)) {
       return new Response(
         JSON.stringify({
-          error: "Missing required fields: sellerId, amount, pin",
+          error: 'Missing required fields: sellerId, amount, pin',
         }),
         { status: 400, headers }
       );
@@ -1612,7 +1611,7 @@ http.route({
       // First verify the PIN
       const user = await ctx.runQuery(api.users.current, {});
       if (!user) {
-        return new Response(JSON.stringify({ error: "User not found" }), {
+        return new Response(JSON.stringify({ error: 'User not found' }), {
           status: 404,
           headers,
         });
@@ -1646,7 +1645,7 @@ http.route({
           });
           return new Response(
             JSON.stringify({
-              error: "Too many failed attempts. Wallet locked for 15 minutes.",
+              error: 'Too many failed attempts. Wallet locked for 15 minutes.',
             }),
             { status: 400, headers }
           );
@@ -1669,7 +1668,7 @@ http.route({
       });
 
       // Validate and format productIds array
-      let validatedProductIds: Id<"product">[] = [];
+      let validatedProductIds: Id<'product'>[] = [];
       if (productIds && Array.isArray(productIds)) {
         validatedProductIds = productIds;
       }
@@ -1678,7 +1677,7 @@ http.route({
       const result = await ctx.runMutation(
         api.wallet.transferToUserWithEscrow,
         {
-          sellerId: sellerId as Id<"users">,
+          sellerId: sellerId as Id<'users'>,
           amount: Number(amount),
           productIds: validatedProductIds,
         }
@@ -1686,10 +1685,10 @@ http.route({
 
       return new Response(JSON.stringify(result), { status: 200, headers });
     } catch (error: any) {
-      console.error("Error during transfer:", error);
+      console.error('Error during transfer:', error);
       return new Response(
         JSON.stringify({
-          error: error.message || "An internal error occurred.",
+          error: error.message || 'An internal error occurred.',
         }),
         { status: 500, headers }
       );
@@ -1698,24 +1697,24 @@ http.route({
 });
 
 http.route({
-  path: "/orders/confirm-completion",
-  method: "OPTIONS",
+  path: '/orders/confirm-completion',
+  method: 'OPTIONS',
   handler: httpAction(async (_, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     return new Response(null, { headers: getCorsHeaders(origin) });
   }),
 });
 
 http.route({
-  path: "/orders/confirm-completion",
-  method: "POST",
+  path: '/orders/confirm-completion',
+  method: 'POST',
   handler: httpAction(async (ctx, request) => {
-    const origin = request.headers.get("Origin");
+    const origin = request.headers.get('Origin');
     const headers = getJsonHeaders(origin);
 
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
         headers,
       });
@@ -1724,22 +1723,22 @@ http.route({
     const { orderId } = await request.json();
     if (!orderId) {
       return new Response(
-        JSON.stringify({ error: "Missing required field: orderId" }),
+        JSON.stringify({ error: 'Missing required field: orderId' }),
         { status: 400, headers }
       );
     }
 
     try {
       const result = await ctx.runMutation(api.orders.confirmOrderCompletion, {
-        orderId: orderId as Id<"orders">,
+        orderId: orderId as Id<'orders'>,
       });
 
       return new Response(JSON.stringify(result), { status: 200, headers });
     } catch (error: any) {
-      console.error("Error during order confirmation:", error);
+      console.error('Error during order confirmation:', error);
       return new Response(
         JSON.stringify({
-          error: error.message || "An internal error occurred.",
+          error: error.message || 'An internal error occurred.',
         }),
         { status: 500, headers }
       );
@@ -1748,8 +1747,8 @@ http.route({
 });
 
 http.route({
-  path: "/resend-webhook",
-  method: "POST",
+  path: '/resend-webhook',
+  method: 'POST',
   handler: httpAction(async (ctx, req) => {
     const resendClient = resend;
     if (!resendClient) {

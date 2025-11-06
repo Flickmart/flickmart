@@ -1,9 +1,9 @@
 import { CheckCircle, Clock, Slash, XCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
-interface TransactionStatusBadgeProps {
+type TransactionStatusBadgeProps = {
   status: string;
-}
+};
 
 export function TransactionStatusBadge({
   status,

@@ -16,29 +16,39 @@ export const confirmOrderCompletion = mutation({
     if (!currentUser) {
       throw new Error('Order not found.');
     }
-    if (!order) throw new Error('Order not found.');
-    if (order.status !== 'in_escrow')
+    if (!order) {
+      throw new Error('Order not found.');
+    }
+    if (order.status !== 'in_escrow') {
       throw new Error(
         `Cannot confirm completion for an order with status: ${order.status}`
       );
+    }
 
     const isBuyer = order.buyerId === currentUser._id;
     const isSeller = order.sellerId === currentUser._id;
 
-    if (!(isBuyer || isSeller))
+    if (!(isBuyer || isSeller)) {
       throw new Error('You are not part of this order.');
+    }
 
     // Update confirmation status
-    if (isBuyer)
+    if (isBuyer) {
       await ctx.db.patch(order._id, { buyerConfirmedCompletion: true });
-    else await ctx.db.patch(order._id, { sellerConfirmedCompletion: true });
+    } else {
+      await ctx.db.patch(order._id, { sellerConfirmedCompletion: true });
+    }
 
     const updatedOrder = await ctx.db.get(args.orderId);
-    if (!updatedOrder) throw new Error('Order vanished after update.');
+    if (!updatedOrder) {
+      throw new Error('Order vanished after update.');
+    }
 
     const seller = await ctx.db.get(updatedOrder.sellerId);
 
-    if (!seller) throw new Error('Seller not found.');
+    if (!seller) {
+      throw new Error('Seller not found.');
+    }
 
     // Check if BOTH parties have now confirmed
     if (
@@ -50,8 +60,9 @@ export const confirmOrderCompletion = mutation({
         .query('wallets')
         .withIndex('by_user', (q) => q.eq('userId', updatedOrder.sellerId))
         .unique();
-      if (!sellerWallet)
+      if (!sellerWallet) {
         throw new Error("Seller's wallet not found for fund release.");
+      }
 
       // 1. Credit Seller's wallet
       await ctx.runMutation(internal.wallet.updateBalance, {
@@ -68,11 +79,12 @@ export const confirmOrderCompletion = mutation({
         .query('escrows')
         .withIndex('by_order', (q) => q.eq('orderId', updatedOrder._id))
         .unique();
-      if (escrow)
+      if (escrow) {
         await ctx.db.patch(escrow._id, {
           status: 'released',
           releasedAt: Date.now(),
         });
+      }
 
       // 3. Log "transfer_in" transaction for seller
       const timestamp = Date.now();

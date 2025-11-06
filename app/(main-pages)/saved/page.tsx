@@ -2,11 +2,10 @@
 import { useQuery } from 'convex/react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SyncLoader } from 'react-spinners';
 import BookedMarkedItem from '@/components/BookMarkedItem';
-import Loader from '@/components/multipage/Loader';
 import Empty from '@/components/saved/Empty';
 import { api } from '@/convex/_generated/api';
 
@@ -67,54 +66,50 @@ export default function SavedPage() {
         <div className="flex w-full flex-grow items-center justify-center">
           <SyncLoader color="#f97316" />
         </div>
-      ) : (
-        <>
-          {selectedTab ? (
-            <motion.div
-              animate={{ opacity: 1, x: 0 }}
-              className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-5"
-              initial={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
-            >
-              {wishlistLength === 0 ? (
-                <Empty message="Your wishlist is empty" />
-              ) : (
-                wishlist?.data
-                  ?.slice()
-                  .reverse()
-                  .map((item) => {
-                    return (
-                      <Link href={`/product/${item?._id}`} key={item?._id}>
-                        <BookedMarkedItem product={item!} type="wishlist" />
-                      </Link>
-                    );
-                  })
-              )}
-            </motion.div>
+      ) : selectedTab ? (
+        <motion.div
+          animate={{ opacity: 1, x: 0 }}
+          className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-5"
+          initial={{ opacity: 0, x: 50 }}
+          transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
+        >
+          {wishlistLength === 0 ? (
+            <Empty message="Your wishlist is empty" />
           ) : (
-            <motion.div
-              animate={{ opacity: 1, x: 0 }}
-              className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-10"
-              initial={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
-            >
-              {savedLength === 0 ? (
-                <Empty message="You have no saved items" />
-              ) : (
-                saved?.data
-                  ?.slice()
-                  .reverse()
-                  .map((item) => {
-                    return (
-                      <Link href={`/product/${item?._id}`} key={item?._id}>
-                        <BookedMarkedItem product={item!} type="saved" />
-                      </Link>
-                    );
-                  })
-              )}
-            </motion.div>
+            wishlist?.data
+              ?.slice()
+              .reverse()
+              .map((item) => {
+                return (
+                  <Link href={`/product/${item?._id}`} key={item?._id}>
+                    <BookedMarkedItem product={item!} type="wishlist" />
+                  </Link>
+                );
+              })
           )}
-        </>
+        </motion.div>
+      ) : (
+        <motion.div
+          animate={{ opacity: 1, x: 0 }}
+          className="mx-auto mt-3 flex w-[95%] flex-col gap-3 pb-10"
+          initial={{ opacity: 0, x: 50 }}
+          transition={{ duration: 0.5, type: 'tween', ease: 'easeInOut' }}
+        >
+          {savedLength === 0 ? (
+            <Empty message="You have no saved items" />
+          ) : (
+            saved?.data
+              ?.slice()
+              .reverse()
+              .map((item) => {
+                return (
+                  <Link href={`/product/${item?._id}`} key={item?._id}>
+                    <BookedMarkedItem product={item!} type="saved" />
+                  </Link>
+                );
+              })
+          )}
+        </motion.div>
       )}
     </main>
   );

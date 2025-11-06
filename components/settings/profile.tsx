@@ -36,11 +36,11 @@ import { useAuthUser } from '@/hooks/useAuthUser';
 import { Dialog } from '../ui/dialog';
 import VerificationDialog from './VerificationDialog';
 
-interface ProfileField {
+type ProfileField = {
   icon: React.ElementType;
   title: string;
   value: string;
-}
+};
 
 const SectionHeader = ({ title }: { title: string }) => (
   <h2 className="font-semibold text-lg">{title}</h2>
@@ -240,7 +240,9 @@ export default function MarketplaceProfile() {
                   <Button
                     className="flex gap-0 pr-3 pl-2"
                     onClick={() => {
-                      if (!phoneError) setIsEditMode(false);
+                      if (!phoneError) {
+                        setIsEditMode(false);
+                      }
                     }}
                   >
                     <Check className="mr-2 h-4 w-4" />
@@ -290,7 +292,9 @@ export default function MarketplaceProfile() {
                     )}
                     key={index}
                     onClick={() => {
-                      if (innerWidth > 640 || isEditMode) return;
+                      if (innerWidth > 640 || isEditMode) {
+                        return;
+                      }
                       setIsEditMode(field.title);
                       setPrevValue(field.value);
                     }}
@@ -299,7 +303,7 @@ export default function MarketplaceProfile() {
                     <div>
                       <SectionHeader title={field.title} />
                       <div className="mt-1">
-                        {(isEditMode == field.title || isEditMode === true) &&
+                        {(isEditMode === field.title || isEditMode === true) &&
                         field.title !== 'Email' ? (
                           <form onSubmit={(e) => handleSubmit(e, field, index)}>
                             {field.title === 'About' ? (

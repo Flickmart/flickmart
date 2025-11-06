@@ -1,7 +1,7 @@
 "use client";
 import { useQuery } from "convex/react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { api } from "@/convex/_generated/api";
 import { useIsMobile } from "@/hooks/use-mobile";
 import ProductCard from "../multipage/ProductCard";

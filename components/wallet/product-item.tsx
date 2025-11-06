@@ -1,6 +1,5 @@
 'use client';
 
-import { CheckCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,11 +7,11 @@ import { Checkbox } from '@/components/ui/checkbox';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
 
-interface ProductItemProps {
+type ProductItemProps = {
   product: Doc<'product'>;
   isSelected: boolean;
   onToggle: (productId: Id<'product'>) => void;
-}
+};
 
 export default function ProductItem({
   product,

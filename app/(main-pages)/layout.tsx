@@ -1,23 +1,26 @@
-"use client"
-import { useEffect, useState, type ReactNode } from "react";
-import CookieConsent from "@/components/CookieConsent";
-import Navbar from "@/components/Navbar";
-import InstallPrompt from "@/components/InstallPrompt";
+'use client';
+import { type ReactNode, useEffect, useState } from 'react';
+import CookieConsent from '@/components/CookieConsent';
+import InstallPrompt from '@/components/InstallPrompt';
+import Navbar from '@/components/Navbar';
 
 const layout = ({ children }: { children: ReactNode }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState< Event | null>(null)
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
 
-  useEffect(()=>{
+  useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault();
-      console.log(e)
-      setDeferredPrompt(e) 
+      console.log(e);
+      setDeferredPrompt(e);
     };
     window?.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     return () => {
-      window?.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window?.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
     };
-  },[])
+  }, []);
   return (
     <>
       <InstallPrompt promptEvent={deferredPrompt} />

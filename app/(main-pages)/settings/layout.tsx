@@ -1,7 +1,6 @@
 'use client';
 import Loader from '@/components/multipage/Loader';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { Id } from '@/convex/_generated/dataModel';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
 export default function DashboardLayout({
@@ -9,7 +8,7 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const {  isLoading, isAuthenticated } =  useAuthUser();
+  const { isLoading, isAuthenticated } = useAuthUser();
 
   if (isLoading) {
     return (

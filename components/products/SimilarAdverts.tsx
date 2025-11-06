@@ -1,9 +1,8 @@
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import React from "react";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import ProductCard from "../multipage/ProductCard";
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import ProductCard from '../multipage/ProductCard';
 
 export default function SimilarAdverts({
   productId,

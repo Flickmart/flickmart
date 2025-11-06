@@ -77,7 +77,6 @@ export const sendPushNotification = action({
       process.env.VAPID_PRIVATE_KEY!
     );
 
-
     let sentCount = 0;
     let failedCount = 0;
 
@@ -103,7 +102,7 @@ export const sendPushNotification = action({
             subscriptionId: subscription._id,
           }
         );
-      // biome-ignore lint/suspicious/noExplicitAny: <error is not typed>
+        // biome-ignore lint/suspicious/noExplicitAny: <error is not typed>
       } catch (error: any) {
         console.error('❌ Push notification failed for device:', error);
         console.error('Error details:', {

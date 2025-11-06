@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/style/useBlockStatements: <if statements and early returns would suffice> */
-export interface ServiceWorkerRegistrationOptions {
+export type ServiceWorkerRegistrationOptions = {
   scope?: string;
   updateViaCache?: ServiceWorkerUpdateViaCache;
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
   onSuccess?: (registration: ServiceWorkerRegistration) => void;
   onError?: (error: Error) => void;
-}
+};
 
 class ServiceWorkerManager {
   private static instance: ServiceWorkerManager;
@@ -83,8 +83,14 @@ class ServiceWorkerManager {
 
     try {
       const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map((reg) => reg.unregister()));
-      console.log('Unregistered old service workers');
+      // Only unregister service workers with different scopes to preserve existing push subscriptions
+      const currentScope = `${window.location.origin}/`;
+      await Promise.all(
+        registrations
+          .filter((reg) => reg.scope !== currentScope)
+          .map((reg) => reg.unregister())
+      );
+      console.log('Unregistered old service workers with different scopes');
     } catch (error) {
       console.error('Error unregistering old service workers:', error);
     }

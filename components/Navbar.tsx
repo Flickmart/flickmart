@@ -1,16 +1,9 @@
-"use client";
+'use client';
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  SignOutButton,
-  useUser,
-} from "@clerk/nextjs";
-import { useQuery } from "convex/react";
+import { SignedIn, SignedOut, SignOutButton, useUser } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
 import {
   Bell,
-  ChevronDown,
   Heart,
   Loader2,
   LogOut,
@@ -21,12 +14,12 @@ import {
   Store,
   User,
   Wallet,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type React from "react";
-import { useState } from "react";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import type React from 'react';
+import { useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -34,7 +27,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Sheet,
   SheetContent,
@@ -49,6 +42,7 @@ import { Button } from "./ui/button";
 import Logo from "./multipage/Logo";
 import SearchBox from "./SearchBox";
 import SearchOverlay from "./SearchOverlay";
+import { ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
   const { isSignedIn, isLoaded, user } = useUser();
@@ -57,7 +51,7 @@ export default function Navbar() {
     useQuery(api.notifications.getUnreadNotifications) || [];
   const wishlistLength =
     useQuery(api.product.getAllSavedOrWishlist, {
-      type: "wishlist",
+      type: 'wishlist',
     })?.data?.length || 0;
 
   const userStore = useQuery(api.store.getStoresByUserId);

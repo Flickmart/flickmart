@@ -1,10 +1,10 @@
-import { useMutation, useQuery } from "convex/react";
-import { ArrowLeft, X } from "lucide-react";
-import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import SearchInput from "./SearchInput";
+import { useMutation, useQuery } from 'convex/react';
+import { ArrowLeft, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import SearchInput from './SearchInput';
 
 // const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
 
@@ -17,22 +17,22 @@ export default function SearchOverlay({
   open: boolean;
   openSearch: (val: boolean) => void;
 }) {
-  const [autoSuggest, setAutoSuggest] = useState<Array<string>>([]);
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [autoSuggest, setAutoSuggest] = useState<string[]>([]);
+  const [searchValue, setSearchValue] = useState<string>('');
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const router = useRouter();
   const focusRef = useRef<HTMLInputElement>(null);
-  function updateAutoSuggest(values: Array<string>, search: string) {
+  function updateAutoSuggest(values: string[], search: string) {
     setAutoSuggest(values);
     setSearchValue(search);
   }
   useEffect(() => {
     focusRef.current?.focus();
     if (open) {
-      document.body.classList.add("overflow-y-hidden");
+      document.body.classList.add('overflow-y-hidden');
     } else {
-      document.body.classList.remove("overflow-y-hidden");
+      document.body.classList.remove('overflow-y-hidden');
     }
   }, [open]);
   useEffect(() => {
@@ -47,11 +47,11 @@ export default function SearchOverlay({
         <motion.div
           animate={{ y: 0, x: 0 }}
           className="fixed inset-0 z-40 flex min-h-screen flex-col bg-white py-3"
-          initial={{ y: "100%", x: "-100%" }}
+          initial={{ y: '100%', x: '-100%' }}
           transition={{
             duration: 0.2,
-            type: "tween",
-            ease: "easeInOut",
+            type: 'tween',
+            ease: 'easeInOut',
           }}
         >
           <div className="flex items-center justify-between gap-3 px-3 py-3 text-gray-600 shadow-md">
@@ -60,7 +60,7 @@ export default function SearchOverlay({
               <SearchInput
                 isOverlayOpen={open}
                 openSearch={openSearch}
-                query={query ?? ""}
+                query={query ?? ''}
                 ref={focusRef}
                 updateAutoSuggest={updateAutoSuggest}
               />
@@ -70,8 +70,8 @@ export default function SearchOverlay({
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
                 {(retrievePreviousInputs?.data?.length ?? 0) > 0
-                  ? "recent searches"
-                  : "no recent searches"}
+                  ? 'recent searches'
+                  : 'no recent searches'}
               </p>
               {retrievePreviousInputs?.data?.map((item) => {
                 return (
@@ -106,7 +106,7 @@ export default function SearchOverlay({
           ) : (
             <div className="flex-grow pt-3">
               <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
-                {autoSuggest?.length > 0 && "suggestions"}
+                {autoSuggest?.length > 0 && 'suggestions'}
               </p>
               {autoSuggest?.map((item, index) => (
                 <p

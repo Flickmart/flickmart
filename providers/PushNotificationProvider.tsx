@@ -3,11 +3,11 @@
 'use client';
 
 import { useUser } from '@clerk/nextjs';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '@/convex/_generated/api';
 
-interface PushNotificationContextType {
+type PushNotificationContextType = {
   isSupported: boolean;
   permission: NotificationPermission | null;
   isSubscribed: boolean;
@@ -15,7 +15,7 @@ interface PushNotificationContextType {
   promptForPermission: () => Promise<boolean>;
   subscribe: () => Promise<boolean>;
   unsubscribe: () => Promise<boolean>;
-}
+};
 
 const PushNotificationContext =
   createContext<PushNotificationContextType | null>(null);
@@ -30,9 +30,9 @@ export function usePushNotifications() {
   return context;
 }
 
-interface PushNotificationProviderProps {
+type PushNotificationProviderProps = {
   children: React.ReactNode;
-}
+};
 
 export function PushNotificationProvider({
   children,
@@ -44,6 +44,13 @@ export function PushNotificationProvider({
   );
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [validatingEndpoint, setValidatingEndpoint] = useState<string | null>(
+    null
+  );
+  const [validationPromise, setValidationPromise] = useState<{
+    resolve: (value: boolean) => void;
+    endpoint: string;
+  } | null>(null);
 
   const savePushSubscription = useMutation(
     api.notifications.savePushSubscription
@@ -51,6 +58,53 @@ export function PushNotificationProvider({
   const removePushSubscriptionByEndpoint = useMutation(
     api.notifications.removePushSubscriptionByEndpoint
   );
+  const getCurrentDeviceSubscription = useQuery(
+    api.notifications.getCurrentDeviceSubscription,
+    validatingEndpoint ? { endpoint: validatingEndpoint } : 'skip'
+  );
+
+  // Handle validation query response
+  useEffect(() => {
+    if (
+      validatingEndpoint &&
+      validationPromise &&
+      validationPromise.endpoint === validatingEndpoint
+    ) {
+      const dbSubscription = getCurrentDeviceSubscription;
+
+      if (dbSubscription !== undefined) {
+        // Query has returned with a result
+        let isValid = false;
+
+        if (!dbSubscription) {
+          console.log(
+            'No active subscription found in database for endpoint:',
+            validatingEndpoint
+          );
+          isValid = false;
+        } else if (dbSubscription.isActive) {
+          console.log(
+            'Subscription validation successful for endpoint:',
+            validatingEndpoint
+          );
+          isValid = true;
+        } else {
+          console.log(
+            'Subscription found but is inactive for endpoint:',
+            validatingEndpoint
+          );
+          isValid = false;
+        }
+
+        // Resolve the promise with the validation result
+        validationPromise.resolve(isValid);
+
+        // Clear validation state
+        setValidationPromise(null);
+        setValidatingEndpoint(null);
+      }
+    }
+  }, [validatingEndpoint, validationPromise, getCurrentDeviceSubscription]);
 
   // Check if push notifications are supported
   useEffect(() => {
@@ -60,7 +114,10 @@ export function PushNotificationProvider({
 
       if (supported) {
         setPermission(Notification.permission);
-        checkSubscriptionStatus();
+        // Wait a bit for service worker to be fully ready before checking subscription
+        setTimeout(() => {
+          checkSubscriptionStatus();
+        }, 100);
       } else {
         setIsLoading(false);
       }
@@ -90,12 +147,66 @@ export function PushNotificationProvider({
     promptForNotifications();
   }, [isSupported, user, permission, isLoading, isSubscribed]);
 
+  const cleanupInvalidSubscription = async (
+    subscription: PushSubscription,
+    reason: string
+  ): Promise<void> => {
+    try {
+      console.log(
+        `Cleaning up invalid subscription (${reason}):`,
+        subscription.endpoint
+      );
+      await subscription.unsubscribe();
+      console.log('Successfully cleaned up invalid browser subscription');
+    } catch (unsubscribeError) {
+      console.error(
+        'Failed to unsubscribe from invalid subscription:',
+        unsubscribeError
+      );
+    }
+  };
+
+  const validateSubscription = async (
+    subscription: PushSubscription
+  ): Promise<boolean> => {
+    try {
+      if (!subscription?.endpoint) {
+        console.warn('Subscription validation failed: no endpoint');
+        return false;
+      }
+
+      const endpoint = subscription.endpoint;
+      console.log('Validating subscription for endpoint:', endpoint);
+
+      // Create a promise that will be resolved by the useEffect
+      const validationPromise = new Promise<boolean>((resolve) => {
+        setValidationPromise({ resolve, endpoint });
+        setValidatingEndpoint(endpoint);
+      });
+
+      // Wait for the query to complete and the useEffect to resolve the promise
+      const isValid = await validationPromise;
+
+      return isValid;
+    } catch (error) {
+      console.error('Error validating subscription:', error);
+      setValidationPromise(null);
+      setValidatingEndpoint(null);
+      return false;
+    }
+  };
+
   const checkSubscriptionStatus = async () => {
     try {
       if (!('serviceWorker' in navigator && user)) {
+        console.log(
+          'Push notifications not supported or user not authenticated'
+        );
         setIsLoading(false);
         return;
       }
+
+      console.log('Checking subscription status for user:', user.id);
 
       const registration = await navigator.serviceWorker.ready;
 
@@ -106,11 +217,25 @@ export function PushNotificationProvider({
         return;
       }
 
+      console.log('Service worker is ready, checking push subscription...');
+
       const subscription = await registration.pushManager.getSubscription();
 
       if (subscription) {
-        setIsSubscribed(true);
+        // Validate subscription exists in database and is active
+        const isValid = await validateSubscription(subscription);
+        setIsSubscribed(isValid);
+
+        if (isValid) {
+          console.log('Subscription validated successfully');
+        } else {
+          await cleanupInvalidSubscription(
+            subscription,
+            'exists in browser but not in database'
+          );
+        }
       } else {
+        console.log('No browser subscription found');
         setIsSubscribed(false);
       }
 
@@ -118,6 +243,7 @@ export function PushNotificationProvider({
     } catch (error) {
       console.error('Error checking subscription status:', error);
       setIsLoading(false);
+      setIsSubscribed(false);
     }
   };
 
@@ -198,8 +324,8 @@ export function PushNotificationProvider({
 
       console.log(
         result.isNew
-          ? '✅ New device subscription created'
-          : '🔄 Existing device subscription updated'
+          ? ' New device subscription created'
+          : ' Existing device subscription updated'
       );
 
       setIsSubscribed(true);

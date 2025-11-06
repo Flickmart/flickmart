@@ -1,22 +1,20 @@
-import React from "react";
-import Logo from "./multipage/Logo";
-import { Button } from "./ui/button";
+import Logo from './multipage/Logo';
+import { Button } from './ui/button';
 
-interface Props {
+type Props = {
   handleInstallClick: () => void;
-}
+};
 
 export default function AddToMobileChrome(props: Props) {
-  const {  handleInstallClick } = props;
-
+  const { handleInstallClick } = props;
 
   return (
     <div
+      className="relative mx-2 my-4 flex h-20 w-full items-center justify-between rounded-xl bg-white px-6 lg:w-2/4"
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
       }}
-      className="bg-white flex justify-between px-6 items-center h-20 my-4 mx-2 rounded-xl w-full lg:w-2/4 relative"
     >
       {/* <div
         onClick={closePrompt}

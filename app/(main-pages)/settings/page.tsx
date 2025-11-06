@@ -93,7 +93,7 @@ export default function SettingsPage() {
   const [searchQuery, setSearchQuery] = React.useState('');
   const { isMobile, setOpenMobile } = useSidebar();
   const router = useRouter();
-  const user =useQuery(api.users.current, {});
+  const user = useQuery(api.users.current, {});
 
   React.useEffect(() => {
     if (isMobile) {
@@ -102,7 +102,9 @@ export default function SettingsPage() {
   }, [isMobile]);
 
   const filteredNavMain = React.useMemo(() => {
-    if (!searchQuery) return data.navMain;
+    if (!searchQuery) {
+      return data.navMain;
+    }
 
     return data.navMain
       .map((group) => ({
@@ -145,7 +147,7 @@ export default function SettingsPage() {
                 {user?.name}
               </span>
               <span className="truncate font-medium text-gray-600 text-xs">
-                {'@' + user?.username || 'No username'}
+                {`@${user?.username}` || 'No username'}
               </span>
             </div>
           </Link>

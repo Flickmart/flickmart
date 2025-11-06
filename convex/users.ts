@@ -1,6 +1,5 @@
 import type { UserJSON } from '@clerk/backend';
 import { type Validator, v } from 'convex/values';
-import { Id } from './_generated/dataModel';
 import {
   internalMutation,
   mutation,
@@ -11,8 +10,8 @@ import {
 export const current = query({
   args: { userId: v.optional(v.id('users')) },
   handler: async (ctx, args) => {
-    if(args.userId){
-    return await ctx.db.get(args.userId);
+    if (args.userId) {
+      return await ctx.db.get(args.userId);
     }
     return await getCurrentUser(ctx);
   },
@@ -35,7 +34,7 @@ export const updateUser = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw Error('Please Login First...');
+      throw new Error('Please Login First...');
     }
     args.allowNotifications !== undefined &&
       (await ctx.db.patch(user._id, {
@@ -128,7 +127,9 @@ export const updatePaystackCustomerId = internalMutation({
 // This is useful for server actions where you need to ensure a user exists
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
   const userRecord = await getCurrentUser(ctx);
-  if (!userRecord) return null;
+  if (!userRecord) {
+    return null;
+  }
   return userRecord;
 }
 

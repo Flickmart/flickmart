@@ -1,19 +1,19 @@
 import { toast } from 'sonner';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 
-interface ChatParams {
+type ChatParams = {
   user: Doc<'users'> | null;
   userId: Id<'users'>;
   onNavigate: (path: string) => void;
   productId?: Id<'product'>;
-}
-interface ShareParams {
+};
+type ShareParams = {
   title: string;
   description: string;
   productId?: Id<'product'>;
   url?: string;
   price?: number;
-}
+};
 
 export const initialChat = async ({
   user,

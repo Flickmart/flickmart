@@ -1,25 +1,20 @@
-"use client";
+'use client';
 
-// import { addCategories } from "@/utils/addCategory";
-import { useMutation } from "convex/react";
-import React, { useEffect, useRef } from "react";
-import { toast } from "sonner";
+import { useRef } from 'react';
 import {
   Carousel,
-  type CarouselApi,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
-import { api } from "@/convex/_generated/api";
-import useSlider from "@/hooks/useSlider";
+} from '@/components/ui/carousel';
+import useSlider from '@/hooks/useSlider';
 
 export default function Slider() {
   const banners = [
-    "flick-ban-5.jpg",
-    "flick-ban-6.jpg",
-    "flick-ban-7.jpg",
-    "flick-ban-3.jpg",
-    "flick-ban-4.jpg",
+    'flick-ban-5.jpg',
+    'flick-ban-6.jpg',
+    'flick-ban-7.jpg',
+    'flick-ban-3.jpg',
+    'flick-ban-4.jpg',
   ];
   const { setApi } = useSlider();
   const catRef = useRef<HTMLDivElement>(null);

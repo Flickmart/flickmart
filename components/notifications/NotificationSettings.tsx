@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import { usePushNotifications } from "@/providers/PushNotificationProvider";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Bell, BellOff, Smartphone, AlertCircle } from "lucide-react";
-import { DeviceSubscriptions } from "./DeviceSubscriptions";
-import { toast } from "sonner";
+import { AlertCircle, Bell, BellOff, Smartphone } from 'lucide-react';
+import { toast } from 'sonner';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { usePushNotifications } from '@/providers/PushNotificationProvider';
+import { DeviceSubscriptions } from './DeviceSubscriptions';
 
 export function NotificationSettings() {
   const {
@@ -25,26 +25,26 @@ export function NotificationSettings() {
     try {
       if (isSubscribed) {
         await unsubscribe();
-        toast.success("Push notifications disabled for this device");
+        toast.success('Push notifications disabled for this device');
       } else {
         const success = await subscribe();
         if (success) {
-          toast.success("Push notifications enabled for this device");
+          toast.success('Push notifications enabled for this device');
         }
       }
     } catch (error) {
-      toast.error("Failed to update notification settings");
-      console.error("Error toggling notifications:", error);
+      toast.error('Failed to update notification settings');
+      console.error('Error toggling notifications:', error);
     }
   };
 
   const getPermissionBadge = () => {
     switch (permission) {
-      case "granted":
+      case 'granted':
         return <Badge className="bg-green-100 text-green-800">Allowed</Badge>;
-      case "denied":
+      case 'denied':
         return <Badge variant="destructive">Blocked</Badge>;
-      case "default":
+      case 'default':
         return <Badge variant="secondary">Not Asked</Badge>;
       default:
         return <Badge variant="outline">Unknown</Badge>;
@@ -84,23 +84,23 @@ export function NotificationSettings() {
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label htmlFor="push-notifications">Push Notifications</Label>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 Receive notifications on this device
               </div>
             </div>
             <div className="flex items-center gap-2">
               {getPermissionBadge()}
               <Switch
-                id="push-notifications"
                 checked={isSubscribed}
+                disabled={isLoading || permission === 'denied'}
+                id="push-notifications"
                 onCheckedChange={handleToggleNotifications}
-                disabled={isLoading || permission === "denied"}
               />
             </div>
           </div>
 
-          {permission === "denied" && (
-            <div className="p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+          {permission === 'denied' && (
+            <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-3">
               <div className="flex items-center gap-2 text-destructive text-sm">
                 <AlertCircle className="h-4 w-4" />
                 Notifications are blocked. Please enable them in your browser
@@ -109,19 +109,19 @@ export function NotificationSettings() {
             </div>
           )}
 
-          {permission === "default" && !isSubscribed && (
+          {permission === 'default' && !isSubscribed && (
             <Button
-              onClick={promptForPermission}
-              disabled={isLoading}
               className="w-full"
+              disabled={isLoading}
+              onClick={promptForPermission}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="mr-2 h-4 w-4" />
               Enable Notifications
             </Button>
           )}
 
-          <div className="text-xs text-muted-foreground">
-            Browser: {navigator.userAgent.split(" ")[0]} • Platform:{" "}
+          <div className="text-muted-foreground text-xs">
+            Browser: {navigator.userAgent.split(' ')[0]} • Platform:{' '}
             {navigator.platform}
           </div>
         </CardContent>

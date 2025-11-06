@@ -57,8 +57,12 @@ export function PushNotificationSetup() {
   };
 
   const getStatusColor = () => {
-    if (permission === 'denied') return 'text-red-600';
-    if (isSubscribed) return 'text-green-600';
+    if (permission === 'denied') {
+      return 'text-red-600';
+    }
+    if (isSubscribed) {
+      return 'text-green-600';
+    }
     return 'text-gray-600';
   };
 
