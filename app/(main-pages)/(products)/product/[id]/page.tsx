@@ -39,7 +39,6 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useIsLarge } from "@/hooks/useLarge";
 import useNav from "@/hooks/useNav";
 import useSlider from "@/hooks/useSlider";
-import Head from "next/head";
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -326,7 +325,7 @@ export default function ProductPage() {
               >
                 <button className="rounded-full bg-white p-2 text-flickmart-chat-orange shadow-lg">
                   <Bookmark
-                    className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+                    className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
                   />
                 </button>
               </div>

@@ -11,7 +11,7 @@ export default function Logo() {
         src="/flickmart-logo.svg"
         width={500}
       />
-      <h1 className="pt-1 font-bold text-xl">
+      <h1 className="pt-1 font-semibold text-2xl">
         Flick<span className="text-flickmart">Mart</span>
       </h1>
     </>

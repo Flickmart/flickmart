@@ -45,7 +45,7 @@ export default function MobileNav() {
   }, [pathname, firstUserStore]);
 
   return (
-    <header
+    <nav
       className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden ${pathname.includes("/chat") ? "md:hidden" : ""}`}
     >
       <div className="relative mx-auto flex w-[94%] justify-between py-3">
@@ -139,6 +139,6 @@ export default function MobileNav() {
           </span>
         </Link>
       </div>
-    </header>
+    </nav>
   );
 }

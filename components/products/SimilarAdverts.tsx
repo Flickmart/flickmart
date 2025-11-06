@@ -1,14 +1,14 @@
-import { useQuery } from 'convex/react';
-import Link from 'next/link';
-import React from 'react';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import ProductCard from '../multipage/ProductCard';
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import React from "react";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import ProductCard from "../multipage/ProductCard";
 
 export default function SimilarAdverts({
   productId,
 }: {
-  productId: Id<'product'>;
+  productId: Id<"product">;
 }) {
   const similarProd = useQuery(api.product.getSimilarProducts, {
     productId,
@@ -28,6 +28,9 @@ export default function SimilarAdverts({
                   image={item.images[0]}
                   price={item.price}
                   title={item.title}
+                  likes={item.likes || 0}
+                  views={item.views || 0}
+                  productId={item._id}
                 />
               </Link>
             </div>

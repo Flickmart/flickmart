@@ -1,12 +1,12 @@
-'use client';
-import { useQuery } from 'convex/react';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { api } from '@/convex/_generated/api';
-import { useIsMobile } from '@/hooks/use-mobile';
-import ProductCard from '../multipage/ProductCard';
-import { Skeleton } from '../ui/skeleton';
-import Container from './Container';
+"use client";
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ProductCard from "../multipage/ProductCard";
+import { Skeleton } from "../ui/skeleton";
+import Container from "./Container";
 
 export default function BestSellers() {
   const recommendation = useQuery(api.product.getRecommendations, {});
@@ -21,12 +21,10 @@ export default function BestSellers() {
   // }, [personalized]);
 
   return (
-    <div className="space-y-5 text-center capitalize lg:space-y-10">
-      <h2 className="font-semibold text-2xl text-gray-800 lg:text-3xl">
-        best sellers
-      </h2>
+    <section className="">
+      <h2 className="section-title">Best Sellers</h2>
       <Container className="!min-h-[40vh]">
-        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
+        <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
           {personalized === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
@@ -42,28 +40,30 @@ export default function BestSellers() {
                 </div>
               ))
             : personalized?.length
-              ? personalized?.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
-                    <ProductCard
-                      image={product.images[0]}
-                      key={index}
-                      price={product.price}
-                      title={product.title}
-                    />
-                  </Link>
+              ? personalized?.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    image={product.images[0]}
+                    price={product.price}
+                    title={product.title}
+                    location={product.location}
+                    likes={product.likes || 0}
+                    productId={product._id}
+                  />
                 ))
-              : all?.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
-                    <ProductCard
-                      image={product.images[0]}
-                      key={index}
-                      price={product.price}
-                      title={product.title}
-                    />
-                  </Link>
+              : all?.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    image={product.images[0]}
+                    price={product.price}
+                    title={product.title}
+                    location={product.location}
+                    likes={product.likes || 0}
+                    productId={product._id}
+                  />
                 ))}
         </div>
       </Container>
-    </div>
+    </section>
   );
 }

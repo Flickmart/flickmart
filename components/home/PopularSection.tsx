@@ -1,12 +1,12 @@
-'use client';
-import { useQuery } from 'convex/react';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
-import { api } from '@/convex/_generated/api';
-import { useIsMobile } from '@/hooks/use-mobile';
-import ProductCard from '../multipage/ProductCard';
-import { Skeleton } from '../ui/skeleton';
-import Container from './Container';
+"use client";
+import { useQuery } from "convex/react";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ProductCard from "../multipage/ProductCard";
+import { Skeleton } from "../ui/skeleton";
+import Container from "./Container";
 
 export default function PopularSection() {
   const recommendations = useQuery(api.product.getRecommendations, {});
@@ -14,19 +14,18 @@ export default function PopularSection() {
   const isMobile = useIsMobile();
   const popular = useQuery(api.interactions.getPopularProducts);
 
+
   useEffect(() => {
     if (recommendations?.error) {
-      console.log('there was an error getting recommendations');
+      console.log("there was an error getting recommendations");
     }
   }, [recommendations]);
 
   return (
-    <div className="space-y-5 pb-12 text-center capitalize lg:space-y-10">
-      <h2 className="font-semibold text-2xl text-gray-800 lg:text-3xl">
-        Popular
-      </h2>
+    <div className="space-y-5 pb-12 lg:space-y-10">
+      <h2 className="section-title">Popular</h2>
       <Container>
-        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
+        <div className="grid w-full grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
           {popular === undefined || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
@@ -42,23 +41,27 @@ export default function PopularSection() {
                 </div>
               ))
             : popular?.data?.length
-              ? popular?.data.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
-                    <ProductCard
-                      image={product.images[0]}
-                      price={product.price}
-                      title={product.title}
-                    />
-                  </Link>
+              ? popular?.data.map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    image={product.images[0]}
+                    price={product.price}
+                    title={product.title}
+                    location={product.location}
+                    likes={product.likes || 0}
+                    productId={product._id}
+                  />
                 ))
               : all?.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
-                    <ProductCard
-                      image={product.images[0]}
-                      price={product.price}
-                      title={product.title}
-                    />
-                  </Link>
+                  <ProductCard
+                    key={product._id}
+                    image={product.images[0]}
+                    price={product.price}
+                    title={product.title}
+                    location={product.location}
+                    likes={product.likes || 0}
+                    productId={product._id}
+                  />
                 ))}
         </div>
       </Container>

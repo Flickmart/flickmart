@@ -143,6 +143,9 @@ importers:
       dotenv:
         specifier: ^16.4.7
         version: 16.6.1
+      emailjs:
+        specifier: ^4.0.3
+        version: 4.0.3(typescript@5.7.2)
       embla-carousel-react:
         specifier: ^8.5.2
         version: 8.6.0(react@19.0.0)
@@ -3803,6 +3806,15 @@ packages:
 
   electron-to-chromium@1.5.213:
     resolution: {integrity: sha512-xr9eRzSLNa4neDO0xVFrkXu3vyIzG4Ay08dApecw42Z1NbmCt+keEpXdvlYGVe0wtvY5dhW0Ay0lY0IOfsCg0Q==}
+
+  emailjs@4.0.3:
+    resolution: {integrity: sha512-1CDXoE3FxkSg7QRTlLsDCYG9elFNu/JQsYWu3Xfrk77ubbg5zYgFGg+JRUKQJ56mceM8o3rHHX0VB4wo9XsyLQ==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      typescript: '>=4.3.5'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
 
   embla-carousel-react@8.6.0:
     resolution: {integrity: sha512-0/PjqU7geVmo6F734pmPqpyHqiM99olvyecY7zdweCw+6tKEXnrE90pBiBbMMU8s5tICemzpQ3hi5EpxzGW+JA==}
@@ -9933,6 +9945,10 @@ snapshots:
   electron-to-chromium@1.5.182: {}
 
   electron-to-chromium@1.5.213: {}
+
+  emailjs@4.0.3(typescript@5.7.2):
+    optionalDependencies:
+      typescript: 5.7.2
 
   embla-carousel-react@8.6.0(react@19.0.0):
     dependencies:
