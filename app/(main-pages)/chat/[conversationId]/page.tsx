@@ -36,7 +36,7 @@ interface Message {
   transferAmount?: number;
   currency?: string;
   order?: any;
-}
+};
 
 type NegotiableRequest = {
   user_id: string;

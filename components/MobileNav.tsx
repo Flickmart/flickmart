@@ -12,7 +12,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import { useAuthUser } from '@/hooks/useAuthUser';
 import useNav from '@/hooks/useNav';
 
 export default function MobileNav() {
@@ -20,25 +19,13 @@ export default function MobileNav() {
   const isVisible = useNav();
   const router = useRouter();
   const [isLoadingAd, setIsLoadingAd] = useState(false);
-  const { user } = useAuthUser();
 
-  // Fetch unread chat messages count
-  const conversations = useQuery(
-    api.chat.getConversations,
-    user?._id ? { userId: user._id } : 'skip'
-  );
-
-  // Calculate total unread messages count from all conversations
-  const unreadMessagesCount =
-    conversations?.reduce((total, conversation) => {
-      const userUnreadCount =
-        conversation.unreadCount &&
-        user?._id &&
-        user._id in conversation.unreadCount
-          ? conversation.unreadCount[user._id as string]
-          : 0;
-      return total + userUnreadCount;
-    }, 0) || 0;
+  // Fetch unread notifications count
+  const unreadNotifications =
+    useQuery(api.notifications.getUnreadNotifications) || [];
+  const unreadCount = unreadNotifications.filter(
+    (notification) => notification.type === 'new_message'
+  ).length;
 
   // Pages where SearchBox should not be shown
   const _hiddenPages = ['/sign-in', '/sign-up', '/forgot-password', '/chat'];
@@ -54,7 +41,7 @@ export default function MobileNav() {
       setIsLoadingAd(false);
       router.push('/post-ad');
     }
-  }, [pathname, firstUserStore, isLoadingAd, router]);
+  }, [pathname, firstUserStore]);
 
   return (
     <nav
@@ -127,9 +114,9 @@ export default function MobileNav() {
             <MessageSquareText
               className={`${pathname.startsWith('/chat') ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
             />
-            {unreadMessagesCount > 0 && (
+            {unreadCount > 0 && (
               <span className="-top-2 -right-2 absolute flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-white text-xs">
-                {unreadMessagesCount > 99 ? '99+' : unreadMessagesCount}
+                {unreadCount > 99 ? '99+' : unreadCount}
               </span>
             )}
           </div>
@@ -141,7 +128,7 @@ export default function MobileNav() {
         </Link>
         <Link
           className="group flex flex-col items-center justify-center gap-1.5"
-          href="/settings/personal"
+          href="settings/personal"
         >
           <UserRound
             className={`${pathname === '/settings/personal' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
