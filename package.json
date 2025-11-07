@@ -6,7 +6,7 @@
     "dev:socket": "cross-env NODE_OPTIONS=\"--loader ts-node/esm --trace-warnings --no-warnings\" nodemon server/server.mts",
     "build": "next build",
     "start": "next start",
-    "lint": "npx ultracite@latest lint",
+    "check": "npx ultracite@latest check",
     "fix": "npx ultracite@latest fix"
   },
   "dependencies": {
