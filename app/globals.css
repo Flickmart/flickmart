@@ -226,8 +226,8 @@
   }
 }
 @layer utilities {
-  .error-check {
-    @apply border-4 border-red-500;
+  .error-check{
+    @apply border-4 border-red-500
   }
 }
 

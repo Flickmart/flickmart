@@ -206,7 +206,7 @@ export default function ChatSidebar({
               {conversations?.map((chat) => (
                 <div
                   className={cn(
-                    'flex cursor-pointer items-center border-gray-200 border-b px-1 py-3 hover:bg-gray-100 sm:px-3',
+                    'flex cursor-pointer items-center border-gray-200 border-b px-3 py-3 hover:bg-gray-100',
                     currentConversationId === chat.id && 'bg-orange-50'
                   )}
                   key={chat.id}
