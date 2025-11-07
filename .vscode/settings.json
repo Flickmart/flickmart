@@ -1,5 +1,9 @@
 {
-  "cSpell.words": ["flickmart", "paystack"],
+  "cSpell.words": [
+    "flickmart",
+    "paystack",
+    "RECOMBEE"
+  ],
   "typescript.autoClosingTags": false,
   "kiroAgent.configureMCP": "Enabled",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -7,7 +11,7 @@
     "editor.defaultFormatter": "biomejs.biome"
   },
   "[typescript]": {
-    "editor.defaultFormatter": "biomejs.biome"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "[javascriptreact]": {
     "editor.defaultFormatter": "biomejs.biome"

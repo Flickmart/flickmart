@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SyncLoader } from "react-spinners";
 import { toast } from "sonner";
@@ -39,7 +39,8 @@ import { useAuthUser } from "@/hooks/useAuthUser";
 import { useIsLarge } from "@/hooks/useLarge";
 import useNav from "@/hooks/useNav";
 import useSlider from "@/hooks/useSlider";
-import Head from "next/head";
+import { useTrack } from "@/hooks/useTrack";
+import { useTrackDuration } from "@/hooks/useTrackDuration";
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -51,9 +52,8 @@ export default function ProductPage() {
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
-  const productData = productId
-    ? useQuery(api.product.getById, { productId })
-    : null;
+  const productData = productId ? useQuery(api.product.getById, { productId }): null;
+  const pathname = usePathname(); 
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
@@ -71,7 +71,13 @@ export default function ProductPage() {
     redirectOnUnauthenticated: false,
   });
   const router = useRouter();
+  const [viewedProduct, setViewedProduct] = useState(false);
 
+  // captureActivity is a function which can me reused to capture different Activities
+  const captureActivity = useTrack();
+
+  // Track Page Duration
+  useTrackDuration(productId, user?._id ?? "")
   const productIcons = [
     {
       label: "likes",
@@ -107,6 +113,14 @@ export default function ProductPage() {
       }
       if (label === "likes") {
         await likeProduct({ productId });
+
+        // capture activity of liking a product
+         captureActivity("Product Liked",{
+          productId,
+          userId: user?._id ?? "",
+          rating: 5,
+          likes: (productData?.likes ?? 0) + 1,
+        })
       }
       if (label === "dislikes") {
         await dislikeProduct({ productId });
@@ -157,7 +171,27 @@ export default function ProductPage() {
   }
   return (
       <Drawer>
-        <div className="min-h-screen gap-x-6 space-y-7 bg-slate-100 lg:p-5">
+        <div onMouseEnter={()=> {
+          if(!viewedProduct){
+            captureActivity("Product Viewed", {
+              userId: user?._id ?? "",
+              productId,
+              aiEnabled: productData?.aiEnabled ?? false,
+              dislikes: productData?.dislikes ?? 0,
+              image: productData?.images[0] ?? "",
+              likes: productData?.likes ?? 0,
+              location: productData?.location ?? "",
+              plan: productData?.plan ?? "",
+              subcategory: productData?.subcategory ?? "",
+              title: productData?.title ?? "",
+              category: productData?.category ?? "",
+              price: productData?.price ?? 0,
+              views: productData?.views ?? 0
+            })
+            setViewedProduct(true)
+          }
+          }}
+          className="min-h-screen gap-x-6 space-y-7 bg-slate-100 lg:p-5">
           <div className="gap-5 space-y-3 lg:grid lg:grid-cols-2">
             <div className="flex flex-col items-center justify-center border">
               <div

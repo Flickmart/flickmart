@@ -1,5 +1,5 @@
 'use client';
-import { useQuery } from 'convex/react';
+import { useAction, useQuery } from 'convex/react';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 import { api } from '@/convex/_generated/api';
@@ -7,12 +7,28 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import ProductCard from '../multipage/ProductCard';
 import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
+import { Doc } from '@/convex/_generated/dataModel';
 
 export default function BestSellers() {
-  const recommendation = useQuery(api.product.getRecommendations, {});
-  const all = useQuery(api.product.getAll, { limit: 10 });
+  // const recommendation = useQuery(api.product.getRecommendations, {});
   const isMobile = useIsMobile();
+  const all = useQuery(api.product.getAll, { limit: 10 });
   const personalized = useQuery(api.interactions.getPersonalizedProducts);
+  const recommendations = useAction(api.recommend.recommendItems)
+  const [recommendation, setRecommendation] = useState<Array<Doc<"product">>|null>(null)
+  const user = useQuery(api.users.current, {})
+
+  // Fetch Recommendations Once Component Mounts
+  useEffect(()=>{
+    async function fetchRecommendations(){
+     const results: Array<Doc<"product">> = await recommendations({queryStrings: "?count=10&returnProperties=true&cascadeCreate=true"})
+     console.log(results)
+     setRecommendation(results)
+    }
+    fetchRecommendations()
+  },[user])
+
+ 
 
   // useEffect(() => {
   //   if (personalized?.error) {
@@ -41,8 +57,8 @@ export default function BestSellers() {
                   </div>
                 </div>
               ))
-            : personalized?.length
-              ? personalized?.map((product, index) => (
+            : recommendation?.length
+              ? recommendation?.map((product, index) => (
                   <Link href={`/product/${product._id}`} key={product._id}>
                     <ProductCard
                       image={product.images[0]}
