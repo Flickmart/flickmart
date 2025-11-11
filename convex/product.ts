@@ -22,12 +22,11 @@ export const getAll = query({
 
 // Get product by ID
 export const getById = query({
-  args: { productId: v.union(v.null(), v.id('product')) },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
-    if (!args.productId) {
-      return null;
-    }
-    return await ctx.db.get(args.productId);
+    const product = await ctx.db.get(args.productId);
+    console.log(product);
+    return product;
   },
 });
 

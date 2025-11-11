@@ -51,6 +51,7 @@ export default function ProductPage() {
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
   const productData = useQuery(api.product.getById, { productId });
+  console.log('Product data:', productData);
 
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
