@@ -157,10 +157,12 @@ export default function PostAdForm({
   const searchParams = useSearchParams();
   const action = searchParams.get('action');
   const [query, setQuery] = useState(action);
-  const productId = searchParams.get('product-id');
-  const product = useQuery(api.product.getById, {
-    productId: productId as Id<'product'> | null,
-  });
+  const productIdString = searchParams.get('product-id');
+  const productId = productIdString as Id<'product'>;
+  const product = useQuery(
+    api.product.getById,
+    productId ? { productId } : 'skip'
+  );
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -312,7 +314,7 @@ export default function PostAdForm({
           {/* <div className="w-full  space-y-5 bg-inherit px-5 lg:w-3/4 lg:space-y-6 lg:px-10"> */}
           {/* <div className="flex h-6 pt-6 items-center justify-between">
             <Label className="font-bold text-gray-600 text-sm" htmlFor="ai">Enable NKEM for this product</Label>
-            <Switch value={form.watch("aiEnabled") ? "true" : "false"} id="ai" 
+            <Switch value={form.watch("aiEnabled") ? "true" : "false"} id="ai"
               onClick={() => {
               form.setValue("aiEnabled", !form.getValues("aiEnabled"))
               toast.success(`NKEM has been ${!form.watch("aiEnabled") ? "disabled" : "enabled"} for this product`)
@@ -347,8 +349,8 @@ export default function PostAdForm({
           {/* Appears if product is negotiable */}
           {/* <AnimatePresence>
               {form.watch("negotiable") === true &&
-                <motion.div 
-                initial={{opacity: 0, y: 100}} 
+                <motion.div
+                initial={{opacity: 0, y: 100}}
                 animate= {{opacity: 1, y: 0, transition: {duration: 0.5, delay:0.2, ease: "easeInOut",  type: "tween"}}}
                 exit={{ opacity: 0 , y: 100}}>
                   <InputField form={form} name="targetPrice" type="numberField" />
