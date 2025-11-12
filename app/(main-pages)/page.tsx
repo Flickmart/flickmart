@@ -57,7 +57,7 @@ export default function Home() {
       </div>
       <section className="lg:w-[75%]">
         <Slider />
-        <div className="min-h-screen space-y-10 section-px">
+        <div className="section-px min-h-screen space-y-10">
           <Categories />
           <BestSellers />
           <NewArrivals />

@@ -1,12 +1,12 @@
-"use client";
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
-import ProductCard from "../multipage/ProductCard";
-import { Skeleton } from "../ui/skeleton";
-import Container from "./Container";
+'use client';
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ProductCard from '../multipage/ProductCard';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
 
 export default function PopularSection() {
   const recommendations = useQuery(api.product.getRecommendations, {});
@@ -14,10 +14,9 @@ export default function PopularSection() {
   const isMobile = useIsMobile();
   const popular = useQuery(api.interactions.getPopularProducts);
 
-
   useEffect(() => {
     if (recommendations?.error) {
-      console.log("there was an error getting recommendations");
+      console.log('there was an error getting recommendations');
     }
   }, [recommendations]);
 
@@ -43,24 +42,24 @@ export default function PopularSection() {
             : popular?.data?.length
               ? popular?.data.map((product) => (
                   <ProductCard
-                    key={product._id}
                     image={product.images[0]}
-                    price={product.price}
-                    title={product.title}
-                    location={product.location}
+                    key={product._id}
                     likes={product.likes || 0}
+                    location={product.location}
+                    price={product.price}
                     productId={product._id}
+                    title={product.title}
                   />
                 ))
               : all?.map((product, index) => (
                   <ProductCard
-                    key={product._id}
                     image={product.images[0]}
-                    price={product.price}
-                    title={product.title}
-                    location={product.location}
+                    key={product._id}
                     likes={product.likes || 0}
+                    location={product.location}
+                    price={product.price}
                     productId={product._id}
+                    title={product.title}
                   />
                 ))}
         </div>

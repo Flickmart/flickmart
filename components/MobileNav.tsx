@@ -20,7 +20,9 @@ export default function MobileNav() {
   const isVisible = useNav();
   const router = useRouter();
   const [isLoadingAd, setIsLoadingAd] = useState(false);
-  const { user } = useAuthUser();
+  const { user } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
 
   // Fetch unread chat messages count
   const conversations = useQuery(
@@ -58,7 +60,7 @@ export default function MobileNav() {
 
   return (
     <nav
-      className={`${isVisible ? "translate-y-0" : "translate-y-[160%]"} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden ${pathname.includes("/chat") ? "md:hidden" : ""}`}
+      className={`${isVisible ? 'translate-y-0' : 'translate-y-[160%]'} fixed bottom-0 z-40 w-full bg-white text-[12px] transition duration-300 lg:hidden ${pathname.includes('/chat') ? 'md:hidden' : ''}`}
     >
       <div className="relative mx-auto flex w-[94%] justify-between py-3">
         <Link
