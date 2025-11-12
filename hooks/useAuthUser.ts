@@ -21,13 +21,13 @@ type UseAuthUserReturn = {
  * This hook handles the user authentication state more reliably than useCheckUser
  * It prioritizes Clerk's loading state since Convex queries depend on Clerk being ready
  */
-export function useAuthUser(options?: {
+export function useAuthUser({
+  redirectOnUnauthenticated = true,
+  redirectTo = '/sign-in',
+}: {
   redirectOnUnauthenticated?: boolean;
   redirectTo?: string;
-}): UseAuthUserReturn {
-  const { redirectOnUnauthenticated = true, redirectTo = '/sign-in' } =
-    options || {};
-
+} = {}): UseAuthUserReturn {
   const { isLoaded: clerkLoaded, isSignedIn } = useAuth();
   const user = useQuery(api.users.current, {});
   const router = useRouter();
@@ -54,11 +54,10 @@ export function useAuthUser(options?: {
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
-        toast('Oops! You need to be logged in to continue.', {
+        toast.info('Oops! You need to be logged in to continue.', {
           duration: 3000,
           position: 'top-center',
           description: 'Redirecting you to Sign In Page...',
-          icon: '🔃',
         });
       }
 
