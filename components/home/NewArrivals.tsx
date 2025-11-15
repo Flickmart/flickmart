@@ -27,7 +27,7 @@ export default function NewArrivals() {
           <ChevronRight className="transition-colors" />
         </Link>
       </div>
-      <div className=" overflow-x-auto w-full gradient">
+      <div className="overflow-x-auto w-full gradient">
         {firstTenProducts === undefined || all === undefined ? (
           Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
             <div
