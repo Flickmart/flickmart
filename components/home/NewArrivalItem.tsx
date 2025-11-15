@@ -13,7 +13,7 @@ type NewArrivalsProp = {
   location?: string;
   likes?: number;
   views?: number;
-}
+};
 
 export default function NewArrivalItem({
   image,
@@ -26,43 +26,43 @@ export default function NewArrivalItem({
 }: NewArrivalsProp) {
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: 'saved',
+    type: "saved",
   });
   if (saved?.error && saved.data === null) {
     console.log(saved.error.message);
   }
-    const comments = useQuery(api.comments.getCommentsByProductId, {
-      productId,
-    });
+  const comments = useQuery(api.comments.getCommentsByProductId, {
+    productId,
+  });
 
-    const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-    const userEngagements = [
-      {
-        engagementName: "Like",
-        engagement: likes || 0,
-      },
-      {
-        engagementName: "Comment",
-        engagement: comments?.length || 0,
-      },
-      {
-        engagementName: "View",
-        engagement: views || 0,
-      },
-    ];
-    useEffect(() => {
-      const id = setTimeout(() => {
-        if (currentIndex < userEngagements.length - 1) {
-          setCurrentIndex(currentIndex + 1);
-        } else {
-          setCurrentIndex(0);
-        }
-      }, 2000);
-      () => {
-        clearTimeout(id);
-      };
-    });
+  const userEngagements = [
+    {
+      engagementName: "Like",
+      engagement: likes || 0,
+    },
+    {
+      engagementName: "Comment",
+      engagement: comments?.length || 0,
+    },
+    {
+      engagementName: "View",
+      engagement: views || 0,
+    },
+  ];
+  useEffect(() => {
+    const id = setTimeout(() => {
+      if (currentIndex < userEngagements.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      } else {
+        setCurrentIndex(0);
+      }
+    }, 2000);
+    () => {
+      clearTimeout(id);
+    };
+  });
 
   return (
     <div className="relative flex w-60 flex-grow flex-col justify-between sm:w-72 overflow-hidden">
@@ -75,7 +75,7 @@ export default function NewArrivalItem({
             alt={name}
             className="size-full object-cover"
             height={500}
-            src={image || '/no-image.png'}
+            src={image || "/no-image.png"}
             width={500}
           />
         </div>
@@ -103,12 +103,12 @@ export default function NewArrivalItem({
                   position = "translate-y-0";
                 }
                 return (
-                  <span
+                  <div
                     key={engagementName}
-                    className={`text-[#A8A8A8] font-semibold absolute top-0 custom-transition ${position}`}
+                    className={`text-[#A8A8A8] flex gap-1 font-semibold absolute top-0 custom-transition ${position}`}
                   >
-                    {engagement} {engagementName}
-                  </span>
+                    <span>{engagement}</span> <span>{engagementName}</span>
+                  </div>
                 );
               })}
             </div>
