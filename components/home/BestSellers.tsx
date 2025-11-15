@@ -1,12 +1,12 @@
-"use client";
-import { useQuery } from "convex/react";
-import Link from "next/link";
-import React, { useEffect, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
-import ProductCard from "../multipage/ProductCard";
-import { Skeleton } from "../ui/skeleton";
-import Container from "./Container";
+'use client';
+import { useQuery } from 'convex/react';
+import Link from 'next/link';
+import React, { useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ProductCard from '../multipage/ProductCard';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
 
 export default function BestSellers() {
   const _recommendation = useQuery(api.product.getRecommendations, {});
@@ -42,24 +42,24 @@ export default function BestSellers() {
             : personalized?.length
               ? personalized?.map((product) => (
                   <ProductCard
-                    key={product._id}
                     image={product.images[0]}
-                    price={product.price}
-                    title={product.title}
-                    location={product.location}
+                    key={product._id}
                     likes={product.likes || 0}
+                    location={product.location}
+                    price={product.price}
                     productId={product._id}
+                    title={product.title}
                   />
                 ))
               : all?.map((product) => (
                   <ProductCard
-                    key={product._id}
                     image={product.images[0]}
-                    price={product.price}
-                    title={product.title}
-                    location={product.location}
+                    key={product._id}
                     likes={product.likes || 0}
+                    location={product.location}
+                    price={product.price}
                     productId={product._id}
+                    title={product.title}
                   />
                 ))}
         </div>

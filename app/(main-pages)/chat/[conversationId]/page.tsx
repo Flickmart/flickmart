@@ -125,9 +125,10 @@ export default function ConversationPage() {
   );
 
   // Fetch product data if productId is present
-  const product = useQuery(api.product.getById, {
-    productId: productId !== 'null' ? productId : null,
-  });
+  const product = useQuery(
+    api.product.getById,
+    productId ? { productId } : 'skip'
+  );
 
   // Store in Local Storage
   // typeof vendorId === "string" && localStorage.setItem("vendorId", vendorId as string)

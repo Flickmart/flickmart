@@ -1,13 +1,13 @@
-"use client";
-import { useQuery } from "convex/react";
-import { ArrowRight, ChevronRight } from "lucide-react";
-import Link from "next/link";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Skeleton } from "../ui/skeleton";
-import Container from "./Container";
-import NewArrivalItem from "./NewArrivalItem";
-import { useRouter } from "next/navigation";
+'use client';
+import { useQuery } from 'convex/react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
+import NewArrivalItem from './NewArrivalItem';
 
 export default function NewArrivals() {
   const newProducts = useQuery(api.product.getNewProducts);
@@ -16,12 +16,12 @@ export default function NewArrivals() {
   const all = useQuery(api.product.getAll, { limit: 10 });
 
   return (
-    <section className="flex mx-auto mt-0 flex-col items-center justify-start space-y-5 py-5 capitalize">
+    <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-5 capitalize">
       <div className="flex w-full items-center justify-between">
         <h2 className="section-title mb-0">New Arrivals</h2>
         <Link
-          href={"/more-products"}
-          className="flex space-x-1 cursor-pointer items-center text-[#606060] sm:hover:text-flickmart transition-colors"
+          className="flex cursor-pointer items-center space-x-1 text-[#606060] transition-colors sm:hover:text-flickmart"
+          href={'/more-products'}
         >
           <span className="text-lg">See All</span>
           <ChevronRight className="transition-colors" />
@@ -48,7 +48,7 @@ export default function NewArrivals() {
             </div>
           ))
         ) : (
-          <div className="flex gap-x-5 relative lg:gap-x-10">
+          <div className="relative flex gap-x-5 lg:gap-x-10">
             {(firstTenProducts?.length ? firstTenProducts : all)?.map(
               (item) => (
                 <Link

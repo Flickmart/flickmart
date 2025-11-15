@@ -30,15 +30,15 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { useIsLarge } from "@/hooks/useLarge";
-import useNav from "@/hooks/useNav";
-import useSlider from "@/hooks/useSlider";
+} from '@/components/ui/carousel';
+import { Drawer, DrawerTrigger } from '@/components/ui/drawer';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useIsLarge } from '@/hooks/useLarge';
+import useNav from '@/hooks/useNav';
+import useSlider from '@/hooks/useSlider';
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -50,9 +50,9 @@ export default function ProductPage() {
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
-  const productData = productId
-    ? useQuery(api.product.getById, { productId })
-    : null;
+  const productData = useQuery(api.product.getById, { productId });
+  console.log('Product data:', productData);
+
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
@@ -325,7 +325,7 @@ export default function ProductPage() {
               >
                 <button className="rounded-full bg-white p-2 text-flickmart-chat-orange shadow-lg">
                   <Bookmark
-                    className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+                    className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? 'fill-flickmart stroke-none' : 'fill-none stroke-current'}`}
                   />
                 </button>
               </div>
