@@ -26,9 +26,6 @@ export default function ProductCard({
   productId: Id<'product'>;
   views?: number;
 }) {
-  if (title?.length && title?.length > 20) {
-    title = title?.substring(0, 20)?.trim() + '...';
-  }
   const comments = useQuery(api.comments.getCommentsByProductId, {
     productId,
   });
@@ -138,9 +135,9 @@ export default function ProductCard({
           <MapPin className="size-4 text-red-500" />
           {location}
         </div>
-        <span className="font-semibold">{title}</span>
-        <div className="flex items-start justify-between text-sm">
-          <span className="font-semibold text-flickmart">
+        <p className="font-semibold text-ellipsis overflow-hidden whitespace-nowrap">{title}</p>
+        <div className="flex justify-between items-start text-sm">
+          <span className="text-flickmart font-semibold">
             &#8358;{price?.toLocaleString()}
           </span>
           <div className="flex flex-col items-end gap-1">

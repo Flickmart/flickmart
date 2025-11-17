@@ -210,7 +210,7 @@
     @apply !fill-flickmartLight;
   }
   .section-title {
-    @apply text-2xl mb-4 font-medium md:text-center md:text-3xl md:mb-6;
+    @apply text-2xl mb-8 font-medium md:text-center md:text-3xl;
   }
   .nav-btn {
     @apply hover:bg-flickmart/20 rounded-full transition-colors lg:hover:bg-transparent lg:hover:text-flickmart;
