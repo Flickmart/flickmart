@@ -1,6 +1,5 @@
 import type { UserJSON } from "@clerk/backend";
 import { type Validator, v } from "convex/values";
-import { Id } from "./_generated/dataModel";
 import {
   internalMutation,
   mutation,
@@ -27,6 +26,12 @@ export const getUserId = internalQuery({
     //   return null;
     // }
     return user?._id;
+  },
+});
+
+export const getAllUsers = query({
+  handler: async (ctx) => {
+    return await ctx.db.query("users").collect();
   },
 });
 

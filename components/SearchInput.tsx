@@ -15,7 +15,9 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from './ui/command';
+} from "./ui/command";
+import { useTrack } from "@/hooks/useTrack";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 const MotionCommandList = motion.create(CommandList);
 
@@ -47,6 +49,8 @@ export default function SearchInput({
   });
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
+  const captureActivity = useTrack();
+  const { user } = useAuthUser();
 
   useEffect(() => {
     if (retrievePreviousInputs?.error) {
@@ -63,6 +67,10 @@ export default function SearchInput({
       openSearch?.(false);
       saveSearchInput({
         search: searchInput,
+      });
+      captureActivity("Product Searched", {
+        query: searchInput,
+        userId: user?._id ?? "",
       });
       // Perform search action
       !isMobile && isOverlayOpen && setSearchInput('');

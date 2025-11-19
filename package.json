@@ -7,7 +7,10 @@
     "build": "next build",
     "start": "next start",
     "check": "npx ultracite@latest check",
-    "fix": "npx ultracite@latest fix"
+    "fix": "npx ultracite@latest fix",
+    "lint": "npx ultracite@latest lint",
+    "format": "npx ultracite@latest format",
+    "sync-recombee": "tsx scripts/sync-to-recombee.ts"
   },
   "dependencies": {
     "@clerk/backend": "^2.1.0",
@@ -87,6 +90,7 @@
     "react-photo-view": "^1.2.7",
     "react-spinners": "^0.15.0",
     "recharts": "^2.15.1",
+    "recombee-api-client": "6.0.0",
     "recombee-js-api-client": "^6.0.0",
     "remark": "^15.0.1",
     "remark-html": "^16.0.1",
