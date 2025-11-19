@@ -1,7 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
-import Delivery from '@/components/Delivery';
 import Footer from '@/components/Footer';
 import NewArrivals from '@/components/home/NewArrivals';
 import PopularSection from '@/components/home/PopularSection';
@@ -12,7 +11,7 @@ import SearchOverlay from '@/components/SearchOverlay';
 import { useAppPresence } from '@/hooks/useAppPresence';
 import JustForYou from '@/components/home/JustForYou';
 import Categories from '@/components/home/Categories';
-import BestSellers from '@/components/home/BestSellers';
+import RecentlyViewed from '@/components/home/RecentlyViewed';
 
 
 export default function Home() {
@@ -64,9 +63,9 @@ export default function Home() {
         <div className="section-px min-h-screen space-y-10">
           <Categories />
           <JustForYou />
-          <BestSellers />
           <NewArrivals />
           <PopularSection />
+          <RecentlyViewed />
         </div>
         <Footer />
       </section>

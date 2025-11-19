@@ -8,6 +8,7 @@ import ProductCard from '../multipage/ProductCard';
 import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
 import { useRecommend } from '@/hooks/useRecommend';
+import { Id } from '@/convex/_generated/dataModel';
 
 
 
@@ -59,12 +60,13 @@ export default function JustForYou() {
 
 
   return (
-    <div className="space-y-5 text-center capitalize lg:space-y-10">
+    <div className="space-y-5 capitalize lg:text-center lg:space-y-10">
       <h2 className="font-semibold text-2xl text-gray-800 lg:text-3xl">
         just for you
       </h2>
       <Container className="!min-h-[40vh]">
-        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
+        {/* <div className="grid w-full grid-cols-2 bg-black gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10"> */}
+        <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
           { !user || recommendation === null
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
@@ -80,25 +82,23 @@ export default function JustForYou() {
                 </div>
               ))
             : recommendation?.recomms.length
-              ? recommendation?.recomms.map((product, index) => (
-                  <Link href={`/product/${product.id}`} key={product.id}>
+              ? recommendation?.recomms.map((product) => (
                     <ProductCard
+                      key={product.id}
                       image={product.values?.image as string}
-                      key={index}
+                      productId={product.id as Id<"product">}
                       price={product.values?.price as number}
                       title={product.values?.title as string}
                     />
-                  </Link>
                 ))
-              : all?.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
+              : all?.map((product) => (
                     <ProductCard
+                      key={product._id}
                       image={product.images[0]}
-                      key={index}
+                      productId={product._id}
                       price={product.price}
                       title={product.title}
                     />
-                  </Link>
                 ))}
         </div>
       </Container>

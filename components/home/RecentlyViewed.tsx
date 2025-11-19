@@ -11,25 +11,27 @@ import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 
-export default function NewArrivals() {
+export default function RecentlyViewed() {
   const isMobile = useIsMobile();
+  // const all = useQuery(api.product.getAll, { limit: 10 });
+  // const firstTenProducts = all?.slice(0, 10);
   const router = useRouter();
-  const recommendation = useRecommend("New-Arrivals") //Specify the scenario as the first parameter
+  const recommendation = useRecommend("New-Arrival") //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {})
   
   
 
   return (
-    <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-5 capitalize">
+    <section className="mx-auto mt-0 pb-12 flex flex-col items-center  justify-start space-y-5 py-5 capitalize">
       <div className="flex w-full items-center justify-between">
-        <h2 className="section-title mb-0">New Arrivals</h2>
-        <Link
+        <h2 className="section-title mb-0">Recently Viewed</h2>
+        {/* <Link
           className="flex cursor-pointer items-center space-x-1 text-[#606060] transition-colors sm:hover:text-flickmart"
           href={'/more-products'}
         >
           <span className="text-lg">See All</span>
           <ChevronRight className="transition-colors" />
-        </Link>
+        </Link> */}
       </div>
       <div className="flex w-full justify-between gap-x-5 overflow-x-auto  lg:gap-x-10">
         {recommendation === null || !user
