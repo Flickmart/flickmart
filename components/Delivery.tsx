@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import React from 'react';
 import { toast } from 'sonner';
 import { Button } from './ui/button';
 

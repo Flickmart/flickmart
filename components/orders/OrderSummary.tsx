@@ -14,15 +14,15 @@ import { Separator } from '@/components/ui/separator';
 import type { Id } from '@/convex/_generated/dataModel';
 
 // TypeScript interfaces
-interface Product {
+type Product = {
   _id: Id<'product'>;
   name: string;
   price: number;
   images?: string[];
   description?: string;
-}
+};
 
-interface OrderWithDetails {
+type OrderWithDetails = {
   _id: Id<'orders'>;
   productIds: Id<'product'>[];
   buyerId: Id<'users'>;
@@ -39,12 +39,12 @@ interface OrderWithDetails {
   buyerImageUrl?: string;
   sellerImageUrl?: string;
   userRole: 'buyer' | 'seller';
-}
+};
 
-interface OrderSummaryProps {
+type OrderSummaryProps = {
   order: OrderWithDetails;
   products: Product[];
-}
+};
 
 // Helper functions
 const formatDate = (timestamp: number): string => {
@@ -93,7 +93,9 @@ const getStatusBadgeProps = (status: OrderWithDetails['status']) => {
 };
 
 const getInitials = (name?: string): string => {
-  if (!name) return 'U';
+  if (!name) {
+    return 'U';
+  }
   return name
     .split(' ')
     .map((word) => word.charAt(0))

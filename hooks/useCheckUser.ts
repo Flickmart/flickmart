@@ -4,14 +4,14 @@ import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
 
-interface UseCheckUserReturn {
+type UseCheckUserReturn = {
   user: any;
   loading: boolean;
   isAuthenticated: boolean;
-}
+};
 
 export default function useCheckUser(): UseCheckUserReturn {
-  const user =useQuery(api.users.current, {});
+  const user = useQuery(api.users.current, {});
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const hasRedirected = useRef(false);

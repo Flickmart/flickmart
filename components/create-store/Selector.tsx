@@ -1,4 +1,3 @@
-import React from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { FormField, FormItem, FormMessage } from '../ui/form';
 import {
@@ -9,12 +8,12 @@ import {
   SelectValue,
 } from '../ui/select';
 
-interface FormType {
+type FormType = {
   businessName: string;
   location: string;
   description: string;
   phoneNumber: string & { __tag: 'E164Number' };
-}
+};
 
 export default function Selector({
   name,
@@ -24,7 +23,7 @@ export default function Selector({
   className = '',
 }: {
   name: 'businessName' | 'location' | 'description' | 'phoneNumber';
-  options: Array<string>;
+  options: string[];
   label?: string;
   form: UseFormReturn<FormType>;
   className?: string;

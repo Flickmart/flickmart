@@ -4,7 +4,7 @@ import type { OAuthStrategy } from '@clerk/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -49,14 +49,15 @@ export default function SignIn() {
       rememberMe: false,
     },
   });
+  const callbackURL = useSearchParams().get('callback') || '/';
   const signInWith = (strategy: OAuthStrategy) => {
     return signIn
       ?.authenticateWithRedirect({
         strategy,
         redirectUrl: '/sign-up/sso-callback',
-        redirectUrlComplete: '/',
+        redirectUrlComplete: callbackURL,
       })
-      .then((res) => {})
+      .then((_res) => {})
       .catch((err: any) => {
         // See https://clerk.com/docs/custom-flows/error-handling
         // for more info on error handling
@@ -65,7 +66,9 @@ export default function SignIn() {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     try {
       setIsLoading(true);
@@ -79,7 +82,7 @@ export default function SignIn() {
       if (result.status === 'complete') {
         // Set the user session active
         await setActive({ session: result.createdSessionId });
-        router.push('/');
+        router.replace(callbackURL);
       } else {
         toast.error('Sign in failed. Please check your credentials.');
       }

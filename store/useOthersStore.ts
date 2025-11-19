@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 
-interface OthersType {
+type OthersType = {
   loading: boolean;
-  images: Array<string>;
-  storeImage: (images: Array<string>) => void;
+  images: string[];
+  storeImage: (images: string[]) => void;
   setLoadingStatus: (status: boolean) => void;
-}
+};
 
 export const useOthersStore = create<OthersType>((set) => ({
   loading: false,

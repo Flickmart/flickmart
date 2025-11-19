@@ -19,13 +19,13 @@ import type { Doc } from '@/convex/_generated/dataModel';
 import { TransactionStatusBadge } from './transaction-status-badge';
 import { formatAmount } from './transaction-utils';
 
-interface TransactionReceiptProps {
+type TransactionReceiptProps = {
   transaction: Doc<'transactions'>;
   user: Doc<'users'>;
   handlePaystackSuccess: (response: { reference: string }) => Promise<void>;
   handlePaystackClose: () => void;
   onClose?: () => void;
-}
+};
 
 export function TransactionReceipt({
   transaction,
@@ -46,7 +46,9 @@ export function TransactionReceipt({
   };
 
   const generateReceiptImage = async (): Promise<Blob | null> => {
-    if (!receiptRef.current) return null;
+    if (!receiptRef.current) {
+      return null;
+    }
 
     setIsCapturing(true);
 
@@ -101,7 +103,7 @@ export function TransactionReceipt({
       URL.revokeObjectURL(url);
 
       toast.success('Receipt downloaded');
-    } catch (error) {
+    } catch (_error) {
       toast.error('Download failed');
     } finally {
       setIsDownloading(false);
@@ -193,14 +195,14 @@ export function TransactionReceipt({
       {/* Close Button */}
       {onClose && (
         <Button
-          className="absolute right-4 top-4 z-20 h-8 w-8 rounded-full bg-white/90 p-0 shadow-lg hover:bg-white"
+          className="absolute top-4 right-4 z-20 h-8 w-8 rounded-full bg-white/90 p-0 shadow-lg hover:bg-white"
           onClick={onClose}
           variant="ghost"
         >
           <X className="h-4 w-4 text-gray-600" />
         </Button>
       )}
-      
+
       <div
         className="relative z-10 space-y-2 bg-white px-6"
         id="capture_div"

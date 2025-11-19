@@ -47,7 +47,7 @@ export const updateUser = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw Error("Please Login First...");
+      throw new Error("Please Login First...");
     }
     args.allowNotifications !== undefined &&
       (await ctx.db.patch(user._id, {
@@ -140,7 +140,9 @@ export const updatePaystackCustomerId = internalMutation({
 // This is useful for server actions where you need to ensure a user exists
 export async function getCurrentUserOrThrow(ctx: QueryCtx) {
   const userRecord = await getCurrentUser(ctx);
-  if (!userRecord) return null;
+  if (!userRecord) {
+    return null;
+  }
   return userRecord;
 }
 

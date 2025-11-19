@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export default function useUserAgent() {
   // If Platform is mobile
@@ -19,20 +19,20 @@ export default function useUserAgent() {
       let userAgent: string;
 
       // Check the browser the user is using
-      if (navigatorAgent.indexOf("SamsungBrowser") > -1) {
-        userAgent = "SamsungBrowser";
-      } else if (navigatorAgent.indexOf("Opera") > -1) {
-        userAgent = "Opera";
-      } else if (navigatorAgent.indexOf("Edge") > -1) {
-        userAgent = "Edge";
-      } else if (navigatorAgent.indexOf("Safari") > -1) {
-        userAgent = "Safari";
-      } else if (navigatorAgent.indexOf("Chrome") > -1) {
-        userAgent = "Chrome";
-      } else if (navigatorAgent.indexOf("Firefox") > -1) {
-        userAgent = "Firefox";
+      if (navigatorAgent.indexOf('SamsungBrowser') > -1) {
+        userAgent = 'SamsungBrowser';
+      } else if (navigatorAgent.indexOf('Opera') > -1) {
+        userAgent = 'Opera';
+      } else if (navigatorAgent.indexOf('Edge') > -1) {
+        userAgent = 'Edge';
+      } else if (navigatorAgent.indexOf('Safari') > -1) {
+        userAgent = 'Safari';
+      } else if (navigatorAgent.indexOf('Chrome') > -1) {
+        userAgent = 'Chrome';
+      } else if (navigatorAgent.indexOf('Firefox') > -1) {
+        userAgent = 'Firefox';
       } else {
-        userAgent = "unknown";
+        userAgent = 'unknown';
       }
       //
       setUserAgent(userAgent);
@@ -40,13 +40,13 @@ export default function useUserAgent() {
       // Check if user agent/ Browser is mobile and what type of mobile
       const isIOS = navigatorAgent.match(/(iPad|iPhone|iPod)/i);
       const isAndroid = navigatorAgent.match(/(Android)/i);
-      setIsIOS(isIOS ? true : false);
+      setIsIOS(!!isIOS);
 
       const isMobile = isAndroid || isIOS;
       setIsMobile(!!isMobile);
 
       // Check is app is installed  (prompt wont be shown)
-      if (window.matchMedia("(display-mode: standalone)").matches) {
+      if (window.matchMedia('(display-mode: standalone)').matches) {
         setIsStandalone(true);
       }
     }

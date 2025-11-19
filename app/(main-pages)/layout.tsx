@@ -20,12 +20,15 @@ const layout = ({ children }: { children: ReactNode }) => {
     analytics.load({ writeKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY || '' })
 
       e.preventDefault();
-      console.log(e)
-      setDeferredPrompt(e) 
+      console.log(e);
+      setDeferredPrompt(e);
     };
     window?.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     return () => {
-      window?.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      window?.removeEventListener(
+        'beforeinstallprompt',
+        handleBeforeInstallPrompt
+      );
     };
   },[])
 

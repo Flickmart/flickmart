@@ -140,7 +140,6 @@ export const getUserOnlineStatus = query({
         (p) => p.userId === user._id && p.online === true
       );
 
-
       return {
         isOnline,
         lastSeen: isOnline ? Date.now() : 0,

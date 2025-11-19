@@ -1,14 +1,14 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { type Doc } from "@/convex/_generated/dataModel";
-import WalletHeader from "./WalletHeader";
-import WalletBalance from "./WalletBalance";
-import WalletActions from "./WalletActions";
-import TransactionHistory from "./TransactionHistory";
-import AccountVerificationDialog from "./AccountVerificationDialog";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
+import { Card, CardContent } from '@/components/ui/card';
+import type { Doc } from '@/convex/_generated/dataModel';
+import AccountVerificationDialog from './AccountVerificationDialog';
+import TransactionHistory from './TransactionHistory';
+import WalletActions from './WalletActions';
+import WalletBalance from './WalletBalance';
+import WalletHeader from './WalletHeader';
 
-interface WalletLayoutProps {
-  user: Doc<"users">;
+type WalletLayoutProps = {
+  user: Doc<'users'>;
   balance: number;
   showBalance: boolean;
   isRefreshingBalance: boolean;
@@ -60,7 +60,7 @@ interface WalletLayoutProps {
   setSaveNewAccount: (save: boolean) => void;
   useNewAccount: boolean;
   setUseNewAccount: (use: boolean) => void;
-}
+};
 
 export default function WalletLayout({
   user,
@@ -114,77 +114,79 @@ export default function WalletLayout({
   useNewAccount,
   setUseNewAccount,
 }: WalletLayoutProps) {
-  const searchParams = useSearchParams()
-  const action = searchParams.get("action")
+  const searchParams = useSearchParams();
+  const action = searchParams.get('action');
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Layout */}
       <div className="lg:hidden">
-       {action !== "show_history" && <Card className="rounded-none border-0 shadow-none">
-          <WalletHeader user={user} isMobile={true} />
-          <WalletBalance
-            balance={balance}
-            showBalance={showBalance}
-            isRefreshingBalance={isRefreshingBalance}
-            isMobile={true}
-            onToggleBalance={onToggleBalance}
-            onRefreshBalance={onRefreshBalance}
-          >
-            <WalletActions
-              user={user}
+        {action !== 'show_history' && (
+          <Card className="rounded-none border-0 shadow-none">
+            <WalletHeader isMobile={true} user={user} />
+            <WalletBalance
+              balance={balance}
               isMobile={true}
-              open={action === "open_dialog" ? true : open}
-              withdrawOpen={withdrawOpen}
-              setOpen={setOpen}
-              setWithdrawOpen={setWithdrawOpen}
-              amount={amount}
-              setAmount={setAmount}
-              error={error}
-              setError={setError}
-              isInitializing={isInitializing}
-              isPaystackModalOpen={isPaystackModalOpen}
-              paystackReference={paystackReference}
-              setPaystackReference={setPaystackReference}
-              setIsPaystackModalOpen={setIsPaystackModalOpen}
-              handleInitializePayment={handleInitializePayment}
-              handlePaystackSuccess={handlePaystackSuccess}
-              handlePaystackClose={handlePaystackClose}
-              banks={banks}
-              selectedBank={selectedBank}
-              setSelectedBank={setSelectedBank}
-              accountNumber={accountNumber}
-              setAccountNumber={setAccountNumber}
-              accountName={accountName}
-              setAccountName={setAccountName}
-              isLoadingBanks={isLoadingBanks}
-              isVerifyingAccount={isVerifyingAccount}
-              isWithdrawing={isWithdrawing}
-              verifyAccount={verifyAccount}
-              handleWithdraw={handleWithdraw}
-              handleContinueToConfirmation={handleContinueToConfirmation}
-              recipientDetails={recipientDetails}
-              verifyDialogOpen={verifyDialogOpen}
-              setVerifyDialogOpen={setVerifyDialogOpen}
-              bankAccounts={bankAccounts}
-              selectedBankAccountId={selectedBankAccountId}
-              setSelectedBankAccountId={setSelectedBankAccountId}
-              saveNewAccount={saveNewAccount}
-              setSaveNewAccount={setSaveNewAccount}
-              useNewAccount={useNewAccount}
-              setUseNewAccount={setUseNewAccount}
-            />
-          </WalletBalance>
-        </Card>}
+              isRefreshingBalance={isRefreshingBalance}
+              onRefreshBalance={onRefreshBalance}
+              onToggleBalance={onToggleBalance}
+              showBalance={showBalance}
+            >
+              <WalletActions
+                accountName={accountName}
+                accountNumber={accountNumber}
+                amount={amount}
+                bankAccounts={bankAccounts}
+                banks={banks}
+                error={error}
+                handleContinueToConfirmation={handleContinueToConfirmation}
+                handleInitializePayment={handleInitializePayment}
+                handlePaystackClose={handlePaystackClose}
+                handlePaystackSuccess={handlePaystackSuccess}
+                handleWithdraw={handleWithdraw}
+                isInitializing={isInitializing}
+                isLoadingBanks={isLoadingBanks}
+                isMobile={true}
+                isPaystackModalOpen={isPaystackModalOpen}
+                isVerifyingAccount={isVerifyingAccount}
+                isWithdrawing={isWithdrawing}
+                open={action === 'open_dialog' ? true : open}
+                paystackReference={paystackReference}
+                recipientDetails={recipientDetails}
+                saveNewAccount={saveNewAccount}
+                selectedBank={selectedBank}
+                selectedBankAccountId={selectedBankAccountId}
+                setAccountName={setAccountName}
+                setAccountNumber={setAccountNumber}
+                setAmount={setAmount}
+                setError={setError}
+                setIsPaystackModalOpen={setIsPaystackModalOpen}
+                setOpen={setOpen}
+                setPaystackReference={setPaystackReference}
+                setSaveNewAccount={setSaveNewAccount}
+                setSelectedBank={setSelectedBank}
+                setSelectedBankAccountId={setSelectedBankAccountId}
+                setUseNewAccount={setUseNewAccount}
+                setVerifyDialogOpen={setVerifyDialogOpen}
+                setWithdrawOpen={setWithdrawOpen}
+                useNewAccount={useNewAccount}
+                user={user}
+                verifyAccount={verifyAccount}
+                verifyDialogOpen={verifyDialogOpen}
+                withdrawOpen={withdrawOpen}
+              />
+            </WalletBalance>
+          </Card>
+        )}
         <TransactionHistory
-          transactions={transactions}
           activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          isLoadingTransactions={isLoadingTransactions}
-          handleRefreshTransactions={handleRefreshTransactions}
-          user={user}
-          handlePaystackSuccess={handlePaystackSuccess}
           handlePaystackClose={handlePaystackClose}
+          handlePaystackSuccess={handlePaystackSuccess}
+          handleRefreshTransactions={handleRefreshTransactions}
+          isLoadingTransactions={isLoadingTransactions}
           isMobile={true}
+          setActiveTab={setActiveTab}
+          transactions={transactions}
+          user={user}
         />
       </div>
 
@@ -192,71 +194,71 @@ export default function WalletLayout({
       <div className="hidden lg:block">
         <div className="">
           <Card className="overflow-hidden rounded-none">
-            <WalletHeader user={user} isMobile={false} />
+            <WalletHeader isMobile={false} user={user} />
             <CardContent className="p-0">
               <WalletBalance
                 balance={balance}
-                showBalance={showBalance}
-                isRefreshingBalance={isRefreshingBalance}
                 isMobile={false}
-                onToggleBalance={onToggleBalance}
+                isRefreshingBalance={isRefreshingBalance}
                 onRefreshBalance={onRefreshBalance}
+                onToggleBalance={onToggleBalance}
+                showBalance={showBalance}
               >
                 <WalletActions
-                  user={user}
-                  isMobile={false}
-                  open={open}
-                  withdrawOpen={withdrawOpen}
-                  setOpen={setOpen}
-                  setWithdrawOpen={setWithdrawOpen}
-                  amount={amount}
-                  setAmount={setAmount}
-                  error={error}
-                  setError={setError}
-                  isInitializing={isInitializing}
-                  isPaystackModalOpen={isPaystackModalOpen}
-                  paystackReference={paystackReference}
-                  setPaystackReference={setPaystackReference}
-                  setIsPaystackModalOpen={setIsPaystackModalOpen}
-                  handleInitializePayment={handleInitializePayment}
-                  handlePaystackSuccess={handlePaystackSuccess}
-                  handlePaystackClose={handlePaystackClose}
-                  banks={banks}
-                  selectedBank={selectedBank}
-                  setSelectedBank={setSelectedBank}
-                  accountNumber={accountNumber}
-                  setAccountNumber={setAccountNumber}
                   accountName={accountName}
-                  setAccountName={setAccountName}
+                  accountNumber={accountNumber}
+                  amount={amount}
+                  bankAccounts={bankAccounts}
+                  banks={banks}
+                  error={error}
+                  handleContinueToConfirmation={handleContinueToConfirmation}
+                  handleInitializePayment={handleInitializePayment}
+                  handlePaystackClose={handlePaystackClose}
+                  handlePaystackSuccess={handlePaystackSuccess}
+                  handleWithdraw={handleWithdraw}
+                  isInitializing={isInitializing}
                   isLoadingBanks={isLoadingBanks}
+                  isMobile={false}
+                  isPaystackModalOpen={isPaystackModalOpen}
                   isVerifyingAccount={isVerifyingAccount}
                   isWithdrawing={isWithdrawing}
-                  verifyAccount={verifyAccount}
-                  handleWithdraw={handleWithdraw}
-                  handleContinueToConfirmation={handleContinueToConfirmation}
+                  open={open}
+                  paystackReference={paystackReference}
                   recipientDetails={recipientDetails}
-                  verifyDialogOpen={verifyDialogOpen}
-                  setVerifyDialogOpen={setVerifyDialogOpen}
-                  bankAccounts={bankAccounts}
-                  selectedBankAccountId={selectedBankAccountId}
-                  setSelectedBankAccountId={setSelectedBankAccountId}
                   saveNewAccount={saveNewAccount}
+                  selectedBank={selectedBank}
+                  selectedBankAccountId={selectedBankAccountId}
+                  setAccountName={setAccountName}
+                  setAccountNumber={setAccountNumber}
+                  setAmount={setAmount}
+                  setError={setError}
+                  setIsPaystackModalOpen={setIsPaystackModalOpen}
+                  setOpen={setOpen}
+                  setPaystackReference={setPaystackReference}
                   setSaveNewAccount={setSaveNewAccount}
-                  useNewAccount={useNewAccount}
+                  setSelectedBank={setSelectedBank}
+                  setSelectedBankAccountId={setSelectedBankAccountId}
                   setUseNewAccount={setUseNewAccount}
+                  setVerifyDialogOpen={setVerifyDialogOpen}
+                  setWithdrawOpen={setWithdrawOpen}
+                  useNewAccount={useNewAccount}
+                  user={user}
+                  verifyAccount={verifyAccount}
+                  verifyDialogOpen={verifyDialogOpen}
+                  withdrawOpen={withdrawOpen}
                 />
               </WalletBalance>
 
               <TransactionHistory
-                transactions={transactions}
                 activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                isLoadingTransactions={isLoadingTransactions}
-                handleRefreshTransactions={handleRefreshTransactions}
-                user={user}
-                handlePaystackSuccess={handlePaystackSuccess}
                 handlePaystackClose={handlePaystackClose}
+                handlePaystackSuccess={handlePaystackSuccess}
+                handleRefreshTransactions={handleRefreshTransactions}
+                isLoadingTransactions={isLoadingTransactions}
                 isMobile={false}
+                setActiveTab={setActiveTab}
+                transactions={transactions}
+                user={user}
               />
             </CardContent>
           </Card>
@@ -265,17 +267,17 @@ export default function WalletLayout({
 
       {/* Account Verification Dialog */}
       <AccountVerificationDialog
-        verifyDialogOpen={verifyDialogOpen}
-        setVerifyDialogOpen={setVerifyDialogOpen}
-        recipientDetails={recipientDetails}
-        selectedBank={selectedBank}
-        banks={banks}
         accountNumber={accountNumber}
         amount={amount}
-        isWithdrawing={isWithdrawing}
-        handleWithdraw={handleWithdraw}
+        banks={banks}
         error={error}
+        handleWithdraw={handleWithdraw}
+        isWithdrawing={isWithdrawing}
+        recipientDetails={recipientDetails}
+        selectedBank={selectedBank}
         setError={setError}
+        setVerifyDialogOpen={setVerifyDialogOpen}
+        verifyDialogOpen={verifyDialogOpen}
       />
     </div>
   );

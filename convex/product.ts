@@ -1,12 +1,12 @@
-import { ConvexError, v } from "convex/values";
-import { mutation, query } from "./_generated/server";
-import { getCurrentUserOrThrow } from "./users";
-import { Id } from "./_generated/dataModel";
+import { ConvexError, v } from 'convex/values';
+import type { Id } from './_generated/dataModel';
+import { mutation, query } from './_generated/server';
+import { getCurrentUserOrThrow } from './users';
 
 export const errorObject = {
   status: 401,
-  message: "Authentication Required",
-  code: "USER_NOT_FOUND",
+  message: 'Authentication Required',
+  code: 'USER_NOT_FOUND',
 };
 // Get all products
 export const getAll = query({
@@ -14,7 +14,7 @@ export const getAll = query({
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
-    const allProducts = await ctx.db.query("product").collect();
+    const allProducts = await ctx.db.query('product').collect();
 
     return allProducts.slice(0, args.limit || allProducts.length);
   },
@@ -22,40 +22,44 @@ export const getAll = query({
 
 // Get product by ID
 export const getById = query({
-  args: { productId: v.union(v.null(), v.id("product")) },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
-    if (!args.productId) return null;
-    return await ctx.db.get(args.productId);
+    const product = await ctx.db.get(args.productId);
+    console.log(product);
+    return product;
   },
 });
 
 // Get products by user ID
 export const getByUserId = query({
-  args: { userId: v.optional(v.id("users")) },
+  args: { userId: v.optional(v.id('users')) },
   handler: async (ctx, args) => {
     try {
       // Validate that the user exists
       let user;
 
       if (args.userId) {
-        user = await ctx.db.get(args.userId)
-      }else{
+        user = await ctx.db.get(args.userId);
+      } else {
         user = await getCurrentUserOrThrow(ctx);
         if (!user) {
           throw new ConvexError({
-            message: "User not Found",
-            code: "USER_NOT_FOUND",
+            message: 'User not Found',
+            code: 'USER_NOT_FOUND',
           });
         }
       }
 
-    
-
       // Get all products for the user
-      const products = await ctx.db.query("product").withIndex("by_userId", q => {
-        if (!user?._id) return q.eq("userId", "" as Id<"users">); // Handle undefined case with empty string ID
-        return q.eq("userId", user._id);
-      }).collect();
+      const products = await ctx.db
+        .query('product')
+        .withIndex('by_userId', (q) => {
+          if (!user?._id) {
+            return q.eq('userId', '' as Id<'users'>); // Handle undefined case with empty string ID
+          }
+          return q.eq('userId', user._id);
+        })
+        .collect();
 
       // Filter out any products that might be considered inactive
       // Since there's no explicit status field, we'll return all products
@@ -74,8 +78,8 @@ export const getByUserId = query({
         throw error;
       }
       throw new ConvexError({
-        message: "Failed to fetch products",
-        code: "FETCH_ERROR",
+        message: 'Failed to fetch products',
+        code: 'FETCH_ERROR',
       });
     }
   },
@@ -83,14 +87,16 @@ export const getByUserId = query({
 
 // Get products by business ID
 export const getByBusinessId = query({
-  args: { businessId: v.optional(v.id("store")) },
+  args: { businessId: v.optional(v.id('store')) },
   handler: async (ctx, args) => {
     const products = await ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("businessId"), args.businessId))
+      .query('product')
+      .filter((q) => q.eq(q.field('businessId'), args.businessId))
       .collect();
 
-    if (!products.length) return null;
+    if (!products.length) {
+      return null;
+    }
 
     return products;
   },
@@ -101,19 +107,19 @@ export const getByCategory = query({
   args: { category: v.string() },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("category"), args.category))
+      .query('product')
+      .filter((q) => q.eq(q.field('category'), args.category))
       .collect();
   },
 });
 
 // Get products by location
 export const getByLocation = query({
-  args: { location: v.union(v.literal("Enugu"), v.literal("Nsuka")) },
+  args: { location: v.union(v.literal('Enugu'), v.literal('Nsuka')) },
   handler: async (ctx, args) => {
     return await ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("location"), args.location))
+      .query('product')
+      .filter((q) => q.eq(q.field('location'), args.location))
       .collect();
   },
 });
@@ -128,20 +134,20 @@ export const create = mutation({
     targetPrice: v.optional(v.number()),
     targetPriceSecond: v.optional(v.number()),
     aiEnabled: v.optional(v.boolean()),
-    businessId: v.id("store"),
+    businessId: v.id('store'),
     category: v.string(),
     subcategory: v.string(),
     plan: v.union(
-      v.literal("free"),
-      v.literal("basic"),
-      v.literal("pro"),
-      v.literal("premium")
+      v.literal('free'),
+      v.literal('basic'),
+      v.literal('pro'),
+      v.literal('premium')
     ),
     exchange: v.optional(v.boolean()),
-    condition: v.union(v.literal("brand new"), v.literal("used")),
-    location: v.union(v.literal("enugu"), v.literal("nsukka")),
+    condition: v.union(v.literal('brand new'), v.literal('used')),
+    location: v.union(v.literal('enugu'), v.literal('nsukka')),
     link: v.optional(v.string()),
-    commentsId: v.optional(v.id("comments")),
+    commentsId: v.optional(v.id('comments')),
     negotiable: v.optional(v.boolean()),
     phone: v.string(),
     store: v.string(),
@@ -149,10 +155,10 @@ export const create = mutation({
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw Error("User must be authenticated to perform this action");
+      throw new Error('User must be authenticated to perform this action');
     }
 
-    const productId = await ctx.db.insert("product", {
+    const productId = await ctx.db.insert('product', {
       userId: user._id,
       title: args.title,
       description: args.description,
@@ -185,7 +191,7 @@ export const create = mutation({
 // Update a product
 export const update = mutation({
   args: {
-    productId: v.id("product"),
+    productId: v.id('product'),
     title: v.optional(v.string()),
     description: v.optional(v.string()),
     images: v.optional(v.array(v.string())),
@@ -201,8 +207,8 @@ export const update = mutation({
     //     v.literal("premium")
     //   )
     // ),
-    condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
-    location: v.optional(v.union(v.literal("enugu"), v.literal("nsukka"))),
+    condition: v.optional(v.union(v.literal('brand new'), v.literal('used'))),
+    location: v.optional(v.union(v.literal('enugu'), v.literal('nsukka'))),
     negotiable: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
@@ -214,27 +220,27 @@ export const update = mutation({
     }
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     if (product.userId !== user._id) {
-      throw new Error("Unauthorized to update this product");
+      throw new Error('Unauthorized to update this product');
     }
 
     const updates: Record<string, any> = {};
 
     // Build updates object with only the fields that were provided
     const updateFields = [
-      "title",
-      "description",
-      "images",
-      "price",
-      "category",
-      "subcategory",
+      'title',
+      'description',
+      'images',
+      'price',
+      'category',
+      'subcategory',
       // "plan",
-      "condition",
-      "location",
-      "negotiable",
+      'condition',
+      'location',
+      'negotiable',
     ] as const;
 
     // Type-safe way to build the updates object
@@ -255,7 +261,7 @@ export const update = mutation({
 
 // Delete a product
 export const remove = mutation({
-  args: { productId: v.id("product") },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
@@ -265,11 +271,11 @@ export const remove = mutation({
     }
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     if (product.userId !== user._id) {
-      throw new Error("Unauthorized to delete this product");
+      throw new Error('Unauthorized to delete this product');
     }
 
     await ctx.db.delete(args.productId);
@@ -280,29 +286,29 @@ export const remove = mutation({
 
 // Like a product
 export const likeProduct = mutation({
-  args: { productId: v.id("product") },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
     // Check if user exists
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
-      throw Error("You need to be logged in to like this product");
+      throw new Error('You need to be logged in to like this product');
     }
 
     // Check if product exists
     const product = await ctx.db.get(args.productId);
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     // Check if user has already liked this product
     const existingLike = await ctx.db
-      .query("likes")
+      .query('likes')
       .filter((q) =>
         q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+          q.eq(q.field('productId'), args.productId),
+          q.eq(q.field('userId'), user._id),
+          q.or(q.eq(q.field('liked'), true), q.eq(q.field('disliked'), true))
         )
       )
       .first();
@@ -327,7 +333,7 @@ export const likeProduct = mutation({
     }
 
     // If product hasn't been liked before
-    await ctx.db.insert("likes", {
+    await ctx.db.insert('likes', {
       timeStamp: new Date().toISOString(),
       productId: args.productId,
       userId: user._id,
@@ -344,7 +350,7 @@ export const likeProduct = mutation({
 });
 
 export const getLikeByProductId = query({
-  args: { productId: v.id("product") },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
@@ -353,11 +359,11 @@ export const getLikeByProductId = query({
     const product = await ctx.db.get(args.productId);
 
     const like = await ctx.db
-      .query("likes")
+      .query('likes')
       .filter((q) =>
         q.and(
-          q.eq(q.field("productId"), product?._id),
-          q.eq(q.field("userId"), user?._id)
+          q.eq(q.field('productId'), product?._id),
+          q.eq(q.field('userId'), user?._id)
         )
       )
       .first();
@@ -370,7 +376,7 @@ export const getLikeByProductId = query({
 
 // Dislike a product
 export const dislikeProduct = mutation({
-  args: { productId: v.id("product") },
+  args: { productId: v.id('product') },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     const product = await ctx.db.get(args.productId);
@@ -378,22 +384,22 @@ export const dislikeProduct = mutation({
     if (!user) {
       return {
         status: 401,
-        message: "Authentication Required",
-        code: "USER_NOT_FOUND",
+        message: 'Authentication Required',
+        code: 'USER_NOT_FOUND',
       };
     }
 
     if (!product) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     const existingDislike = await ctx.db
-      .query("likes")
+      .query('likes')
       .filter((q) =>
         q.and(
-          q.eq(q.field("productId"), args.productId),
-          q.eq(q.field("userId"), user._id),
-          q.or(q.eq(q.field("liked"), true), q.eq(q.field("disliked"), true))
+          q.eq(q.field('productId'), args.productId),
+          q.eq(q.field('userId'), user._id),
+          q.or(q.eq(q.field('liked'), true), q.eq(q.field('disliked'), true))
         )
       )
       .first();
@@ -415,7 +421,7 @@ export const dislikeProduct = mutation({
       return;
     }
 
-    await ctx.db.insert("likes", {
+    await ctx.db.insert('likes', {
       timeStamp: new Date().toISOString(),
       productId: args.productId,
       userId: user._id,
@@ -434,8 +440,8 @@ export const dislikeProduct = mutation({
 
 export const addBookmark = mutation({
   args: {
-    productId: v.id("product"),
-    type: v.union(v.literal("saved"), v.literal("wishlist")),
+    productId: v.id('product'),
+    type: v.union(v.literal('saved'), v.literal('wishlist')),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -444,21 +450,21 @@ export const addBookmark = mutation({
     }
 
     const wishListed = await ctx.db
-      .query("bookmarks")
-      .withIndex("by_product_user_type", (q) =>
+      .query('bookmarks')
+      .withIndex('by_product_user_type', (q) =>
         q
-          .eq("productId", args.productId)
-          .eq("userId", user._id)
-          .eq("type", args.type)
+          .eq('productId', args.productId)
+          .eq('userId', user._id)
+          .eq('type', args.type)
       )
       .first();
 
     if (wishListed) {
       await ctx.db.delete(wishListed._id);
-      return "removed";
+      return 'removed';
     }
 
-    const bookmarkId = await ctx.db.insert("bookmarks", {
+    const bookmarkId = await ctx.db.insert('bookmarks', {
       productId: args.productId,
       type: args.type,
       timeStamp: new Date().toISOString(),
@@ -472,8 +478,8 @@ export const addBookmark = mutation({
 
 export const getSavedOrWishlistProduct = query({
   args: {
-    productId: v.id("product"),
-    type: v.union(v.literal("saved"), v.literal("wishlist")),
+    productId: v.id('product'),
+    type: v.union(v.literal('saved'), v.literal('wishlist')),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -487,19 +493,19 @@ export const getSavedOrWishlistProduct = query({
         success: false,
         error: {
           status: 404,
-          message: "Product does not exist",
-          code: "PRODUCT_NOT_FOUND",
+          message: 'Product does not exist',
+          code: 'PRODUCT_NOT_FOUND',
         },
         data: null,
       };
     }
     const saved = await ctx.db
-      .query("bookmarks")
-      .withIndex("by_product_user_type", (q) =>
+      .query('bookmarks')
+      .withIndex('by_product_user_type', (q) =>
         q
-          .eq("productId", product._id)
-          .eq("userId", user._id)
-          .eq("type", args.type)
+          .eq('productId', product._id)
+          .eq('userId', user._id)
+          .eq('type', args.type)
       )
       .first();
     return { success: true, error: null, data: saved };
@@ -508,7 +514,7 @@ export const getSavedOrWishlistProduct = query({
 
 export const getAllSavedOrWishlist = query({
   args: {
-    type: v.union(v.literal("saved"), v.literal("wishlist")),
+    type: v.union(v.literal('saved'), v.literal('wishlist')),
   },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
@@ -516,9 +522,9 @@ export const getAllSavedOrWishlist = query({
       return { error: errorObject, success: false, data: null };
     }
     const saved = await ctx.db
-      .query("bookmarks")
-      .withIndex("by_user_type", (q) =>
-        q.eq("userId", user._id).eq("type", args.type)
+      .query('bookmarks')
+      .withIndex('by_user_type', (q) =>
+        q.eq('userId', user._id).eq('type', args.type)
       )
       .collect();
 
@@ -536,34 +542,33 @@ export const getAllSavedOrWishlist = query({
 // Search products with advanced filtering and sorting
 export const search = query({
   args: {
-    type: v.union(v.literal("suggestions"), v.literal("search")),
+    type: v.union(v.literal('suggestions'), v.literal('search')),
     query: v.string(),
     location: v.optional(v.string()),
     category: v.optional(v.string()),
     minPrice: v.optional(v.number()),
     maxPrice: v.optional(v.number()),
-    condition: v.optional(v.union(v.literal("brand new"), v.literal("used"))),
+    condition: v.optional(v.union(v.literal('brand new'), v.literal('used'))),
     exchangePossible: v.optional(v.boolean()),
     sortBy: v.optional(
       v.union(
-        v.literal("price_asc"),
-        v.literal("price_desc"),
-        v.literal("newest"),
-        v.literal("popular")
+        v.literal('price_asc'),
+        v.literal('price_desc'),
+        v.literal('newest'),
+        v.literal('popular')
       )
     ),
   },
   handler: async (ctx, args) => {
     const searchQuery = args.query.toLowerCase();
-    let products = await ctx.db.query("product").collect();
+    let products = await ctx.db.query('product').collect();
 
     // Apply text search filter
     products = products.filter(
       (product) =>
         product.title.toLowerCase().includes(searchQuery) ||
         product.description.toLowerCase().includes(searchQuery) ||
-        (product.category &&
-          product.category.toLowerCase().includes(searchQuery))
+        product.category?.toLowerCase().includes(searchQuery)
     );
 
     // Apply location filter
@@ -616,20 +621,22 @@ export const search = query({
     products.sort((a, b) => {
       // First sort by ad type priority
       const adTypeDiff = adTypePriority[b.plan] - adTypePriority[a.plan];
-      if (adTypeDiff !== 0) return adTypeDiff;
+      if (adTypeDiff !== 0) {
+        return adTypeDiff;
+      }
 
       // Then apply the requested sort order
       if (args.sortBy) {
         switch (args.sortBy) {
-          case "price_asc":
+          case 'price_asc':
             return a.price - b.price;
-          case "price_desc":
+          case 'price_desc':
             return b.price - a.price;
-          case "newest":
+          case 'newest':
             return (
               new Date(b.timeStamp).getTime() - new Date(a.timeStamp).getTime()
             );
-          case "popular":
+          case 'popular':
             return (
               (b?.likes ?? 0) -
               (b?.dislikes ?? 0) -
@@ -640,10 +647,10 @@ export const search = query({
       return 0;
     });
 
-    if (args.type === "suggestions") {
+    if (args.type === 'suggestions') {
       return products.map((item) => item.title);
     }
-    if (args.type === "search") {
+    if (args.type === 'search') {
       return products;
     }
   },
@@ -663,13 +670,13 @@ export const getRecommendations = query({
     }
     // Query db based on user likes
     const likedProducts = await ctx.db
-      .query("likes")
-      .filter((q) => q.eq(q.field("userId"), user._id))
+      .query('likes')
+      .filter((q) => q.eq(q.field('userId'), user._id))
       .collect();
     // Query db based on user bookmarks
     const bookmarkedProducts = await ctx.db
-      .query("bookmarks")
-      .filter((q) => q.eq(q.field("userId"), user._id))
+      .query('bookmarks')
+      .filter((q) => q.eq(q.field('userId'), user._id))
       .collect();
 
     // Get user's liked products
@@ -680,8 +687,8 @@ export const getRecommendations = query({
 
     // Get all products except user's own
     const allProducts = await ctx.db
-      .query("product")
-      .filter((q) => q.neq(q.field("userId"), user._id))
+      .query('product')
+      .filter((q) => q.neq(q.field('userId'), user._id))
       .collect();
 
     const scoreProducts = allProducts.map((product) => {
@@ -763,12 +770,12 @@ export const getTrending = query({
   args: {
     limit: v.optional(v.number()),
     timeFrame: v.optional(
-      v.union(v.literal("day"), v.literal("week"), v.literal("month"))
+      v.union(v.literal('day'), v.literal('week'), v.literal('month'))
     ),
   },
   handler: async (ctx, args) => {
     const limit = args.limit || 10;
-    const timeFrame = args.timeFrame || "week";
+    const timeFrame = args.timeFrame || 'week';
 
     // Calculate time threshold based on timeFrame
     const now = Date.now();
@@ -779,7 +786,7 @@ export const getTrending = query({
     }[timeFrame];
 
     // Get all products
-    const products = await ctx.db.query("product").collect();
+    const products = await ctx.db.query('product').collect();
 
     // Calculate trending scores
     const scoredProducts = products.map((product) => {
@@ -796,7 +803,7 @@ export const getTrending = query({
         ((product.likes ?? 0) - (product.dislikes ?? 0)) / daysOld;
 
       // Calculate final score
-      const score = engagementVelocity * (product.plan === "premium" ? 1.5 : 1);
+      const score = engagementVelocity * (product.plan === 'premium' ? 1.5 : 1);
 
       return { product, score };
     });
@@ -814,7 +821,7 @@ export const getTrending = query({
 // Get similar products based on a product ID
 export const getSimilarProducts = query({
   args: {
-    productId: v.id("product"),
+    productId: v.id('product'),
     limit: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -823,13 +830,13 @@ export const getSimilarProducts = query({
     // Get the target product
     const targetProduct = await ctx.db.get(args.productId);
     if (!targetProduct) {
-      throw new Error("Product not found");
+      throw new Error('Product not found');
     }
 
     // Get all products except the target product
     const allProducts = await ctx.db
-      .query("product")
-      .filter((q) => q.neq(q.field("_id"), args.productId))
+      .query('product')
+      .filter((q) => q.neq(q.field('_id'), args.productId))
       .collect();
 
     // Calculate similarity scores
@@ -861,7 +868,7 @@ export const getSimilarProducts = query({
       // 4. Price Range Similarity (10% weight)
       const priceDiff = Math.abs(targetProduct.price - product.price);
       const maxPrice = Math.max(targetProduct.price, product.price);
-      const minPrice = Math.min(1, maxPrice); // Avoid division by zero
+      const _minPrice = Math.min(1, maxPrice); // Avoid division by zero
       const priceSimilarity = 1 - priceDiff / (maxPrice || 1);
       score += priceSimilarity * 0.1;
 
@@ -921,14 +928,14 @@ export const getProductsByCategoryOrSubCategory = query({
     const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
-      throw Error("User is not logged in");
+      throw new Error('User is not logged in');
     }
     const products = await ctx.db
-      .query("product")
+      .query('product')
       .filter((q) =>
         q.or(
-          q.eq(q.field("category"), args.category),
-          q.eq(q.field("subcategory"), args.category)
+          q.eq(q.field('category'), args.category),
+          q.eq(q.field('subcategory'), args.category)
         )
       )
       .collect();
@@ -950,25 +957,25 @@ export const getProductsByFilters = query({
     console.log(args);
 
     let query = ctx.db
-      .query("product")
+      .query('product')
       .filter((q) =>
         q.and(
-          q.eq(q.field("category"), args.category),
-          q.eq(q.field("subcategory"), args.subcategory)
+          q.eq(q.field('category'), args.category),
+          q.eq(q.field('subcategory'), args.subcategory)
         )
       );
 
     // Apply location filter if provided
     if (args.location) {
-      query = query.filter((q) => q.eq(q.field("location"), args.location));
+      query = query.filter((q) => q.eq(q.field('location'), args.location));
     }
 
     // Apply price range filter if min and max are provided
     if (args.min && args.max) {
       query = query.filter((q) =>
         q.and(
-          q.gte(q.field("price"), args.min),
-          q.lte(q.field("price"), args.max)
+          q.gte(q.field('price'), args.min),
+          q.lte(q.field('price'), args.max)
         )
       );
     }
@@ -985,8 +992,8 @@ export const getProductsByFilters = query({
       if (range) {
         query = query.filter((q) =>
           q.and(
-            q.gte(q.field("price"), range.min),
-            q.lte(q.field("price"), range.max)
+            q.gte(q.field('price'), range.min),
+            q.lte(q.field('price'), range.max)
           )
         );
       }
@@ -1006,9 +1013,9 @@ export const getNewProducts = query({
 
     // Get products not older than 7 days
     const products = await ctx.db
-      .query("product")
-      .filter((q) => q.gte(q.field("_creationTime"), tenDaysAgo))
-      .order("desc")
+      .query('product')
+      .filter((q) => q.gte(q.field('_creationTime'), tenDaysAgo))
+      .order('desc')
       .collect();
 
     return products;
@@ -1017,26 +1024,26 @@ export const getNewProducts = query({
 
 export const getVendorProducts = query({
   args: {
-    id: v.id("users"),
+    id: v.id('users'),
   },
 
   handler(ctx, args) {
     return ctx.db
-      .query("product")
-      .filter((q) => q.eq(q.field("userId"), args.id))
+      .query('product')
+      .filter((q) => q.eq(q.field('userId'), args.id))
       .collect();
   },
 });
 
 export const getBySellerId = query({
   args: {
-    sellerId: v.id("users"),
+    sellerId: v.id('users'),
   },
   handler: async (ctx, args) => {
     // Fetch all products where userId matches the given sellerId
     const products = await ctx.db
-      .query("product")
-      .withIndex("by_userId", (q) => q.eq("userId", args.sellerId))
+      .query('product')
+      .withIndex('by_userId', (q) => q.eq('userId', args.sellerId))
       .collect();
 
     return products;

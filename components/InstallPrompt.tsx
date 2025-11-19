@@ -1,68 +1,68 @@
-"use client"
-import useUserAgent from "@/hooks/useUserAgent";
-import React, { useEffect, useState } from "react";
-import { setCookie, getCookie } from "cookies-next";
-import AddToMobileChrome from "./AddToMobileChrome";
-import { usePathname } from "next/navigation";
-
+'use client';
+import { getCookie, setCookie } from 'cookies-next';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import useUserAgent from '@/hooks/useUserAgent';
+import AddToMobileChrome from './AddToMobileChrome';
 
 const COOKIE_NAME = 'addToHomeScreenPrompt';
 
-export default function InstallPrompt({promptEvent}: {promptEvent: Event | null}) {
+export default function InstallPrompt({
+  promptEvent,
+}: {
+  promptEvent: Event | null;
+}) {
   const { isMobile, isStandalone, userAgent, isIOS } = useUserAgent();
   const [isVisible, setIsVisible] = useState(false);
-  const path = usePathname()
+  const path = usePathname();
 
   // Close Prompt
   const closePrompt = () => {
-    setIsVisible(false)
+    setIsVisible(false);
   };
 
   // Don't show again to prevent being intrusive
   const doNotShowAgain = () => {
     const date = new Date();
     date.setFullYear(date.getFullYear() + 1);
-    setCookie(COOKIE_NAME, "dontShow", { expires: date });
+    setCookie(COOKIE_NAME, 'dontShow', { expires: date });
     setIsVisible(false);
   };
 
   async function handleInstallClick() {
-
     (promptEvent as any).prompt();
     closePrompt();
 
     const { outcome } = await (promptEvent as any).userChoice;
-    console.log("User choice:", outcome);
+    console.log('User choice:', outcome);
 
-    if (outcome === "accepted") {
+    if (outcome === 'accepted') {
       doNotShowAgain();
     }
   }
 
-
-  useEffect(()=>{
-    closePrompt()
+  useEffect(() => {
+    closePrompt();
     const addToHomeScreenPromptCookie = getCookie(COOKIE_NAME);
-    if(promptEvent && addToHomeScreenPromptCookie !== "dontShow" && !isStandalone){
-    setIsVisible(true); // show button when prompt is available
+    if (
+      promptEvent &&
+      addToHomeScreenPromptCookie !== 'dontShow' &&
+      !isStandalone
+    ) {
+      setIsVisible(true); // show button when prompt is available
     }
-  },[promptEvent, isStandalone])
+  }, [promptEvent, isStandalone]);
 
- 
-  
   if (!isVisible || path !== '/') {
     return null;
   }
 
   return (
     <div
-      className="fixed top-0 left-0 right-0 bottom-0 flex justify-center bg-black/70 z-50"
+      className="fixed top-0 right-0 bottom-0 left-0 z-50 flex justify-center bg-black/70"
       onClick={closePrompt}
     >
-      <AddToMobileChrome
-        handleInstallClick={handleInstallClick}
-      />
+      <AddToMobileChrome handleInstallClick={handleInstallClick} />
     </div>
-
   );
 }

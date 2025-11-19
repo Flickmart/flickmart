@@ -15,7 +15,7 @@ export default function PersonalDetailsPage() {
   const { isMobile } = useSidebar();
   const router = useRouter();
 
-  const handleChange = (
+  const _handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
@@ -25,7 +25,7 @@ export default function PersonalDetailsPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const _handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement update logic
     console.log('Form submitted:', formData);

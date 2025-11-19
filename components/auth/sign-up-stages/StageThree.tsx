@@ -1,6 +1,6 @@
 import { useUser } from '@clerk/nextjs';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -8,11 +8,11 @@ const StageThree = () => {
   const [redirectTimer, setRedirectTimer] = useState(5);
   const router = useRouter();
   const { user } = useUser();
-
+  const callbackURL = useSearchParams().get('callback') || '/';
   useEffect(() => {
     const interval = setInterval(() => {
       if (redirectTimer <= 0) {
-        router.push('/');
+        router.push(callbackURL);
       } else {
         setRedirectTimer((prev) => prev - 1);
       }
@@ -22,7 +22,7 @@ const StageThree = () => {
   }, [redirectTimer, router]);
 
   const handleGetStarted = () => {
-    router.push('/');
+    router.push(callbackURL);
   };
 
   return (

@@ -4,7 +4,7 @@ import type { OAuthStrategy } from '@clerk/types';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { type Dispatch, type SetStateAction, useState } from 'react';
+import { type Dispatch, type SetStateAction, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -78,7 +78,9 @@ export default function StageOne({
   const setEmail = useUserStore((state) => state.updateUserInfo);
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    if (!isLoaded) return;
+    if (!isLoaded) {
+      return;
+    }
 
     try {
       setIsLoading(true);

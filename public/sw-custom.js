@@ -8,8 +8,8 @@ self.addEventListener('push', (event) => {
 
       const options = {
         body: data.body,
-        icon: data.icon || '/icon-192x192.png',
-        badge: data.badge || '/badge-72x72.png',
+        icon: data.icon || '/icon512_rounded.png',
+        badge: data.badge || '/icon512_rounded.png',
         data: data.data,
         actions: data.actions || [
           {
@@ -36,8 +36,8 @@ self.addEventListener('push', (event) => {
       event.waitUntil(
         self.registration.showNotification('New Notification', {
           body: 'You have a new notification from Flickmart',
-          icon: '/icon-192x192.png',
-          badge: '/icon-512-rounded.png',
+          icon: '/icon512_maskable.png',
+          badge: '/icon512_maskable.png',
           tag: 'flickmart-fallback',
         })
       );

@@ -1,19 +1,19 @@
-"use client";
+'use client';
 
-import { useAuth } from "@clerk/nextjs";
-import { useQuery } from "convex/react";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import ClientOnly from "@/components/client-only";
-import { WalletPageSkeleton } from "@/components/wallet/skeleton";
-import WalletLayout from "@/components/wallet/WalletLayout";
-import { api } from "@/convex/_generated/api";
-import { type Doc } from "@/convex/_generated/dataModel";
-import { useAuthUser } from "@/hooks/useAuthUser";
+import { useAuth } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import ClientOnly from '@/components/client-only';
+import { WalletPageSkeleton } from '@/components/wallet/skeleton';
+import WalletLayout from '@/components/wallet/WalletLayout';
+import { api } from '@/convex/_generated/api';
+import type { Doc } from '@/convex/_generated/dataModel';
+import { useAuthUser } from '@/hooks/useAuthUser';
 
 export default function WalletPage() {
   const [showBalance, setShowBalance] = useState(true);
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const [isLoadingTransactions, setIsLoadingTransactions] = useState(false);
@@ -21,26 +21,26 @@ export default function WalletPage() {
 
   // Helper function to validate and format amount
   const validateAndSetAmount = (value: string) => {
-    const numValue = parseFloat(value);
-    if (!isNaN(numValue) && numValue >= 0) {
+    const numValue = Number.parseFloat(value);
+    if (!Number.isNaN(numValue) && numValue >= 0) {
       // Round to 2 decimal places to prevent precision issues
       const roundedValue = Math.round(numValue * 100) / 100;
       setAmount(roundedValue);
-    } else if (value === "" || value === "0") {
+    } else if (value === '' || value === '0') {
       setAmount(0);
     }
   };
-  const [error, setError] = useState<string | null>("");
+  const [error, setError] = useState<string | null>('');
   const [open, setOpen] = useState(false);
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [paystackReference, setPaystackReference] = useState<string>("");
+  const [paystackReference, setPaystackReference] = useState<string>('');
   const [isPaystackModalOpen, setIsPaystackModalOpen] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [isLoadingBanks, setIsLoadingBanks] = useState(false);
   const [banks, setBanks] = useState<any[]>([]);
-  const [selectedBank, setSelectedBank] = useState<string>("");
-  const [accountNumber, setAccountNumber] = useState<string>("");
-  const [accountName, setAccountName] = useState<string>("");
+  const [selectedBank, setSelectedBank] = useState<string>('');
+  const [accountNumber, setAccountNumber] = useState<string>('');
+  const [accountName, setAccountName] = useState<string>('');
   const [isWithdrawing, setIsWithdrawing] = useState(false);
   const [isVerifyingAccount, setIsVerifyingAccount] = useState(false);
   const [recipientDetails, setRecipientDetails] = useState<any>(null);
@@ -48,7 +48,7 @@ export default function WalletPage() {
 
   // Bank account management state
   const [selectedBankAccountId, setSelectedBankAccountId] =
-    useState<string>("");
+    useState<string>('');
   const [saveNewAccount, setSaveNewAccount] = useState(false);
   const [useNewAccount, setUseNewAccount] = useState(false);
 
@@ -67,16 +67,16 @@ export default function WalletPage() {
 
   const wallet = useQuery(
     api.wallet.getWalletByUserId,
-    user ? { userId: user._id } : "skip"
+    user ? { userId: user._id } : 'skip'
   );
   const transactions = useQuery(
     api.transactions.getByUserId,
-    user ? { userId: user._id } : "skip"
+    user ? { userId: user._id } : 'skip'
   );
 
   const bankAccounts = useQuery(
     api.bankAccounts.getUserBankAccounts,
-    user ? {} : "skip"
+    user ? {} : 'skip'
   );
 
   const { getToken } = useAuth();
@@ -99,12 +99,12 @@ export default function WalletPage() {
 
   const handleInitializePayment = async () => {
     if (amount <= 0) {
-      setError("Please enter a valid amount.");
-      toast.error("Amount invalid");
+      setError('Please enter a valid amount.');
+      toast.error('Amount invalid');
       return;
     }
     if (!user) {
-      setError("Log in to fund your wallet.");
+      setError('Log in to fund your wallet.');
       return;
     }
     try {
@@ -112,9 +112,9 @@ export default function WalletPage() {
       setIsInitializing(true);
       setIsPaystackModalOpen(true);
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsInitializing(false);
         return;
       }
@@ -122,9 +122,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/initialize`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ email: user.email, amount }),
@@ -134,12 +134,12 @@ export default function WalletPage() {
       if (data.status) {
         setPaystackReference(data.data.reference);
       } else {
-        setError("Failed to initialize payment.");
-        toast.error("Failed to initialize payment.");
+        setError('Failed to initialize payment.');
+        toast.error('Failed to initialize payment.');
         setIsPaystackModalOpen(false);
       }
-    } catch (err) {
-      setError("Error initializing payment.");
+    } catch (_err) {
+      setError('Error initializing payment.');
       setIsPaystackModalOpen(false);
     } finally {
       setIsInitializing(false);
@@ -149,18 +149,18 @@ export default function WalletPage() {
   const handlePaystackSuccess = async (response: { reference: string }) => {
     try {
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("User not authenticated.");
+        setError('User not authenticated.');
         setIsPaystackModalOpen(false);
         return;
       }
       const result = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -175,50 +175,50 @@ export default function WalletPage() {
         // Check the actual transaction status
         const transactionStatus = data.data?.status;
 
-        if (transactionStatus === "success") {
-          toast.success("Payment successful! Wallet updated.");
+        if (transactionStatus === 'success') {
+          toast.success('Payment successful! Wallet updated.');
           setAmount(0);
-          setPaystackReference("");
+          setPaystackReference('');
           setIsPaystackModalOpen(false);
           setError(null);
-        } else if (transactionStatus === "abandoned") {
-          toast.error("Payment was not completed. Please try again.");
+        } else if (transactionStatus === 'abandoned') {
+          toast.error('Payment was not completed. Please try again.');
           setError(
-            "Payment was abandoned. Please complete the payment process."
+            'Payment was abandoned. Please complete the payment process.'
           );
           setIsPaystackModalOpen(false);
-        } else if (transactionStatus === "failed") {
-          toast.error("Payment failed. Please try again.");
-          setError("Payment failed. Please try a different payment method.");
+        } else if (transactionStatus === 'failed') {
+          toast.error('Payment failed. Please try again.');
+          setError('Payment failed. Please try a different payment method.');
           setIsPaystackModalOpen(false);
-        } else if (transactionStatus === "pending") {
-          toast.info("Payment is still being processed. Please wait.");
-          setError("Payment is pending. Please wait for confirmation.");
+        } else if (transactionStatus === 'pending') {
+          toast.info('Payment is still being processed. Please wait.');
+          setError('Payment is pending. Please wait for confirmation.');
           setIsPaystackModalOpen(false);
         } else {
           // Handle other statuses
           const userMessage =
             data.userMessage ||
-            "Payment status unclear. Please contact support.";
+            'Payment status unclear. Please contact support.';
           toast.error(userMessage);
           setError(userMessage);
           setIsPaystackModalOpen(false);
         }
       } else {
         toast.error("We couldn't verify your transaction");
-        setError("Payment verification failed.");
+        setError('Payment verification failed.');
         setIsPaystackModalOpen(false);
       }
-    } catch (err) {
-      setError("Error verifying payment.");
+    } catch (_err) {
+      setError('Error verifying payment.');
       setIsPaystackModalOpen(false);
     }
   };
 
   const handlePaystackClose = () => {
-    setError("Payment cancelled.");
-    toast.info("Paystack transaction closed");
-    setPaystackReference("");
+    setError('Payment cancelled.');
+    toast.info('Paystack transaction closed');
+    setPaystackReference('');
     setIsPaystackModalOpen(false);
   };
 
@@ -228,9 +228,9 @@ export default function WalletPage() {
       setError(null);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsLoadingBanks(false);
         return;
       }
@@ -238,9 +238,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/list-banks`,
         {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
         }
@@ -250,12 +250,12 @@ export default function WalletPage() {
       if (data.status) {
         setBanks(data.data);
       } else {
-        setError("Failed to fetch banks.");
-        toast.error("Failed to fetch banks.");
+        setError('Failed to fetch banks.');
+        toast.error('Failed to fetch banks.');
       }
-    } catch (err) {
-      setError("Error fetching banks.");
-      toast.error("Error fetching banks.");
+    } catch (_err) {
+      setError('Error fetching banks.');
+      toast.error('Error fetching banks.');
     } finally {
       setIsLoadingBanks(false);
     }
@@ -263,7 +263,7 @@ export default function WalletPage() {
 
   const verifyAccount = async () => {
     if (!(accountNumber && selectedBank)) {
-      setError("Please enter account number and select bank");
+      setError('Please enter account number and select bank');
       return;
     }
 
@@ -272,9 +272,9 @@ export default function WalletPage() {
       setError(null);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsVerifyingAccount(false);
         return;
       }
@@ -282,9 +282,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/verify-account`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -298,14 +298,14 @@ export default function WalletPage() {
       if (data.status) {
         setRecipientDetails(data.data);
         setAccountName(data.data.account_name);
-        toast.success("Account verified successfully!");
+        toast.success('Account verified successfully!');
       } else {
-        setError(data.message || "Failed to verify account");
-        toast.error(data.message || "Failed to verify account");
+        setError(data.message || 'Failed to verify account');
+        toast.error(data.message || 'Failed to verify account');
       }
-    } catch (err) {
-      setError("Error verifying account");
-      toast.error("Error verifying account");
+    } catch (_err) {
+      setError('Error verifying account');
+      toast.error('Error verifying account');
     } finally {
       setIsVerifyingAccount(false);
     }
@@ -318,11 +318,11 @@ export default function WalletPage() {
 
   const handleWithdraw = async () => {
     const MIN_WITHDRAWAL = 100; // ₦100 minimum withdrawal
-    const MAX_WITHDRAWAL = 1000000; // ₦1M maximum withdrawal
+    const MAX_WITHDRAWAL = 1_000_000; // ₦1M maximum withdrawal
 
     if (amount <= 0) {
-      setError("Please enter a valid amount.");
-      toast.error("Amount invalid");
+      setError('Please enter a valid amount.');
+      toast.error('Amount invalid');
       return;
     }
 
@@ -343,40 +343,40 @@ export default function WalletPage() {
     }
 
     if (amount > balance) {
-      setError("Insufficient funds in your wallet.");
-      toast.error("Insufficient funds");
+      setError('Insufficient funds in your wallet.');
+      toast.error('Insufficient funds');
       return;
     }
 
     // Check if using saved account or new account
-    if (!useNewAccount && !selectedBankAccountId) {
-      setError("Please select a bank account or choose to add a new one.");
-      toast.error("Bank account selection required");
+    if (!(useNewAccount || selectedBankAccountId)) {
+      setError('Please select a bank account or choose to add a new one.');
+      toast.error('Bank account selection required');
       return;
     }
 
     if (useNewAccount) {
       if (!selectedBank) {
-        setError("Please select a bank.");
-        toast.error("Bank selection required");
+        setError('Please select a bank.');
+        toast.error('Bank selection required');
         return;
       }
 
       if (!accountNumber || accountNumber.length !== 10) {
-        setError("Please enter a valid 10-digit account number.");
-        toast.error("Invalid account number");
+        setError('Please enter a valid 10-digit account number.');
+        toast.error('Invalid account number');
         return;
       }
 
-      if (!recipientDetails || !accountName) {
-        setError("Please verify your account first.");
-        toast.error("Account verification required");
+      if (!(recipientDetails && accountName)) {
+        setError('Please verify your account first.');
+        toast.error('Account verification required');
         return;
       }
     }
 
     if (!user) {
-      setError("Log in to withdraw from your wallet.");
+      setError('Log in to withdraw from your wallet.');
       return;
     }
 
@@ -385,9 +385,9 @@ export default function WalletPage() {
       setIsWithdrawing(true);
 
       // Get the auth token from Clerk
-      const token = await getToken({ template: "convex" });
+      const token = await getToken({ template: 'convex' });
       if (!token) {
-        setError("Unauthorised user");
+        setError('Unauthorised user');
         setIsWithdrawing(false);
         return;
       }
@@ -395,9 +395,9 @@ export default function WalletPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_CONVEX_HTTP_ACTION_URL}/paystack/withdraw`,
         {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
@@ -407,9 +407,9 @@ export default function WalletPage() {
                   // New account details
                   bankCode: selectedBank,
                   accountNumber,
-                  accountName: accountName || "Not Verified",
+                  accountName: accountName || 'Not Verified',
                   bankName:
-                    banks.find((b) => b.code === selectedBank)?.name || "",
+                    banks.find((b) => b.code === selectedBank)?.name || '',
                   saveAccount: saveNewAccount,
                 }
               : {
@@ -422,25 +422,25 @@ export default function WalletPage() {
 
       const data = await response.json();
       if (data.status) {
-        toast.success("Withdrawal initiated successfully!");
+        toast.success('Withdrawal initiated successfully!');
         setAmount(0);
-        setSelectedBank("");
-        setAccountNumber("");
-        setAccountName("");
+        setSelectedBank('');
+        setAccountNumber('');
+        setAccountName('');
         setRecipientDetails(null);
-        setSelectedBankAccountId("");
+        setSelectedBankAccountId('');
         setSaveNewAccount(false);
         setUseNewAccount(false);
         setError(null);
         setWithdrawOpen(false);
         setVerifyDialogOpen(false);
       } else {
-        setError(data.message || "Failed to process withdrawal.");
-        toast.error(data.message || "Failed to process withdrawal.");
+        setError(data.message || 'Failed to process withdrawal.');
+        toast.error(data.message || 'Failed to process withdrawal.');
       }
-    } catch (err) {
-      setError("Error processing withdrawal.");
-      toast.error("Error processing withdrawal.");
+    } catch (_err) {
+      setError('Error processing withdrawal.');
+      toast.error('Error processing withdrawal.');
     } finally {
       setIsWithdrawing(false);
     }
@@ -463,56 +463,56 @@ export default function WalletPage() {
   return (
     <ClientOnly>
       <WalletLayout
-        user={user as Doc<"users">}
-        balance={balance}
-        showBalance={showBalance}
-        isRefreshingBalance={isRefreshingBalance}
-        activeTab={activeTab}
-        transactions={transactions}
-        isLoadingTransactions={isLoadingTransactions}
-        open={open}
-        withdrawOpen={withdrawOpen}
-        amount={amount}
-        error={error}
-        isInitializing={isInitializing}
-        isPaystackModalOpen={isPaystackModalOpen}
-        paystackReference={paystackReference}
-        banks={banks}
-        selectedBank={selectedBank}
-        accountNumber={accountNumber}
         accountName={accountName}
+        accountNumber={accountNumber}
+        activeTab={activeTab}
+        amount={amount}
+        balance={balance}
+        bankAccounts={bankAccounts || []}
+        banks={banks}
+        error={error}
+        handleContinueToConfirmation={handleContinueToConfirmation}
+        handleInitializePayment={handleInitializePayment}
+        handlePaystackClose={handlePaystackClose}
+        handlePaystackSuccess={handlePaystackSuccess}
+        handleRefreshTransactions={handleRefreshTransactions}
+        handleWithdraw={handleWithdraw}
+        isInitializing={isInitializing}
         isLoadingBanks={isLoadingBanks}
+        isLoadingTransactions={isLoadingTransactions}
+        isPaystackModalOpen={isPaystackModalOpen}
+        isRefreshingBalance={isRefreshingBalance}
         isVerifyingAccount={isVerifyingAccount}
         isWithdrawing={isWithdrawing}
-        recipientDetails={recipientDetails}
-        verifyDialogOpen={verifyDialogOpen}
-        onToggleBalance={() => setShowBalance(!showBalance)}
         onRefreshBalance={handleRefreshBalance}
+        onToggleBalance={() => setShowBalance(!showBalance)}
+        open={open}
+        paystackReference={paystackReference}
+        recipientDetails={recipientDetails}
+        saveNewAccount={saveNewAccount}
+        selectedBank={selectedBank}
+        selectedBankAccountId={selectedBankAccountId}
+        setAccountName={setAccountName}
+        setAccountNumber={setAccountNumber}
         setActiveTab={setActiveTab}
-        handleRefreshTransactions={handleRefreshTransactions}
-        setOpen={setOpen}
-        setWithdrawOpen={setWithdrawOpen}
         setAmount={validateAndSetAmount}
         setError={setError}
-        setPaystackReference={setPaystackReference}
         setIsPaystackModalOpen={setIsPaystackModalOpen}
-        handleInitializePayment={handleInitializePayment}
-        handlePaystackSuccess={handlePaystackSuccess}
-        handlePaystackClose={handlePaystackClose}
-        setSelectedBank={setSelectedBank}
-        setAccountNumber={setAccountNumber}
-        setAccountName={setAccountName}
-        verifyAccount={verifyAccount}
-        handleWithdraw={handleWithdraw}
-        handleContinueToConfirmation={handleContinueToConfirmation}
-        setVerifyDialogOpen={setVerifyDialogOpen}
-        bankAccounts={bankAccounts || []}
-        selectedBankAccountId={selectedBankAccountId}
-        setSelectedBankAccountId={setSelectedBankAccountId}
-        saveNewAccount={saveNewAccount}
+        setOpen={setOpen}
+        setPaystackReference={setPaystackReference}
         setSaveNewAccount={setSaveNewAccount}
-        useNewAccount={useNewAccount}
+        setSelectedBank={setSelectedBank}
+        setSelectedBankAccountId={setSelectedBankAccountId}
         setUseNewAccount={setUseNewAccount}
+        setVerifyDialogOpen={setVerifyDialogOpen}
+        setWithdrawOpen={setWithdrawOpen}
+        showBalance={showBalance}
+        transactions={transactions}
+        useNewAccount={useNewAccount}
+        user={user as Doc<'users'>}
+        verifyAccount={verifyAccount}
+        verifyDialogOpen={verifyDialogOpen}
+        withdrawOpen={withdrawOpen}
       />
     </ClientOnly>
   );

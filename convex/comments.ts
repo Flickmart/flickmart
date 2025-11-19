@@ -12,7 +12,7 @@ export const addComment = mutation({
     const user = await getCurrentUserOrThrow(ctx);
 
     if (!user) {
-      throw Error('User not found');
+      throw new Error('User not found');
     }
 
     const commentId = await ctx.db.insert('comments', {
@@ -75,10 +75,10 @@ export const deleteComment = mutation({
     }
 
     if (!comment) {
-      throw Error('Comment not found');
+      throw new Error('Comment not found');
     }
     if (comment.userId !== user._id) {
-      throw Error('User is unauthorized to delete this comment');
+      throw new Error('User is unauthorized to delete this comment');
     }
 
     await ctx.db.delete(args.commentId);

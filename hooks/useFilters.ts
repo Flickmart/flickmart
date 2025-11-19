@@ -39,9 +39,8 @@ export function useFilters() {
           const filter: MobileFilterType = {
             ...filterState,
             minPrice,
-            maxPrice,
+            maxPrice: maxPrice || undefined,
           };
-          !maxPrice && delete filter.maxPrice;
 
           return setFilterState(filter);
         }

@@ -10,10 +10,8 @@ import Container from './Container';
 import { Doc } from '@/convex/_generated/dataModel';
 
 export default function BestSellers() {
-  // const recommendation = useQuery(api.product.getRecommendations, {});
   const isMobile = useIsMobile();
   const all = useQuery(api.product.getAll, { limit: 10 });
-  const personalized = useQuery(api.interactions.getPersonalizedProducts);
   const recommendations = useAction(api.recommend.recommendItems)
   const [recommendation, setRecommendation] = useState<Array<Doc<"product">>|null>(null)
   const user = useQuery(api.users.current, {})
@@ -28,22 +26,12 @@ export default function BestSellers() {
     fetchRecommendations()
   },[user])
 
- 
-
-  // useEffect(() => {
-  //   if (personalized?.error) {
-  //     console.log("there was an error getting personalized");
-  //   }
-  // }, [personalized]);
-
   return (
-    <div className="space-y-5 text-center capitalize lg:space-y-10">
-      <h2 className="font-semibold text-2xl text-gray-800 lg:text-3xl">
-        best sellers
-      </h2>
+    <section className="">
+      <h2 className="section-title">Best Sellers</h2>
       <Container className="!min-h-[40vh]">
-        <div className="grid w-full grid-cols-2 gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10">
-          {personalized === undefined || all === undefined
+        <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
+          {recommendation === null || all === undefined
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div
@@ -68,18 +56,19 @@ export default function BestSellers() {
                     />
                   </Link>
                 ))
-              : all?.map((product, index) => (
-                  <Link href={`/product/${product._id}`} key={product._id}>
-                    <ProductCard
-                      image={product.images[0]}
-                      key={index}
-                      price={product.price}
-                      title={product.title}
-                    />
-                  </Link>
+              : all?.map((product) => (
+                  <ProductCard
+                    image={product.images[0]}
+                    key={product._id}
+                    likes={product.likes || 0}
+                    location={product.location}
+                    price={product.price}
+                    productId={product._id}
+                    title={product.title}
+                  />
                 ))}
         </div>
       </Container>
-    </div>
+    </section>
   );
 }

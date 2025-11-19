@@ -7,13 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SecurityHeader } from './security-header';
 
-interface PinSetupProps {
+type PinSetupProps = {
   displayAmount: string;
   errorMessage: string;
   isLoading: boolean;
   onBack: () => void;
   onCreatePin: (newPin: string, confirmPin: string) => void;
-}
+};
 
 export function PinSetup({
   displayAmount,

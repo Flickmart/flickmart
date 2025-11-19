@@ -12,7 +12,7 @@ import {
 import type { Id } from '@/convex/_generated/dataModel';
 
 // TypeScript interface for order data
-interface OrderDisplay {
+type OrderDisplay = {
   _id: Id<'orders'>;
   productIds: Id<'product'>[];
   buyerId: Id<'users'>;
@@ -27,7 +27,7 @@ interface OrderDisplay {
   buyerName?: string;
   sellerName?: string;
   userRole: 'buyer' | 'seller';
-}
+};
 
 // Helper function to format date
 const formatDate = (timestamp: number): string => {
@@ -78,10 +78,10 @@ const formatCurrency = (amount: number): string => {
 };
 
 // OrderCard component props
-interface OrderCardProps {
+type OrderCardProps = {
   order: OrderDisplay;
   onClick?: () => void;
-}
+};
 
 // OrderCard component
 export const OrderCard = ({ order, onClick }: OrderCardProps) => {

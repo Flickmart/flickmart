@@ -1,13 +1,13 @@
-"use client";
-import { useMutation, useQuery } from "convex/react";
-import { Search, X } from "lucide-react";
-import { motion } from "motion/react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import type React from "react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { api } from "@/convex/_generated/api";
-import { useIsMobile } from "@/hooks/use-mobile";
+'use client';
+import { useMutation, useQuery } from 'convex/react';
+import { Search, X } from 'lucide-react';
+import { motion } from 'motion/react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type React from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Command,
   CommandEmpty,
@@ -15,7 +15,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
+} from './ui/command';
 
 const MotionCommandList = motion.create(CommandList);
 
@@ -29,21 +29,21 @@ export default function SearchInput({
 }: {
   query?: string;
   openSearch?: (val: boolean) => void;
-  updateAutoSuggest?: (values: Array<string>, searchValue: string) => void;
+  updateAutoSuggest?: (values: string[], searchValue: string) => void;
   loc?: string;
   isOverlayOpen?: boolean;
   ref?: React.ForwardedRef<HTMLInputElement>;
 }) {
   const isMobile = useIsMobile();
-  const [searchInput, setSearchInput] = useState("");
+  const [searchInput, setSearchInput] = useState('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [focus, setFocus] = useState<boolean>(false);
   const saveSearchInput = useMutation(api.search.insertSearchHistory);
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const autoSuggest = useQuery(api.product.search, {
-    query: searchInput || "",
-    type: "suggestions",
+    query: searchInput || '',
+    type: 'suggestions',
   });
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
@@ -57,30 +57,31 @@ export default function SearchInput({
   function handleKeyPress<T extends HTMLElement>(
     event: React.KeyboardEvent<T>
   ) {
-    if (event.key === "Enter") {
-      const locationQuery = !loc || loc === "all" ? "" : `?location=${loc}`;
+    if (event.key === 'Enter') {
+      const locationQuery = !loc || loc === 'all' ? '' : `?location=${loc}`;
       router.push(`/search?query=${searchInput}${locationQuery}`);
-      openSearch && openSearch(false);
+      openSearch?.(false);
       saveSearchInput({
         search: searchInput,
       });
       // Perform search action
-      !isMobile && isOverlayOpen && setSearchInput("");
+      !isMobile && isOverlayOpen && setSearchInput('');
       setIsTyping(false);
     }
   }
   function handlePrefetch() {
-    router.prefetch("/search");
+    router.prefetch('/search');
     if (searchInput) {
       setFocus(false);
       return;
     }
-    if (!isMobile) setFocus(true);
+    if (!isMobile) {
+      setFocus(true);
+    }
   }
   useEffect(() => {
     if (autoSuggest || searchInput) {
-      updateAutoSuggest &&
-        updateAutoSuggest(autoSuggest as Array<string>, searchInput);
+      updateAutoSuggest?.(autoSuggest as string[], searchInput);
     }
   }, [autoSuggest, isMobile, isOverlayOpen, searchInput]);
 
@@ -91,21 +92,21 @@ export default function SearchInput({
   }, []);
 
   return (
-    <Command className="bg-inherit">
-      <div className="w-full">
+    <Command className="bg-inherit h-full">
+      <div className="h-full">
         {isMobile && !isOverlayOpen ? (
           <div
-            className="mb-2 flex h-full cursor-pointer items-center gap-5 bg-gray-100 p-2 px-4 text-gray-500 lg:p-2.5"
+            className="flex cursor-pointer items-center gap-2 bg-gray-100 px-3 text-gray-500 lg:p-2.5 h-full"
             onClick={() => openSearch && openSearch(true)}
           >
-            <Search className="size-4" />
-            <span className="text-sm lg:text-lg">
-              {searchInput || "What are you looking for?"}
+            <Search className="size-5" />
+            <span className="text-sm text-nowrap sm:text-base">
+              {searchInput || "Search for products..."}
             </span>
           </div>
         ) : (
           <CommandInput
-            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none"
+            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none sm:text-base"
             inputMode="search"
             onBlur={() => {
               setFocus(false);
@@ -126,7 +127,7 @@ export default function SearchInput({
               setIsTyping(true);
               setFocus(false);
             }}
-            placeholder="What are you looking for?"
+            placeholder="Search for products..."
             ref={ref}
             value={searchInput}
           />
@@ -154,13 +155,13 @@ export default function SearchInput({
                   <CommandItem
                     className="cursor-pointer"
                     onKeyDown={(e) => {
-                      if (e.key === "Enter") {
+                      if (e.key === 'Enter') {
                         router.push(`/search?query=${item}`);
                         setIsTyping(false);
                       }
                     }}
                   >
-                    {typeof item === "string" ? item : null}
+                    {typeof item === 'string' ? item : null}
                   </CommandItem>
                 </Link>
               ))}
@@ -175,7 +176,7 @@ export default function SearchInput({
           !isOverlayOpen &&
           retrievePreviousInputs?.data &&
           retrievePreviousInputs.data?.length > 0 ? (
-          <CommandList className="absolute z-10 mt-1.5 rounded-lg bg-white p-2 shadow-md lg:w-[40vw]">
+          <CommandList className="absolute z-10 mt-1.5 rounded-lg bg-white p-2 shadow-md lg:w-[30vw]">
             <CommandGroup heading="Recent Searches">
               {retrievePreviousInputs?.data?.map((item, index) => (
                 <div

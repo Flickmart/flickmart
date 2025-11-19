@@ -2,9 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 
-interface PresetAmountsProps {
+type PresetAmountsProps = {
   onPresetClick: (value: string) => void;
-}
+};
 
 const presetAmounts = [
   { label: '₦500.00', value: '500.00' },

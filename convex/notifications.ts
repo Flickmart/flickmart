@@ -346,7 +346,7 @@ export const savePushSubscription = mutation({
     let subscriptionData;
     try {
       subscriptionData = JSON.parse(args.subscription);
-    } catch (error) {
+    } catch (_error) {
       throw new Error('Invalid subscription format');
     }
 
@@ -435,7 +435,15 @@ export const getCurrentDeviceSubscription = query({
       return null;
     }
 
-    // Use by_user index and filter by endpoint since endpoint might be optional during migration
+    // Validate endpoint argument
+    if (!args.endpoint) {
+      console.warn(
+        'getCurrentDeviceSubscription: endpoint argument is required'
+      );
+      return null;
+    }
+
+    // Use by_user index and filter by endpoint to find the specific device subscription
     const subscription = await ctx.db
       .query('pushSubscriptions')
       .withIndex('by_user', (q) => q.eq('userId', user._id))

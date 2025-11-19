@@ -2,11 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 
-interface NumberKeypadProps {
+type NumberKeypadProps = {
   onNumberClick: (number: string) => void;
   onClear: () => void;
   onBackspace: () => void;
-}
+};
 
 export function NumberKeypad({
   onNumberClick,

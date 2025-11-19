@@ -1,4 +1,5 @@
 import { useMutation, useQuery } from 'convex/react';
+import { useRouter } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
@@ -21,11 +22,13 @@ export default function CommentContent({
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
+  const router = useRouter();
 
   function handleComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!isAuthenticated) {
       toast.error('Please sign in to perform this action');
+      router.push(`/sign-in?callback=/product/${productId}`);
       setInput('');
       return;
     }

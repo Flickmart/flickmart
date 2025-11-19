@@ -1,28 +1,27 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { Spinner } from '@/components/Spinner';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import type { Id } from '@/convex/_generated/dataModel';
+import Image from "next/image";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import type { Id } from "@/convex/_generated/dataModel";
 
 // TypeScript interfaces
-interface Product {
-  _id: Id<'product'>;
+type Product = {
+  _id: Id<"product">;
   title: string;
   description: string;
   images: string[];
   price: number;
   category: string;
-  condition: 'brand new' | 'used';
-}
+  condition: "brand new" | "used";
+};
 
-interface ProductsListProps {
+type ProductsListProps = {
   products: Product[] | undefined;
   isLoading?: boolean;
   error?: string;
-}
+};
 
 // Helper function to format currency
 const formatCurrency = (amount: number): string => {
@@ -219,7 +218,7 @@ export const ProductsList = ({
     <Card>
       <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
         <CardTitle className="text-base sm:text-lg">
-          Products ({products.length} item{products.length !== 1 ? 's' : ''})
+          Products ({products.length} item{products.length !== 1 ? "s" : ""})
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">

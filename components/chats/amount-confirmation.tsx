@@ -1,10 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { SecurityHeader } from './security-header';
 
-interface AmountConfirmationProps {
+type AmountConfirmationProps = {
   initialAmount: string;
   selectedProductsCount: number;
   calculatedTotal: number;
@@ -12,7 +10,7 @@ interface AmountConfirmationProps {
   onSelectInitialAmount: () => void;
   onSelectProductTotal: () => void;
   sellerName?: string;
-}
+};
 
 export function AmountConfirmation({
   initialAmount,
@@ -25,7 +23,9 @@ export function AmountConfirmation({
 }: AmountConfirmationProps) {
   const formatAmount = (value: string | number) => {
     const num = typeof value === 'string' ? Number.parseFloat(value) : value;
-    if (isNaN(num)) return '0.00';
+    if (Number.isNaN(num)) {
+      return '0.00';
+    }
     return num.toLocaleString('en-NG', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -69,9 +69,9 @@ export function AmountConfirmation({
               <span className="text-gray-600">Amount Difference</span>
               <span className="font-semibold text-gray-900">
                 {difference > 0
-                  ? '₦' + formatAmount(Math.abs(difference))
+                  ? `₦${formatAmount(Math.abs(difference))}`
                   : difference < 0
-                    ? '-₦' + formatAmount(Math.abs(difference))
+                    ? `-₦${formatAmount(Math.abs(difference))}`
                     : '₦0.00'}
               </span>
             </div>

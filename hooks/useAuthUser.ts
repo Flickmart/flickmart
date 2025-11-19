@@ -4,32 +4,32 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
-import type { Doc, Id } from '@/convex/_generated/dataModel';
+import type { Doc } from '@/convex/_generated/dataModel';
 
 // Type for the user document from Convex
 type ConvexUser = Doc<'users'>;
 
-interface UseAuthUserReturn {
+type UseAuthUserReturn = {
   user: ConvexUser | null | undefined;
   isLoading: boolean;
   isAuthenticated: boolean;
   isError: boolean;
-}
+};
 
 /**
  * Enhanced hook for user authentication with better loading states and error handling
  * This hook handles the user authentication state more reliably than useCheckUser
  * It prioritizes Clerk's loading state since Convex queries depend on Clerk being ready
  */
-export function useAuthUser(options?: {
+export function useAuthUser({
+  redirectOnUnauthenticated = true,
+  redirectTo = '/sign-in',
+}: {
   redirectOnUnauthenticated?: boolean;
   redirectTo?: string;
-}): UseAuthUserReturn {
-  const { redirectOnUnauthenticated = true, redirectTo = '/sign-in' } =
-    options || {};
-
+} = {}): UseAuthUserReturn {
   const { isLoaded: clerkLoaded, isSignedIn } = useAuth();
-  const user =useQuery(api.users.current, {});
+  const user = useQuery(api.users.current, {});
   const router = useRouter();
   const hasRedirected = useRef(false);
   const toastShown = useRef(false);
@@ -54,11 +54,10 @@ export function useAuthUser(options?: {
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
-        toast('Oops! You need to be logged in to continue.', {
+        toast.info('Oops! You need to be logged in to continue.', {
           duration: 3000,
           position: 'top-center',
           description: 'Redirecting you to Sign In Page...',
-          icon: '🔃',
         });
       }
 

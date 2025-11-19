@@ -2,7 +2,6 @@ import { useQuery } from 'convex/react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { api } from '@/convex/_generated/api';
-import { Id } from '@/convex/_generated/dataModel';
 
 const StageFour = () => {
   const router = useRouter();

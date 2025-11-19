@@ -6,9 +6,8 @@ import { Button } from '@/components/ui/button';
 import type { Doc } from '@/convex/_generated/dataModel';
 import { NumberKeypad } from './number-keypad';
 import { PresetAmounts } from './preset-amounts';
-import { SecurityHeader } from './security-header';
 
-interface AmountEntryProps {
+type AmountEntryProps = {
   amount: string;
   displayAmount: string;
   seller?: Doc<'users'>;
@@ -17,7 +16,7 @@ interface AmountEntryProps {
   onClear: () => void;
   onBackspace: () => void;
   onTransfer: () => void;
-}
+};
 
 export function AmountEntry({
   seller,

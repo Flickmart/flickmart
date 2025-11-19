@@ -34,7 +34,7 @@ export default function Home() {
     }
   }, []);
 
-  function urlBase64ToUint8Array(base64String: string) {
+  function _urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')
@@ -50,19 +50,22 @@ export default function Home() {
   }
 
   return (
-    <>
-      <MobileNav />
-      <SearchOverlay open={searchOpen} openSearch={openSearch} />
-      <SearchBox open={searchOpen} openSearch={openSearch} />
-      <Slider />
-      <div className="min-h-screen space-y-5 px-5 text-white sm:space-y-10 sm:px-10">
-        <Categories />
-        <BestSellers />
-        <NewArrivals />
-        <PopularSection />
+    <section className="lg:flex lg:justify-end lg:bg-[#F8F8F8]">
+      <div className="lg:hidden">
+        <SearchOverlay open={searchOpen} openSearch={openSearch} />
+        <SearchBox open={searchOpen} openSearch={openSearch} />
       </div>
-      <Delivery />
-      <Footer />
-    </>
+      <section className="lg:w-[75%]">
+        <Slider />
+        <div className="section-px min-h-screen space-y-10">
+          <Categories />
+          <BestSellers />
+          <NewArrivals />
+          <PopularSection />
+        </div>
+        <Footer />
+      </section>
+      <MobileNav />
+    </section>
   );
 }

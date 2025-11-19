@@ -1,8 +1,6 @@
-import React from 'react';
-
-interface EmailTemplateProps {
+type EmailTemplateProps = {
   firstName: string;
-}
+};
 
 export default function EmailTemplate({ firstName }: EmailTemplateProps) {
   return (

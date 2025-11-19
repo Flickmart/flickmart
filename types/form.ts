@@ -1,6 +1,6 @@
 import type { UseFormReturn } from 'react-hook-form';
 
-export interface FormDataType {
+export type FormDataType = {
   store: string;
   category: string;
   location: 'enugu' | 'nsukka';
@@ -11,7 +11,7 @@ export interface FormDataType {
   price: number;
   phone: string;
   plan: 'free' | 'basic' | 'pro' | 'premium';
-}
+};
 
 export type NameType =
   | 'category'
@@ -21,13 +21,13 @@ export type NameType =
   | 'negotiable'
   | 'condition'
   | 'description'
-  | 'originalPrice'
-  | "targetPrice"
-  | "targetPriceSecond"
+  | 'price'
+  | 'targetPrice'
+  | 'targetPriceSecond'
   | 'store'
   | 'phone'
   | 'plan'
-  | "aiEnabled"
+  | 'aiEnabled';
 
 export type FormType = UseFormReturn<{
   store: string;
@@ -38,10 +38,10 @@ export type FormType = UseFormReturn<{
   condition: 'brand new' | 'used';
   title: string;
   description: string;
-  originalPrice?: number | string ;
-  targetPrice?: number | string ;
-  targetPriceSecond?: number | string ;
+  price?: number | string;
+  targetPrice?: number | string;
+  targetPriceSecond?: number | string;
   phone: string;
   plan: 'free' | 'basic' | 'pro' | 'premium';
-  aiEnabled: boolean
+  aiEnabled: boolean;
 }>;

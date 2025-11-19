@@ -1,11 +1,11 @@
 import { RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { type Doc, Id } from '@/convex/_generated/dataModel';
-import TransactionDetails from './transaction-details';
-import TransactionTabs from './TransactionTabs';
+import type { Doc } from '@/convex/_generated/dataModel';
 import { TransactionHistorySkeleton } from './skeleton';
+import TransactionTabs from './TransactionTabs';
+import TransactionDetails from './transaction-details';
 
-interface TransactionHistoryProps {
+type TransactionHistoryProps = {
   transactions: any[] | undefined;
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -15,7 +15,7 @@ interface TransactionHistoryProps {
   handlePaystackSuccess: (response: { reference: string }) => Promise<void>;
   handlePaystackClose: () => void;
   isMobile?: boolean;
-}
+};
 
 export default function TransactionHistory({
   transactions,
@@ -29,14 +29,19 @@ export default function TransactionHistory({
   isMobile = false,
 }: TransactionHistoryProps) {
   const filteredTransactions = transactions?.filter((transaction) => {
-    if (activeTab === 'all') return true;
-    if (activeTab === 'deposits')
+    if (activeTab === 'all') {
+      return true;
+    }
+    if (activeTab === 'deposits') {
       return (
         transaction.type === 'funding' ||
         transaction.type === 'transfer_in' ||
         transaction.type === 'escrow_refund'
       );
-    if (activeTab === 'withdrawals') return transaction.type === 'withdrawal';
+    }
+    if (activeTab === 'withdrawals') {
+      return transaction.type === 'withdrawal';
+    }
     return true;
   });
 
@@ -51,7 +56,9 @@ export default function TransactionHistory({
 
   return (
     <div className={containerPadding}>
-      <div className={`mb-${isMobile ? '4' : '6'} flex items-center justify-between`}>
+      <div
+        className={`mb-${isMobile ? '4' : '6'} flex items-center justify-between`}
+      >
         <div>
           <h3 className={`${titleMargin} font-bold ${titleSize}`}>
             Transaction History
@@ -72,8 +79,8 @@ export default function TransactionHistory({
 
       <TransactionTabs
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
         isMobile={isMobile}
+        setActiveTab={setActiveTab}
       />
 
       {filteredTransactions?.length === 0 && (
