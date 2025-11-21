@@ -16,7 +16,7 @@ export default function RecentlyViewed() {
   // const all = useQuery(api.product.getAll, { limit: 10 });
   // const firstTenProducts = all?.slice(0, 10);
   const router = useRouter();
-  const recommendation = useRecommend("New-Arrival") //Specify the scenario as the first parameter
+  const recommendation = useRecommend("Recently-Viewed") //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {})
   
   
