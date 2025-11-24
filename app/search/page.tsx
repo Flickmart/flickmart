@@ -1,6 +1,6 @@
 'use client';
 import { useMutation, useQuery } from 'convex/react';
-import { IconFolderCode } from "@tabler/icons-react"
+import { IconMoodPuzzled } from "@tabler/icons-react"
 import {
   ArrowLeft,
   ArrowUpRightIcon,
@@ -206,13 +206,7 @@ export default function DetailedCategoryPage() {
 
 
   const {
-    // state,
-    open,
-    setOpen,
-    openMobile,
-    setOpenMobile,
     isMobile,
-    toggleSidebar,
   } = useSidebar();
 
   function openSearch(val: boolean) {
@@ -354,7 +348,7 @@ export default function DetailedCategoryPage() {
       </Sidebar>
       <section className="mx-auto mt-24 flex w-[95%] flex-col pt-3 text-sm lg:mt-0 lg:block lg:w-4/6">
         <h2 className="p-3 font-semibold text-lg capitalize lg:py-5 lg:text-2xl">
-          {search && `${search?.[0].values.category} in Nigeria`}
+          {search && search?.[0]?.values.category !== undefined && `${search?.[0]?.values.category} in ${search?.[0]?.values.location}`}
         </h2>
         <Filters handleFilterState={handleFilterState} isMobile={isMobile} />
         <div className="mt-3 flex flex-col lg:h-[90vh]">
@@ -378,40 +372,23 @@ export default function DetailedCategoryPage() {
               </div>
             ) : search?.length === 0 ? (
               <div className="flex h-[45vh] flex-col items-center justify-start px-5">
-                <span className="py-5 font-medium text-gray-500 text-lg">
-                  No result for "{query}"
-                </span>
-
-                <div className="text-gray-500">
-                  <SearchSlash size={150} />
-                </div>
                 <Empty>
                   <EmptyHeader>
                     <EmptyMedia variant="icon">
-                      <IconFolderCode />
+                      <IconMoodPuzzled />
                     </EmptyMedia>
-                    <EmptyTitle>No Projects Yet</EmptyTitle>
+                    <EmptyTitle>
+                      No result for "{query}"
+                    </EmptyTitle>
                     <EmptyDescription>
-                      You haven&apos;t created any projects yet. Get started by creating
-                      your first project.
+                      It seems we don&apos;t have a product that matches your search—try a different keyword.
                     </EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
                     <div className="flex gap-2">
-                      <Button>Create Project</Button>
-                      <Button variant="outline">Import Project</Button>
+                      <Button onClick={()=> router.push("/")}>Browse All Products</Button>
                     </div>
                   </EmptyContent>
-                  <Button
-                    variant="link"
-                    asChild
-                    className="text-muted-foreground"
-                    size="sm"
-                  >
-                    <a href="#">
-                      Learn More <ArrowUpRightIcon />
-                    </a>
-                  </Button>
                 </Empty>
               </div>
             ) : (
