@@ -46,22 +46,29 @@ export default function JustForYou() {
               ))
             : recommendation?.recomms.length
               ? recommendation?.recomms.map((product) => (
+                <Link key={product.id} href={`/product/${product.id}?id=${recommendation.recommId}`}>
                     <ProductCard
-                      key={product.id}
                       image={product.values?.image as string}
                       productId={product.id as Id<"product">}
                       price={product.values?.price as number}
                       title={product.values?.title as string}
+                      views={product.values?.views as number}
+                      likes={product.values?.likes as number}
                     />
+                </Link>
                 ))
               : all?.map((product) => (
+                <Link key={product._id} href={`/product/${product._id}?id=${recommendation.recommId}`}>
                     <ProductCard
                       key={product._id}
                       image={product.images[0]}
                       productId={product._id}
                       price={product.price}
                       title={product.title}
+                      views={product.views}
+                      likes={product.likes}
                     />
+                </Link>
                 ))}
         </div>
       </Container>

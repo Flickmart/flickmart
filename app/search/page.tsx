@@ -1,7 +1,9 @@
 'use client';
 import { useMutation, useQuery } from 'convex/react';
+import { IconFolderCode } from "@tabler/icons-react"
 import {
   ArrowLeft,
+  ArrowUpRightIcon,
   Bookmark,
   ChevronRight,
   LayoutGrid,
@@ -42,6 +44,8 @@ import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { useFilters } from '@/hooks/useFilters';
 import { SearchResponse } from 'recombee-api-client';
 import { ValuesDto } from '@/types/recommendations';
+import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '@/components/ui/empty';
+import { Button } from '@/components/ui/button';
 
 
 type FilterObjectType = {
@@ -381,10 +385,34 @@ export default function DetailedCategoryPage() {
                 <div className="text-gray-500">
                   <SearchSlash size={150} />
                 </div>
-                {/* <span>
-                  Try checking your spelling or use more general terms
-                </span>
-                <span>Check each product page for other buying options.</span> */}
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <IconFolderCode />
+                    </EmptyMedia>
+                    <EmptyTitle>No Projects Yet</EmptyTitle>
+                    <EmptyDescription>
+                      You haven&apos;t created any projects yet. Get started by creating
+                      your first project.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <div className="flex gap-2">
+                      <Button>Create Project</Button>
+                      <Button variant="outline">Import Project</Button>
+                    </div>
+                  </EmptyContent>
+                  <Button
+                    variant="link"
+                    asChild
+                    className="text-muted-foreground"
+                    size="sm"
+                  >
+                    <a href="#">
+                      Learn More <ArrowUpRightIcon />
+                    </a>
+                  </Button>
+                </Empty>
               </div>
             ) : (
               search?.map((product) => {
