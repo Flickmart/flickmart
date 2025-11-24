@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/convex/_generated/api';
 import SearchInput from './SearchInput';
+import Image from 'next/image';
 
 // const transitionProps = { duration: 0.2, type: "tween", ease: "easeInOut" };
 
@@ -17,13 +18,13 @@ export default function SearchOverlay({
   open: boolean;
   openSearch: (val: boolean) => void;
 }) {
-  const [autoSuggest, setAutoSuggest] = useState<string[]>([]);
+  const [autoSuggest, setAutoSuggest] = useState<{title: string; image: string}[]>([]);
   const [searchValue, setSearchValue] = useState<string>('');
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const router = useRouter();
   const focusRef = useRef<HTMLInputElement>(null);
-  function updateAutoSuggest(values: string[], search: string) {
+  function updateAutoSuggest(values: {title: string; image: string}[], search: string) {
     setAutoSuggest(values);
     setSearchValue(search);
   }
@@ -68,7 +69,7 @@ export default function SearchOverlay({
           </div>
           {autoSuggest?.length === 0 || !searchValue ? (
             <div className="flex-grow pt-3">
-              <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
+              <p className="px-4 py-2 font-medium text-gray-500 text-xs capitalize">
                 {(retrievePreviousInputs?.data?.length ?? 0) > 0
                   ? 'recent searches'
                   : 'no recent searches'}
@@ -76,7 +77,7 @@ export default function SearchOverlay({
               {retrievePreviousInputs?.data?.map((item) => {
                 return (
                   <div
-                    className="flex cursor-pointer items-center justify-between px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
+                    className="flex cursor-pointer items-center justify-between px-4 pl-5 py-1 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                     key={item._id}
                   >
                     <p
@@ -109,16 +110,19 @@ export default function SearchOverlay({
                 {autoSuggest?.length > 0 && 'suggestions'}
               </p>
               {autoSuggest?.map((item, index) => (
-                <p
-                  className="px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
+                <div
+                  className="px-4 py-2.5 flex font-medium items-center gap-3 text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                   key={index}
                   onClick={() => {
                     router.push(`/search?query=${item}`);
                     openSearch(false);
                   }}
                 >
-                  {item}
-                </p>
+                  <Image className='w-11 h-7' src={item.image} alt={item.title} width={100} height={100}/>
+                  <span>
+                    {item.title}
+                  </span>
+                </div>
               ))}
             </div>
           )}

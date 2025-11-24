@@ -22,6 +22,7 @@ export type RecommendationResponse = {
       subcategory: string | null;
       title: string | null;
       views: number | null;
+      timeStamp: string | null;
     };
   }>;
 };
@@ -72,7 +73,6 @@ export const recommendItems = action({
       // If cache is still valid
       if (cache.data && Date.now() - cache.updatedAt < oneHour) {
         const validCache = cache.data as RecommendationResponse;
-        console.log(validCache);
 
         return validCache;
       }
@@ -99,8 +99,6 @@ export const recommendItems = action({
         data,
       });
 
-      // console.log(data);
-
       return data;
     } catch (err) {
       console.error("Error fetching recommendations:", err);
@@ -123,6 +121,7 @@ export const cache = internalMutation({
       .unique();
 
     if (!cache) {
+      // Create an cache record if none is found which will later be populated with recommendation data
       const cacheId = await ctx.db.insert("recommCache", {
         userId: args.userId,
         data: null,

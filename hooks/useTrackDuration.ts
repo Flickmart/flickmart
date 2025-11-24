@@ -2,7 +2,11 @@
 import { useEffect } from "react";
 import { useTrack } from "./useTrack";
 
-export function useTrackDuration(productId: string, userId: string) {
+export function useTrackDuration(
+  productId: string,
+  userId: string,
+  recommId: string
+) {
   useEffect(() => {
     // let start = Date.now();
     let visibleStart = Date.now();
@@ -25,6 +29,7 @@ export function useTrackDuration(productId: string, userId: string) {
       captureActivity("Product Viewed", {
         userId: userId,
         productId,
+        recommId,
         duration: totalSeconds,
       });
     };

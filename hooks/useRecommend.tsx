@@ -10,13 +10,17 @@ export function useRecommend(scenario: string, count?: number){
     const recommendations = useAction(api.recommend.recommendItems)
     const [recommendation, setRecommendation] = useState<RecommendationResponse | null>(null)
     const user = useQuery(api.users.current, {})
+    const [fetched, setFetched] = useState(false)
 
     useEffect(()=>{
-    fetchRecommendations(scenario, recommendations, count).then(data=> {
-        setRecommendation(data)
-    })  
+        if (user && !fetched) {
+            fetchRecommendations(scenario, recommendations, count).then(data=> {
+                setRecommendation(data)
+                // Set Fetched to true so recommendation
+                setFetched(true)
+            })  
+        }
     },[user])
 
-    console.log(recommendation)
     return recommendation
 }

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { SyncLoader } from "react-spinners";
 import { toast } from "sonner";
@@ -49,6 +49,8 @@ export default function ProductPage() {
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
   const params = useParams();
+  const searchParams = useSearchParams()
+  const recommendationId = searchParams.get("id")
   const productId = params.id as Id<"product">;
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
@@ -56,7 +58,6 @@ export default function ProductPage() {
   const productData = productId
     ? useQuery(api.product.getById, { productId })
     : null;
-  const pathname = usePathname();
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
@@ -76,14 +77,13 @@ export default function ProductPage() {
     redirectOnUnauthenticated: false,
   });
   const router = useRouter();
-  const [viewedProduct, setViewedProduct] = useState(false);
   const [isUpdated, setIsUpdated]= useState(false)
 
   // captureActivity is a function which can me reused to capture different Activities
   const captureActivity = useTrack();
 
   // Track Page Duration
-  useTrackDuration(productId, user?._id ?? "");
+  useTrackDuration(productId, user?._id ?? "", recommendationId ?? "");
   const productIcons = [
     {
       label: "likes",
@@ -135,6 +135,7 @@ export default function ProductPage() {
         captureActivity("Product Liked", {
           productId,
           userId: user?._id ?? "",
+          recommId: recommendationId,
           rating: 5,
           likes: (productData?.likes ?? 0) + 1,
         });
@@ -149,6 +150,8 @@ export default function ProductPage() {
           captureActivity("Product Added to Wishlist", {
             productId,
             userId: user?._id ?? "",
+            recommId: recommendationId,
+            price: productData?.price ?? 0
           });
         }
 
@@ -173,43 +176,37 @@ export default function ProductPage() {
   }
 
   const [loading, setLoading] = useState(false);
-  const productProps={
-  aiEnabled: productData?.aiEnabled ?? false,
-  dislikes: productData?.dislikes ?? 0,
-  image: productData?.images[0] ?? "",
-  likes: productData?.likes ?? 0,
-  location: productData?.location ?? "",
-  plan: productData?.plan ?? "",
-  subcategory: productData?.subcategory ?? "",
-  title: productData?.title ?? "",
-  category: productData?.category ?? "",
-  price: productData?.price ?? 0,
-  views: productData?.views ?? 0
-}
+//   const productProps={
+//   aiEnabled: productData?.aiEnabled ?? false,
+//   dislikes: productData?.dislikes ?? 0,
+//   image: productData?.images[0] ?? "",
+//   likes: productData?.likes ?? 0,
+//   location: productData?.location ?? "",
+//   plan: productData?.plan ?? "",
+//   subcategory: productData?.subcategory ?? "",
+//   title: productData?.title ?? "",
+//   category: productData?.category ?? "",
+//   price: productData?.price ?? 0,
+//   views: productData?.views ?? 0
+// }
 
   useEffect(() => {
-    // if(!isUpdated){
-    //   // Sync Product with Destination (Recombee)
-    //  async function syncItem(){
-    //    const status = await addProductToRecombeeCatalog(productId, productProps)
-    //    console.log(status)
-    //    setIsUpdated(true)
-    //   }
-    //   syncItem()
-    //   return
-    // }
+
     if (!productData) {
       setLoading(true);
       return;
     }
     // View Page once it loads
     if (!viewed) {
+      // Update view count on the db
       view({ productId }).then((data) => console.log(data));
+
       // Send Interaction to Source
       captureActivity("Product Viewed", {
         userId: user?._id ?? "",
         productId,
-        ...productProps
+        recommId: recommendationId,
+        // ...productProps
       })
       setViewed(true);
       return;
@@ -325,12 +322,12 @@ export default function ProductPage() {
                     </span>
                   </div>
                 </DrawerTrigger>
-                <CommentContent productId={productId} />
+                <CommentContent productId={productId} recommId={recommendationId ?? ""}/>
               </div>
             </div>
             <div className="flex flex-col justify-center space-y-3">
               {isMobile && comments?.length ? (
-                <Comment productId={productId} />
+                <Comment productId={productId} recommId={recommendationId ?? ""} />
               ) : null}
               {isMobile ? null : (
                 <ProductHeader
@@ -423,7 +420,7 @@ export default function ProductPage() {
             </div>
           </div>
           {isMobile || !comments?.length ? null : (
-            <Comment productId={productId} />
+            <Comment productId={productId}  recommId={recommendationId ?? ""}/>
           )}
           <SimilarAdverts productId={productId} />
         </div>

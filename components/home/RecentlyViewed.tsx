@@ -10,6 +10,7 @@ import { useRecommend } from "@/hooks/useRecommend";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { ValuesDto } from "@/types/recommendations";
 
 export default function RecentlyViewed() {
   const isMobile = useIsMobile();
@@ -18,8 +19,12 @@ export default function RecentlyViewed() {
   const router = useRouter();
   const recommendation = useRecommend("Recently-Viewed") //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {})
+  const recommendationId = recommendation?.recommId
   
-  
+  // If no recent item, Don't display the recent items section
+  if (recommendation?.recomms?.length === 0){ 
+    return null
+  }
 
   return (
     <section className="mx-auto mt-0 pb-12 flex flex-col items-center  justify-start space-y-5 py-5 capitalize">
@@ -53,16 +58,21 @@ export default function RecentlyViewed() {
                 </div>
               </div>
             ))
-          : recommendation?.recomms?.map((item) => (
-              <Link href={`/product/${item.id}`} key={item.id}>
+          : recommendation?.recomms?.map((item) => {
+            const {likes, views, rating, title, image, price}= item.values as ValuesDto
+
+              return <Link href={`/product/${item.id}?id=${recommendationId}`} key={item.id}>
                 <NewArrivalItem
-                  image={item.values?.image as string}
-                  name={item.values?.title as string}
-                  price={item.values?.price as number}
+                  image={image}
+                  name={title}
+                  price={price}
                   productId={item.id as Id<"product">}
+                  views={views}
+                  likes={likes}
+                  rating={rating}
                 />
               </Link>
-            ))}
+})}
       </div>
     </section>
   );

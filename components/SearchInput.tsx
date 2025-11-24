@@ -31,7 +31,7 @@ export default function SearchInput({
 }: {
   query?: string;
   openSearch?: (val: boolean) => void;
-  updateAutoSuggest?: (values: string[], searchValue: string) => void;
+  updateAutoSuggest?: (values: {title: string; image: string}[], searchValue: string) => void;
   loc?: string;
   isOverlayOpen?: boolean;
   ref?: React.ForwardedRef<HTMLInputElement>;
@@ -89,7 +89,7 @@ export default function SearchInput({
   }
   useEffect(() => {
     if (autoSuggest || searchInput) {
-      updateAutoSuggest?.(autoSuggest as string[], searchInput);
+      updateAutoSuggest?.(autoSuggest as {title: string; image: string}[], searchInput);
     }
   }, [autoSuggest, isMobile, isOverlayOpen, searchInput]);
 
@@ -114,7 +114,7 @@ export default function SearchInput({
           </div>
         ) : (
           <CommandInput
-            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none sm:text-base"
+            className="w-full rounded-lg py-3 ps-4  text-flickmart-gray text-sm outline-none sm:text-base"
             inputMode="search"
             onBlur={() => {
               setFocus(false);

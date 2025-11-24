@@ -20,43 +20,6 @@ export default function JustForYou() {
   
   
   
-  // const personalized = useQuery(api.interactions.getPersonalizedProducts);
-    // const recommendation = useQuery(api.product.getRecommendations, {});
-  // const user = useQuery(api.users.current, {})
-  // async function fetchRecommendations() {
-    //   const baseQuery =
-    //     "&returnProperties=true" +
-    //     "&includedProperties=likes,views,rating,title,location,image,price,timestamp" +
-    //     "&cascadeCreate=true" +
-    //     "&scenario=Just-For-You";
-
-    //   // 1. Try to get items from the last 10 days
-    //   const tenDaysInSeconds = 10 * 24 * 3600;
-    //   const filter = `'timestamp' > now() - ${tenDaysInSeconds}`;
-    //   const filteredQuery = `?count=10&filter=${encodeURIComponent(filter)}${baseQuery}`;
-
-    //   let results = await recommendations({ queryStrings: filteredQuery });
-
-    //   // 2. If no recent items, fetch default recommendations (fallback)
-    //   if (results && results.recomms.length === 0) {
-    //     console.log("No recent items found, falling back to default recommendations.");
-    //     const defaultQuery = `?count=10${baseQuery}`;
-    //     results = await recommendations({ queryStrings: defaultQuery });
-    //   }
-
-    //   return results
-    // }
-    
-    // Fetch Recommendations Once Component Mounts
-
-
- 
-
-  // useEffect(() => {
-  //   if (personalized?.error) {
-  //     console.log("there was an error getting personalized");
-  //   }
-  // }, [personalized]);
 
 
   return (

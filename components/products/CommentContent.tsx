@@ -13,8 +13,10 @@ import { useTrack } from '@/hooks/useTrack';
 
 export default function CommentContent({
   productId,
+  recommId
 }: {
   productId: Id<'product'>;
+  recommId: string
 }) {
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
   const [input, setInput] = useState('');
@@ -38,7 +40,8 @@ export default function CommentContent({
     captureActivity('Product Commented', {
       productId,
       userId: user?._id ?? '',
-      content: input,
+      recommId,
+      rating: input,
     });
     setInput('');
   }
