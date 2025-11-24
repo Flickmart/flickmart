@@ -40,14 +40,14 @@ export default function Slider() {
   // }, []);
 
   return (
-    <div className="py-4 section-px" ref={catRef}>
+    <div className="py-4 section-px lg:py-5" ref={catRef}>
       <Carousel className="rounded-xl overflow-hidden" setApi={setApi}>
         <CarouselContent>
           {banners.map((img, index) => (
             <CarouselItem key={index} className="p-0">
               <div
                 className={
-                  "flex h-40 items-end justify-center space-y-2.5 bg-center bg-cover bg-no-repeat p-7 pb-2 text-gray-200 capitalize sm:h-56 lg:h-96 xl:h-[430px] lg:space-y-7 lg:px-5 lg:py-3"
+                  "flex h-40 items-end justify-center space-y-2.5 bg-center bg-cover bg-no-repeat p-7 pb-2 text-gray-200 capitalize sm:h-56 lg:h-80 lg:space-y-7 lg:px-5 lg:py-3"
                 }
                 style={{
                   backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), url(/${img})`,

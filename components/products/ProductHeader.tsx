@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { initialChat, shareProduct } from '@/utils/helpers';
+import { useTrack } from '@/hooks/useTrack';
 
 export default function ProductHeader({
   location,
@@ -31,6 +32,7 @@ export default function ProductHeader({
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
+  const captureActivity = useTrack();
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
@@ -71,6 +73,10 @@ export default function ProductHeader({
       toast.error('Please sign in to perform this action');
       return;
     }
+    captureActivity('Chat Initiated', {
+      productId,
+      userId: user?._id ?? '',
+    });
     initialChat({
       user: user ?? null,
       userId,

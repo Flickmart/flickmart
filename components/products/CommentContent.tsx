@@ -9,6 +9,7 @@ import { useAuthUser } from '@/hooks/useAuthUser';
 import ChatInput from '../chats/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
+import { useTrack } from '@/hooks/useTrack';
 
 export default function CommentContent({
   productId,
@@ -23,6 +24,7 @@ export default function CommentContent({
     redirectOnUnauthenticated: false,
   });
   const router = useRouter();
+  const captureActivity = useTrack();
 
   function handleComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,6 +35,11 @@ export default function CommentContent({
       return;
     }
     addComment({ productId, content: input });
+    captureActivity('Product Commented', {
+      productId,
+      userId: user?._id ?? '',
+      content: input,
+    });
     setInput('');
   }
   useEffect(() => {

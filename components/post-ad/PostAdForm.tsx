@@ -10,19 +10,24 @@ import {
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
-} from 'react-hook-form';
-import { toast } from 'sonner';
-import { z } from 'zod';
-import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
-import { useOthersStore } from '@/store/useOthersStore';
-import { Form } from '../ui/form';
-import AdCharges from './AdCharges';
-import AddPhoto from './AddPhoto';
-import AdPromotion from './AdPromotion';
-import CategorySheet from './CategorySheet';
-import InputField from './InputField';
-import Selector from './Selector';
+} from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
+import { useOthersStore } from "@/store/useOthersStore";
+import { Button } from "../ui/button";
+import { Form } from "../ui/form";
+import AdCharges from "./AdCharges";
+import AddPhoto from "./AddPhoto";
+import AdPromotion from "./AdPromotion";
+import CategorySheet from "./CategorySheet";
+import InputField from "./InputField";
+import Selector from "./Selector";
+import { Switch } from "../ui/switch";
+import { Label } from "../ui/label";
+import { AnimatePresence, motion } from "motion/react";
+import { addProductToRecombeeCatalog } from '@/app/(main-pages)/(products)/product/[id]/actions';
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -231,6 +236,22 @@ export default function PostAdForm({
     mutationFn: createNewAd,
     onSuccess: async (data) => {
       // Show success toast
+      const values = form.getValues();
+      addProductToRecombeeCatalog(data, {
+        aiEnabled: values.aiEnabled,
+        dislikes: 0,
+        image: images[0] ?? '',
+        likes: 0,
+        location: values.location,
+        plan: values.plan,
+        subcategory: values.subcategory,
+        title: values.title,
+        category: values.category,
+        timestamp: Math.floor(Date.now() / 1000), // Add current timestamp in seconds
+        price: Number(values.price) || 0,
+        views: 0,
+      });
+
       setAdId(data);
 
       // Show a loading toast for redirection
@@ -261,9 +282,8 @@ export default function PostAdForm({
         aiEnabled: formData.aiEnabled,
       };
 
-      console.log(modifiedObj);
-      action === 'edit'
-        ? updateProduct({
+      if (action === "edit") {
+        await updateProduct({
             condition: modifiedObj.condition,
             description: modifiedObj.description,
             images: modifiedObj.images,
@@ -274,8 +294,28 @@ export default function PostAdForm({
             category: modifiedObj.category,
             title: modifiedObj.title,
             productId: productId as Id<'product'>,
-          })
-        : adPostMutate(modifiedObj);
+          });
+        } else {
+          adPostMutate(modifiedObj);
+        }
+
+        if(adId || productId){
+          // Send updated product to Recombee
+        addProductToRecombeeCatalog((adId || productId)!, {
+          aiEnabled: modifiedObj.aiEnabled,
+          dislikes: product?.dislikes ?? 0,
+          image: modifiedObj.images[0] ?? "",
+          likes: product?.likes ?? 0,
+          location: modifiedObj.location,
+          plan: modifiedObj.plan,
+          subcategory: modifiedObj.subcategory,
+          title: modifiedObj.title,
+          category: modifiedObj.category,
+          timestamp: product?.timeStamp ?? Math.floor(Date.now() / 1000), // Preserve original timestamp
+          price: modifiedObj.price,
+          views: product?.views ?? 0,
+        });
+      }
 
       // Only reset if everything was successful
       setIsSubmitted(true);

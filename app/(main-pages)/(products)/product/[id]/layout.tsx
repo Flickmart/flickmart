@@ -1,8 +1,8 @@
-import { fetchQuery } from 'convex/nextjs';
-import type { Metadata } from 'next';
-import type React from 'react';
 import { api } from '@/convex/_generated/api';
-import type { Id } from '@/convex/_generated/dataModel';
+import { Id } from '@/convex/_generated/dataModel';
+import { fetchQuery } from 'convex/nextjs';
+import { Metadata } from 'next';
+import type React from 'react';
 
 // This would typically come from an API or database
 type Props = {

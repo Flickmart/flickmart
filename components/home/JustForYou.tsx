@@ -1,0 +1,107 @@
+'use client';
+import {  useQuery } from 'convex/react';
+import Link from 'next/link';
+import React from 'react';
+import { api } from '@/convex/_generated/api';
+import { useIsMobile } from '@/hooks/use-mobile';
+import ProductCard from '../multipage/ProductCard';
+import { Skeleton } from '../ui/skeleton';
+import Container from './Container';
+import { useRecommend } from '@/hooks/useRecommend';
+import { Id } from '@/convex/_generated/dataModel';
+
+
+
+export default function JustForYou() {
+  const isMobile = useIsMobile();
+  const all = useQuery(api.product.getAll, { limit: 10 });
+  const user = useQuery(api.users.current, {})
+  const recommendation = useRecommend("Just-For-You") //Specify the scenario as the first parameter
+  
+  
+  
+  // const personalized = useQuery(api.interactions.getPersonalizedProducts);
+    // const recommendation = useQuery(api.product.getRecommendations, {});
+  // const user = useQuery(api.users.current, {})
+  // async function fetchRecommendations() {
+    //   const baseQuery =
+    //     "&returnProperties=true" +
+    //     "&includedProperties=likes,views,rating,title,location,image,price,timestamp" +
+    //     "&cascadeCreate=true" +
+    //     "&scenario=Just-For-You";
+
+    //   // 1. Try to get items from the last 10 days
+    //   const tenDaysInSeconds = 10 * 24 * 3600;
+    //   const filter = `'timestamp' > now() - ${tenDaysInSeconds}`;
+    //   const filteredQuery = `?count=10&filter=${encodeURIComponent(filter)}${baseQuery}`;
+
+    //   let results = await recommendations({ queryStrings: filteredQuery });
+
+    //   // 2. If no recent items, fetch default recommendations (fallback)
+    //   if (results && results.recomms.length === 0) {
+    //     console.log("No recent items found, falling back to default recommendations.");
+    //     const defaultQuery = `?count=10${baseQuery}`;
+    //     results = await recommendations({ queryStrings: defaultQuery });
+    //   }
+
+    //   return results
+    // }
+    
+    // Fetch Recommendations Once Component Mounts
+
+
+ 
+
+  // useEffect(() => {
+  //   if (personalized?.error) {
+  //     console.log("there was an error getting personalized");
+  //   }
+  // }, [personalized]);
+
+
+  return (
+    <div className="space-y-5 capitalize lg:text-center lg:space-y-10">
+      <h2 className="font-semibold text-2xl text-gray-800 lg:text-3xl">
+        just for you
+      </h2>
+      <Container className="!min-h-[40vh]">
+        {/* <div className="grid w-full grid-cols-2 bg-black gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10"> */}
+        <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
+          { !user || recommendation === null
+            ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
+                // Skeleton Loader
+                <div
+                  className="flex h-56 w-full flex-col items-center justify-around bg-gray-100 lg:h-80"
+                  key={index}
+                >
+                  <Skeleton className="h-3/4 w-11/12 bg-gray-200 lg:w-full" />
+                  <div className="flex h-1/4 w-full flex-col justify-center space-y-2 p-2">
+                    <Skeleton className="h-4 w-3/4 bg-gray-200" />
+                    <Skeleton className="h-3 w-1/3 bg-gray-200" />
+                  </div>
+                </div>
+              ))
+            : recommendation?.recomms.length
+              ? recommendation?.recomms.map((product) => (
+                    <ProductCard
+                      key={product.id}
+                      image={product.values?.image as string}
+                      productId={product.id as Id<"product">}
+                      price={product.values?.price as number}
+                      title={product.values?.title as string}
+                    />
+                ))
+              : all?.map((product) => (
+                    <ProductCard
+                      key={product._id}
+                      image={product.images[0]}
+                      productId={product._id}
+                      price={product.price}
+                      title={product.title}
+                    />
+                ))}
+        </div>
+      </Container>
+    </div>
+  );
+}
