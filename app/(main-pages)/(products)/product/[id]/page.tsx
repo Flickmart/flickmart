@@ -283,6 +283,7 @@ export default function ProductPage() {
 
               {isMobile ? (
                 <ProductHeader
+                  recommendationId={recommendationId ?? ""}
                   aiEnabled={productData?.aiEnabled ?? false}
                   description={productData?.description || ""}
                   location={productData?.location ?? ""}
@@ -331,6 +332,7 @@ export default function ProductPage() {
               ) : null}
               {isMobile ? null : (
                 <ProductHeader
+                  recommendationId={recommendationId ?? ""}
                   aiEnabled={productData?.aiEnabled ?? false}
                   description={productData?.description ?? ""}
                   location={productData?.location ?? ""}

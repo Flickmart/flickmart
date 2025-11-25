@@ -107,9 +107,8 @@ export default function ProductCard({
         />
       </button>
       {image ? (
-        <Link
+        <div
           className="block h-[74%] overflow-hidden rounded-sm"
-          href={`/product/${productId}`}
         >
           <Image
             alt={title || ''}
@@ -118,9 +117,9 @@ export default function ProductCard({
             src={image || ''}
             width={500}
           />
-        </Link>
+        </div>
       ) : (
-        <Link className="relative block h-[74%]" href={`/product/${productId}`}>
+        <div className="relative block h-[74%]">
           <Image
             alt={title || ''}
             className="abs-center-x abs-center-y absolute w-1/2 rounded-sm object-top"
@@ -128,7 +127,7 @@ export default function ProductCard({
             src="/no-image.png"
             width={500}
           />
-        </Link>
+        </div>
       )}
       <div className="flex flex-col space-y-[3px] pt-1 text-left">
         <div className="flex items-center gap-1 font-medium text-gray-700 text-sm capitalize">
