@@ -37,6 +37,7 @@ export default function PopularSection() {
                 </div>
               ))
             : popular.recomms.map((product) => (
+                <Link key={product.id} href={`/product/${product.id}?id=${popular.recommId}`}>
                   <ProductCard
                     key={product.id}
                     likes={product.values?.likes as number}
@@ -47,6 +48,7 @@ export default function PopularSection() {
                     title={product.values?.title as string}
                     views={product.values?.views as number}
                   />
+              </Link>
                 ))
               }
         </div>

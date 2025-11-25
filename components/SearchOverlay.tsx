@@ -47,7 +47,7 @@ export default function SearchOverlay({
       {open && (
         <motion.div
           animate={{ y: 0, x: 0 }}
-          className="fixed inset-0 z-40 flex min-h-screen flex-col bg-white py-3"
+          className="fixed inset-0 flex min-h-screen flex-col overflow-x-auto z-50 bg-white py-3"
           initial={{ y: '100%', x: '-100%' }}
           transition={{
             duration: 0.2,
@@ -55,7 +55,7 @@ export default function SearchOverlay({
             ease: 'easeInOut',
           }}
         >
-          <div className="flex items-center justify-between gap-3 px-3 py-3 text-gray-600 shadow-md">
+          <div className="flex items-center fixed top-0 w-full bg-white justify-between gap-3 px-3 py-5 pr-7 text-gray-600 shadow-md">
             <ArrowLeft onClick={() => openSearch(false)} />
             <div className="flex-grow rounded-lg bg-gray-100">
               <SearchInput
@@ -68,7 +68,7 @@ export default function SearchOverlay({
             </div>
           </div>
           {autoSuggest?.length === 0 || !searchValue ? (
-            <div className="flex-grow pt-3">
+            <div className="flex-grow pt-20">
               <p className="px-4 py-2 font-medium text-gray-500 text-xs capitalize">
                 {(retrievePreviousInputs?.data?.length ?? 0) > 0
                   ? 'recent searches'
@@ -105,7 +105,7 @@ export default function SearchOverlay({
               })}
             </div>
           ) : (
-            <div className="flex-grow pt-3">
+            <div className="flex-grow pt-16">
               <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
                 {autoSuggest?.length > 0 && 'suggestions'}
               </p>
