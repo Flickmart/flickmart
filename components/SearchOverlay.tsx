@@ -114,7 +114,7 @@ export default function SearchOverlay({
                   className="px-4 py-2.5 flex font-medium items-center gap-3 text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                   key={index}
                   onClick={() => {
-                    router.push(`/search?query=${item}`);
+                    router.push(`/search?query=${item.title}`);
                     openSearch(false);
                   }}
                 >
