@@ -23,7 +23,6 @@ const withPWA = require('next-pwa')({
 
 const baseConfig = {
   reactStrictMode: true,
-  serverComponentsExternalPackages: ['require-in-the-middle'],
   images: {
     remotePatterns: [
       {
