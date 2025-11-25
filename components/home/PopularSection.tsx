@@ -45,6 +45,7 @@ export default function PopularSection() {
                     productId={product.id as Id<"product">}
                     price={product.values?.price as number}
                     title={product.values?.title as string}
+                    views={product.values?.views as number}
                   />
                 ))
               }

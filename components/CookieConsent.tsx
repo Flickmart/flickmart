@@ -37,12 +37,11 @@ export default function CookieConsent({identifyUser}: {identifyUser : ()=> void}
         className={cn("flex items-end fixed inset-0 z-50 bg-black/80", hidden && "hidden" )}
         onClick={()=> setHidden(true) }
       >
-        <div onClick={(e)=> e.stopPropagation()} className='bg-white gap-3 w-full h-52 px-20 flex flex-col justify-center'>
-          <div className='space-y-3'>
-            <h2 className='text-xl  font-semibold'>Cookie Consent</h2>
-            <p className='font-medium'>
-              We use cookies to improve your experience. By using our site, you
-              agree to our cookie policy.
+        <div onClick={(e)=> e.stopPropagation()} className='bg-white lg:gap-3 gap-5 w-full min-h-52 lg:px-20 p-5 text-justify flex py-7 flex-col justify-center'>
+          <div className='lg:space-y-3 space-y-2'>
+            <h2 className='lg:text-xl text-lg  font-semibold'>Cookie Consent</h2>
+            <p className='font-medium text-sm lg:text-base leading-loose'>
+         We use cookies to personalize content, remember your preferences, and analyze traffic. Click Accept to agree to our use of cookies, or Manage to change your settings. See our Cookie Policy for details.
             </p>
           </div>
             <div className="flex  justify-end gap-5">

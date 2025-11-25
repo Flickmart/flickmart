@@ -10,6 +10,9 @@ import { useRecommend } from "@/hooks/useRecommend";
 import { Id } from "@/convex/_generated/dataModel";
 import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
+import { ValuesDto } from "@/types/recommendations";
+
+
 
 export default function NewArrivals() {
   const isMobile = useIsMobile();
@@ -51,16 +54,21 @@ export default function NewArrivals() {
                 </div>
               </div>
             ))
-          : recommendation?.recomms?.map((item) => (
-              <Link href={`/product/${item.id}`} key={item.id}>
+          : recommendation?.recomms?.map((item) => {
+            const {likes, views, rating, title, image, price}= item.values as ValuesDto
+
+              return <Link href={`/product/${item.id}?id=${recommendation.recommId}`} key={item.id}>
                 <NewArrivalItem
-                  image={item.values?.image as string}
-                  name={item.values?.title as string}
-                  price={item.values?.price as number}
+                  image={image}
+                  name={title}
+                  price={price}
                   productId={item.id as Id<"product">}
+                  views={views}
+                  likes={likes}
+                  rating={rating}
                 />
               </Link>
-            ))}
+})}
       </div>
     </section>
   );

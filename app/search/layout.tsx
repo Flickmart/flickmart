@@ -10,7 +10,7 @@ export default async function Layout({
 }) {
   return (
     <>
-      <Navbar></Navbar>
+      <Navbar />
       <SidebarProvider>
         <Suspense fallback={<div>Loading...</div>}>{children}</Suspense>
       </SidebarProvider>

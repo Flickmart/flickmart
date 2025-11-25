@@ -56,6 +56,7 @@ async function main() {
         image: product.images[0] ?? "",
         likes: product?.likes ?? 0,
         location: product.location,
+        description: product.description,
         plan: product.plan,
         subcategory: product.subcategory,
         title: product.title,

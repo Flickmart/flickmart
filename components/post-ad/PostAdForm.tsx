@@ -307,6 +307,7 @@ export default function PostAdForm({
           image: modifiedObj.images[0] ?? "",
           likes: product?.likes ?? 0,
           location: modifiedObj.location,
+          description: modifiedObj.description,
           plan: modifiedObj.plan,
           subcategory: modifiedObj.subcategory,
           title: modifiedObj.title,

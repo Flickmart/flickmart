@@ -13,6 +13,7 @@ type NewArrivalsProp = {
   location?: string;
   likes?: number;
   views?: number;
+  rating?: number
 };
 
 export default function NewArrivalItem({
@@ -23,6 +24,7 @@ export default function NewArrivalItem({
   location,
   likes,
   views,
+  rating
 }: NewArrivalsProp) {
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
