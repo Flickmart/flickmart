@@ -1,5 +1,7 @@
+/** biome-ignore-all lint/style/noMagicNumbers: <Needed> */
+/** biome-ignore-all lint/performance/useTopLevelRegex: <N> */
 import { ConvexError, v } from "convex/values";
-import type { Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserOrThrow } from "./users";
 
@@ -36,7 +38,7 @@ export const getByUserId = query({
   handler: async (ctx, args) => {
     try {
       // Validate that the user exists
-      let user;
+      let user: Doc<"users"> | null | undefined;
 
       if (args.userId) {
         user = await ctx.db.get(args.userId);
@@ -227,6 +229,7 @@ export const update = mutation({
       throw new Error("Unauthorized to update this product");
     }
 
+    // biome-ignore lint/suspicious/noExplicitAny: <any>
     const updates: Record<string, any> = {};
 
     // Build updates object with only the fields that were provided
@@ -641,6 +644,7 @@ export const search = query({
 
       // Then apply the requested sort order
       if (args.sortBy) {
+        // biome-ignore lint/style/useDefaultSwitchClause: <switch is how it works >
         switch (args.sortBy) {
           case "price_asc":
             return a.price - b.price;
@@ -997,6 +1001,7 @@ export const getProductsByFilters = query({
   handler: async (ctx, args) => {
     console.log(args);
 
+    // biome-ignore lint/nursery/noShadow: <not affected>
     let query = ctx.db
       .query("product")
       .filter((q) =>
