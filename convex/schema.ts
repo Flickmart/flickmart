@@ -17,6 +17,9 @@ export default defineSchema({
     username: v.optional(v.string()),
     description: v.optional(v.string()),
     verified: v.optional(v.boolean()),
+    verifiedAt: v.optional(v.number()), 
+    lastWeeklyProductCount: v.optional(v.number()), // Products posted in current week
+    weekStartTimestamp: v.optional(v.number()), // Start of current tracking week
     contact: v.optional(
       v.object({
         phone: v.optional(v.string()),

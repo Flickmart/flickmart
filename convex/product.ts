@@ -609,6 +609,13 @@ export const search = query({
       );
     }
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(products.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     // Define ad type priority
     const adTypePriority = {
       premium: 3,
@@ -617,9 +624,16 @@ export const search = query({
       free: 0,
     };
 
-    // Sort products based on criteria and ad type priority
+    // Sort products based on criteria, verified seller priority, and ad type priority
     products.sort((a, b) => {
-      // First sort by ad type priority
+      // First sort by verified seller status (verified sellers appear first)
+      const aVerified = verifiedSellers.has(a.userId) ? 1 : 0;
+      const bVerified = verifiedSellers.has(b.userId) ? 1 : 0;
+      if (bVerified !== aVerified) {
+        return bVerified - aVerified;
+      }
+
+      // Then sort by ad type priority
       const adTypeDiff = adTypePriority[b.plan] - adTypePriority[a.plan];
       if (adTypeDiff !== 0) {
         return adTypeDiff;
@@ -694,6 +708,13 @@ export const getRecommendations = query({
       .filter((q) => q.neq(q.field("userId"), user._id))
       .collect();
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(allProducts.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     const scoreProducts = allProducts.map((product) => {
       // score determines if product is recommended or not
       let score = 0;
@@ -713,29 +734,33 @@ export const getRecommendations = query({
       score += (hasLiked ? 0.2 : 0) + (hasBookmarked ? 0.15 : 0);
       // Calculate product scores based on multiple factors
 
-      // Net positive likes / total  feedback volume (25% weight)
+      // Net positive likes / total  feedback volume (20% weight - reduced from 25%)
       const popularity =
         (product.likes ?? 0) -
         (product.dislikes ?? 0) /
           Math.max(1, (product.likes ?? 0) + (product.dislikes ?? 0));
-      score += popularity * 0.25;
+      score += popularity * 0.2;
 
-      // Time posted (20% weight)
+      // Time posted (15% weight - reduced from 20%)
       const daysSincePosted =
         Date.now() -
         (new Date(product.timeStamp).getTime() / 1000) * 60 * 60 * 24;
 
       const recencyScore = Math.exp(-daysSincePosted / 30); // 30-day decay
-      score += recencyScore * 0.2;
+      score += recencyScore * 0.15;
 
-      //Ad Type Priority (20 weight)
+      //Ad Type Priority (15% weight - reduced from 20%)
       const adTypeScore = {
         premium: 1.0,
         pro: 0.7,
         basic: 0.4,
         free: 0,
       }[product.plan];
-      score += adTypeScore * 0.2;
+      score += adTypeScore * 0.15;
+
+      // Verified Seller Boost (15% weight) - NEW
+      const isVerifiedSeller = verifiedSellers.has(product.userId);
+      score += (isVerifiedSeller ? 1 : 0) * 0.15;
 
       // // 4. Category Match Score (15% weight)
       // if (userProducts.length > 0) {
@@ -842,6 +867,13 @@ export const getSimilarProducts = query({
       .filter((q) => q.neq(q.field("_id"), args.productId))
       .collect();
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(allProducts.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     // Calculate similarity scores
     const scoredProducts = allProducts.map((product) => {
       let score = 0;
@@ -895,6 +927,12 @@ export const getSimilarProducts = query({
         free: 0,
       }[product.plan];
       score *= adTypeBoost;
+
+      // Verified Seller Boost - Apply additional multiplier for verified sellers
+      const isVerifiedSeller = verifiedSellers.has(product.userId);
+      if (isVerifiedSeller) {
+        score *= 1.15; // 15% boost for verified sellers
+      }
 
       return { product, score };
     });
