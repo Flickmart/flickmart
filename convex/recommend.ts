@@ -1,8 +1,8 @@
 // convex/recommend.ts
-import { v } from "convex/values";
-import { action, internalMutation } from "./_generated/server";
-import { internal } from "./_generated/api";
-import { Doc, Id } from "./_generated/dataModel";
+import { v } from 'convex/values';
+import { internal } from './_generated/api';
+import type { Doc, Id } from './_generated/dataModel';
+import { action, internalMutation } from './_generated/server';
 
 export type RecommendationResponse = {
   numberNextRecommsCalls: number;
@@ -27,7 +27,7 @@ export type RecommendationResponse = {
   }>;
 };
 
-export const apiUrl = `https://rapi-eu-west.recombee.com`;
+export const apiUrl = 'https://rapi-eu-west.recombee.com';
 
 // Recommend Items to User
 export const recommendItems = action({
@@ -39,7 +39,7 @@ export const recommendItems = action({
       // Get User ID
       const userIdResult = await ctx.runQuery(internal.users.getUserId);
       if (!userIdResult) {
-        throw new Error("No user id found");
+        throw new Error('No user id found');
       }
 
       const userId = userIdResult;
@@ -56,13 +56,13 @@ export const recommendItems = action({
 
       // Extract scenario from the query string
       const params = new URLSearchParams(args.queryStrings);
-      const scenario = params.get("scenario");
+      const scenario = params.get('scenario');
 
       // Check if Cache exists
-      const cache: Doc<"recommCache"> = await ctx.runMutation(
+      const cache: Doc<'recommCache'> = await ctx.runMutation(
         internal.recommend.cache,
         {
-          scenario: scenario ?? "", // Use scenario for caching, with a fallback
+          scenario: scenario ?? '', // Use scenario for caching, with a fallback
           userId,
         }
       );
@@ -81,9 +81,9 @@ export const recommendItems = action({
       // Fetch recommendations
 
       const res = await fetch(fullUrl, {
-        method: "GET",
+        method: 'GET',
         headers: {
-          Accept: "application/json",
+          Accept: 'application/json',
           Authorization: `Bearer ${process.env.RECOMBEE_PRIVATE_TOKEN as string}`,
         },
       });
@@ -95,13 +95,13 @@ export const recommendItems = action({
       // Update Cache
       await ctx.runMutation(internal.recommend.updateCache, {
         cacheId: cache._id,
-        scenario: scenario ?? "default",
+        scenario: scenario ?? 'default',
         data,
       });
 
       return data;
     } catch (err) {
-      console.error("Error fetching recommendations:", err);
+      console.error('Error fetching recommendations:', err);
       return null;
     }
   },
@@ -110,25 +110,25 @@ export const recommendItems = action({
 //////////////////////////////////////////////////////
 // Check if there is  an existing Cache
 export const cache = internalMutation({
-  args: { userId: v.id("users"), scenario: v.string() },
+  args: { userId: v.id('users'), scenario: v.string() },
   handler: async (ctx, args) => {
     // Check if cache exists and is still valid
     const cache = await ctx.db
-      .query("recommCache")
-      .withIndex("by_user", (q) =>
-        q.eq("userId", args.userId).eq("scenario", args.scenario)
+      .query('recommCache')
+      .withIndex('by_user', (q) =>
+        q.eq('userId', args.userId).eq('scenario', args.scenario)
       )
       .unique();
 
     if (!cache) {
       // Create an cache record if none is found which will later be populated with recommendation data
-      const cacheId = await ctx.db.insert("recommCache", {
+      const cacheId = await ctx.db.insert('recommCache', {
         userId: args.userId,
         data: null,
         updatedAt: Date.now(),
         scenario: args.scenario,
       });
-      return (await ctx.db.get(cacheId)) as Doc<"recommCache">;
+      return (await ctx.db.get(cacheId)) as Doc<'recommCache'>;
     }
     return cache;
   },
@@ -138,11 +138,11 @@ export const cache = internalMutation({
 // Update Cache Record
 export const updateCache = internalMutation({
   args: {
-    cacheId: v.id("recommCache"),
+    cacheId: v.id('recommCache'),
     scenario: v.string(),
     data: v.any(),
   },
-  handler: async function (ctx, args) {
+  async handler(ctx, args) {
     await ctx.db.patch(args.cacheId, {
       data: args.data,
       scenario: args.scenario,
