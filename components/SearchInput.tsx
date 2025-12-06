@@ -8,6 +8,8 @@ import type React from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/convex/_generated/api';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useTrack } from '@/hooks/useTrack';
 import {
   Command,
   CommandEmpty,
@@ -15,9 +17,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "./ui/command";
-import { useTrack } from "@/hooks/useTrack";
-import { useAuthUser } from "@/hooks/useAuthUser";
+} from './ui/command';
 
 const MotionCommandList = motion.create(CommandList);
 
@@ -31,7 +31,10 @@ export default function SearchInput({
 }: {
   query?: string;
   openSearch?: (val: boolean) => void;
-  updateAutoSuggest?: (values: {title: string; image: string}[], searchValue: string) => void;
+  updateAutoSuggest?: (
+    values: { title: string; image: string }[],
+    searchValue: string
+  ) => void;
   loc?: string;
   isOverlayOpen?: boolean;
   ref?: React.ForwardedRef<HTMLInputElement>;
@@ -68,9 +71,9 @@ export default function SearchInput({
       saveSearchInput({
         search: searchInput,
       });
-      captureActivity("Product Searched", {
+      captureActivity('Product Searched', {
         query: searchInput,
-        userId: user?._id ?? "",
+        userId: user?._id ?? '',
       });
       // Perform search action
       !isMobile && isOverlayOpen && setSearchInput('');
@@ -89,7 +92,10 @@ export default function SearchInput({
   }
   useEffect(() => {
     if (autoSuggest || searchInput) {
-      updateAutoSuggest?.(autoSuggest as {title: string; image: string}[], searchInput);
+      updateAutoSuggest?.(
+        autoSuggest as { title: string; image: string }[],
+        searchInput
+      );
     }
   }, [autoSuggest, isMobile, isOverlayOpen, searchInput]);
 
@@ -100,21 +106,21 @@ export default function SearchInput({
   }, []);
 
   return (
-    <Command className="bg-inherit h-full">
+    <Command className="h-full bg-inherit">
       <div className="h-full">
         {isMobile && !isOverlayOpen ? (
           <div
-            className="flex cursor-pointer items-center gap-2 bg-gray-100 px-3 text-gray-500 lg:p-2.5 h-full"
+            className="flex h-full cursor-pointer items-center gap-2 bg-gray-100 px-3 text-gray-500 lg:p-2.5"
             onClick={() => openSearch && openSearch(true)}
           >
             <Search className="size-5" />
-            <span className="text-sm text-nowrap sm:text-base">
-              {searchInput || "Search for products..."}
+            <span className="text-nowrap text-sm sm:text-base">
+              {searchInput || 'Search for products...'}
             </span>
           </div>
         ) : (
           <CommandInput
-            className="w-full rounded-lg py-3 ps-4  text-flickmart-gray text-sm outline-none sm:text-base"
+            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none sm:text-base"
             inputMode="search"
             onBlur={() => {
               setFocus(false);

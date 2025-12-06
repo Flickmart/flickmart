@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 function useResponsive(mediaQuery: string) {
   let media: MediaQueryList;
@@ -11,10 +11,10 @@ function useResponsive(mediaQuery: string) {
   useEffect(() => {
     media = matchMedia(`(${mediaQuery})`);
     setMatchesBreakpoint(media.matches);
-    media.addEventListener("change", handleResize);
+    media.addEventListener('change', handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleResize);
     };
   }, []);
 

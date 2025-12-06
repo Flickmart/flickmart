@@ -6,17 +6,17 @@ import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
+import { useTrack } from '@/hooks/useTrack';
 import ChatInput from '../chats/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
-import { useTrack } from '@/hooks/useTrack';
 
 export default function CommentContent({
   productId,
-  recommId
+  recommId,
 }: {
   productId: Id<'product'>;
-  recommId: string
+  recommId: string;
 }) {
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
   const [input, setInput] = useState('');

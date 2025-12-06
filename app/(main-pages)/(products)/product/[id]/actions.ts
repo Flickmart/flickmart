@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { client } from "@/utils/recombee";
-import { requests } from "recombee-api-client";
+import { requests } from 'recombee-api-client';
+import { client } from '@/utils/recombee';
 
 export async function addProductToRecombeeCatalog(itemId: string, values: any) {
   return await client.send(

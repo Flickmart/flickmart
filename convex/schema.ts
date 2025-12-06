@@ -17,7 +17,7 @@ export default defineSchema({
     username: v.optional(v.string()),
     description: v.optional(v.string()),
     verified: v.optional(v.boolean()),
-    verifiedAt: v.optional(v.number()), 
+    verifiedAt: v.optional(v.number()),
     lastWeeklyProductCount: v.optional(v.number()), // Products posted in current week
     weekStartTimestamp: v.optional(v.number()), // Start of current tracking week
     contact: v.optional(
@@ -410,14 +410,14 @@ export default defineSchema({
     // Removed duplicate endpoint field
     isActive: v.optional(v.boolean()),
   })
-    .index("by_user", ["userId"])
-    .index("by_endpoint", ["endpoint"])
-    .index("by_user_endpoint", ["userId", "endpoint"]),
+    .index('by_user', ['userId'])
+    .index('by_endpoint', ['endpoint'])
+    .index('by_user_endpoint', ['userId', 'endpoint']),
 
   recommCache: defineTable({
-    userId: v.id("users"),
+    userId: v.id('users'),
     scenario: v.string(),
     data: v.any(),
     updatedAt: v.number(),
-  }).index("by_user", ["userId", "scenario"]),
+  }).index('by_user', ['userId', 'scenario']),
 });

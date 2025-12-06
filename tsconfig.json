@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "es2020",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -24,15 +20,9 @@
       }
     ],
     "paths": {
-      "@/*": [
-        "./*"
-      ],
-      "@schema": [
-        "./db/schema"
-      ],
-      "@db": [
-        "./db/index.ts"
-      ]
+      "@/*": ["./*"],
+      "@schema": ["./db/schema"],
+      "@db": ["./db/index.ts"]
     },
     "strictNullChecks": true
   },
@@ -47,7 +37,5 @@
     "components/wallet/transaction-details.tsx",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": [
-    "node_modules"
-  ]
+  "exclude": ["node_modules"]
 }

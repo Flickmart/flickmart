@@ -1,7 +1,7 @@
-"use node";
-import crypto from "crypto";
-import { internalAction } from "./_generated/server";
-import { v } from "convex/values";
+'use node';
+import { v } from 'convex/values';
+import crypto from 'crypto';
+import { internalAction } from './_generated/server';
 
 export const signRecombeeUri = internalAction({
   args: { uri: v.string() },
@@ -12,9 +12,9 @@ export const signRecombeeUri = internalAction({
     const message = `${args.uri}&hmac_timestamp=${timestamp}`;
 
     const hmac_sign = crypto
-      .createHmac("sha1", secret) // recombee uses sha1 by default
+      .createHmac('sha1', secret) // recombee uses sha1 by default
       .update(message)
-      .digest("hex");
+      .digest('hex');
 
     return { hmac_timestamp: timestamp, hmac_sign };
   },
