@@ -111,7 +111,7 @@ export default function SearchInput({
         {isMobile && !isOverlayOpen ? (
           <div
             className="flex h-full cursor-pointer items-center gap-2 bg-gray-100 px-3 text-gray-500 lg:p-2.5"
-            onClick={() => openSearch && openSearch(true)}
+            onClick={() => openSearch?.(true)}
           >
             <Search className="size-5" />
             <span className="text-nowrap text-sm sm:text-base">

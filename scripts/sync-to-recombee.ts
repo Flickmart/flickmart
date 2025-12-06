@@ -265,7 +265,7 @@ async function main() {
     // Step 4: Sync products
     await syncProducts();
 
-    console.log('\n' + '='.repeat(60));
+    console.log(`\n${'='.repeat(60)}`);
     console.log('🎉 Recombee sync completed!');
     console.log('\n💡 Tips:');
     console.log('  - Check the Recombee Admin UI to verify the data');

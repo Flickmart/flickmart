@@ -1,9 +1,7 @@
 'use client';
 import { useQuery } from 'convex/react';
-import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -16,7 +14,7 @@ export default function RecentlyViewed() {
   const isMobile = useIsMobile();
   // const all = useQuery(api.product.getAll, { limit: 10 });
   // const firstTenProducts = all?.slice(0, 10);
-  const router = useRouter();
+  const _router = useRouter();
   const recommendation = useRecommend('Recently-Viewed'); //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {});
   const recommendationId = recommendation?.recommId;

@@ -2,7 +2,7 @@
 import { ChevronRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { type Dispatch, RefObject, type SetStateAction, useRef } from 'react';
+import { type Dispatch, type SetStateAction, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import useResponsive from '@/hooks/useResponsive';
 

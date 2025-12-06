@@ -12,12 +12,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { SyncLoader } from 'react-spinners';
 import { toast } from 'sonner';
@@ -46,7 +41,6 @@ import useNav from '@/hooks/useNav';
 import useSlider from '@/hooks/useSlider';
 import { useTrack } from '@/hooks/useTrack';
 import { useTrackDuration } from '@/hooks/useTrackDuration';
-import { addProductToRecombeeCatalog } from './actions';
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);

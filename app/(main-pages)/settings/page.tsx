@@ -4,7 +4,6 @@ import {
   Bell,
   ChartNoAxesCombined,
   ChevronLeft,
-  Code2,
   MessageSquare,
   ShoppingBag,
   Store,

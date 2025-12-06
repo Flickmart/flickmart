@@ -8,11 +8,11 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-interface VerifiedBadgeProps {
+type VerifiedBadgeProps = {
   size?: 'sm' | 'md' | 'lg';
   showTooltip?: boolean;
   className?: string;
-}
+};
 
 const sizeConfig = {
   sm: 12,

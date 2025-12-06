@@ -1,5 +1,5 @@
 'use client';
-import { ChevronUp, Facebook, Instagram, Mail, Twitter } from 'lucide-react';
+import { ChevronUp, Mail } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';

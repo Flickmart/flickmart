@@ -1,4 +1,4 @@
-import { ApiClient, requests } from 'recombee-api-client';
+import { ApiClient } from 'recombee-api-client';
 
 export const client = new ApiClient(
   process.env.RECOMBEE_DB_ID as string,

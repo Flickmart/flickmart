@@ -1,6 +1,6 @@
 'use client';
 import { SelectTrigger } from '@radix-ui/react-select';
-import { ChevronDown, MapPin } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import SearchInput from './SearchInput';

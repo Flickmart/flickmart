@@ -1,11 +1,11 @@
 'use node';
+import crypto from 'node:crypto';
 import { v } from 'convex/values';
-import crypto from 'crypto';
 import { internalAction } from './_generated/server';
 
 export const signRecombeeUri = internalAction({
   args: { uri: v.string() },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const timestamp = Math.floor(Date.now() / 1000); // UTC unix seconds
     const secret = process.env.RECOMBEE_PRIVATE_TOKEN as string;
 

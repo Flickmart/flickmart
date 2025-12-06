@@ -2,16 +2,20 @@ if (!self.define) {
   let e,
     a = {};
   const c = (c, s) => (
-    (c = new URL(c + '.js', s).href),
+    (c = new URL(`${c}.js`, s).href),
     a[c] ||
       new Promise((a) => {
         if ('document' in self) {
           const e = document.createElement('script');
           (e.src = c), (e.onload = a), document.head.appendChild(e);
-        } else (e = c), importScripts(c), a();
+        } else {
+          (e = c), importScripts(c), a();
+        }
       }).then(() => {
         const e = a[c];
-        if (!e) throw new Error(`Module ${c} didn’t register its module`);
+        if (!e) {
+          throw new Error(`Module ${c} didn’t register its module`);
+        }
         return e;
       })
   );
@@ -20,7 +24,9 @@ if (!self.define) {
       e ||
       ('document' in self ? document.currentScript.src : '') ||
       location.href;
-    if (a[n]) return;
+    if (a[n]) {
+      return;
+    }
     const t = {};
     const d = (e) => c(e, n),
       r = { module: { uri: n }, exports: t, require: d };

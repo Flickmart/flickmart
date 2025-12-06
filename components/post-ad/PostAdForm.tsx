@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Separator } from '@radix-ui/react-select';
 import { useMutation } from '@tanstack/react-query';
 import { useMutation as useMutationConvex, useQuery } from 'convex/react';
-import { AnimatePresence, motion } from 'motion/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type React from 'react';
 import { useEffect, useState } from 'react';
@@ -18,10 +17,7 @@ import { addProductToRecombeeCatalog } from '@/app/(main-pages)/(products)/produ
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useOthersStore } from '@/store/useOthersStore';
-import { Button } from '../ui/button';
 import { Form } from '../ui/form';
-import { Label } from '../ui/label';
-import { Switch } from '../ui/switch';
 import AdCharges from './AdCharges';
 import AddPhoto from './AddPhoto';
 import AdPromotion from './AdPromotion';

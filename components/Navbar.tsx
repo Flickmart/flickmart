@@ -9,7 +9,6 @@ import {
   Loader2,
   LogOut,
   Menu,
-  MessageSquareText,
   Settings,
   ShoppingBag,
   Store,
@@ -19,7 +18,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type React from 'react';
 import { useState } from 'react';
 import {
   DropdownMenu,

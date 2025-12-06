@@ -3,7 +3,6 @@ import { useQuery } from 'convex/react';
 import { ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React from 'react';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -14,7 +13,7 @@ import NewArrivalItem from './NewArrivalItem';
 
 export default function NewArrivals() {
   const isMobile = useIsMobile();
-  const router = useRouter();
+  const _router = useRouter();
   const recommendation = useRecommend('New-Arrivals'); //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {});
 

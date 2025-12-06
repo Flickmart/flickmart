@@ -3,12 +3,10 @@ import { IconMoodPuzzled } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'convex/react';
 import {
   ArrowLeft,
-  ArrowUpRightIcon,
   Bookmark,
   ChevronRight,
   LayoutGrid,
   LayoutPanelLeft,
-  SearchSlash,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -50,7 +48,7 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { api } from '@/convex/_generated/api';
-import type { Doc, Id } from '@/convex/_generated/dataModel';
+import type { Id } from '@/convex/_generated/dataModel';
 import { useFilters } from '@/hooks/useFilters';
 import type { ValuesDto } from '@/types/recommendations';
 
@@ -336,7 +334,7 @@ export default function DetailedCategoryPage() {
                   </div>
                   <div className="flex items-center justify-between border-b py-1">
                     <div>
-                      <>500k - 1.5m </>
+                      500k - 1.5m
                       <span className="text-[10px]">452 ads</span>
                     </div>
                     <RadioGroupItem value="moderate" />

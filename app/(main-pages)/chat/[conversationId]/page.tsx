@@ -17,7 +17,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useUploadThing } from '@/utils/uploadthing';
 
-interface Message {
+type Message = {
   _id: Id<'message'>;
   senderId: Id<'users'>;
   content: string;
@@ -36,7 +36,7 @@ interface Message {
   transferAmount?: number;
   currency?: string;
   order?: any;
-}
+};
 
 type NegotiableRequest = {
   user_id: string;
@@ -73,7 +73,7 @@ export default function ConversationPage() {
   >([]);
 
   const conversationId = params?.conversationId as Id<'conversations'>;
-  const vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
+  const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
 
   const messagesEndRef = useRef<HTMLDivElement>(null);

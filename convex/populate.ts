@@ -187,7 +187,9 @@ export const addDemoProducts = mutation({
       store = await ctx.db.get(storeId);
     }
 
-    if (!store) throw new Error('Could not find or create store');
+    if (!store) {
+      throw new Error('Could not find or create store');
+    }
 
     // 3. Insert Products
     const results = [];

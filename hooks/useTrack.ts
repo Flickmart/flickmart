@@ -1,5 +1,4 @@
 import type { EventProperties } from '@segment/analytics-next';
-import { useEffect } from 'react';
 import { analytics } from '@/utils/analytics';
 
 export function useTrack() {
