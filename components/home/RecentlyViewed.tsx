@@ -1,7 +1,5 @@
 "use client";
-import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Skeleton } from "../ui/skeleton";
 import NewArrivalItem from "./NewArrivalItem";
@@ -14,8 +12,6 @@ import { ValuesDto } from "@/types/recommendations";
 
 export default function RecentlyViewed() {
   const isMobile = useIsMobile();
-  // const all = useQuery(api.product.getAll, { limit: 10 });
-  // const firstTenProducts = all?.slice(0, 10);
   const router = useRouter();
   const recommendation = useRecommend("Recently-Viewed") //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {})
