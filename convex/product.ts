@@ -24,9 +24,13 @@ export const getAll = query({
 
 // Get product by ID
 export const getById = query({
-  args: { productId: v.id("product") },
+  args: { productId: v.string() },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId("product", args.productId);
+    if (!productId) {
+      return null;
+    }
+    const product = await ctx.db.get(productId);
     console.log(product);
     return product;
   },
@@ -353,13 +357,17 @@ export const likeProduct = mutation({
 });
 
 export const getLikeByProductId = query({
-  args: { productId: v.id("product") },
+  args: { productId: v.string() },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
       return;
     }
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId("product", args.productId);
+    if (!productId) {
+      return null;
+    }
+    const product = await ctx.db.get(productId);
 
     const like = await ctx.db
       .query("likes")
@@ -481,7 +489,7 @@ export const addBookmark = mutation({
 
 export const getSavedOrWishlistProduct = query({
   args: {
-    productId: v.id("product"),
+    productId: v.string(),
     type: v.union(v.literal("saved"), v.literal("wishlist")),
   },
   handler: async (ctx, args) => {
@@ -490,7 +498,20 @@ export const getSavedOrWishlistProduct = query({
       return { success: false, error: errorObject, data: null };
     }
 
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId("product", args.productId);
+    if (!productId) {
+      return {
+        success: false,
+        error: {
+          status: 404,
+          message: "Product does not exist",
+          code: "PRODUCT_NOT_FOUND",
+        },
+        data: null,
+      };
+    }
+
+    const product = await ctx.db.get(productId);
     if (!product) {
       return {
         success: false,
