@@ -28,12 +28,16 @@ export const addComment = mutation({
 // Get comments for a product
 export const getCommentsByProductId = query({
   args: {
-    productId: v.id("product"),
+    productId: v.string(),
   },
   handler: async (ctx, args) => {
+    const productId = ctx.db.normalizeId("product", args.productId);
+    if (!productId) {
+      return [];
+    }
     const comments = await ctx.db
       .query("comments")
-      .filter((q) => q.eq(q.field("productId"), args.productId))
+      .filter((q) => q.eq(q.field("productId"), productId))
       .collect();
     const commentsWithUser = await Promise.all(
       comments.map(async (comment) => {
