@@ -18,7 +18,6 @@ export type RecommendationResponse = {
       location: string | null;
       plan: string | null;
       price: number | null;
-      rating: number | null;
       subcategory: string | null;
       title: string | null;
       views: number | null;
@@ -39,13 +38,20 @@ export const recommendItems = action({
       // Get User ID
       const userIdResult = await ctx.runQuery(internal.users.getUserId);
       if (!userIdResult) {
+        console.error('[Recombee] ERROR: No user id found from getUserId query');
         throw new Error('No user id found');
       }
 
       const userId = userIdResult;
+      console.log('[Recombee] User ID:', userId);
 
       // Get URI and Hash
-      const uri = `/${process.env.RECOMBEE_DB_ID as string}/recomms/users/${userId}/items/${args.queryStrings}`;
+      const databaseId = process.env.RECOMBEE_DB_ID as string;
+      console.log('[Recombee] Database ID:', databaseId);
+      
+      const uri = `/${databaseId}/recomms/users/${userId}/items/${args.queryStrings}`;
+      console.log('[Recombee] URI (before signing):', uri);
+      
       const { hmac_timestamp, hmac_sign } = await ctx.runAction(
         internal.helpers.signRecombeeUri,
         {
@@ -53,10 +59,13 @@ export const recommendItems = action({
         }
       );
       const fullUrl = `${apiUrl}${uri}&hmac_timestamp=${hmac_timestamp}&hmac_sign=${hmac_sign}`;
+      console.log('[Recombee] Full URL:', fullUrl);
 
       // Extract scenario from the query string
       const params = new URLSearchParams(args.queryStrings);
       const scenario = params.get('scenario');
+      console.log('[Recombee] Scenario:', scenario);
+      console.log('[Recombee] Query Strings:', args.queryStrings);
 
       // Check if Cache exists
       const cache: Doc<'recommCache'> = await ctx.runMutation(
@@ -72,14 +81,15 @@ export const recommendItems = action({
 
       // If cache is still valid
       if (cache.data && Date.now() - cache.updatedAt < oneHour) {
+        console.log('[Recombee] Returning cached data (cache age:', Date.now() - cache.updatedAt, 'ms)');
         const validCache = cache.data as RecommendationResponse;
 
         return validCache;
       }
 
-      // TODO - Implement using axios
-      // Fetch recommendations
+      console.log('[Recombee] Cache miss or expired, fetching from Recombee API...');
 
+      // Fetch recommendations
       const res = await fetch(fullUrl, {
         method: 'GET',
         headers: {
@@ -87,11 +97,32 @@ export const recommendItems = action({
           Authorization: `Bearer ${process.env.RECOMBEE_PRIVATE_TOKEN as string}`,
         },
       });
+      
+      console.log('[Recombee] Response status:', res.status, res.statusText);
+      
       if (!res.ok) {
-        throw new Error(`Recombee request failed: ${res.statusText}`);
+        // Get the response body for more details
+        let errorBody = '';
+        try {
+          errorBody = await res.text();
+          console.error('[Recombee] Error response body:', errorBody);
+        } catch (e) {
+          console.error('[Recombee] Could not read error response body');
+        }
+        
+        console.error('[Recombee] Request failed with status:', res.status);
+        console.error('[Recombee] Request URL was:', fullUrl.replace(hmac_sign, '[REDACTED]'));
+        console.error('[Recombee] User ID:', userId);
+        console.error('[Recombee] Scenario:', scenario);
+        console.error('[Recombee] Database ID:', databaseId);
+        
+        throw new Error(`Recombee request failed: ${res.statusText} - ${errorBody}`);
       }
 
       const data: RecommendationResponse = await res.json();
+      console.log('[Recombee] SUCCESS: Received', data.recomms?.length ?? 0, 'recommendations');
+      console.log('[Recombee] Response recommId:', data.recommId);
+      
       // Update Cache
       await ctx.runMutation(internal.recommend.updateCache, {
         cacheId: cache._id,

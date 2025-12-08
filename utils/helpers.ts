@@ -69,7 +69,7 @@ export async function fetchRecommendations(
 ) {
   const baseQuery =
     '&returnProperties=true' +
-    '&includedProperties=likes,views,rating,title,location,image,price,timestamp' +
+    '&includedProperties=likes,views,title,location,image,price,timestamp' +
     '&cascadeCreate=true' +
     `&count=${count || 10}` +
     `&scenario=${scenario}`;
