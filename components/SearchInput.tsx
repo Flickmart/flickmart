@@ -53,7 +53,7 @@ export default function SearchInput({
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const captureActivity = useTrack();
-  const { user } = useAuthUser();
+  const { user } = useAuthUser({redirectOnUnauthenticated: false});
 
   useEffect(() => {
     if (retrievePreviousInputs?.error) {
