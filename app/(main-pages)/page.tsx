@@ -2,17 +2,16 @@
 import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
 import Footer from '@/components/Footer';
+import Categories from '@/components/home/Categories';
+import JustForYou from '@/components/home/JustForYou';
 import NewArrivals from '@/components/home/NewArrivals';
 import PopularSection from '@/components/home/PopularSection';
+import RecentlyViewed from '@/components/home/RecentlyViewed';
 import Slider from '@/components/home/Slider';
 import MobileNav from '@/components/MobileNav';
 import SearchBox from '@/components/SearchBox';
 import SearchOverlay from '@/components/SearchOverlay';
 import { useAppPresence } from '@/hooks/useAppPresence';
-import JustForYou from '@/components/home/JustForYou';
-import Categories from '@/components/home/Categories';
-import RecentlyViewed from '@/components/home/RecentlyViewed';
-
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -21,7 +20,6 @@ export default function Home() {
   }
 
   const { presenceState } = useAppPresence();
-  
 
   console.log('Presense state', presenceState);
 
@@ -50,7 +48,6 @@ export default function Home() {
     }
     return outputArray;
   }
-
 
   return (
     <section className="lg:flex lg:justify-end lg:bg-[#F8F8F8]">

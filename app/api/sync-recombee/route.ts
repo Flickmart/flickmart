@@ -1,19 +1,19 @@
-import { NextResponse } from "next/server";
-import { ConvexHttpClient } from "convex/browser";
-import { api } from "@/convex/_generated/api";
-import { client as recombeeClient } from "@/utils/recombee";
-import { requests } from "recombee-api-client";
+import { ConvexHttpClient } from 'convex/browser';
+import { NextResponse } from 'next/server';
+import { requests } from 'recombee-api-client';
+import { api } from '@/convex/_generated/api';
+import { client as recombeeClient } from '@/utils/recombee';
 
-export const dynamic = "force-dynamic"; // an Next.js optimization
+export const dynamic = 'force-dynamic'; // an Next.js optimization
 
 export async function GET(request: Request) {
   // 1. SECURE THE ROUTE
   const { searchParams } = new URL(request.url);
-  const secret = searchParams.get("secret");
+  const secret = searchParams.get('secret');
 
   if (secret !== process.env.CRON_SECRET) {
     return NextResponse.json(
-      { message: "Unauthorized" },
+      { message: 'Unauthorized' },
       {
         status: 401,
       }
@@ -23,7 +23,7 @@ export async function GET(request: Request) {
   // 2. RUN THE SYNC LOGIC
   const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
   if (!convexUrl) {
-    throw new Error("Missing NEXT_PUBLIC_CONVEX_URL environment variable.");
+    throw new Error('Missing NEXT_PUBLIC_CONVEX_URL environment variable.');
   }
 
   try {
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         {
           aiEnabled: product.aiEnabled,
           dislikes: product?.dislikes ?? 0,
-          image: product.images[0] ?? "",
+          image: product.images[0] ?? '',
           likes: product?.likes ?? 0,
           location: product.location,
           description: product.description,

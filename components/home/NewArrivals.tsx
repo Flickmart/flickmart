@@ -1,26 +1,21 @@
-"use client";
-import { ChevronRight } from "lucide-react";
-import Link from "next/link";
-import React from "react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { Skeleton } from "../ui/skeleton";
-import NewArrivalItem from "./NewArrivalItem";
-import { useRouter } from "next/navigation";
-import { useRecommend } from "@/hooks/useRecommend";
-import { Id } from "@/convex/_generated/dataModel";
-import { useQuery } from "convex/react";
-import { api } from "@/convex/_generated/api";
-import { ValuesDto } from "@/types/recommendations";
-
-
+'use client';
+import { useQuery } from 'convex/react';
+import { ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useRecommend } from '@/hooks/useRecommend';
+import type { ValuesDto } from '@/types/recommendations';
+import { Skeleton } from '../ui/skeleton';
+import NewArrivalItem from './NewArrivalItem';
 
 export default function NewArrivals() {
   const isMobile = useIsMobile();
-  const router = useRouter();
-  const recommendation = useRecommend("New-Arrivals") //Specify the scenario as the first parameter
-  const user = useQuery(api.users.current, {})
-  
-  
+  const _router = useRouter();
+  const recommendation = useRecommend('New-Arrivals'); //Specify the scenario as the first parameter
+  const user = useQuery(api.users.current, {});
 
   return (
     <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-5 capitalize">
@@ -34,7 +29,7 @@ export default function NewArrivals() {
           <ChevronRight className="transition-colors" />
         </Link>
       </div>
-      <div className="flex w-full justify-between gap-x-5 overflow-x-auto  lg:gap-x-10">
+      <div className="flex w-full justify-between gap-x-5 overflow-x-auto lg:gap-x-10">
         {recommendation === null || !user
           ? Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
               <div
@@ -55,20 +50,26 @@ export default function NewArrivals() {
               </div>
             ))
           : recommendation?.recomms?.map((item) => {
-            const {likes, views, rating, title, image, price}= item.values as ValuesDto
+              const { likes, views, rating, title, image, price } =
+                item.values as ValuesDto;
 
-              return <Link href={`/product/${item.id}?id=${recommendation.recommId}`} key={item.id}>
-                <NewArrivalItem
-                  image={image}
-                  name={title}
-                  price={price}
-                  productId={item.id as Id<"product">}
-                  views={views}
-                  likes={likes}
-                  rating={rating}
-                />
-              </Link>
-})}
+              return (
+                <Link
+                  href={`/product/${item.id}?id=${recommendation.recommId}`}
+                  key={item.id}
+                >
+                  <NewArrivalItem
+                    image={image}
+                    likes={likes}
+                    name={title}
+                    price={price}
+                    productId={item.id as Id<'product'>}
+                    rating={rating}
+                    views={views}
+                  />
+                </Link>
+              );
+            })}
       </div>
     </section>
   );

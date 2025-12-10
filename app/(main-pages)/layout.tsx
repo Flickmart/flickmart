@@ -1,23 +1,24 @@
-"use client"
-import { useEffect, useState, type ReactNode } from "react";
-import CookieConsent from "@/components/CookieConsent";
-import Navbar from "@/components/Navbar";
-import InstallPrompt from "@/components/InstallPrompt";
-import { useTrackUser } from "@/hooks/useTrackUser";
-import { analytics } from "@/utils/analytics";
-import { useAnalyticsInit } from "@/hooks/useAnalyticsInit";
+'use client';
+import { type ReactNode, useEffect, useState } from 'react';
+import CookieConsent from '@/components/CookieConsent';
+import InstallPrompt from '@/components/InstallPrompt';
+import Navbar from '@/components/Navbar';
+import { useAnalyticsInit } from '@/hooks/useAnalyticsInit';
+import { useTrackUser } from '@/hooks/useTrackUser';
+import { analytics } from '@/utils/analytics';
 
 const layout = ({ children }: { children: ReactNode }) => {
-  const [deferredPrompt, setDeferredPrompt] = useState< Event | null>(null)
+  const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   // Initialize Analytics.js
-  useAnalyticsInit()
+  useAnalyticsInit();
   // Returns Track function which is executed when user accepts cookies
-  const identify = useTrackUser()
+  const identify = useTrackUser();
 
-
-  useEffect(()=>{    
+  useEffect(() => {
     const handleBeforeInstallPrompt = (e: Event) => {
-    analytics.load({ writeKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY || '' })
+      analytics.load({
+        writeKey: process.env.NEXT_PUBLIC_SEGMENT_WRITE_KEY || '',
+      });
 
       e.preventDefault();
       console.log(e);
@@ -30,8 +31,7 @@ const layout = ({ children }: { children: ReactNode }) => {
         handleBeforeInstallPrompt
       );
     };
-  },[])
-
+  }, []);
 
   return (
     <>

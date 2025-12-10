@@ -5,7 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Drawer, DrawerTrigger } from '../ui/drawer';
 import CommentContent from './CommentContent';
 
-export default function Comment({ productId, recommId }: { productId: Id<'product'>; recommId: string }) {
+export default function Comment({
+  productId,
+  recommId,
+}: {
+  productId: Id<'product'>;
+  recommId: string;
+}) {
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
 
   return (
@@ -30,7 +36,7 @@ export default function Comment({ productId, recommId }: { productId: Id<'produc
             </div>
           </div>
         </DrawerTrigger>
-        <CommentContent productId={productId} recommId={recommId}/>
+        <CommentContent productId={productId} recommId={recommId} />
       </div>
     </Drawer>
   );

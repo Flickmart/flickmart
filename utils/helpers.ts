@@ -1,6 +1,6 @@
-import { toast } from "sonner";
-import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { RecommendationResponse } from "recombee-api-client";
+import type { RecommendationResponse } from 'recombee-api-client';
+import { toast } from 'sonner';
+import type { Doc, Id } from '@/convex/_generated/dataModel';
 
 type ChatParams = {
   user: Doc<'users'> | null;
@@ -11,7 +11,7 @@ type ChatParams = {
 type ShareParams = {
   title: string;
   description: string;
-  productId?: Id<"product">;
+  productId?: Id<'product'>;
   url?: string;
   price?: number;
 };
@@ -23,15 +23,15 @@ export const initialChat = async ({
   productId,
 }: ChatParams) => {
   if (!user) {
-    toast.error("Please login to chat with vendor");
+    toast.error('Please login to chat with vendor');
     return;
   }
-  console.log("chat vendor clicked");
+  console.log('chat vendor clicked');
 
   // Navigate to chat page with vendor ID as query parameter
   onNavigate(`/chat?vendorId=${userId}&productId=${productId}`);
 
-  toast.success("Starting chat with vendor");
+  toast.success('Starting chat with vendor');
 };
 
 export async function shareProduct({
@@ -41,7 +41,7 @@ export async function shareProduct({
   url,
 }: ShareParams) {
   const shareData = {
-    title: title || "Check out this product",
+    title: title || 'Check out this product',
     text:
       `${description?.substring(0, 200)} '...\n'` ||
       'Check out this product on Flickmart',
@@ -68,9 +68,9 @@ export async function fetchRecommendations(
   count?: number
 ) {
   const baseQuery =
-    "&returnProperties=true" +
-    "&includedProperties=likes,views,rating,title,location,image,price,timestamp" +
-    "&cascadeCreate=true" +
+    '&returnProperties=true' +
+    '&includedProperties=likes,views,title,location,image,price,timestamp' +
+    '&cascadeCreate=true' +
     `&count=${count || 10}` +
     `&scenario=${scenario}`;
 
@@ -80,16 +80,16 @@ export async function fetchRecommendations(
   const filteredQuery = `?filter=${encodeURIComponent(filter)}${baseQuery}`;
   let results: RecommendationResponse | null = null;
 
-  if (scenario === "New-Arrivals") {
+  if (scenario === 'New-Arrivals') {
     results = await recommendations({ queryStrings: filteredQuery });
   }
 
   // 2. If no recent items, fetch default recommendations (fallback)
   if ((results && results.recomms.length === 0) || !results) {
     console.log(
-      !results
-        ? "Another Scenario in use"
-        : "No recent items found, falling back to default recommendations."
+      results
+        ? 'No recent items found, falling back to default recommendations.'
+        : 'Another Scenario in use'
     );
 
     const defaultQuery = `?${baseQuery}`;

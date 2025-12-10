@@ -7,7 +7,7 @@ import ProductCard from '../multipage/ProductCard';
 export default function SimilarAdverts({
   productId,
 }: {
-  productId: Id<"product">;
+  productId: Id<'product'>;
 }) {
   const similarProd = useQuery(api.product.getSimilarProducts, {
     productId,
@@ -25,11 +25,11 @@ export default function SimilarAdverts({
               <Link href={`/product/${item._id}`}>
                 <ProductCard
                   image={item.images[0]}
-                  price={item.price}
-                  title={item.title}
                   likes={item.likes || 0}
-                  views={item.views || 0}
+                  price={item.price}
                   productId={item._id}
+                  title={item.title}
+                  views={item.views || 0}
                 />
               </Link>
             </div>

@@ -1,3 +1,3 @@
-import { AnalyticsBrowser } from "@segment/analytics-next"
+import { AnalyticsBrowser } from '@segment/analytics-next';
 
- export const analytics = new AnalyticsBrowser()
+export const analytics = new AnalyticsBrowser();

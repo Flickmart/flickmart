@@ -10,24 +10,20 @@ import {
   type SubmitErrorHandler,
   type SubmitHandler,
   useForm,
-} from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useOthersStore } from "@/store/useOthersStore";
-import { Button } from "../ui/button";
-import { Form } from "../ui/form";
-import AdCharges from "./AdCharges";
-import AddPhoto from "./AddPhoto";
-import AdPromotion from "./AdPromotion";
-import CategorySheet from "./CategorySheet";
-import InputField from "./InputField";
-import Selector from "./Selector";
-import { Switch } from "../ui/switch";
-import { Label } from "../ui/label";
-import { AnimatePresence, motion } from "motion/react";
+} from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 import { addProductToRecombeeCatalog } from '@/app/(main-pages)/(products)/product/[id]/actions';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useOthersStore } from '@/store/useOthersStore';
+import { Form } from '../ui/form';
+import AdCharges from './AdCharges';
+import AddPhoto from './AddPhoto';
+import AdPromotion from './AdPromotion';
+import CategorySheet from './CategorySheet';
+import InputField from './InputField';
+import Selector from './Selector';
 
 type SubmitType = SubmitHandler<{
   category: string;
@@ -282,29 +278,29 @@ export default function PostAdForm({
         aiEnabled: formData.aiEnabled,
       };
 
-      if (action === "edit") {
+      if (action === 'edit') {
         await updateProduct({
-            condition: modifiedObj.condition,
-            description: modifiedObj.description,
-            images: modifiedObj.images,
-            location: modifiedObj.location,
-            negotiable: modifiedObj.negotiable,
-            price: modifiedObj.price,
-            subcategory: modifiedObj.subcategory,
-            category: modifiedObj.category,
-            title: modifiedObj.title,
-            productId: productId as Id<'product'>,
-          });
-        } else {
-          adPostMutate(modifiedObj);
-        }
+          condition: modifiedObj.condition,
+          description: modifiedObj.description,
+          images: modifiedObj.images,
+          location: modifiedObj.location,
+          negotiable: modifiedObj.negotiable,
+          price: modifiedObj.price,
+          subcategory: modifiedObj.subcategory,
+          category: modifiedObj.category,
+          title: modifiedObj.title,
+          productId: productId as Id<'product'>,
+        });
+      } else {
+        adPostMutate(modifiedObj);
+      }
 
-        if(adId || productId){
-          // Send updated product to Recombee
+      if (adId || productId) {
+        // Send updated product to Recombee
         addProductToRecombeeCatalog((adId || productId)!, {
           aiEnabled: modifiedObj.aiEnabled,
           dislikes: product?.dislikes ?? 0,
-          image: modifiedObj.images[0] ?? "",
+          image: modifiedObj.images[0] ?? '',
           likes: product?.likes ?? 0,
           location: modifiedObj.location,
           description: modifiedObj.description,

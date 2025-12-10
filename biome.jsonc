@@ -18,6 +18,10 @@
       "correctness": {
         "useExhaustiveDependencies": "off"
       },
+      "style": {
+        "noNonNullAssertion": "off",
+        "noMagicNumbers": "off"
+      },
       "suspicious": {
         "noConsole": {
           "level": "off",
