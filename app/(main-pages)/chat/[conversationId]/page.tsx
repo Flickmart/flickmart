@@ -186,7 +186,7 @@ export default function ConversationPage() {
       console.log('Sending initial product message for product:', productId);
       sendInitialProductMessage(productId);
       // Clean URL
-      // router.replace(`/chat/${conversationId}`);
+      router.replace(`/chat/${conversationId}`);
     }
   }, [
     productId,
