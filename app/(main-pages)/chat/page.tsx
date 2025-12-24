@@ -23,9 +23,6 @@ export default function ChatPage() {
   const searchParams = new URLSearchParams(
     typeof window !== 'undefined' ? window.location.search : ''
   );
-  const { presenceState } = useAppPresence();
-
-  console.log('Presense state', presenceState);
 
   const vendorId = searchParams.get('vendorId') as Id<'users'> | null;
   const productId = searchParams.get('productId') as Id<'product'> | null;
@@ -267,7 +264,7 @@ export default function ChatPage() {
                 return 'Loading conversations...';
               }
               if (conversations.length === 0) {
-                return 'No conversations yet.Click on "Chat Vendor" to start a new conversation!';
+                return 'No conversations yet.Click on "Chat Vendor" at the product review page to start a new conversation!';
               }
               return 'Select a conversation to start chatting';
             })()}
