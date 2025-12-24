@@ -8,6 +8,7 @@ import {
   Heart,
   Loader2,
   LogOut,
+  Mail,
   Menu,
   Settings,
   ShoppingBag,
@@ -35,6 +36,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { api } from '@/convex/_generated/api';
+import useAuthUser from '@/hooks/useAuthUser';
 import { cn } from '@/lib/utils';
 import Logo from './multipage/Logo';
 import SearchBox from './SearchBox';
@@ -43,8 +45,11 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Button } from './ui/button';
 
 export default function Navbar() {
-  const { isSignedIn, isLoaded, user } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const userStore = useQuery(api.store.getStoresByUserId);
+  const pathname = usePathname();
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const wishlistLength =
@@ -52,11 +57,28 @@ export default function Navbar() {
       type: 'wishlist',
     })?.data?.length || 0;
 
-  const userStore = useQuery(api.store.getStoresByUserId);
+  const { user } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
 
-  const pathname = usePathname();
+  // Fetch unread chat messages count
+  const conversations = useQuery(
+    api.chat.getConversations,
+    user?._id ? { userId: user._id } : 'skip'
+  );
 
-  const [searchOpen, setSearchOpen] = useState(false);
+  // Calculate total unread messages count from all conversations
+  const unreadMessagesCount =
+    conversations?.reduce((total, conversation) => {
+      const userUnreadCount =
+        conversation.unreadCount &&
+        user?._id &&
+        user._id in conversation.unreadCount
+          ? conversation.unreadCount[user._id as string]
+          : 0;
+      return total + userUnreadCount;
+    }, 0) || 0;
+
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
@@ -88,10 +110,7 @@ export default function Navbar() {
                 >
                   <div className="!flex items-center">
                     <Avatar className="mr-2 size-9 cursor-pointer">
-                      <AvatarImage
-                        alt={`${user.firstName} ${user.lastName}`}
-                        src={user.imageUrl}
-                      />
+                      <AvatarImage alt={user?.name} src={user?.imageUrl} />
                       <AvatarFallback>
                         <User className="size-[25px] stroke-[1.5]" />
                       </AvatarFallback>
@@ -106,14 +125,25 @@ export default function Navbar() {
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
                       <p className="font-medium text-sm leading-none">
-                        {user?.firstName} {user?.lastName}
+                        {user?.name}
                       </p>
                       <p className="text-muted-foreground text-xs leading-none">
-                        {user?.emailAddresses[0]?.emailAddress}
+                        {user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link className="flex items-center" href="/chat">
+                      <Mail className="mr-2 size-4" />
+                      Chat
+                      {wishlistLength > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                          {unreadMessagesCount}
+                        </span>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link className="flex items-center" href="/wallet">
                       <Wallet className="mr-2 size-4" />
@@ -181,7 +211,10 @@ export default function Navbar() {
                   Notifications
                 </span>
               </Link>
-              <button className="hover:-translate-y-1 hidden rounded bg-flickmart font-bold text-sm text-white transition-all duration-300 hover:shadow-black/25 hover:shadow-lg lg:block">
+              <button
+                className="hover:-translate-y-1 hidden rounded bg-flickmart font-bold text-sm text-white transition-all duration-300 hover:shadow-black/25 hover:shadow-lg lg:block"
+                type="button"
+              >
                 <Link
                   className="inline-block px-3 py-2"
                   href={userStore?.data ? '/post-ad' : '/create-store'}
@@ -282,6 +315,7 @@ export default function Navbar() {
                                 <button
                                   className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
                                   onClick={() => setOpen(false)}
+                                  type="button"
                                 >
                                   Logout
                                 </button>
@@ -289,7 +323,10 @@ export default function Navbar() {
                             </SignedIn>
                             <SignedOut>
                               <Link href="/sign-in">
-                                <button className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105">
+                                <button
+                                  className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
+                                  type="button"
+                                >
                                   Sign in
                                 </button>
                               </Link>
