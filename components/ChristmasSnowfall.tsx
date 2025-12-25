@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile'; // Import the hook
 
-type ItemType = 'snow' | 'gift' | 'santa';
+type ItemType = 'snow' | 'gift' | 'santa' | 'tree' | 'goat';
 
 interface FallingItem {
   id: number;
@@ -15,17 +16,22 @@ interface FallingItem {
 
 const ChristmasSnowfall = () => {
   const [items, setItems] = useState<FallingItem[]>([]);
+  const isMobile = useIsMobile(); // Use the hook
 
   useEffect(() => {
-    const snowCount = 50;
-    const giftCount = 2; // Reduced frequency
-    const santaCount = 1;
+    const snowCount = 100; // Increased frequency
+    const giftCount = 4;
+    const santaCount = 2;
+    const treeCount = 8;
+    const goatCount = 4;
 
     const createItem = (i: number, type: ItemType): FallingItem => {
-      // Vary delay based on type to spread out the rare items
-      const maxDelay = type === 'snow' ? 5 : type === 'gift' ? 25 : 40;
+      let maxDelay = 5;
+      if (type === 'gift') maxDelay = 25;
+      else if (type === 'santa') maxDelay = 40;
+      else if (type === 'tree') maxDelay = 30;
+      else if (type === 'goat') maxDelay = 45;
       
-      // Even slower speed: Duration between 20s and 35s
       const minDuration = 20;
       const additionalDuration = 15;
 
@@ -34,7 +40,6 @@ const ChristmasSnowfall = () => {
         left: `${Math.random() * 100}vw`,
         animationDuration: `${Math.random() * additionalDuration + minDuration}s`, 
         animationDelay: `${Math.random() * maxDelay}s`,
-        // Reduced opacity for all items
         opacity: type === 'snow' ? Math.random() * 0.5 + 0.5 : 0.7, 
         type,
       };
@@ -58,6 +63,16 @@ const ChristmasSnowfall = () => {
       newItems.push(createItem(idCounter++, 'santa'));
     }
 
+    // Add Trees
+    for (let i = 0; i < treeCount; i++) {
+      newItems.push(createItem(idCounter++, 'tree'));
+    }
+
+    // Add Goats
+    for (let i = 0; i < goatCount; i++) {
+      newItems.push(createItem(idCounter++, 'goat'));
+    }
+
     setItems(newItems);
   }, []);
 
@@ -67,6 +82,10 @@ const ChristmasSnowfall = () => {
         return '🎁';
       case 'santa':
         return '🎅';
+      case 'tree':
+        return '🎄';
+      case 'goat':
+        return '🐐';
       default:
         return '❄';
     }
@@ -75,11 +94,16 @@ const ChristmasSnowfall = () => {
   const getSize = (type: ItemType) => {
     switch (type) {
       case 'gift':
-        return '1.2rem'; // Reduced size
+        return '1.2rem';
       case 'santa':
-        return '1.5rem';   // Smaller size
-      default:
         return '1.5rem';
+      case 'tree':
+        return '1.4rem';
+      case 'goat':
+        return '1.3rem';
+      default:
+        // Adjust snow size based on mobile
+        return isMobile ? '1rem' : '1.5rem'; 
     }
   };
 
@@ -122,7 +146,6 @@ const ChristmasSnowfall = () => {
               animationDelay: item.animationDelay,
               opacity: item.opacity,
               fontSize: getSize(item.type),
-              // Reset color for emojis so they show their native colors
               color: item.type === 'snow' ? 'white' : 'initial',
             }}
           >
