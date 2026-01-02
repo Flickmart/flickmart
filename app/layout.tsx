@@ -8,7 +8,8 @@ import MobileHeader from '@/components/MobileHeader';
 import Loader from '@/components/multipage/Loader';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { Providers } from '@/providers/providers';
-import ChristmasWrapper from '@/components/ChristmasWrapper';
+
+import NewYearBanner from '@/components/NewYearBanner';
 
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
@@ -51,7 +52,6 @@ export default function RootLayout({
     >
       <body className="text relative bg-background">
         <Providers>
-          <ChristmasWrapper />
           <ServiceWorkerRegistration />
 
           <Suspense
@@ -64,6 +64,7 @@ export default function RootLayout({
             <MobileHeader />
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
+          <NewYearBanner />
           <Toaster position="top-right" richColors />
         </Providers>
       </body>
