@@ -9,6 +9,8 @@ import Loader from '@/components/multipage/Loader';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { Providers } from '@/providers/providers';
 
+import NewYearBanner from '@/components/NewYearBanner';
+
 const defaultUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : 'http://localhost:3000';
@@ -62,6 +64,7 @@ export default function RootLayout({
             <MobileHeader />
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
+          <NewYearBanner />
           <Toaster position="top-right" richColors />
         </Providers>
       </body>
