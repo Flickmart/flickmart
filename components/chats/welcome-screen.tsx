@@ -17,7 +17,7 @@ export default function WelcomeScreen({ onOpenSidebar }: WelcomeScreenProps) {
         width={400}
       />
       <Button
-        className="bg-flickmart text-white hover:bg-flickmart-chat-orange md:hidden"
+        className="bg-flickmart text-white hover:bg-flickmart-orange-2 md:hidden"
         onClick={onOpenSidebar}
       >
         Start a conversation

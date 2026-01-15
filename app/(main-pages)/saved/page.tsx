@@ -44,7 +44,7 @@ export default function SavedPage() {
         <button
           className={
             selectedTab
-              ? 'w-full py-5 text-center font-bold text-flickmart-gray'
+              ? 'w-full py-5 text-center font-bold text-flickmart-gray-1'
               : 'w-full py-5 text-center font-bold text-flickmart'
           }
           onClick={toggleAd}
@@ -55,7 +55,7 @@ export default function SavedPage() {
           className={
             selectedTab
               ? 'w-full py-5 text-center font-bold text-flickmart'
-              : 'w-full py-5 text-center font-bold text-flickmart-gray'
+              : 'w-full py-5 text-center font-bold text-flickmart-gray-1'
           }
           onClick={toggleWl}
         >

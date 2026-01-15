@@ -1,4 +1,4 @@
-import type { Config } from 'tailwindcss';
+import type { Config } from "tailwindcss";
 
 const config = {
   darkMode: ["class"],
@@ -27,10 +27,10 @@ const config = {
     extend: {
       colors: {
         flickmart: "#F68B1E",
-        "flickmart-chat-orange": "#FF8100",
+        "flickmart-orange-2": "#FF8100",
         flickmartLight: "#f9b122",
-        "flickmart-gray": "#6C7275",
-        "flickmart-chat-gray": "#E5E3E3C2",
+        "flickmart-gray-1": "#6C7275",
+        "flickmart-gray-2": "#E5E3E3C2",
         "light-orange": "#F7BD54",
         "off-white": "#F0F0F0",
         border: "hsl(var(--border))",

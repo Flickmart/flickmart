@@ -106,7 +106,7 @@ export default function SearchInput({
           </div>
         ) : (
           <CommandInput
-            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray text-sm outline-none sm:text-base"
+            className="w-full rounded-lg py-3 ps-4 text-flickmart-gray-1 text-sm outline-none sm:text-base"
             inputMode="search"
             onBlur={() => {
               setFocus(false);

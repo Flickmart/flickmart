@@ -127,7 +127,7 @@ export default function SignIn() {
                 name="rememberMe"
                 render={({ field }) => (
                   <FormItem className="mt-8 flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-flickmart-gray">
+                    <div className="flex items-center gap-3 text-flickmart-gray-1">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -174,7 +174,7 @@ export default function SignIn() {
               </div>
             </form>
           </Form>
-          <p className="text-center font-light text-flickmart-gray">
+          <p className="text-center font-light text-flickmart-gray-1">
             Don't have an account yet?{' '}
             <Link
               className="font-medium text-flickmart capitalize hover:underline"

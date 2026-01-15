@@ -141,7 +141,7 @@ export default function ChatSidebar({
           <div className="relative">
             <Search className="-translate-y-1/2 absolute top-1/2 left-3 h-4 w-4 transform text-gray-400" />
             <Input
-              className="py- rounded-lg bg-flickmart-chat-gray pl-9"
+              className="py- rounded-lg bg-flickmart-gray-2 pl-9"
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search chats"
               ref={searchInputRef}
@@ -154,7 +154,7 @@ export default function ChatSidebar({
         <div className="mt-1 flex items-center space-x-3 px-3">
           <button
             className={cn(
-              'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+              'rounded-3xl bg-flickmart-gray-2 px-4 py-1 font-medium text-sm',
               activeFilter === 'all'
                 ? 'border bg-[#FF810054] text-[#FF8100]'
                 : 'text-gray-500 hover:text-[#FF8100]'
@@ -165,7 +165,7 @@ export default function ChatSidebar({
           </button>
           <button
             className={cn(
-              'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+              'rounded-3xl bg-flickmart-gray-2 px-4 py-1 font-medium text-sm',
               activeFilter === 'unread'
                 ? 'border bg-[#FF810054] text-[#FF8100]'
                 : 'text-gray-500 hover:text-[#FF8100]'
@@ -177,7 +177,7 @@ export default function ChatSidebar({
           </button>
           <button
             className={cn(
-              'rounded-3xl bg-flickmart-chat-gray px-4 py-1 font-medium text-sm',
+              'rounded-3xl bg-flickmart-gray-2 px-4 py-1 font-medium text-sm',
               activeFilter === 'archived'
                 ? 'border bg-[#FF810054] text-[#FF8100]'
                 : 'text-gray-500 hover:text-[#FF8100]'

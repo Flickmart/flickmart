@@ -68,7 +68,7 @@ export default function MobileNav() {
           href="/"
         >
           <House
-            className={`${pathname === '/' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === '/' ? 'text-flickmart' : 'text-flickmart-gray-1'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
             className={`${pathname === '/' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
@@ -81,7 +81,7 @@ export default function MobileNav() {
           href="/saved"
         >
           <Bookmark
-            className={`${pathname === '/saved' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === '/saved' ? 'text-flickmart' : 'text-flickmart-gray-1'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
             className={`${pathname === '/saved' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}
@@ -127,7 +127,7 @@ export default function MobileNav() {
         >
           <div className="relative">
             <MessageSquareText
-              className={`${pathname.startsWith('/chat') ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+              className={`${pathname.startsWith('/chat') ? 'text-flickmart' : 'text-flickmart-gray-1'} h-5 w-5 duration-500 group-hover:text-flickmart`}
             />
             {unreadMessagesCount > 0 && (
               <span className="-top-2 -right-2 absolute flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-white text-xs">
@@ -146,7 +146,7 @@ export default function MobileNav() {
           href="/settings/personal"
         >
           <UserRound
-            className={`${pathname === '/settings/personal' ? 'text-flickmart' : 'text-flickmart-gray'} h-5 w-5 duration-500 group-hover:text-flickmart`}
+            className={`${pathname === '/settings/personal' ? 'text-flickmart' : 'text-flickmart-gray-1'} h-5 w-5 duration-500 group-hover:text-flickmart`}
           />
           <span
             className={`${pathname === '/settings/personal' ? 'text-flickmart' : ''} duration-500 group-hover:text-flickmart`}

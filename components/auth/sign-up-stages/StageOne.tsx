@@ -160,7 +160,7 @@ export default function StageOne({
                 name="agreeWithPrivacyPolicyAndTermsOfUse"
                 render={({ field }) => (
                   <FormItem className="mt-8">
-                    <div className="flex items-center gap-3 text-flickmart-gray">
+                    <div className="flex items-center gap-3 text-flickmart-gray-1">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
@@ -168,7 +168,7 @@ export default function StageOne({
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormLabel className="!m-0 font-light text-flickmart-gray text-xs">
+                      <FormLabel className="!m-0 font-light text-flickmart-gray-1 text-xs">
                         I agree with{' '}
                         <Link
                           className="font-semibold text-flickmart hover:underline"
@@ -221,7 +221,7 @@ export default function StageOne({
               </div>
             </form>
           </Form>
-          <p className="text-center font-light text-flickmart-gray">
+          <p className="text-center font-light text-flickmart-gray-1">
             Already have an account?{' '}
             <Link
               className="font-medium text-flickmart capitalize hover:underline"

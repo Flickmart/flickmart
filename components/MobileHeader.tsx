@@ -62,7 +62,7 @@ const MobileHeader = ({ rightSlot }: MobileHeaderProps) => {
       )}
     >
       <button
-        className="flex items-center text-flickmart-gray text-sm capitalize transition-colors duration-300 hover:text-flickmart"
+        className="flex items-center text-flickmart-gray-1 text-sm capitalize transition-colors duration-300 hover:text-flickmart"
         onClick={() =>
           pathname.includes('/categories') ||
           pathname.includes('/post-ad') ||

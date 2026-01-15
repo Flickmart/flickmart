@@ -122,7 +122,7 @@ export default function ChatHeader({
               ) : (
                 <div className="flex items-center">
                   {isOnline ? (
-                    <p className="truncate text-flickmart-chat-orange text-sm">
+                    <p className="truncate text-flickmart-orange-2 text-sm">
                       online
                     </p>
                   ) : (

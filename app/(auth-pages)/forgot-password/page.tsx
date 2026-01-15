@@ -39,7 +39,7 @@ export default function ForgotPassword() {
             Authentication has been removed. You will be redirected to the home
             page automatically.
           </div>
-          <p className="mt-8 text-flickmart-gray">
+          <p className="mt-8 text-flickmart-gray-1">
             Enter your email to reset password.
           </p>
         </div>

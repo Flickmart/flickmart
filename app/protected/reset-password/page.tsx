@@ -74,7 +74,7 @@ export default function ResetPassword() {
                 Authentication has been removed. You will be redirected to the
                 home page automatically.
               </div>
-              <p className="text-flickmart-gray text-sm">
+              <p className="text-flickmart-gray-1 text-sm">
                 Password must be different from the last one
               </p>
             </div>

@@ -39,7 +39,7 @@ const CustomInput = ({
                   {...field}
                 />
                 <button
-                  className="border-b-2 text-flickmart-gray transition duration-300 hover:text-flickmart peer-focus-visible:border-flickmart"
+                  className="border-b-2 text-flickmart-gray-1 transition duration-300 hover:text-flickmart peer-focus-visible:border-flickmart"
                   onClick={() => {
                     setShowPassword(!showPassword);
                   }}

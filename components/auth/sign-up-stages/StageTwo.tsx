@@ -119,7 +119,7 @@ const StageTwo = ({
           <h1 className="mt-14 mb-3 text-[26px] sm:text-4xl lg:mt-0 lg:text-[44px]">
             Verify your email address
           </h1>
-          <p className="mb-20 text-flickmart-gray text-sm lg:text-base">
+          <p className="mb-20 text-flickmart-gray-1 text-sm lg:text-base">
             We sent a verification code to{' '}
             <span className="font-medium text-flickmart">{email}</span>
           </p>

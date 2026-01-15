@@ -122,7 +122,7 @@
     @apply border-0 border-b-2 rounded-none px-0 py-6 transition-all duration-300 focus-visible:border-b-flickmart;
   }
   .auth-input::placeholder {
-    @apply text-base text-flickmart-gray;
+    @apply text-base text-flickmart-gray-1;
   }
   .container-px {
     @apply px-5;

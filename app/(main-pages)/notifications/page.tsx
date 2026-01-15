@@ -332,7 +332,7 @@ const Page = () => {
         <div className="flex gap-2">
           <button
             className={
-              activeTab === 'all' ? 'text-flickmart' : 'text-flickmart-gray'
+              activeTab === 'all' ? 'text-flickmart' : 'text-flickmart-gray-1'
             }
             onClick={() => setActiveTab('all')}
             type="button"
@@ -341,7 +341,7 @@ const Page = () => {
           </button>
           <button
             className={
-              activeTab === 'unread' ? 'text-flickmart' : 'text-flickmart-gray'
+              activeTab === 'unread' ? 'text-flickmart' : 'text-flickmart-gray-1'
             }
             onClick={() => setActiveTab('unread')}
             type="button"

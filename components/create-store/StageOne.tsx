@@ -19,7 +19,7 @@ const StageOne = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       <h2 className="mb-3 font-medium text-2xl capitalize md:text-4xl">
         Create your store
       </h2>
-      <p className="font-light text-flickmart-gray text-sm md:text-base">
+      <p className="font-light text-flickmart-gray-1 text-sm md:text-base">
         Read our{' '}
         <Link className="font-medium text-flickmart" href="/privacy-policy">
           Privacy Policy

@@ -23,7 +23,7 @@ const NavigationBar = () => {
     >
       <div className="mx-auto w-[98%]">
         <button
-          className="flex items-center font-light text-flickmart-gray text-sm capitalize transition-colors duration-300 hover:text-flickmart"
+          className="flex items-center font-light text-flickmart-gray-1 text-sm capitalize transition-colors duration-300 hover:text-flickmart"
           onClick={() => router.back()}
         >
           <ChevronLeft size={35} strokeWidth={1.5} />

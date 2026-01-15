@@ -146,7 +146,7 @@ export default function DetailedCategoryPage() {
       >
         <SidebarHeader>
           <div className="flex items-center justify-between px-2 pt-5">
-            <h2 className="font-semibold text-flickmart-chat-orange">
+            <h2 className="font-semibold text-flickmart-orange-2">
               Subcategories
             </h2>
             {isMobile && <SidebarTrigger />}
@@ -167,7 +167,7 @@ export default function DetailedCategoryPage() {
                 />
               ))}
               {/* <div className="w-full flex justify-end text-[12px]">
-                  <Link href={"#"} className="text-flickmart-chat-orange mt-2">
+                  <Link href={"#"} className="text-flickmart-orange-2 mt-2">
                     Show More
                   </Link>
                 </div> */}
@@ -211,7 +211,7 @@ export default function DetailedCategoryPage() {
                 <div className="flex w-5/12 flex-col items-start">
                   <Label className="text-[10px] text-gray-700">Min</Label>
                   <Input
-                    className="w-full border border-flickmart-chat-orange p-2"
+                    className="w-full border border-flickmart-orange-2 p-2"
                     onChange={(e) =>
                       dispatch({ type: 'min', payload: +e.target.value })
                     }
@@ -222,7 +222,7 @@ export default function DetailedCategoryPage() {
                 <div className="flex w-5/12 flex-col items-start">
                   <Label className="text-[10px] text-gray-700">Max</Label>
                   <Input
-                    className="w-full border border-flickmart-chat-orange p-2"
+                    className="w-full border border-flickmart-orange-2 p-2"
                     onChange={(e) =>
                       dispatch({ type: 'max', payload: +e.target.value })
                     }
@@ -291,7 +291,7 @@ export default function DetailedCategoryPage() {
           </h3>
           {/* <div className="flex gap-2">
                 <button>
-                  <LayoutGrid className="text-flickmart-chat-orange h-5 w-5" />
+                  <LayoutGrid className="text-flickmart-orange-2 h-5 w-5" />
                 </button>
                 <button>
                   <LayoutPanelLeft className="text-gray-500 h-5 w-5" />
@@ -326,7 +326,7 @@ export default function DetailedCategoryPage() {
                           </div>
                           <div className="mt-1 p-2 tracking-tight">
                             <h2 className="font-semibold">{product.title}</h2>
-                            <span className="mt-1 font-semibold text-[12px] text-flickmart-chat-orange">
+                            <span className="mt-1 font-semibold text-[12px] text-flickmart-orange-2">
                               &#8358;{product.price.toLocaleString()}
                             </span>
                           </div>

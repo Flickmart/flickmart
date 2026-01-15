@@ -114,7 +114,7 @@ export default function Contact() {
               width={1000}
             />
           </div>
-          <div className="w-full bg-flickmart-chat-orange py-4 text-center text-white">
+          <div className="w-full bg-flickmart-orange-2 py-4 text-center text-white">
             <h1 className="font-bold text-2xl">For further inquiries</h1>
           </div>
           <div className="flex w-full flex-col">
@@ -137,7 +137,7 @@ export default function Contact() {
                   with us and get instant support.{' '}
                 </p>
                 <Link
-                  className="mt-4 inline-block w-full rounded-md bg-flickmart-chat-orange px-4 py-3 font-medium text-sm text-white"
+                  className="mt-4 inline-block w-full rounded-md bg-flickmart-orange-2 px-4 py-3 font-medium text-sm text-white"
                   href={
                     'https://chat.whatsapp.com/ENMHsidxkfgBCyckFkKluD?mode=ems_copy_c'
                   }
@@ -162,7 +162,7 @@ export default function Contact() {
                   with any questions you have.{' '}
                 </p>
                 <Link
-                  className="mt-5 inline-block w-full rounded-md bg-flickmart-chat-orange px-4 py-3 font-medium text-sm text-white"
+                  className="mt-5 inline-block w-full rounded-md bg-flickmart-orange-2 px-4 py-3 font-medium text-sm text-white"
                   href={'tel:phonenumber'}
                   target="_blank"
                 >

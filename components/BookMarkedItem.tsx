@@ -57,7 +57,7 @@ export default function BookedMarkedItem({
             {product?.title}
           </h1>
           <div
-            className="relative rounded-full p-1.5 text-flickmart-chat-orange transition-colors duration-300 hover:bg-orange-100"
+            className="relative rounded-full p-1.5 text-flickmart-orange-2 transition-colors duration-300 hover:bg-orange-100"
             onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
@@ -100,7 +100,7 @@ export default function BookedMarkedItem({
           </span>
         </div>
 
-        <div className="flex items-center gap-1 text-[10px] text-flickmart-gray lg:text-base">
+        <div className="flex items-center gap-1 text-[10px] text-flickmart-gray-1 lg:text-base">
           <MapPin className="size-4" />
           <span>{product?.location}</span>
         </div>

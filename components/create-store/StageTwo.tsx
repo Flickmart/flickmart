@@ -113,7 +113,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
         <h2 className="mb-1 font-medium text-3xl capitalize md:text-4xl">
           Create store
         </h2>
-        <p className="mb-8 font-light text-flickmart-gray text-sm md:text-base">
+        <p className="mb-8 font-light text-flickmart-gray-1 text-sm md:text-base">
           Fill in the form to create your store
         </p>
         <section className="space-y-2 text-left">
