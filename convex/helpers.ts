@@ -1,0 +1,21 @@
+'use node';
+import crypto from 'node:crypto';
+import { v } from 'convex/values';
+import { internalAction } from './_generated/server';
+
+export const signRecombeeUri = internalAction({
+  args: { uri: v.string() },
+  handler: async (_ctx, args) => {
+    const timestamp = Math.floor(Date.now() / 1000); // UTC unix seconds
+    const secret = process.env.RECOMBEE_PRIVATE_TOKEN as string;
+
+    const message = `${args.uri}&hmac_timestamp=${timestamp}`;
+
+    const hmac_sign = crypto
+      .createHmac('sha1', secret) // recombee uses sha1 by default
+      .update(message)
+      .digest('hex');
+
+    return { hmac_timestamp: timestamp, hmac_sign };
+  },
+});

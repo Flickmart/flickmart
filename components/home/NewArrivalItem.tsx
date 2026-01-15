@@ -1,18 +1,19 @@
-import { useQuery } from "convex/react";
-import Image from "next/image";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { MapPin } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQuery } from 'convex/react';
+import { MapPin } from 'lucide-react';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 
 type NewArrivalsProp = {
   image: string;
   name: string;
   price: number;
-  productId: Id<"product">;
+  productId: Id<'product'>;
   location?: string;
   likes?: number;
   views?: number;
+  rating?: number;
 };
 
 export default function NewArrivalItem({
@@ -23,10 +24,11 @@ export default function NewArrivalItem({
   location,
   likes,
   views,
+  rating,
 }: NewArrivalsProp) {
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
-    type: "saved",
+    type: 'saved',
   });
   if (saved?.error && saved.data === null) {
     console.log(saved.error.message);
@@ -39,15 +41,15 @@ export default function NewArrivalItem({
 
   const userEngagements = [
     {
-      engagementName: "Like",
+      engagementName: 'Like',
       engagement: likes || 0,
     },
     {
-      engagementName: "Comment",
+      engagementName: 'Comment',
       engagement: comments?.length || 0,
     },
     {
-      engagementName: "View",
+      engagementName: 'View',
       engagement: views || 0,
     },
   ];
@@ -65,7 +67,7 @@ export default function NewArrivalItem({
   });
 
   return (
-    <div className="relative flex w-60 flex-grow flex-col justify-between sm:w-72 overflow-hidden">
+    <div className="relative flex w-60 flex-grow flex-col justify-between overflow-hidden sm:w-72">
       <span className="absolute top-3 left-3 rounded-sm bg-white px-3 py-1 font-bold text-black uppercase shadow-md">
         new
       </span>
@@ -75,37 +77,37 @@ export default function NewArrivalItem({
             alt={name}
             className="size-full object-cover"
             height={500}
-            src={image || "/no-image.png"}
+            src={image || '/no-image.png'}
             width={500}
           />
         </div>
-        <div className="pt-2 pb-3 flex flex-col gap-1">
-          <div className="flex capitalize gap-1 items-center text-sm font-medium text-gray-700">
+        <div className="flex flex-col gap-1 pt-2 pb-3">
+          <div className="flex items-center gap-1 font-medium text-gray-700 text-sm capitalize">
             <MapPin className="size-4 text-red-500" />
             {location}
           </div>
           <span className="font-semibold">{name}</span>
-          <div className="flex justify-between items-center text-sm relative">
-            <span className="text-flickmart font-semibold">
+          <div className="relative flex items-center justify-between text-sm">
+            <span className="font-semibold text-flickmart">
               &#8358;{price?.toLocaleString()}
             </span>
             <div className="flex flex-col items-end gap-1">
               {userEngagements.map(({ engagementName, engagement }, index) => {
                 if (engagement !== 1) {
-                  engagementName += "s";
+                  engagementName += 's';
                 }
-                let position = "";
+                let position = '';
                 if (currentIndex > index) {
-                  position = "-translate-y-full opacity-0";
+                  position = '-translate-y-full opacity-0';
                 } else if (currentIndex < index) {
-                  position = "translate-y-full opacity-0";
+                  position = 'translate-y-full opacity-0';
                 } else {
-                  position = "translate-y-0";
+                  position = 'translate-y-0';
                 }
                 return (
                   <div
+                    className={`custom-transition absolute top-0 flex gap-1 font-semibold text-[#A8A8A8] ${position}`}
                     key={engagementName}
-                    className={`text-[#A8A8A8] flex gap-1 font-semibold absolute top-0 custom-transition ${position}`}
                   >
                     <span>{engagement}</span> <span>{engagementName}</span>
                   </div>

@@ -23,7 +23,6 @@ const withPWA = require('next-pwa')({
 
 const baseConfig = {
   reactStrictMode: true,
-  serverComponentsExternalPackages: ["require-in-the-middle"],
   images: {
     remotePatterns: [
       {
@@ -39,22 +38,22 @@ const baseConfig = {
         pathname: "/**",
       },
       {
-        protocol: "https",
-        hostname: "utfs.io",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'utfs.io',
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "6xxtyvziev.ufs.sh",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: '6xxtyvziev.ufs.sh',
+        port: '',
+        pathname: '/**',
       },
       {
-        protocol: "https",
-        hostname: "placehold.co",
-        port: "",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
       },
     ],
   },

@@ -14,14 +14,17 @@ import type * as categories from "../categories.js";
 import type * as chat from "../chat.js";
 import type * as comments from "../comments.js";
 import type * as email from "../email.js";
+import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as interactions from "../interactions.js";
 import type * as internal_ from "../internal.js";
 import type * as notifications from "../notifications.js";
 import type * as orders from "../orders.js";
+import type * as populate from "../populate.js";
 import type * as presence from "../presence.js";
 import type * as product from "../product.js";
 import type * as pushNotifications from "../pushNotifications.js";
+import type * as recommend from "../recommend.js";
 import type * as search from "../search.js";
 import type * as store from "../store.js";
 import type * as transactions from "../transactions.js";
@@ -35,14 +38,6 @@ import type {
   FunctionReference,
 } from "convex/server";
 
-/**
- * A utility for referencing Convex functions in your app's API.
- *
- * Usage:
- * ```js
- * const myFunctionReference = api.myModule.myFunction;
- * ```
- */
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   bankAccounts: typeof bankAccounts;
@@ -50,14 +45,17 @@ declare const fullApi: ApiFromModules<{
   chat: typeof chat;
   comments: typeof comments;
   email: typeof email;
+  helpers: typeof helpers;
   http: typeof http;
   interactions: typeof interactions;
   internal: typeof internal_;
   notifications: typeof notifications;
   orders: typeof orders;
+  populate: typeof populate;
   presence: typeof presence;
   product: typeof product;
   pushNotifications: typeof pushNotifications;
+  recommend: typeof recommend;
   search: typeof search;
   store: typeof store;
   transactions: typeof transactions;
@@ -65,14 +63,30 @@ declare const fullApi: ApiFromModules<{
   views: typeof views;
   wallet: typeof wallet;
 }>;
-declare const fullApiWithMounts: typeof fullApi;
 
+/**
+ * A utility for referencing Convex functions in your app's public API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = api.myModule.myFunction;
+ * ```
+ */
 export declare const api: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "public">
 >;
+
+/**
+ * A utility for referencing Convex functions in your app's internal API.
+ *
+ * Usage:
+ * ```js
+ * const myFunctionReference = internal.myModule.myFunction;
+ * ```
+ */
 export declare const internal: FilterApi<
-  typeof fullApiWithMounts,
+  typeof fullApi,
   FunctionReference<any, "internal">
 >;
 
@@ -85,7 +99,60 @@ export declare const components: {
         { emailId: string },
         null
       >;
-      get: FunctionReference<"query", "internal", { emailId: string }, any>;
+      cleanupAbandonedEmails: FunctionReference<
+        "mutation",
+        "internal",
+        { olderThan?: number },
+        null
+      >;
+      cleanupOldEmails: FunctionReference<
+        "mutation",
+        "internal",
+        { olderThan?: number },
+        null
+      >;
+      createManualEmail: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          from: string;
+          headers?: Array<{ name: string; value: string }>;
+          replyTo?: Array<string>;
+          subject: string;
+          to: string;
+        },
+        string
+      >;
+      get: FunctionReference<
+        "query",
+        "internal",
+        { emailId: string },
+        {
+          complained: boolean;
+          createdAt: number;
+          errorMessage?: string;
+          finalizedAt: number;
+          from: string;
+          headers?: Array<{ name: string; value: string }>;
+          html?: string;
+          opened: boolean;
+          replyTo: Array<string>;
+          resendId?: string;
+          segment: number;
+          status:
+            | "waiting"
+            | "queued"
+            | "cancelled"
+            | "sent"
+            | "delivered"
+            | "delivery_delayed"
+            | "bounced"
+            | "failed";
+          subject: string;
+          text?: string;
+          to: string;
+        } | null
+      >;
       getStatus: FunctionReference<
         "query",
         "internal",
@@ -101,8 +168,9 @@ export declare const components: {
             | "sent"
             | "delivered"
             | "delivery_delayed"
-            | "bounced";
-        }
+            | "bounced"
+            | "failed";
+        } | null
       >;
       handleEmailEvent: FunctionReference<
         "mutation",
@@ -130,6 +198,25 @@ export declare const components: {
           to: string;
         },
         string
+      >;
+      updateManualEmail: FunctionReference<
+        "mutation",
+        "internal",
+        {
+          emailId: string;
+          errorMessage?: string;
+          resendId?: string;
+          status:
+            | "waiting"
+            | "queued"
+            | "cancelled"
+            | "sent"
+            | "delivered"
+            | "delivery_delayed"
+            | "bounced"
+            | "failed";
+        },
+        null
       >;
     };
   };

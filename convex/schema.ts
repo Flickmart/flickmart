@@ -17,6 +17,9 @@ export default defineSchema({
     username: v.optional(v.string()),
     description: v.optional(v.string()),
     verified: v.optional(v.boolean()),
+    verifiedAt: v.optional(v.number()),
+    lastWeeklyProductCount: v.optional(v.number()), // Products posted in current week
+    weekStartTimestamp: v.optional(v.number()), // Start of current tracking week
     contact: v.optional(
       v.object({
         phone: v.optional(v.string()),
@@ -410,4 +413,11 @@ export default defineSchema({
     .index('by_user', ['userId'])
     .index('by_endpoint', ['endpoint'])
     .index('by_user_endpoint', ['userId', 'endpoint']),
+
+  recommCache: defineTable({
+    userId: v.id('users'),
+    scenario: v.string(),
+    data: v.any(),
+    updatedAt: v.number(),
+  }).index('by_user', ['userId', 'scenario']),
 });

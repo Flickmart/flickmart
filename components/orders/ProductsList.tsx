@@ -1,20 +1,20 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import type { Id } from "@/convex/_generated/dataModel";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import type { Id } from '@/convex/_generated/dataModel';
 
 // TypeScript interfaces
 type Product = {
-  _id: Id<"product">;
+  _id: Id<'product'>;
   title: string;
   description: string;
   images: string[];
   price: number;
   category: string;
-  condition: "brand new" | "used";
+  condition: 'brand new' | 'used';
 };
 
 type ProductsListProps = {
@@ -218,7 +218,7 @@ export const ProductsList = ({
     <Card>
       <CardHeader className="px-4 py-4 sm:px-6 sm:py-6">
         <CardTitle className="text-base sm:text-lg">
-          Products ({products.length} item{products.length !== 1 ? "s" : ""})
+          Products ({products.length} item{products.length !== 1 ? 's' : ''})
         </CardTitle>
       </CardHeader>
       <CardContent className="px-4 pb-4 sm:px-6 sm:pb-6">

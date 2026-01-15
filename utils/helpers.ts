@@ -1,3 +1,4 @@
+import type { RecommendationResponse } from 'recombee-api-client';
 import { toast } from 'sonner';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
 
@@ -55,4 +56,45 @@ export async function shareProduct({
   } catch (err) {
     console.log(err);
   }
+}
+
+export async function fetchRecommendations(
+  scenario: string,
+  recommendations: ({
+    queryStrings,
+  }: {
+    queryStrings: string;
+  }) => Promise<RecommendationResponse | null>,
+  count?: number
+) {
+  const baseQuery =
+    '&returnProperties=true' +
+    '&includedProperties=likes,views,title,location,image,price,timestamp' +
+    '&cascadeCreate=true' +
+    `&count=${count || 10}` +
+    `&scenario=${scenario}`;
+
+  // 1. Try to get items from the last 10 days
+  const tenDaysInSeconds = 10 * 24 * 3600;
+  const filter = `'timestamp' > now() - ${tenDaysInSeconds}`;
+  const filteredQuery = `?filter=${encodeURIComponent(filter)}${baseQuery}`;
+  let results: RecommendationResponse | null = null;
+
+  if (scenario === 'New-Arrivals') {
+    results = await recommendations({ queryStrings: filteredQuery });
+  }
+
+  // 2. If no recent items, fetch default recommendations (fallback)
+  if ((results && results.recomms.length === 0) || !results) {
+    console.log(
+      results
+        ? 'No recent items found, falling back to default recommendations.'
+        : 'Another Scenario in use'
+    );
+
+    const defaultQuery = `?${baseQuery}`;
+    results = await recommendations({ queryStrings: defaultQuery });
+  }
+
+  return results;
 }

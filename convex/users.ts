@@ -2,6 +2,7 @@ import type { UserJSON } from '@clerk/backend';
 import { type Validator, v } from 'convex/values';
 import {
   internalMutation,
+  internalQuery,
   mutation,
   type QueryCtx,
   query,
@@ -14,6 +15,23 @@ export const current = query({
       return await ctx.db.get(args.userId);
     }
     return await getCurrentUser(ctx);
+  },
+});
+
+export const getUserId = internalQuery({
+  handler: async (ctx) => {
+    const user = await getCurrentUserOrThrow(ctx);
+
+    // if (!user) {
+    //   return null;
+    // }
+    return user?._id;
+  },
+});
+
+export const getAllUsers = query({
+  handler: async (ctx) => {
+    return await ctx.db.query('users').collect();
   },
 });
 
@@ -196,5 +214,69 @@ export const getById = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId);
     return user;
+  },
+});
+
+// Check if a user is verified
+export const isUserVerified = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    return user?.verified === true;
+  },
+});
+
+// One week in milliseconds
+// biome-ignore lint/style/noMagicNumbers: <Well described>
+const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
+
+// Update weekly product count for a user (called when posting a product)
+export const updateWeeklyProductCount = internalMutation({
+  args: { userId: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId);
+    if (!user) {
+      return;
+    }
+
+    const now = Date.now();
+
+    // Check if we need to reset the weekly count (new week started)
+    const weekStart = user.weekStartTimestamp ?? 0;
+    const isNewWeek = now - weekStart > ONE_WEEK_MS;
+
+    if (isNewWeek) {
+      // Reset counter for new week
+      await ctx.db.patch(args.userId, {
+        lastWeeklyProductCount: 1,
+        weekStartTimestamp: now,
+      });
+    } else {
+      // Increment counter
+      await ctx.db.patch(args.userId, {
+        lastWeeklyProductCount: (user.lastWeeklyProductCount ?? 0) + 1,
+      });
+    }
+  },
+});
+
+// Get weekly product count for current user
+export const getWeeklyProductCount = query({
+  args: {},
+  handler: async (ctx) => {
+    const user = await getCurrentUser(ctx);
+    if (!user) {
+      return 0;
+    }
+
+    const now = Date.now();
+    const weekStart = user.weekStartTimestamp ?? 0;
+
+    // If week has expired, count is 0
+    if (now - weekStart > ONE_WEEK_MS) {
+      return 0;
+    }
+
+    return user.lastWeeklyProductCount ?? 0;
   },
 });

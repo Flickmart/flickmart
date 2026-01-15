@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from 'convex/react';
 import { ArrowLeft, X } from 'lucide-react';
 import { motion } from 'motion/react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { api } from '@/convex/_generated/api';
@@ -17,13 +18,18 @@ export default function SearchOverlay({
   open: boolean;
   openSearch: (val: boolean) => void;
 }) {
-  const [autoSuggest, setAutoSuggest] = useState<string[]>([]);
+  const [autoSuggest, setAutoSuggest] = useState<
+    { title: string; image: string }[]
+  >([]);
   const [searchValue, setSearchValue] = useState<string>('');
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const router = useRouter();
   const focusRef = useRef<HTMLInputElement>(null);
-  function updateAutoSuggest(values: string[], search: string) {
+  function updateAutoSuggest(
+    values: { title: string; image: string }[],
+    search: string
+  ) {
     setAutoSuggest(values);
     setSearchValue(search);
   }
@@ -46,7 +52,7 @@ export default function SearchOverlay({
       {open && (
         <motion.div
           animate={{ y: 0, x: 0 }}
-          className="fixed inset-0 z-40 flex min-h-screen flex-col bg-white py-3"
+          className="fixed inset-0 z-50 flex min-h-screen flex-col overflow-x-auto bg-white py-3"
           initial={{ y: '100%', x: '-100%' }}
           transition={{
             duration: 0.2,
@@ -54,7 +60,7 @@ export default function SearchOverlay({
             ease: 'easeInOut',
           }}
         >
-          <div className="flex items-center justify-between gap-3 px-3 py-3 text-gray-600 shadow-md">
+          <div className="fixed top-0 flex w-full items-center justify-between gap-3 bg-white px-3 py-5 pr-7 text-gray-600 shadow-md">
             <ArrowLeft onClick={() => openSearch(false)} />
             <div className="flex-grow rounded-lg bg-gray-100">
               <SearchInput
@@ -67,8 +73,8 @@ export default function SearchOverlay({
             </div>
           </div>
           {autoSuggest?.length === 0 || !searchValue ? (
-            <div className="flex-grow pt-3">
-              <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
+            <div className="flex-grow pt-20">
+              <p className="px-4 py-2 font-medium text-gray-500 text-xs capitalize">
                 {(retrievePreviousInputs?.data?.length ?? 0) > 0
                   ? 'recent searches'
                   : 'no recent searches'}
@@ -76,7 +82,7 @@ export default function SearchOverlay({
               {retrievePreviousInputs?.data?.map((item) => {
                 return (
                   <div
-                    className="flex cursor-pointer items-center justify-between px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
+                    className="flex cursor-pointer items-center justify-between px-4 py-1 pl-5 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                     key={item._id}
                   >
                     <p
@@ -104,21 +110,28 @@ export default function SearchOverlay({
               })}
             </div>
           ) : (
-            <div className="flex-grow pt-3">
+            <div className="flex-grow pt-16">
               <p className="px-4 py-4 font-medium text-gray-500 text-xs capitalize">
                 {autoSuggest?.length > 0 && 'suggestions'}
               </p>
               {autoSuggest?.map((item, index) => (
-                <p
-                  className="px-4 py-4 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
+                <div
+                  className="flex items-center gap-3 px-4 py-2.5 font-medium text-sm capitalize transition-all duration-700 ease-in-out hover:bg-gray-100"
                   key={index}
                   onClick={() => {
-                    router.push(`/search?query=${item}`);
+                    router.push(`/search?query=${item.title}`);
                     openSearch(false);
                   }}
                 >
-                  {item}
-                </p>
+                  <Image
+                    alt={item.title}
+                    className="h-7 w-11"
+                    height={100}
+                    src={item.image}
+                    width={100}
+                  />
+                  <span>{item.title}</span>
+                </div>
               ))}
             </div>
           )}

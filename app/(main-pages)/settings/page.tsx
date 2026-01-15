@@ -12,8 +12,10 @@ import {
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import * as React from 'react';
+// import { AddDemoProductsButton } from '@/components/settings/AddDemoProductsButton';
 import { SearchForm } from '@/components/settings/search-form';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+
 import { useSidebar } from '@/components/ui/sidebar';
 import { api } from '@/convex/_generated/api';
 
@@ -177,6 +179,14 @@ export default function SettingsPage() {
             </div>
           </div>
         ))}
+
+        {/* Developer Tools Section */}
+        <div className="space-y-2">
+          <h2 className="font-medium text-gray-600 text-sm">Developer Tools</h2>
+          {/* <div>
+            <AddDemoProductsButton />
+          </div> */}
+        </div>
       </div>
     </div>
   );

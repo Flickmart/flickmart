@@ -4,11 +4,12 @@ import { SignedIn, SignedOut, SignOutButton, useUser } from '@clerk/nextjs';
 import { useQuery } from 'convex/react';
 import {
   Bell,
+  ChevronDown,
   Heart,
   Loader2,
   LogOut,
+  Mail,
   Menu,
-  MessageSquareText,
   Settings,
   ShoppingBag,
   Store,
@@ -18,7 +19,6 @@ import {
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type React from 'react';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -34,19 +34,22 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "@/components/ui/sheet";
-import { api } from "@/convex/_generated/api";
-import { cn } from "@/lib/utils";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Button } from "./ui/button";
-import Logo from "./multipage/Logo";
-import SearchBox from "./SearchBox";
-import SearchOverlay from "./SearchOverlay";
-import { ChevronDown } from 'lucide-react';
+} from '@/components/ui/sheet';
+import { api } from '@/convex/_generated/api';
+import useAuthUser from '@/hooks/useAuthUser';
+import { cn } from '@/lib/utils';
+import Logo from './multipage/Logo';
+import SearchBox from './SearchBox';
+import SearchOverlay from './SearchOverlay';
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import { Button } from './ui/button';
 
 export default function Navbar() {
-  const { isSignedIn, isLoaded, user } = useUser();
+  const { isSignedIn, isLoaded } = useUser();
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const userStore = useQuery(api.store.getStoresByUserId);
+  const pathname = usePathname();
   const unreadNotifications =
     useQuery(api.notifications.getUnreadNotifications) || [];
   const wishlistLength =
@@ -54,11 +57,28 @@ export default function Navbar() {
       type: 'wishlist',
     })?.data?.length || 0;
 
-  const userStore = useQuery(api.store.getStoresByUserId);
+  const { user } = useAuthUser({
+    redirectOnUnauthenticated: false,
+  });
 
-  const pathname = usePathname();
+  // Fetch unread chat messages count
+  const conversations = useQuery(
+    api.chat.getConversations,
+    user?._id ? { userId: user._id } : 'skip'
+  );
 
-  const [searchOpen, setSearchOpen] = useState(false);
+  // Calculate total unread messages count from all conversations
+  const unreadMessagesCount =
+    conversations?.reduce((total, conversation) => {
+      const userUnreadCount =
+        conversation.unreadCount &&
+        user?._id &&
+        user._id in conversation.unreadCount
+          ? conversation.unreadCount[user._id as string]
+          : 0;
+      return total + userUnreadCount;
+    }, 0) || 0;
+
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
@@ -66,57 +86,64 @@ export default function Navbar() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-30 w-full section-px bg-white py-2 lg:py-1",
+        'section-px sticky top-0 z-30 w-full bg-white py-2 lg:py-1',
         {
-          "hidden sm:block": pathname !== "/",
+          'hidden sm:block': pathname !== '/',
         }
       )}
     >
       <div className="flex items-center justify-between">
-        <Link className="flex items-center gap-1" href={"/"}>
+        <Link className="flex items-center gap-1" href={'/'}>
           <Logo />
         </Link>
-          <div className="hidden lg:w-[40%] xl:w-[44%] lg:block">
-            <SearchOverlay open={searchOpen} openSearch={openSearch} />
-            <SearchBox open={searchOpen} openSearch={openSearch} inNavbar />
-          </div>
-          {!isLoaded ? (
-            <Loader2 className="h-8 w-8 animate-spin" />
-          ) : isSignedIn ? (
+        <div className="hidden lg:block lg:w-[40%] xl:w-[44%]">
+          <SearchOverlay open={searchOpen} openSearch={openSearch} />
+          <SearchBox inNavbar open={searchOpen} openSearch={openSearch} />
+        </div>
+        {isLoaded ? (
+          isSignedIn ? (
             <div className="flex items-center lg:gap-4 xl:gap-7">
               <DropdownMenu>
                 <DropdownMenuTrigger
-                  className="!hidden cursor-pointer lg:!flex lg:w-32 hover:!text-flickmart "
                   asChild
+                  className="!hidden lg:!flex hover:!text-flickmart cursor-pointer lg:w-32"
                 >
                   <div className="!flex items-center">
-                    <Avatar className="size-9 cursor-pointer mr-2">
-                      <AvatarImage
-                        alt={`${user.firstName} ${user.lastName}`}
-                        src={user.imageUrl}
-                      />
+                    <Avatar className="mr-2 size-9 cursor-pointer">
+                      <AvatarImage alt={user?.name} src={user?.imageUrl} />
                       <AvatarFallback>
                         <User className="size-[25px] stroke-[1.5]" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hover:text-flickmart font-medium transition-colors">
+                    <span className="font-medium transition-colors hover:text-flickmart">
                       Account
                     </span>
-                    <ChevronDown className="flex-none size-6 ml-1" />
+                    <ChevronDown className="ml-1 size-6 flex-none" />
                   </div>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
                       <p className="font-medium text-sm leading-none">
-                        {user?.firstName} {user?.lastName}
+                        {user?.name}
                       </p>
                       <p className="text-muted-foreground text-xs leading-none">
-                        {user?.emailAddresses[0]?.emailAddress}
+                        {user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link className="flex items-center" href="/chat">
+                      <Mail className="mr-2 size-4" />
+                      Chat
+                      {wishlistLength > 0 && (
+                        <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white text-xs">
+                          {unreadMessagesCount}
+                        </span>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link className="flex items-center" href="/wallet">
                       <Wallet className="mr-2 size-4" />
@@ -159,7 +186,7 @@ export default function Navbar() {
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild className="w-full">
-                    <SignOutButton signOutOptions={{ redirectUrl: "/sign-in" }}>
+                    <SignOutButton signOutOptions={{ redirectUrl: '/sign-in' }}>
                       <Button variant="ghost">
                         <LogOut className="size-4" />
                         Sign out
@@ -169,8 +196,8 @@ export default function Navbar() {
                 </DropdownMenuContent>
               </DropdownMenu>
               <Link
+                className="nav-btn flex items-center gap-2 p-2"
                 href="/notifications"
-                className="nav-btn p-2 flex gap-2 items-center"
               >
                 <div className="relative">
                   {unreadNotifications.length > 0 && (
@@ -178,24 +205,27 @@ export default function Navbar() {
                       {unreadNotifications.length}
                     </div>
                   )}
-                  <Bell className="stroke-1.5 size-7 lg:size-[22px]" />
+                  <Bell className="size-7 stroke-1.5 lg:size-[22px]" />
                 </div>
-                <span className="font-medium hidden lg:inline">
+                <span className="hidden font-medium lg:inline">
                   Notifications
                 </span>
               </Link>
-              <button className="rounded hover:-translate-y-1 hover:shadow-lg hover:shadow-black/25 transition-all bg-flickmart font-bold text-sm duration-300  text-white hidden lg:block">
+              <button
+                className="hover:-translate-y-1 hidden rounded bg-flickmart font-bold text-sm text-white transition-all duration-300 hover:shadow-black/25 hover:shadow-lg lg:block"
+                type="button"
+              >
                 <Link
                   className="inline-block px-3 py-2"
-                  href={userStore?.data ? "/post-ad" : "/create-store"}
+                  href={userStore?.data ? '/post-ad' : '/create-store'}
                 >
                   SELL
                 </Link>
               </button>
               <Sheet onOpenChange={setOpen} open={open}>
                 <SheetTrigger
-                  className="cursor-pointer nav-btn p-1 lg:hidden"
                   asChild
+                  className="nav-btn cursor-pointer p-1 lg:hidden"
                 >
                   <Menu
                     absoluteStrokeWidth
@@ -227,7 +257,7 @@ export default function Navbar() {
                         <div className="flex w-full flex-col font-medium">
                           <Link
                             className="border-[#E8ECEF] border-b py-4"
-                            href={"/wallet"}
+                            href={'/wallet'}
                             onClick={() => setOpen(false)}
                           >
                             Wallet
@@ -241,14 +271,14 @@ export default function Navbar() {
                           </Link>
                           <Link
                             className="border-[#E8ECEF] border-b py-4"
-                            href={"#"}
+                            href={'#'}
                             onClick={() => setOpen(false)}
                           >
                             <span>About Us</span>
                           </Link>
                           <Link
                             className="border-[#E8ECEF] border-b py-4"
-                            href={"/contact"}
+                            href={'/contact'}
                             onClick={() => setOpen(false)}
                           >
                             Contact Us
@@ -280,11 +310,12 @@ export default function Navbar() {
                           <div className="pt-5">
                             <SignedIn>
                               <SignOutButton
-                                signOutOptions={{ redirectUrl: "/sign-in" }}
+                                signOutOptions={{ redirectUrl: '/sign-in' }}
                               >
                                 <button
                                   className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
                                   onClick={() => setOpen(false)}
+                                  type="button"
                                 >
                                   Logout
                                 </button>
@@ -292,7 +323,10 @@ export default function Navbar() {
                             </SignedIn>
                             <SignedOut>
                               <Link href="/sign-in">
-                                <button className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105">
+                                <button
+                                  className="mt-2 h-12 w-full rounded-md bg-black py-3 text-white transition-all duration-300 hover:scale-105"
+                                  type="button"
+                                >
                                   Sign in
                                 </button>
                               </Link>
@@ -307,14 +341,17 @@ export default function Navbar() {
             </div>
           ) : (
             <button
+              className="rounded-full bg-black px-5 py-2 text-white hover:text-flickmart"
               type="button"
-              className="bg-black py-2 px-5 rounded-full text-white hover:text-flickmart"
             >
               <Link className="font-semibold text-sm" href="/sign-in">
                 Sign in
               </Link>
             </button>
-          )}
+          )
+        ) : (
+          <Loader2 className="h-8 w-8 animate-spin" />
+        )}
       </div>
     </header>
   );

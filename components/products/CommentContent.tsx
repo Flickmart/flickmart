@@ -6,14 +6,17 @@ import { toast } from 'sonner';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
+import { useTrack } from '@/hooks/useTrack';
 import ChatInput from '../chats/chat-input';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { DrawerContent, DrawerHeader, DrawerTitle } from '../ui/drawer';
 
 export default function CommentContent({
   productId,
+  recommId,
 }: {
   productId: Id<'product'>;
+  recommId: string;
 }) {
   const comments = useQuery(api.comments.getCommentsByProductId, { productId });
   const [input, setInput] = useState('');
@@ -23,6 +26,7 @@ export default function CommentContent({
     redirectOnUnauthenticated: false,
   });
   const router = useRouter();
+  const captureActivity = useTrack();
 
   function handleComment(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -33,6 +37,12 @@ export default function CommentContent({
       return;
     }
     addComment({ productId, content: input });
+    captureActivity('Product Commented', {
+      productId,
+      userId: user?._id ?? '',
+      recommId,
+      rating: input,
+    });
     setInput('');
   }
   useEffect(() => {

@@ -1,4 +1,5 @@
 'use client';
+import { IconMoodPuzzled } from '@tabler/icons-react';
 import { useMutation, useQuery } from 'convex/react';
 import {
   ArrowLeft,
@@ -6,17 +7,18 @@ import {
   ChevronRight,
   LayoutGrid,
   LayoutPanelLeft,
-  SearchSlash,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useReducer, useState } from 'react';
+import { useEffect, useReducer, useState } from 'react';
 import { SyncLoader } from 'react-spinners';
+import type { SearchResponse } from 'recombee-api-client';
 import { toast } from 'sonner';
 import Filters from '@/components/Filters';
 import SearchInput from '@/components/SearchInput';
 import SearchOverlay from '@/components/SearchOverlay';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -26,6 +28,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
@@ -38,8 +48,9 @@ import {
   useSidebar,
 } from '@/components/ui/sidebar';
 import { api } from '@/convex/_generated/api';
-import type { Doc } from '@/convex/_generated/dataModel';
+import type { Id } from '@/convex/_generated/dataModel';
 import { useFilters } from '@/hooks/useFilters';
+import type { ValuesDto } from '@/types/recommendations';
 
 type FilterObjectType = {
   min: number;
@@ -175,27 +186,34 @@ export default function DetailedCategoryPage() {
   const { min, max, location, priceRange } = state;
   const [searchOpen, setSearchOpen] = useState(false);
   const { filterState, handleFilterState } = useFilters();
+  const user = useQuery(api.users.current, {});
 
   // Get the search parameter
   const searchParams = useSearchParams();
   const query = searchParams.get('query');
-  const search = useQuery(api.product.search, {
-    ...filterState,
-    query: query || '',
-    type: 'search',
-  }) as Doc<'product'>[];
+  const [personalizedSearch, setPersonalizedSearch] =
+    useState<SearchResponse | null>(null);
+  // const search = useQuery(api.product.search, {
+  //   ...filterState,
+  //   query: query || '',
+  //   type: 'search',
+  // }) as Doc<'product'>[];
+  const recommId = personalizedSearch?.recommId;
+  const search = personalizedSearch?.recomms as unknown as Array<{
+    id: string;
+    values: ValuesDto & { category: string };
+  }>;
 
   const router = useRouter();
 
-  const {
-    // state,
-    open,
-    setOpen,
-    openMobile,
-    setOpenMobile,
-    isMobile,
-    toggleSidebar,
-  } = useSidebar();
+  useEffect(() => {
+    setPersonalizedSearch(null);
+    fetch(`/api/search?q=${query}&userId=${user?._id}`).then((res) =>
+      res.json().then((data) => setPersonalizedSearch(data))
+    );
+  }, [query, user]);
+
+  const { isMobile } = useSidebar();
 
   function openSearch(val: boolean) {
     setSearchOpen(val);
@@ -212,10 +230,10 @@ export default function DetailedCategoryPage() {
               query={query ?? ''}
             />
             <div className="flex items-center justify-between gap-1">
-              <div className="mb-1.5 cursor-pointer rounded-full p-2 text-gray-600 transition-all duration-300 ease-in-out hover:bg-gray-200">
+              <div className="cursor-pointer rounded-full p-2 text-gray-600 transition-all duration-300 ease-in-out hover:bg-gray-200">
                 <ArrowLeft onClick={() => router.back()} size={29} />
               </div>
-              <div className="w-full">
+              <div className="h-9 w-full">
                 <SearchInput
                   isOverlayOpen={searchOpen}
                   openSearch={openSearch}
@@ -238,25 +256,7 @@ export default function DetailedCategoryPage() {
           </div>
         </SidebarHeader>
         <SidebarContent>
-          {/* <SidebarGroup>
-            <SidebarGroupLabel className="font-semibold text-sm capitalize">
-              {slug}
-            </SidebarGroupLabel>
-            <SidebarGroupContent className="flex flex-col text-sm text-gray-800">
-              {subCatItems?.map((item, index) => (
-                <CategoryItem key={index} item={item} />
-              ))}
-              <div className="w-full flex justify-end text-[12px]">
-                <Link href={"#"} className="text-flickmart-orange-2 mt-2">
-                  Show More
-                </Link>
-              </div>
-            </SidebarGroupContent>
-          </SidebarGroup> */}
           <SidebarGroup>
-            {/* <SidebarGroupLabel className="font-semibold text-sm capitalize">
-              Filters
-            </SidebarGroupLabel> */}
             <DropdownMenu>
               <DropdownMenuTrigger className="flex w-full items-center justify-between px-5 py-2 shadow-md">
                 <div className="flex flex-col items-start space-y-1">
@@ -334,7 +334,7 @@ export default function DetailedCategoryPage() {
                   </div>
                   <div className="flex items-center justify-between border-b py-1">
                     <div>
-                      <h2>500k - 1.5m</h2>
+                      500k - 1.5m
                       <span className="text-[10px]">452 ads</span>
                     </div>
                     <RadioGroupItem value="moderate" />
@@ -354,7 +354,9 @@ export default function DetailedCategoryPage() {
       </Sidebar>
       <section className="mx-auto mt-24 flex w-[95%] flex-col pt-3 text-sm lg:mt-0 lg:block lg:w-4/6">
         <h2 className="p-3 font-semibold text-lg capitalize lg:py-5 lg:text-2xl">
-          {query} in Nigeria
+          {search &&
+            search?.[0]?.values.category !== undefined &&
+            `${search?.[0]?.values.category} in ${search?.[0]?.values.location}`}
         </h2>
         <Filters handleFilterState={handleFilterState} isMobile={isMobile} />
         <div className="mt-3 flex flex-col lg:h-[90vh]">
@@ -372,71 +374,83 @@ export default function DetailedCategoryPage() {
           <div
             className={`mt-2 ${search?.length && 'grid'} grid-cols-2 gap-5 py-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4`}
           >
-            {search === undefined ? (
+            {personalizedSearch ? (
+              search?.length === 0 ? (
+                <div className="flex h-[45vh] flex-col items-center justify-start px-5">
+                  <Empty>
+                    <EmptyHeader>
+                      <EmptyMedia variant="icon">
+                        <IconMoodPuzzled />
+                      </EmptyMedia>
+                      <EmptyTitle>No result for "{query}"</EmptyTitle>
+                      <EmptyDescription>
+                        It seems we don&apos;t have a product that matches your
+                        search—try a different keyword.
+                      </EmptyDescription>
+                    </EmptyHeader>
+                    <EmptyContent>
+                      <div className="flex gap-2">
+                        <Button onClick={() => router.push('/')}>
+                          Browse All Products
+                        </Button>
+                      </div>
+                    </EmptyContent>
+                  </Empty>
+                </div>
+              ) : (
+                search?.map((product) => {
+                  return (
+                    <div className="relative" key={product.id}>
+                      <Link href={`/product/${product.id}?id=${recommId}`}>
+                        <div className="border">
+                          <div className="flex h-56 w-full items-center justify-center overflow-hidden">
+                            {product.values.image && (
+                              <Image
+                                alt="category image"
+                                height={500}
+                                src={product.values.image}
+                                width={500}
+                              />
+                            )}
+                          </div>
+                          <div className="mt-1 p-2 tracking-tight">
+                            <h2 className="font-semibold">
+                              {product.values.title}
+                            </h2>
+                            <span className="mt-1 font-semibold text-[12px] text-flickmart-chat-orange">
+                              &#8358;{product.values.price.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </Link>
+                      <div
+                        className="absolute top-2 right-0 left-0 z-20 mx-auto flex w-[95%] items-center justify-between"
+                        onClick={async () => {
+                          const saved = await saveProduct({
+                            productId: product.id as Id<'product'>,
+                            type: 'saved',
+                          });
+
+                          typeof saved === 'object' && saved?.added
+                            ? toast.success('Item added to saved')
+                            : toast.success('Item removed from saved');
+                        }}
+                      >
+                        <span className="rounded-sm bg-white px-2 py-0.5 font-semibold text-[12px] uppercase">
+                          Hot
+                        </span>
+                        <button className="flex items-center justify-center rounded-full bg-white p-1.5">
+                          <Bookmark className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })
+              )
+            ) : (
               <div className="flex h-[45vh] items-center justify-center">
                 <SyncLoader color="#FF8100" loading={true} />
               </div>
-            ) : search?.length === 0 ? (
-              <div className="flex h-[45vh] flex-col items-center justify-start px-5">
-                <span className="py-5 font-medium text-gray-500 text-lg">
-                  No result for "{query}"
-                </span>
-
-                <div className="text-gray-500">
-                  <SearchSlash size={150} />
-                </div>
-                {/* <span>
-                  Try checking your spelling or use more general terms
-                </span>
-                <span>Check each product page for other buying options.</span> */}
-              </div>
-            ) : (
-              search?.map((product) => {
-                return (
-                  <div className="relative" key={product._id}>
-                    <Link href={`/product/${product._id}`}>
-                      <div className="border">
-                        <div className="flex h-56 w-full items-center justify-center overflow-hidden">
-                          {product.images.length && (
-                            <Image
-                              alt="category image"
-                              height={500}
-                              src={product.images[0]}
-                              width={500}
-                            />
-                          )}
-                        </div>
-                        <div className="mt-1 p-2 tracking-tight">
-                          <h2 className="font-semibold">{product.title}</h2>
-                          <span className="mt-1 font-semibold text-[12px] text-flickmart-orange-2">
-                            &#8358;{product.price.toLocaleString()}
-                          </span>
-                        </div>
-                      </div>
-                    </Link>
-                    <div
-                      className="absolute top-2 right-0 left-0 z-20 mx-auto flex w-[95%] items-center justify-between"
-                      onClick={async () => {
-                        const saved = await saveProduct({
-                          productId: product._id,
-                          type: 'saved',
-                        });
-
-                        typeof saved === 'object' && saved?.added
-                          ? toast.success('Item added to saved')
-                          : toast.success('Item removed from saved');
-                      }}
-                    >
-                      <span className="rounded-sm bg-white px-2 py-0.5 font-semibold text-[12px] uppercase">
-                        Hot
-                      </span>
-                      <button className="flex items-center justify-center rounded-full bg-white p-1.5">
-                        <Bookmark className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })
             )}
           </div>
         </div>

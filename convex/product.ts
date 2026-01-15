@@ -1,5 +1,7 @@
+/** biome-ignore-all lint/style/noMagicNumbers: <Needed> */
+/** biome-ignore-all lint/performance/useTopLevelRegex: <N> */
 import { ConvexError, v } from 'convex/values';
-import type { Id } from './_generated/dataModel';
+import type { Doc, Id } from './_generated/dataModel';
 import { mutation, query } from './_generated/server';
 import { getCurrentUserOrThrow } from './users';
 
@@ -22,9 +24,13 @@ export const getAll = query({
 
 // Get product by ID
 export const getById = query({
-  args: { productId: v.id('product') },
+  args: { productId: v.string() },
   handler: async (ctx, args) => {
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId('product', args.productId);
+    if (!productId) {
+      return null;
+    }
+    const product = await ctx.db.get(productId);
     console.log(product);
     return product;
   },
@@ -36,7 +42,7 @@ export const getByUserId = query({
   handler: async (ctx, args) => {
     try {
       // Validate that the user exists
-      let user;
+      let user: Doc<'users'> | null | undefined;
 
       if (args.userId) {
         user = await ctx.db.get(args.userId);
@@ -227,6 +233,7 @@ export const update = mutation({
       throw new Error('Unauthorized to update this product');
     }
 
+    // biome-ignore lint/suspicious/noExplicitAny: <any>
     const updates: Record<string, any> = {};
 
     // Build updates object with only the fields that were provided
@@ -350,13 +357,17 @@ export const likeProduct = mutation({
 });
 
 export const getLikeByProductId = query({
-  args: { productId: v.id('product') },
+  args: { productId: v.string() },
   handler: async (ctx, args) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (!user) {
       return;
     }
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId('product', args.productId);
+    if (!productId) {
+      return null;
+    }
+    const product = await ctx.db.get(productId);
 
     const like = await ctx.db
       .query('likes')
@@ -478,7 +489,7 @@ export const addBookmark = mutation({
 
 export const getSavedOrWishlistProduct = query({
   args: {
-    productId: v.id('product'),
+    productId: v.string(),
     type: v.union(v.literal('saved'), v.literal('wishlist')),
   },
   handler: async (ctx, args) => {
@@ -487,7 +498,20 @@ export const getSavedOrWishlistProduct = query({
       return { success: false, error: errorObject, data: null };
     }
 
-    const product = await ctx.db.get(args.productId);
+    const productId = ctx.db.normalizeId('product', args.productId);
+    if (!productId) {
+      return {
+        success: false,
+        error: {
+          status: 404,
+          message: 'Product does not exist',
+          code: 'PRODUCT_NOT_FOUND',
+        },
+        data: null,
+      };
+    }
+
+    const product = await ctx.db.get(productId);
     if (!product) {
       return {
         success: false,
@@ -609,6 +633,13 @@ export const search = query({
       );
     }
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(products.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     // Define ad type priority
     const adTypePriority = {
       premium: 3,
@@ -617,9 +648,16 @@ export const search = query({
       free: 0,
     };
 
-    // Sort products based on criteria and ad type priority
+    // Sort products based on criteria, verified seller priority, and ad type priority
     products.sort((a, b) => {
-      // First sort by ad type priority
+      // First sort by verified seller status (verified sellers appear first)
+      const aVerified = verifiedSellers.has(a.userId) ? 1 : 0;
+      const bVerified = verifiedSellers.has(b.userId) ? 1 : 0;
+      if (bVerified !== aVerified) {
+        return bVerified - aVerified;
+      }
+
+      // Then sort by ad type priority
       const adTypeDiff = adTypePriority[b.plan] - adTypePriority[a.plan];
       if (adTypeDiff !== 0) {
         return adTypeDiff;
@@ -627,6 +665,7 @@ export const search = query({
 
       // Then apply the requested sort order
       if (args.sortBy) {
+        // biome-ignore lint/style/useDefaultSwitchClause: <switch is how it works >
         switch (args.sortBy) {
           case 'price_asc':
             return a.price - b.price;
@@ -648,7 +687,10 @@ export const search = query({
     });
 
     if (args.type === 'suggestions') {
-      return products.map((item) => item.title);
+      return products.map((item) => ({
+        title: item.title,
+        image: item.images[0],
+      }));
     }
     if (args.type === 'search') {
       return products;
@@ -691,6 +733,13 @@ export const getRecommendations = query({
       .filter((q) => q.neq(q.field('userId'), user._id))
       .collect();
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(allProducts.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     const scoreProducts = allProducts.map((product) => {
       // score determines if product is recommended or not
       let score = 0;
@@ -710,29 +759,33 @@ export const getRecommendations = query({
       score += (hasLiked ? 0.2 : 0) + (hasBookmarked ? 0.15 : 0);
       // Calculate product scores based on multiple factors
 
-      // Net positive likes / total  feedback volume (25% weight)
+      // Net positive likes / total  feedback volume (20% weight - reduced from 25%)
       const popularity =
         (product.likes ?? 0) -
         (product.dislikes ?? 0) /
           Math.max(1, (product.likes ?? 0) + (product.dislikes ?? 0));
-      score += popularity * 0.25;
+      score += popularity * 0.2;
 
-      // Time posted (20% weight)
+      // Time posted (15% weight - reduced from 20%)
       const daysSincePosted =
         Date.now() -
         (new Date(product.timeStamp).getTime() / 1000) * 60 * 60 * 24;
 
       const recencyScore = Math.exp(-daysSincePosted / 30); // 30-day decay
-      score += recencyScore * 0.2;
+      score += recencyScore * 0.15;
 
-      //Ad Type Priority (20 weight)
+      //Ad Type Priority (15% weight - reduced from 20%)
       const adTypeScore = {
         premium: 1.0,
         pro: 0.7,
         basic: 0.4,
         free: 0,
       }[product.plan];
-      score += adTypeScore * 0.2;
+      score += adTypeScore * 0.15;
+
+      // Verified Seller Boost (15% weight) - NEW
+      const isVerifiedSeller = verifiedSellers.has(product.userId);
+      score += (isVerifiedSeller ? 1 : 0) * 0.15;
 
       // // 4. Category Match Score (15% weight)
       // if (userProducts.length > 0) {
@@ -839,6 +892,13 @@ export const getSimilarProducts = query({
       .filter((q) => q.neq(q.field('_id'), args.productId))
       .collect();
 
+    // Get unique seller IDs to batch fetch verified status
+    const sellerIds = [...new Set(allProducts.map((p) => p.userId))];
+    const sellers = await Promise.all(sellerIds.map((id) => ctx.db.get(id)));
+    const verifiedSellers = new Set(
+      sellers.filter((s) => s?.verified === true).map((s) => s?._id)
+    );
+
     // Calculate similarity scores
     const scoredProducts = allProducts.map((product) => {
       let score = 0;
@@ -892,6 +952,12 @@ export const getSimilarProducts = query({
         free: 0,
       }[product.plan];
       score *= adTypeBoost;
+
+      // Verified Seller Boost - Apply additional multiplier for verified sellers
+      const isVerifiedSeller = verifiedSellers.has(product.userId);
+      if (isVerifiedSeller) {
+        score *= 1.15; // 15% boost for verified sellers
+      }
 
       return { product, score };
     });
@@ -956,6 +1022,7 @@ export const getProductsByFilters = query({
   handler: async (ctx, args) => {
     console.log(args);
 
+    // biome-ignore lint/nursery/noShadow: <not affected>
     let query = ctx.db
       .query('product')
       .filter((q) =>

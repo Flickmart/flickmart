@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
-import Delivery from '@/components/Delivery';
 import Footer from '@/components/Footer';
-import BestSellers from '@/components/home/BestSellers';
 import Categories from '@/components/home/Categories';
+import JustForYou from '@/components/home/JustForYou';
 import NewArrivals from '@/components/home/NewArrivals';
 import PopularSection from '@/components/home/PopularSection';
+import RecentlyViewed from '@/components/home/RecentlyViewed';
 import Slider from '@/components/home/Slider';
 import MobileNav from '@/components/MobileNav';
 import SearchBox from '@/components/SearchBox';
@@ -59,9 +59,10 @@ export default function Home() {
         <Slider />
         <div className="section-px min-h-screen space-y-10">
           <Categories />
-          <BestSellers />
+          <JustForYou />
           <NewArrivals />
           <PopularSection />
+          <RecentlyViewed />
         </div>
         <Footer />
       </section>

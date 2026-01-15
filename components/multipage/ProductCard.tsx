@@ -1,10 +1,10 @@
 import { useMutation, useQuery } from 'convex/react';
 import { Bookmark, MapPin } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
@@ -17,6 +17,7 @@ export default function ProductCard({
   likes,
   productId,
   views,
+  sellerId,
 }: {
   image?: string;
   title?: string;
@@ -25,10 +26,17 @@ export default function ProductCard({
   likes?: number;
   productId: Id<'product'>;
   views?: number;
+  sellerId?: Id<'users'>;
 }) {
   const comments = useQuery(api.comments.getCommentsByProductId, {
     productId,
   });
+
+  // Fetch seller verified status
+  const isSellerVerified = useQuery(
+    api.users.isUserVerified,
+    sellerId ? { userId: sellerId } : 'skip'
+  );
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -73,7 +81,7 @@ export default function ProductCard({
     try {
       if (!isAuthenticated) {
         toast.error('Please sign in to perform this action');
-        router.push('/sign-in?callback=/product/' + productId);
+        router.push(`/sign-in?callback=/product/${productId}`);
         return;
       }
       const bookmarked = await bookmarkProduct({ productId, type: 'saved' });
@@ -107,10 +115,7 @@ export default function ProductCard({
         />
       </button>
       {image ? (
-        <Link
-          className="block h-[74%] overflow-hidden rounded-sm"
-          href={`/product/${productId}`}
-        >
+        <div className="block h-[74%] overflow-hidden rounded-sm">
           <Image
             alt={title || ''}
             className="size-full border object-cover object-top transition-transform duration-300 sm:hover:scale-125"
@@ -118,9 +123,9 @@ export default function ProductCard({
             src={image || ''}
             width={500}
           />
-        </Link>
+        </div>
       ) : (
-        <Link className="relative block h-[74%]" href={`/product/${productId}`}>
+        <div className="relative block h-[74%]">
           <Image
             alt={title || ''}
             className="abs-center-x abs-center-y absolute w-1/2 rounded-sm object-top"
@@ -128,16 +133,21 @@ export default function ProductCard({
             src="/no-image.png"
             width={500}
           />
-        </Link>
+        </div>
       )}
       <div className="flex flex-col space-y-[3px] pt-1 text-left">
         <div className="flex items-center gap-1 font-medium text-gray-700 text-sm capitalize">
           <MapPin className="size-4 text-red-500" />
           {location}
         </div>
-        <p className="font-semibold text-ellipsis overflow-hidden whitespace-nowrap">{title}</p>
-        <div className="flex justify-between items-start text-sm">
-          <span className="text-flickmart font-semibold">
+        <div className="flex items-center gap-1">
+          <p className="overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
+            {title}
+          </p>
+          {isSellerVerified && <VerifiedBadge size="sm" />}
+        </div>
+        <div className="flex items-start justify-between text-sm">
+          <span className="font-semibold text-flickmart">
             &#8358;{price?.toLocaleString()}
           </span>
           <div className="flex flex-col items-end gap-1">

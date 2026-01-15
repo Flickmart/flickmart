@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { useTrack } from '@/hooks/useTrack';
 import { initialChat } from "@/utils/helpers";
 
 export default function ProductHeader({
@@ -14,6 +15,7 @@ export default function ProductHeader({
   productId,
   description,
   aiEnabled,
+  recommendationId,
 }: {
   location: string;
   title: string;
@@ -23,6 +25,7 @@ export default function ProductHeader({
   productId: Id<"product">;
   description: string;
   aiEnabled: boolean;
+  recommendationId: string;
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
@@ -31,6 +34,7 @@ export default function ProductHeader({
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
+  const captureActivity = useTrack();
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
   const minsAgo = Math.floor(dateDiff / (1000 * 60));
@@ -71,6 +75,12 @@ export default function ProductHeader({
       toast.error("Please sign in to perform this action");
       return;
     }
+    captureActivity('Chat Initiated', {
+      productId,
+      userId: user?._id ?? '',
+      recommId: recommendationId,
+      price,
+    });
     initialChat({
       user: user ?? null,
       userId,

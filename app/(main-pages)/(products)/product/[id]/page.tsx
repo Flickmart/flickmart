@@ -10,17 +10,17 @@ import {
   ThumbsDown,
   ThumbsUp,
   X,
-} from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { SyncLoader } from "react-spinners";
-import { toast } from "sonner";
-import Comment from "@/components/products/Comment";
-import CommentContent from "@/components/products/CommentContent";
-import ProductHeader from "@/components/products/ProductHeader";
-import SimilarAdverts from "@/components/products/SimilarAdverts";
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { SyncLoader } from 'react-spinners';
+import { toast } from 'sonner';
+import Comment from '@/components/products/Comment';
+import CommentContent from '@/components/products/CommentContent';
+import ProductHeader from '@/components/products/ProductHeader';
+import SimilarAdverts from '@/components/products/SimilarAdverts';
 import {
   Accordion,
   AccordionContent,
@@ -31,16 +31,17 @@ import {
   Carousel,
   CarouselContent,
   CarouselItem,
-} from "@/components/ui/carousel";
-import { Drawer, DrawerTrigger } from "@/components/ui/drawer";
-import { api } from "@/convex/_generated/api";
-import type { Id } from "@/convex/_generated/dataModel";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { useAuthUser } from "@/hooks/useAuthUser";
-import { useIsLarge } from "@/hooks/useLarge";
-import useNav from "@/hooks/useNav";
-import useSlider from "@/hooks/useSlider";
-import { shareProduct } from "@/utils/helpers";
+} from '@/components/ui/carousel';
+import { Drawer, DrawerTrigger } from '@/components/ui/drawer';
+import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuthUser } from '@/hooks/useAuthUser';
+import { useIsLarge } from '@/hooks/useLarge';
+import useNav from '@/hooks/useNav';
+import useSlider from '@/hooks/useSlider';
+import { useTrack } from '@/hooks/useTrack';
+import { useTrackDuration } from '@/hooks/useTrackDuration';
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -48,13 +49,15 @@ export default function ProductPage() {
   const isMobile = useIsMobile();
   const isLarge = useIsLarge();
   const params = useParams();
-  const productId = params.id as Id<"product">;
+  const searchParams = useSearchParams();
+  const recommendationId = searchParams.get('id');
+  const productId = params.id as Id<'product'>;
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
-  const productData = useQuery(api.product.getById, { productId });
-  console.log("Product data:", productData);
-
+  const productData = productId
+    ? useQuery(api.product.getById, { productId })
+    : null;
   const like = useQuery(api.product.getLikeByProductId, { productId });
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
@@ -67,18 +70,30 @@ export default function ProductPage() {
   const view = useMutation(api.views.createView);
   const _exchangePossible = productData?.exchange === true ? "yes" : "no";
   const { setApi, setAutoScroll } = useSlider();
-  const comments = useQuery(api.comments.getCommentsByProductId, { productId });
+  const comments = useQuery(api.comments.getCommentsByProductId, {
+    productId,
+  });
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
   const router = useRouter();
+  const [isUpdated, setIsUpdated] = useState(false);
 
+  // captureActivity is a function which can me reused to capture different Activities
+  const captureActivity = useTrack();
+
+  // Track Page Duration
+  useTrackDuration(productId, user?._id ?? '', recommendationId ?? '');
   const productIcons = [
     {
       label: "likes",
       icon: (
         <ThumbsUp
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.liked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${
+            like?.liked
+              ? 'fill-flickmart stroke-none'
+              : 'fill-none stroke-current'
+          }`}
         />
       ),
     },
@@ -86,15 +101,11 @@ export default function ProductPage() {
       label: "dislikes",
       icon: (
         <ThumbsDown
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${like?.disliked ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
-        />
-      ),
-    },
-    {
-      label: "share",
-      icon: (
-        <Share
-          className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 `}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${
+            like?.disliked
+              ? 'fill-flickmart stroke-none'
+              : 'fill-none stroke-current'
+          }`}
         />
       ),
     },
@@ -102,7 +113,11 @@ export default function ProductPage() {
       label: 'wishlist',
       icon: (
         <Heart
-          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${wishlist?.data?.added ? 'fill-red-600 stroke-none' : 'fill-none stroke-current'}`}
+          className={`fill] transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${
+            wishlist?.data?.added
+              ? 'fill-red-600 stroke-none'
+              : 'fill-none stroke-current'
+          }`}
         />
       ),
     },
@@ -126,15 +141,30 @@ export default function ProductPage() {
       }
       if (label === "likes") {
         await likeProduct({ productId });
+
+        // capture activity of liking a product
+        captureActivity('Product Liked', {
+          productId,
+          userId: user?._id ?? '',
+          recommId: recommendationId,
+          rating: 5,
+          likes: (productData?.likes ?? 0) + 1,
+        });
       }
       if (label === "dislikes") {
         await dislikeProduct({ productId });
       }
-      if (label === "share") {
-        await handleShare();
-      }
-      // if (label === 'wishlist' || label === 'saved') {
-      //   const bookmarked = await bookmarkProduct({ productId, type: label });
+      if (label === 'wishlist' || label === 'saved') {
+        const bookmarked = await bookmarkProduct({ productId, type: label });
+
+        if (typeof bookmarked !== 'string' && bookmarked?.added) {
+          captureActivity('Product Added to Wishlist', {
+            productId,
+            userId: user?._id ?? '',
+            recommId: recommendationId,
+            price: productData?.price ?? 0,
+          });
+        }
 
       //   // bookmarked?.added
 
@@ -144,6 +174,8 @@ export default function ProductPage() {
       // }
     } catch (err) {
       console.log(err);
+    } finally {
+      setIsUpdated(false);
     }
   };
 
@@ -155,6 +187,19 @@ export default function ProductPage() {
   }
 
   const [loading, setLoading] = useState(false);
+  //   const productProps={
+  //   aiEnabled: productData?.aiEnabled ?? false,
+  //   dislikes: productData?.dislikes ?? 0,
+  //   image: productData?.images[0] ?? "",
+  //   likes: productData?.likes ?? 0,
+  //   location: productData?.location ?? "",
+  //   plan: productData?.plan ?? "",
+  //   subcategory: productData?.subcategory ?? "",
+  //   title: productData?.title ?? "",
+  //   category: productData?.category ?? "",
+  //   price: productData?.price ?? 0,
+  //   views: productData?.views ?? 0
+  // }
 
   useEffect(() => {
     if (!productData) {
@@ -163,12 +208,21 @@ export default function ProductPage() {
     }
     // View Page once it loads
     if (!viewed) {
+      // Update view count on the db
       view({ productId }).then((data) => console.log(data));
+
+      // Send Interaction to Source
+      captureActivity('Product Viewed', {
+        userId: user?._id ?? '',
+        productId,
+        recommId: recommendationId,
+        // ...productProps
+      });
       setViewed(true);
       return;
     }
     setLoading(false);
-  }, [productData, viewed]);
+  }, [productData, viewed, isUpdated]);
 
   if (loading) {
     return (
@@ -177,6 +231,7 @@ export default function ProductPage() {
       </div>
     );
   }
+
   return (
     <Drawer>
       <div className="min-h-screen gap-x-6 space-y-7 bg-slate-100 lg:p-5">
@@ -206,7 +261,9 @@ export default function ProductPage() {
               </button>
             </div>
             <div
-              className={`cursor-pointer sm:cursor-default ${enlarge ? "enlarge" : ""}`}
+              className={`cursor-pointer sm:cursor-default ${
+                enlarge ? 'enlarge' : ''
+              }`}
               onClick={() => {
                 setEnlarge(true);
                 setAutoScroll(false);
@@ -238,8 +295,9 @@ export default function ProductPage() {
                 location={productData?.location ?? ""}
                 price={productData?.price ?? 0}
                 productId={productId}
-                timestamp={productData?.timeStamp ?? ""}
-                title={productData?.title ?? ""}
+                recommendationId={recommendationId ?? ''}
+                timestamp={productData?.timeStamp ?? ''}
+                title={productData?.title ?? ''}
                 userId={productData?.userId!}
               />
             ) : null}
@@ -272,12 +330,18 @@ export default function ProductPage() {
                   </span>
                 </div>
               </DrawerTrigger>
-              <CommentContent productId={productId} />
+              <CommentContent
+                productId={productId}
+                recommId={recommendationId ?? ''}
+              />
             </div>
           </div>
           <div className="flex flex-col justify-center space-y-3">
             {isMobile && comments?.length ? (
-              <Comment productId={productId} />
+              <Comment
+                productId={productId}
+                recommId={recommendationId ?? ''}
+              />
             ) : null}
             {isMobile ? null : (
               <ProductHeader
@@ -286,8 +350,9 @@ export default function ProductPage() {
                 location={productData?.location ?? ""}
                 price={productData?.price ?? 0}
                 productId={productId}
-                timestamp={productData?.timeStamp ?? ""}
-                title={productData?.title ?? ""}
+                recommendationId={recommendationId ?? ''}
+                timestamp={productData?.timeStamp ?? ''}
+                title={productData?.title ?? ''}
                 userId={productData?.userId!}
               />
             )}
@@ -339,7 +404,9 @@ export default function ProductPage() {
               </Accordion>
             </div>
             <div
-              className={` ${isVisible ? "translate-y-0" : "-translate-y-[-100%]"} fixed bottom-0 z-30 flex w-full space-x-5 bg-white p-3 transition duration-300 lg:relative lg:translate-y-0 lg:p-0`}
+              className={` ${
+                isVisible ? 'translate-y-0' : '-translate-y-[-100%]'
+              } fixed bottom-0 z-30 flex w-full space-x-5 bg-white p-3 transition duration-300 lg:relative lg:translate-y-0 lg:p-0`}
             >
               <div
                 className="flex w-1/4 items-center justify-center rounded-md bg-white shadow-md transition-all duration-300 hover:scale-110 lg:w-1/12"
@@ -347,7 +414,11 @@ export default function ProductPage() {
               >
                 <button className="rounded-full bg-white p-2 text-flickmart-orange-2 shadow-lg">
                   <Bookmark
-                    className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${saved?.data?.added ? "fill-flickmart stroke-none" : "fill-none stroke-current"}`}
+                    className={`fill transform transition-[stroke, duration-500 ease-in-out hover:scale-110 ${
+                      saved?.data?.added
+                        ? 'fill-flickmart stroke-none'
+                        : 'fill-none stroke-current'
+                    }`}
                   />
                 </button>
               </div>
@@ -364,7 +435,7 @@ export default function ProductPage() {
           </div>
         </div>
         {isMobile || !comments?.length ? null : (
-          <Comment productId={productId} />
+          <Comment productId={productId} recommId={recommendationId ?? ''} />
         )}
         <SimilarAdverts productId={productId} />
       </div>
