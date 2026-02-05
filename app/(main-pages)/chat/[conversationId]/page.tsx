@@ -16,6 +16,12 @@ import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
 import { useAuthUser } from "@/hooks/useAuthUser";
 import { useUploadThing } from "@/utils/uploadthing";
+import { GoogleGenAI } from "@google/genai";
+import { generateText,  } from 'ai';
+import { google } from '@ai-sdk/google';
+
+
+
 
 interface Message {
   _id: Id<"message">;
@@ -71,6 +77,11 @@ export default function ConversationPage() {
       isPending: boolean;
     }>
   >([]);
+
+  // Initialize Google Gen AI
+  const ai = new GoogleGenAI({
+    apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY,
+  })
 
   const conversationId = params?.conversationId as Id<"conversations">;
   const vendorId = searchParams?.get("vendorId") as Id<"users"> | null;
@@ -242,7 +253,6 @@ export default function ConversationPage() {
     api.presence.getUserOnlineStatus,
     otherUserId ? { userId: otherUserId } : "skip"
   );
-
   console.log("otherUserId:", otherUserId);
   console.log("otherUserOnlineStatus:", otherUserOnlineStatus);
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -426,19 +436,34 @@ export default function ConversationPage() {
         }
       }
 
-      // Send message with text and/or images
-      await sendMessage({
-        senderId: user._id,
-        content: messageText,
-        conversationId,
-        images: imageUrls,
-        type: "text",
-      });
+        // Send message with text and/or images
+        await sendMessage({
+          senderId: user._id,
+          content: messageText,
+          conversationId,
+          images: imageUrls,
+          type: "text",
+        });
 
-      // Remove pending message on success
+     // Remove pending message on success
       setPendingMessages((prev) =>
         prev.filter((msg) => msg.id !== optimisticMessageId)
       );
+
+      // Check if other user is online and if other user has AI enabled through subscription
+      // if(!otherUserOnlineStatus?.isOnline && otherUser?.aiEnabled){
+      //   const response = await ai.models.generateContent({
+      //     model: "gemma-3-27b-it",
+      //     contents: input
+      //   })
+        // console.log(response.candidates?.at(0)?.content?.parts?.at(0)?.text)
+      // }   
+      const { text } = await generateText({
+        model: google('gemma-3-27b-it'),
+        prompt: input,
+      });
+      
+      console.log(text)
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");

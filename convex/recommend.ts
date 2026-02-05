@@ -54,6 +54,8 @@ export const recommendItems = action({
       );
       const fullUrl = `${apiUrl}${uri}&hmac_timestamp=${hmac_timestamp}&hmac_sign=${hmac_sign}`;
 
+      console.log(fullUrl);
+
       // Extract scenario from the query string
       const params = new URLSearchParams(args.queryStrings);
       const scenario = params.get("scenario");

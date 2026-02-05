@@ -18,6 +18,7 @@ export default function JustForYou() {
   const user = useQuery(api.users.current, {})
   const recommendation = useRecommend("Just-For-You") //Specify the scenario as the first parameter
   
+  console.log(recommendation)
   
   
 

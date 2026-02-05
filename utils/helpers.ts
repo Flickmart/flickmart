@@ -3,10 +3,10 @@ import type { Doc, Id } from "@/convex/_generated/dataModel";
 import { RecommendationResponse } from "recombee-api-client";
 
 type ChatParams = {
-  user: Doc<'users'> | null;
-  userId: Id<'users'>;
+  user: Doc<"users"> | null;
+  userId: Id<"users">;
   onNavigate: (path: string) => void;
-  productId?: Id<'product'>;
+  productId?: Id<"product">;
 };
 type ShareParams = {
   title: string;
@@ -44,7 +44,7 @@ export async function shareProduct({
     title: title || "Check out this product",
     text:
       `${description?.substring(0, 200)} '...\n'` ||
-      'Check out this product on Flickmart',
+      "Check out this product on Flickmart",
     url: url || `https://flickmart.app/product/${productId}`,
   };
   try {
@@ -68,7 +68,7 @@ export async function fetchRecommendations(
   count?: number
 ) {
   const baseQuery =
-    "&returnProperties=true" +
+    "returnProperties=true" +
     "&includedProperties=likes,views,rating,title,location,image,price,timestamp" +
     "&cascadeCreate=true" +
     `&count=${count || 10}` +
