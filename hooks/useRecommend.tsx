@@ -21,21 +21,26 @@ export function useRecommend(scenario: string, count?: number) {
         setFetched(true);
       });
     } else if (!user && anonId && !fetched) {
+
       const scenarioRecommendations = localStorage.getItem(scenario);
+
       if (scenarioRecommendations) {
         const { data, expiresAt } = JSON.parse(scenarioRecommendations);
+
         if (expiresAt > Date.now()) {
-          const result = data as RecommendationResponse
+          let result = data as RecommendationResponse
           setRecommendation(result);
           setFetched(true);
           return;
         }
       }
+        
+        
       fetchRecommendations(scenario, recommendations, count, anonId).then((data) => {
         // If it's first time recommending to anon users, cache to local storage
         localStorage.setItem(scenario, JSON.stringify({
-          data,
-          expiresAt: Date.now() + 60 * 60 * 1000 // 10 mins
+          data: scenarioRecommendations? data: {...data,  recomms: data?.recomms?.sort(() => Math.random() - 0.5)}, // if scenarioRecommendations is null, it's first time recommending so we shuffle before setting
+          expiresAt: Date.now() + 30 * 60 * 1000 ,// 10 mins
         }));
         
         setRecommendation(data);
