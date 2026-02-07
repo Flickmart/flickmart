@@ -8,12 +8,14 @@ import { useRecommend } from '@/hooks/useRecommend';
 import ProductCard from '../multipage/ProductCard';
 import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
+import { useEffect, useState } from 'react';
 
-export default function JustForYou() {
+export default function JustForYou({anonId}: {anonId: string |null}) {
   const isMobile = useIsMobile();
   const all = useQuery(api.product.getAll, { limit: 10 });
   const user = useQuery(api.users.current, {});
   const recommendation = useRecommend('Just-For-You'); //Specify the scenario as the first parameter
+
 
   return (
     <div className="space-y-5 capitalize lg:space-y-10 lg:text-center">
@@ -23,7 +25,7 @@ export default function JustForYou() {
       <Container className="!min-h-[40vh]">
         {/* <div className="grid w-full grid-cols-2 bg-black gap-x-1 gap-y-4 lg:w-4/6 lg:grid-cols-4 lg:gap-x-5 lg:gap-y-10"> */}
         <div className="grid w-full grid-cols-2 gap-4 lg:grid-cols-4">
-          {!user || recommendation === null
+          {(!user && !anonId) || recommendation === null
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div

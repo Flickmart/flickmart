@@ -1,6 +1,6 @@
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
-import { analytics } from '@/utils/analytics';
+import { useQuery } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { analytics } from "@/utils/analytics";
 
 export function useTrackUser() {
   // Get User
@@ -12,5 +12,5 @@ export function useTrackUser() {
       email: user?.email,
     });
   }
-  return identify;
+  return { identify, user };
 }

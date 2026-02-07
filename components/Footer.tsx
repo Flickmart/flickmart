@@ -27,7 +27,7 @@ export default function Footer() {
 
   return (
     <>
-      <section className="section-px mb-10">
+      <section className="section-px my-10">
         <Image
           alt="wave"
           className="w-full"

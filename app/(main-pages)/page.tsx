@@ -15,6 +15,8 @@ import { useAppPresence } from '@/hooks/useAppPresence';
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [anonId, setAnonId]= useState<string | null>("")
+
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
@@ -24,6 +26,8 @@ export default function Home() {
   console.log('Presense state', presenceState);
 
   useEffect(() => {
+    const id = localStorage.getItem("anonId")
+    setAnonId(id)
     // Ensure this code runs only on the client side
     if (typeof window !== 'undefined') {
       OneSignal.init({
@@ -33,6 +37,8 @@ export default function Home() {
       });
     }
   }, []);
+
+  
 
   function _urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -59,10 +65,10 @@ export default function Home() {
         <Slider />
         <div className="section-px min-h-screen space-y-10">
           <Categories />
-          <JustForYou />
-          <NewArrivals />
-          <PopularSection />
-          <RecentlyViewed />
+          <JustForYou anonId={anonId}/>
+          <NewArrivals anonId={anonId}/>
+          <PopularSection anonId={anonId}/>
+          <RecentlyViewed anonId={anonId} />
         </div>
         <Footer />
       </section>
