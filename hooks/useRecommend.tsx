@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import type { RecommendationResponse } from 'recombee-api-client';
 import { api } from '@/convex/_generated/api';
 import { fetchRecommendations } from '@/utils/helpers';
+import { scenarios } from '@/utils/constants';
 
 export function useRecommend(scenario: string, count?: number) {
   const recommendations = useAction(api.recommend.recommendItems);
@@ -15,6 +16,7 @@ export function useRecommend(scenario: string, count?: number) {
   useEffect(() => {
     const anonId = localStorage.getItem('anonId');
     if (user  && !fetched) {
+      scenarios.map(scenario => localStorage.removeItem(scenario))
       fetchRecommendations(scenario, recommendations, count).then((data) => {
         setRecommendation(data);
         // Set Fetched to true so recommendation

@@ -6,8 +6,8 @@ import Navbar from '@/components/Navbar';
 import { useAnalyticsInit } from '@/hooks/useAnalyticsInit';
 import { useTrackUser } from '@/hooks/useTrackUser';
 import { analytics } from '@/utils/analytics';
-
-const scenarios = ["Recently-Viewed", "Popular", "Just-For-You", "New-Arrivals"]
+import { scenarios } from '@/utils/constants';
+``
 const layout = ({ children }: { children: ReactNode }) => {
   const [deferredPrompt, setDeferredPrompt] = useState<Event | null>(null);
   // Initialize Analytics.js
