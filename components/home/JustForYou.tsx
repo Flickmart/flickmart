@@ -15,6 +15,7 @@ export default function JustForYou({anonId}: {anonId: string |null}) {
   const all = useQuery(api.product.getAll, { limit: 10 });
   const user = useQuery(api.users.current, {});
   const recommendation = useRecommend('Just-For-You'); //Specify the scenario as the first parameter
+  console.log(recommendation);
 
 
   return (
