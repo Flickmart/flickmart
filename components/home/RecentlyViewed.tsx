@@ -10,7 +10,7 @@ import type { ValuesDto } from '@/types/recommendations';
 import { Skeleton } from '../ui/skeleton';
 import NewArrivalItem from './NewArrivalItem';
 
-export default function RecentlyViewed() {
+export default function RecentlyViewed({anonId}: {anonId: string | null}) {
   const isMobile = useIsMobile();
   // const all = useQuery(api.product.getAll, { limit: 10 });
   // const firstTenProducts = all?.slice(0, 10);
@@ -28,16 +28,9 @@ export default function RecentlyViewed() {
     <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-5 pb-12 capitalize">
       <div className="flex w-full items-center justify-between">
         <h2 className="section-title mb-0">Recently Viewed</h2>
-        {/* <Link
-          className="flex cursor-pointer items-center space-x-1 text-[#606060] transition-colors sm:hover:text-flickmart"
-          href={'/more-products'}
-        >
-          <span className="text-lg">See All</span>
-          <ChevronRight className="transition-colors" />
-        </Link> */}
       </div>
       <div className="flex w-full justify-between gap-x-5 overflow-x-auto lg:gap-x-10">
-        {recommendation === null || !user
+        {recommendation === null || (!user && !anonId)
           ? Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
               <div
                 className="flex min-h-80 w-full flex-col bg-gray-100 lg:h-96"

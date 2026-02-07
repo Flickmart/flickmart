@@ -8,7 +8,7 @@ const recombeePrivateToken = process.env.RECOMBEE_PRIVATE_TOKEN;
 
 if (!recombeeDbId || !recombeePrivateToken) {
   throw new Error(
-    "Missing environment variables. Please make sure RECOMBEE_DB_ID and RECOMBEE_PRIVATE_TOKEN are set."
+    "Missing environment variables. Please make sure RECOMBEE_DB_ID and RECOMBEE_PRIVATE_TOKEN are set.",
   );
 }
 async function main() {
@@ -20,7 +20,7 @@ async function main() {
 
   // Delete items from Recombee
   const deleteRequests = items.map((itemId) => {
-    return new requests.DeleteItem(itemId);
+    return new requests.DeleteItem(itemId); // Change to DeleteUser if object you want to delete is users
   });
 
   await recombeeClient.send(new requests.Batch(deleteRequests));

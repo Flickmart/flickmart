@@ -54,6 +54,7 @@ export default function ProductPage() {
   const likeProduct = useMutation(api.product.likeProduct);
   const dislikeProduct = useMutation(api.product.dislikeProduct);
   const bookmarkProduct = useMutation(api.product.addBookmark);
+  const [anonId, setAnonId] = useState<string | null>('');
   const productData = productId
     ? useQuery(api.product.getById, { productId })
     : null;
@@ -82,7 +83,7 @@ export default function ProductPage() {
   const captureActivity = useTrack();
 
   // Track Page Duration
-  useTrackDuration(productId, user?._id ?? '', recommendationId ?? '');
+  useTrackDuration(productId, user?._id, recommendationId ?? '');
   const productIcons = [
     {
       label: 'likes',
@@ -177,21 +178,13 @@ export default function ProductPage() {
   }
 
   const [loading, setLoading] = useState(false);
-  //   const productProps={
-  //   aiEnabled: productData?.aiEnabled ?? false,
-  //   dislikes: productData?.dislikes ?? 0,
-  //   image: productData?.images[0] ?? "",
-  //   likes: productData?.likes ?? 0,
-  //   location: productData?.location ?? "",
-  //   plan: productData?.plan ?? "",
-  //   subcategory: productData?.subcategory ?? "",
-  //   title: productData?.title ?? "",
-  //   category: productData?.category ?? "",
-  //   price: productData?.price ?? 0,
-  //   views: productData?.views ?? 0
-  // }
+
 
   useEffect(() => {
+    const anonymousUserId = localStorage.getItem("anonId");
+    if(!anonId){
+      setAnonId(anonymousUserId);
+    }
     if (!productData) {
       setLoading(true);
       return;
@@ -203,7 +196,7 @@ export default function ProductPage() {
 
       // Send Interaction to Source
       captureActivity('Product Viewed', {
-        userId: user?._id ?? '',
+        userId: user?._id ?? anonId,
         productId,
         recommId: recommendationId,
         // ...productProps

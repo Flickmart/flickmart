@@ -9,7 +9,7 @@ import ProductCard from '../multipage/ProductCard';
 import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
 
-export default function PopularSection() {
+export default function PopularSection({anonId}: {anonId: string | null}) {
   const isMobile = useIsMobile();
   const popular = useRecommend('Popular', 20); //Specify the scenario as the first parameter
   const user = useQuery(api.users.current, {});
@@ -19,7 +19,7 @@ export default function PopularSection() {
       <h2 className="section-title">Popular</h2>
       <Container>
         <div className="grid w-full grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
-          {popular === null || !user
+          {popular === null || (!user && !anonId)
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div

@@ -11,7 +11,7 @@ import type { ValuesDto } from '@/types/recommendations';
 import { Skeleton } from '../ui/skeleton';
 import NewArrivalItem from './NewArrivalItem';
 
-export default function NewArrivals() {
+export default function NewArrivals({anonId}: {anonId: string | null}) {
   const isMobile = useIsMobile();
   const _router = useRouter();
   const recommendation = useRecommend('New-Arrivals'); //Specify the scenario as the first parameter
@@ -30,7 +30,7 @@ export default function NewArrivals() {
         </Link>
       </div>
       <div className="flex w-full justify-between gap-x-5 overflow-x-auto lg:gap-x-10">
-        {recommendation === null || !user
+        {recommendation === null || (!user && !anonId)
           ? Array.from({ length: isMobile ? 3 : 5 }).map((_, index) => (
               <div
                 className="flex min-h-80 w-full flex-col bg-gray-100 lg:h-96"

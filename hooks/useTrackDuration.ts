@@ -1,14 +1,15 @@
-'use client';
-import { useEffect } from 'react';
-import { useTrack } from './useTrack';
+"use client";
+import { useEffect } from "react";
+import { useTrack } from "./useTrack";
+import { Id } from "@/convex/_generated/dataModel";
 
 export function useTrackDuration(
   productId: string,
-  userId: string,
-  recommId: string
+  userId: Id<"users"> | undefined,
+  recommId: string,
 ) {
   useEffect(() => {
-    // let start = Date.now();
+    const anonId = localStorage.getItem("anonId");
     let visibleStart = Date.now();
     let visibleDuration = 0;
     const captureActivity = useTrack();
@@ -26,21 +27,21 @@ export function useTrackDuration(
       const totalSeconds = Math.floor(visibleDuration / 1000);
 
       // send to backend
-      captureActivity('Product Viewed', {
-        userId,
+      captureActivity("Product Viewed", {
+        userId: userId ?? anonId,
         productId,
         recommId,
         duration: totalSeconds,
       });
     };
 
-    document.addEventListener('visibilitychange', onVisibility);
-    window.addEventListener('beforeunload', onBeforeUnload);
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("beforeunload", onBeforeUnload);
 
     return () => {
       onBeforeUnload(); // also send on route change
-      document.removeEventListener('visibilitychange', onVisibility);
-      window.removeEventListener('beforeunload', onBeforeUnload);
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("beforeunload", onBeforeUnload);
     };
   }, [productId, userId]);
 }

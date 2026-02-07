@@ -1,17 +1,17 @@
-import type { RecommendationResponse } from 'recombee-api-client';
-import { toast } from 'sonner';
-import type { Doc, Id } from '@/convex/_generated/dataModel';
+import type { RecommendationResponse } from "recombee-api-client";
+import { toast } from "sonner";
+import type { Doc, Id } from "@/convex/_generated/dataModel";
 
 type ChatParams = {
-  user: Doc<'users'> | null;
-  userId: Id<'users'>;
+  user: Doc<"users"> | null;
+  userId: Id<"users">;
   onNavigate: (path: string) => void;
-  productId?: Id<'product'>;
+  productId?: Id<"product">;
 };
 type ShareParams = {
   title: string;
   description: string;
-  productId?: Id<'product'>;
+  productId?: Id<"product">;
   url?: string;
   price?: number;
 };
@@ -23,15 +23,15 @@ export const initialChat = async ({
   productId,
 }: ChatParams) => {
   if (!user) {
-    toast.error('Please login to chat with vendor');
+    toast.error("Please login to chat with vendor");
     return;
   }
-  console.log('chat vendor clicked');
+  console.log("chat vendor clicked");
 
   // Navigate to chat page with vendor ID as query parameter
   onNavigate(`/chat?vendorId=${userId}&productId=${productId}`);
 
-  toast.success('Starting chat with vendor');
+  toast.success("Starting chat with vendor");
 };
 
 export async function shareProduct({
@@ -41,10 +41,10 @@ export async function shareProduct({
   url,
 }: ShareParams) {
   const shareData = {
-    title: title || 'Check out this product',
+    title: title || "Check out this product",
     text:
       `${description?.substring(0, 200)} '...\n'` ||
-      'Check out this product on Flickmart',
+      "Check out this product on Flickmart",
     url: url || `https://flickmart.app/product/${productId}`,
   };
   try {
@@ -62,15 +62,18 @@ export async function fetchRecommendations(
   scenario: string,
   recommendations: ({
     queryStrings,
+    anonId,
   }: {
     queryStrings: string;
+    anonId?: string;
   }) => Promise<RecommendationResponse | null>,
-  count?: number
+  count?: number,
+  anonId?: string,
 ) {
   const baseQuery =
-    '&returnProperties=true' +
-    '&includedProperties=likes,views,title,location,image,price,timestamp' +
-    '&cascadeCreate=true' +
+    "&returnProperties=true" +
+    "&includedProperties=likes,views,title,location,image,price,timestamp" +
+    "&cascadeCreate=true" +
     `&count=${count || 10}` +
     `&scenario=${scenario}`;
 
@@ -80,20 +83,23 @@ export async function fetchRecommendations(
   const filteredQuery = `?filter=${encodeURIComponent(filter)}${baseQuery}`;
   let results: RecommendationResponse | null = null;
 
-  if (scenario === 'New-Arrivals') {
-    results = await recommendations({ queryStrings: filteredQuery });
+  if (scenario === "New-Arrivals") {
+    results = await recommendations({ queryStrings: filteredQuery, anonId });
   }
 
   // 2. If no recent items, fetch default recommendations (fallback)
   if ((results && results.recomms.length === 0) || !results) {
     console.log(
       results
-        ? 'No recent items found, falling back to default recommendations.'
-        : 'Another Scenario in use'
+        ? "No recent items found, falling back to default recommendations."
+        : "Another Scenario in use",
     );
 
     const defaultQuery = `?${baseQuery}`;
-    results = await recommendations({ queryStrings: defaultQuery });
+    results = await recommendations({
+      queryStrings: defaultQuery,
+      anonId,
+    });
   }
 
   return results;
