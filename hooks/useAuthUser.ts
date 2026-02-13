@@ -1,13 +1,13 @@
-import { useAuth } from '@clerk/nextjs';
-import { useQuery } from 'convex/react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useRef } from 'react';
-import { toast } from 'sonner';
-import { api } from '@/convex/_generated/api';
-import type { Doc } from '@/convex/_generated/dataModel';
+import { useAuth } from "@clerk/nextjs";
+import { useQuery } from "convex/react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { toast } from "sonner";
+import { api } from "@/convex/_generated/api";
+import type { Doc } from "@/convex/_generated/dataModel";
 
 // Type for the user document from Convex
-type ConvexUser = Doc<'users'>;
+type ConvexUser = Doc<"users">;
 
 type UseAuthUserReturn = {
   user: ConvexUser | null | undefined;
@@ -23,7 +23,7 @@ type UseAuthUserReturn = {
  */
 export function useAuthUser({
   redirectOnUnauthenticated = true,
-  redirectTo = '/sign-in',
+  redirectTo = "/sign-in",
 }: {
   redirectOnUnauthenticated?: boolean;
   redirectTo?: string;
@@ -54,10 +54,10 @@ export function useAuthUser({
       // Only show toast once
       if (!toastShown.current) {
         toastShown.current = true;
-        toast.info('Oops! You need to be logged in to continue.', {
+        toast.info("Oops! You need to be logged in to continue.", {
           duration: 3000,
-          position: 'top-center',
-          description: 'Redirecting you to Sign In Page...',
+          position: "top-center",
+          description: "Redirecting you to Sign In Page...",
         });
       }
 

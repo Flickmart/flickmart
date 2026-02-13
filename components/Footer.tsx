@@ -1,24 +1,24 @@
-"use client";
-import Image from "next/image";
-import { usePathname } from "next/navigation";
-import Link from "next/link";
-import { ChevronUp, Mail, Facebook, Twitter, Instagram } from "lucide-react";
+'use client';
+import { ChevronUp, Mail } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
   const pathname = usePathname();
 
   // Pages where Footer should not be shown
   const hiddenPages = [
-    "/sign-in",
-    "/sign-up",
-    "/forgot-password",
-    "/notifications",
-    "/settings",
-    "post-ad",
-    "/create-store",
-    "/saved",
-    "/chat",
-    "/business",
+    '/sign-in',
+    '/sign-up',
+    '/forgot-password',
+    '/notifications',
+    '/settings',
+    'post-ad',
+    '/create-store',
+    '/saved',
+    '/chat',
+    '/business',
   ];
 
   if (hiddenPages.includes(pathname)) {
@@ -27,67 +27,67 @@ export default function Footer() {
 
   return (
     <>
-      <section className="section-px mb-10">
+      <section className="section-px my-10">
         <Image
-          src={"/footer-image.png"}
           alt="wave"
-          width={1010}
-          height={390}
           className="w-full"
+          height={390}
+          src={'/footer-image.png'}
+          width={1010}
         />
       </section>
-      <footer className="bg-black relative text-white rounded-t-[25px] section-px py-5 xl:pt-10 ">
+      <footer className="section-px relative rounded-t-[25px] bg-black py-5 text-white xl:pt-10">
         <section className="xl:flex xl:justify-between">
           <div>
-            <div className="flex justify-between items-center mb-3">
+            <div className="mb-3 flex items-center justify-between">
               <Image
-                src="/icons/logo-dark.svg"
                 alt="Logo"
-                width={150}
+                className="w-56 object-contain lg:w-64"
                 height={50}
-                className="object-contain w-56 lg:w-64"
+                src="/icons/logo-dark.svg"
+                width={150}
               />
               <a
+                className="rounded-full bg-white/10 p-3 transition hover:bg-white/20 xl:absolute xl:top-5 xl:right-5"
                 href="#top"
-                className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition xl:absolute xl:top-5 xl:right-5"
               >
                 <ChevronUp className="text-white" />
               </a>
             </div>
 
-            <p className="text-center text-gray-300 mb-5 italic">
+            <p className="mb-5 text-center text-gray-300 italic">
               "One flick, endless choices."
             </p>
           </div>
 
           {/* Main Footer Grid */}
-          <div className="grid text-center gap-6 border-t border-white/20 pt-5 grid-cols-1 sm:flex sm:justify-between  sm:text-left sm:gap-0 xl:w-[65%] xl:border-0">
+          <div className="grid grid-cols-1 gap-6 border-white/20 border-t pt-5 text-center sm:flex sm:justify-between sm:gap-0 sm:text-left xl:w-[65%] xl:border-0">
             {/* Quick Links */}
             <div>
-              <h3 className="text-lg font-semibold mb-3">Quick Links</h3>
+              <h3 className="mb-3 font-semibold text-lg">Quick Links</h3>
               <ul className="space-y-1 text-gray-400">
                 <li>
-                  <Link href="/" className="hover:text-white">
+                  <Link className="hover:text-white" href="/">
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link href="/post-ad" className="hover:text-white">
+                  <Link className="hover:text-white" href="/post-ad">
                     Sell
                   </Link>
                 </li>
                 <li>
-                  <Link href="/settings/personal" className="hover:text-white">
+                  <Link className="hover:text-white" href="/settings/personal">
                     Profile
                   </Link>
                 </li>
                 <li>
-                  <Link href="/chats" className="hover:text-white">
+                  <Link className="hover:text-white" href="/chats">
                     Chats
                   </Link>
                 </li>
                 <li>
-                  <Link href="/contact" className="hover:text-white">
+                  <Link className="hover:text-white" href="/contact">
                     Contact Us
                   </Link>
                 </li>
@@ -95,62 +95,62 @@ export default function Footer() {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold mb-3">Email</h3>
-              <p className="flex items-center gap-2 text-gray-400 justify-center sm:justify-start">
-                <Mail className="w-5 h-5 text-white flex-shrink-0" />
+              <h3 className="mb-3 font-semibold text-lg">Email</h3>
+              <p className="flex items-center justify-center gap-2 text-gray-400 sm:justify-start">
+                <Mail className="h-5 w-5 flex-shrink-0 text-white" />
                 <a
-                  href="mailto:flickmart2024@gmail.com"
                   className="hover:text-white"
+                  href="mailto:official@flickmart.app"
                 >
-                  flickmart2024@gmail.com
+                  official@flickmart.app
                 </a>
               </p>
             </div>
 
             {/* Social Links */}
             <div>
-              <h3 className="text-lg font-semibold mb-4">Follow Us</h3>
-              <div className="flex gap-4 justify-center items-center sm:justify-start">
+              <h3 className="mb-4 font-semibold text-lg">Follow Us</h3>
+              <div className="flex items-center justify-center gap-4 sm:justify-start">
                 <a
+                  className="rounded-[8px] bg-[#FF8100] p-3 transition hover:bg-white/20"
                   href="https://web.facebook.com/profile.php?id=61580235660893"
-                  target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 bg-[#FF8100] rounded-[8px] hover:bg-white/20 transition"
+                  target="_blank"
                 >
                   <Image
-                    src={"/social-icons/facebook-white.png"}
                     alt="Facebook"
-                    width={2084}
+                    className="size-[22px]"
                     height={2084}
-                    className="size-[22px]"
+                    src={'/social-icons/facebook-white.png'}
+                    width={2084}
                   />
                 </a>
                 <a
+                  className="rounded-[8px] bg-[#FF8100] p-3 transition hover:bg-white/20"
                   href="https://x.com/flickmartoffici"
-                  target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 bg-[#FF8100] rounded-[8px] hover:bg-white/20 transition"
+                  target="_blank"
                 >
                   <Image
-                    src={"/social-icons/instagram-white.png"}
                     alt="Instagram"
-                    width={4332}
-                    height={4320}
                     className="size-[22px]"
+                    height={4320}
+                    src={'/social-icons/instagram-white.png'}
+                    width={4332}
                   />
                 </a>
                 <a
+                  className="rounded-[8px] bg-[#FF8100] p-3 transition hover:bg-white/20"
                   href="https://www.instagram.com/flickmartofficial/"
-                  target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 bg-[#FF8100] rounded-[8px] hover:bg-white/20 transition"
+                  target="_blank"
                 >
                   <Image
-                    src={"/social-icons/x-white.png"}
                     alt="x/twitter"
-                    width={2400}
-                    height={2453}
                     className="size-[22px]"
+                    height={2453}
+                    src={'/social-icons/x-white.png'}
+                    width={2400}
                   />
                 </a>
               </div>
@@ -159,27 +159,27 @@ export default function Footer() {
         </section>
 
         {/* Bottom Note */}
-        <div className="mt-5 border-t border-white/20 pt-5 text-center sm:flex sm:items-center sm:justify-between sm:flex-row-reverse">
-          <ul className="text-white flex items-center justify-center gap-3 mb-3 text-sm font-bold sm:mb-0 sm:gap-6">
+        <div className="mt-5 border-white/20 border-t pt-5 text-center sm:flex sm:flex-row-reverse sm:items-center sm:justify-between">
+          <ul className="mb-3 flex items-center justify-center gap-3 font-bold text-sm text-white sm:mb-0 sm:gap-6">
             <li>
               <Link
+                className="transition-colors hover:text-flickmart"
                 href="/privacy-policy"
-                className="hover:text-flickmart transition-colors"
               >
                 Privacy Policy
               </Link>
             </li>
-            <li className="h-[20px] border-l-[1.5px] border-white/50 sm:hidden"></li>
+            <li className="h-[20px] border-white/50 border-l-[1.5px] sm:hidden" />
             <li>
               <Link
+                className="transition-colors hover:text-flickmart"
                 href="/terms-of-service"
-                className="hover:text-flickmart transition-colors"
               >
                 Terms of Service
               </Link>
             </li>
           </ul>
-          <p className="text-sm text-gray-500 sm:text-white">
+          <p className="text-gray-500 text-sm sm:text-white">
             © {new Date().getFullYear()} FlickMart. All rights reserved.
           </p>
         </div>

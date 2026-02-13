@@ -4,6 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
   // User
   users: defineTable({
+    aiEnabled: v.optional(v.boolean()),
     externalId: v.string(),
     name: v.string(),
     walletId: v.optional(v.id("wallets")),
@@ -18,11 +19,14 @@ export default defineSchema({
     description: v.optional(v.string()),
     aiEnabled: v.optional(v.boolean()),
     verified: v.optional(v.boolean()),
+    verifiedAt: v.optional(v.number()),
+    lastWeeklyProductCount: v.optional(v.number()), // Products posted in current week
+    weekStartTimestamp: v.optional(v.number()), // Start of current tracking week
     contact: v.optional(
       v.object({
         phone: v.optional(v.string()),
         address: v.optional(v.string()),
-      })
+      }),
     ),
   }).index("byExternalId", ["externalId"]),
 
@@ -58,7 +62,7 @@ export default defineSchema({
       v.literal("free"),
       v.literal("basic"),
       v.literal("pro"),
-      v.literal("premium")
+      v.literal("premium"),
     ),
     exchange: v.optional(v.boolean()),
     condition: v.union(v.literal("brand new"), v.literal("used")),
@@ -91,7 +95,7 @@ export default defineSchema({
         title: v.string(),
         image: v.string(),
         size: v.number(),
-      })
+      }),
     ),
   }),
 
@@ -163,8 +167,8 @@ export default defineSchema({
         v.literal("text"),
         v.literal("product"),
         v.literal("escrow"),
-        v.literal("transfer")
-      )
+        v.literal("transfer"),
+      ),
     ),
     price: v.optional(v.number()),
     title: v.optional(v.string()),
@@ -188,7 +192,7 @@ export default defineSchema({
       v.literal("reminder"),
       v.literal("escrow_funded"),
       v.literal("escrow_released"),
-      v.literal("completion_confirmed")
+      v.literal("completion_confirmed"),
     ),
     relatedId: v.optional(
       v.union(
@@ -198,8 +202,8 @@ export default defineSchema({
         v.id("store"),
         v.id("conversations"),
         v.id("orders"),
-        v.id("users")
-      )
+        v.id("users"),
+      ),
     ),
     content: v.string(),
     imageUrl: v.optional(v.string()),
@@ -220,7 +224,7 @@ export default defineSchema({
     status: v.union(
       v.literal("online"),
       v.literal("offline"),
-      v.literal("away")
+      v.literal("away"),
     ),
   })
     .index("byUserId", ["userId"])
@@ -233,7 +237,7 @@ export default defineSchema({
     status: v.union(
       v.literal("active"),
       v.literal("inactive"),
-      v.literal("blocked")
+      v.literal("blocked"),
     ),
     recipientCode: v.optional(v.string()), // Paystack recipient code
     paystackCustomerId: v.optional(v.string()), // Paystack customer ID
@@ -261,14 +265,14 @@ export default defineSchema({
       v.literal("ad_posting"), // Payment for posting an ad
       v.literal("ad_promotion"), // Payment for promoting an ad
       v.literal("subscription"), // Payment for subscription
-      v.literal("refund") // General refund
+      v.literal("refund"), // General refund
     ),
     amount: v.number(),
     status: v.union(
       v.literal("pending"),
       v.literal("success"),
       v.literal("failed"),
-      v.literal("cancelled")
+      v.literal("cancelled"),
     ),
     reference: v.string(),
     paystackReference: v.optional(v.string()),
@@ -294,10 +298,10 @@ export default defineSchema({
             v.literal("free"),
             v.literal("basic"),
             v.literal("pro"),
-            v.literal("premium")
-          )
+            v.literal("premium"),
+          ),
         ), // Ad plan type
-      })
+      }),
     ),
   })
     .index("by_user", ["userId"])
@@ -314,7 +318,7 @@ export default defineSchema({
       v.literal("in_escrow"),
       v.literal("completed"),
       v.literal("cancelled"),
-      v.literal("disputed")
+      v.literal("disputed"),
     ),
     buyerConfirmedCompletion: v.boolean(),
     sellerConfirmedCompletion: v.boolean(),
@@ -346,7 +350,7 @@ export default defineSchema({
     status: v.union(
       v.literal("frozen"), // Balance frozen
       v.literal("released"), // Released to seller
-      v.literal("refunded") // Refunded to buyer
+      v.literal("refunded"), // Refunded to buyer
     ),
     reference: v.string(),
     autoReleaseAt: v.optional(v.number()),
@@ -381,7 +385,7 @@ export default defineSchema({
       v.literal("pending"),
       v.literal("processing"),
       v.literal("completed"),
-      v.literal("failed")
+      v.literal("failed"),
     ),
     paystackTransferCode: v.optional(v.string()),
     reference: v.string(),
@@ -401,7 +405,7 @@ export default defineSchema({
         platform: v.optional(v.string()),
         browser: v.optional(v.string()),
         deviceType: v.optional(v.string()),
-      })
+      }),
     ),
     createdAt: v.number(),
     lastUsed: v.optional(v.number()),

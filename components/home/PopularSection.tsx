@@ -1,28 +1,25 @@
 'use client';
 import { useQuery } from 'convex/react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { api } from '@/convex/_generated/api';
+import type { Id } from '@/convex/_generated/dataModel';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useRecommend } from '@/hooks/useRecommend';
 import ProductCard from '../multipage/ProductCard';
 import { Skeleton } from '../ui/skeleton';
 import Container from './Container';
-import { useRecommend } from '@/hooks/useRecommend';
-import { Id } from '@/convex/_generated/dataModel';
 
-export default function PopularSection() {
+export default function PopularSection({anonId}: {anonId: string | null}) {
   const isMobile = useIsMobile();
-  const popular = useRecommend("Popular", 20) //Specify the scenario as the first parameter
-  const user = useQuery(api.users.current, {})
-
-
+  const popular = useRecommend('Popular', 20); //Specify the scenario as the first parameter
+  const user = useQuery(api.users.current, {});
 
   return (
-    <div className="space-y-5 lg-text-center  lg:space-y-10">
+    <div className="lg-text-center space-y-5 lg:space-y-10">
       <h2 className="section-title">Popular</h2>
       <Container>
         <div className="grid w-full grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
-          {popular === null || !user
+          {popular === null || (!user && !anonId)
             ? Array.from({ length: isMobile ? 4 : 8 }).map((_, index) => (
                 // Skeleton Loader
                 <div
@@ -37,18 +34,22 @@ export default function PopularSection() {
                 </div>
               ))
             : popular.recomms.map((product) => (
+                <Link
+                  href={`/product/${product.id}?id=${popular.recommId}`}
+                  key={product.id}
+                >
                   <ProductCard
+                    image={product.values?.image as string}
                     key={product.id}
                     likes={product.values?.likes as number}
                     location={product.values?.location as string}
-                    image={product.values?.image as string}
-                    productId={product.id as Id<"product">}
                     price={product.values?.price as number}
+                    productId={product.id as Id<'product'>}
                     title={product.values?.title as string}
                     views={product.values?.views as number}
                   />
-                ))
-              }
+                </Link>
+              ))}
         </div>
       </Container>
     </div>

@@ -1,6 +1,6 @@
+import type { RecommendationResponse } from "recombee-api-client";
 import { toast } from "sonner";
 import type { Doc, Id } from "@/convex/_generated/dataModel";
-import { RecommendationResponse } from "recombee-api-client";
 
 type ChatParams = {
   user: Doc<"users"> | null;
@@ -62,14 +62,17 @@ export async function fetchRecommendations(
   scenario: string,
   recommendations: ({
     queryStrings,
+    anonId,
   }: {
     queryStrings: string;
+    anonId?: string;
   }) => Promise<RecommendationResponse | null>,
-  count?: number
+  count?: number,
+  anonId?: string,
 ) {
   const baseQuery =
-    "returnProperties=true" +
-    "&includedProperties=likes,views,rating,title,location,image,price,timestamp" +
+    "&returnProperties=true" +
+    "&includedProperties=likes,views,title,location,image,price,timestamp" +
     "&cascadeCreate=true" +
     `&count=${count || 10}` +
     `&scenario=${scenario}`;
@@ -81,19 +84,22 @@ export async function fetchRecommendations(
   let results: RecommendationResponse | null = null;
 
   if (scenario === "New-Arrivals") {
-    results = await recommendations({ queryStrings: filteredQuery });
+    results = await recommendations({ queryStrings: filteredQuery, anonId });
   }
 
   // 2. If no recent items, fetch default recommendations (fallback)
   if ((results && results.recomms.length === 0) || !results) {
     console.log(
-      !results
-        ? "Another Scenario in use"
-        : "No recent items found, falling back to default recommendations."
+      results
+        ? "No recent items found, falling back to default recommendations."
+        : "Another Scenario in use",
     );
 
     const defaultQuery = `?${baseQuery}`;
-    results = await recommendations({ queryStrings: defaultQuery });
+    results = await recommendations({
+      queryStrings: defaultQuery,
+      anonId,
+    });
   }
 
   return results;

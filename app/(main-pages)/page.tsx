@@ -2,30 +2,32 @@
 import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
 import Footer from '@/components/Footer';
+import Categories from '@/components/home/Categories';
+import JustForYou from '@/components/home/JustForYou';
 import NewArrivals from '@/components/home/NewArrivals';
 import PopularSection from '@/components/home/PopularSection';
+import RecentlyViewed from '@/components/home/RecentlyViewed';
 import Slider from '@/components/home/Slider';
 import MobileNav from '@/components/MobileNav';
 import SearchBox from '@/components/SearchBox';
 import SearchOverlay from '@/components/SearchOverlay';
 import { useAppPresence } from '@/hooks/useAppPresence';
-import JustForYou from '@/components/home/JustForYou';
-import Categories from '@/components/home/Categories';
-import RecentlyViewed from '@/components/home/RecentlyViewed';
-
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
+  const [anonId, setAnonId]= useState<string | null>("")
+
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
 
   const { presenceState } = useAppPresence();
-  
 
   console.log('Presense state', presenceState);
 
   useEffect(() => {
+    const id = localStorage.getItem("anonId")
+    setAnonId(id)
     // Ensure this code runs only on the client side
     if (typeof window !== 'undefined') {
       OneSignal.init({
@@ -35,6 +37,8 @@ export default function Home() {
       });
     }
   }, []);
+
+  
 
   function _urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -51,7 +55,6 @@ export default function Home() {
     return outputArray;
   }
 
-
   return (
     <section className="lg:flex lg:justify-end lg:bg-[#F8F8F8]">
       <div className="lg:hidden">
@@ -62,10 +65,10 @@ export default function Home() {
         <Slider />
         <div className="section-px min-h-screen space-y-10">
           <Categories />
-          <JustForYou />
-          <NewArrivals />
-          <PopularSection />
-          <RecentlyViewed />
+          <JustForYou anonId={anonId}/>
+          <NewArrivals anonId={anonId}/>
+          <PopularSection anonId={anonId}/>
+          <RecentlyViewed anonId={anonId} />
         </div>
         <Footer />
       </section>

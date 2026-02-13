@@ -3,8 +3,8 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
-import { initialChat, shareProduct } from '@/utils/helpers';
 import { useTrack } from '@/hooks/useTrack';
+import { initialChat, shareProduct } from '@/utils/helpers';
 
 export default function ProductHeader({
   location,
@@ -15,6 +15,7 @@ export default function ProductHeader({
   productId,
   description,
   aiEnabled,
+  recommendationId,
 }: {
   location: string;
   title: string;
@@ -24,6 +25,7 @@ export default function ProductHeader({
   productId: Id<'product'>;
   description: string;
   aiEnabled: boolean;
+  recommendationId: string;
 }) {
   const date = new Date(timestamp);
   const dateNow = new Date();
@@ -76,6 +78,8 @@ export default function ProductHeader({
     captureActivity('Chat Initiated', {
       productId,
       userId: user?._id ?? '',
+      recommId: recommendationId,
+      price,
     });
     initialChat({
       user: user ?? null,

@@ -20,6 +20,7 @@ import type * as interactions from "../interactions.js";
 import type * as internal_ from "../internal.js";
 import type * as notifications from "../notifications.js";
 import type * as orders from "../orders.js";
+import type * as populate from "../populate.js";
 import type * as presence from "../presence.js";
 import type * as product from "../product.js";
 import type * as pushNotifications from "../pushNotifications.js";
@@ -50,6 +51,7 @@ declare const fullApi: ApiFromModules<{
   internal: typeof internal_;
   notifications: typeof notifications;
   orders: typeof orders;
+  populate: typeof populate;
   presence: typeof presence;
   product: typeof product;
   pushNotifications: typeof pushNotifications;

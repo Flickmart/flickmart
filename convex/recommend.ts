@@ -1,8 +1,8 @@
 // convex/recommend.ts
 import { v } from "convex/values";
-import { action, internalMutation } from "./_generated/server";
 import { internal } from "./_generated/api";
-import { Doc, Id } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
+import { action, internalMutation } from "./_generated/server";
 
 export type RecommendationResponse = {
   numberNextRecommsCalls: number;
@@ -18,7 +18,6 @@ export type RecommendationResponse = {
       location: string | null;
       plan: string | null;
       price: number | null;
-      rating: number | null;
       subcategory: string | null;
       title: string | null;
       views: number | null;
@@ -27,30 +26,41 @@ export type RecommendationResponse = {
   }>;
 };
 
-export const apiUrl = `https://rapi-eu-west.recombee.com`;
+export const apiUrl = "https://rapi-eu-west.recombee.com";
 
 // Recommend Items to User
 export const recommendItems = action({
   args: {
     queryStrings: v.string(),
+    anonId: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
     try {
       // Get User ID
       const userIdResult = await ctx.runQuery(internal.users.getUserId);
-      if (!userIdResult) {
-        throw new Error("No user id found");
+      let userId = userIdResult;
+      if (!userId) {
+        // If no user ID found, use anonId if provided
+        userId = args.anonId ? (args.anonId as Id<"users">) : null;
+
+        if (!userId) {
+          console.error(
+            "[Recombee] ERROR: No user id found from getUserId query and no anonId provided",
+          );
+          throw new Error("No user id found");
+        }
       }
 
-      const userId = userIdResult;
-
       // Get URI and Hash
-      const uri = `/${process.env.RECOMBEE_DB_ID as string}/recomms/users/${userId}/items/${args.queryStrings}`;
+      const databaseId = process.env.RECOMBEE_DB_ID as string;
+
+      const uri = `/${databaseId}/recomms/users/${userId}/items/${args.queryStrings}`;
+
       const { hmac_timestamp, hmac_sign } = await ctx.runAction(
         internal.helpers.signRecombeeUri,
         {
           uri,
-        }
+        },
       );
       const fullUrl = `${apiUrl}${uri}&hmac_timestamp=${hmac_timestamp}&hmac_sign=${hmac_sign}`;
 
@@ -60,13 +70,25 @@ export const recommendItems = action({
       const params = new URLSearchParams(args.queryStrings);
       const scenario = params.get("scenario");
 
+      // If anonId is provided, skip caching and fetch recommendation
+      if (args.anonId && !userIdResult) {
+        const result = await fetchRecommendation(
+          fullUrl,
+          hmac_sign,
+          userId,
+          scenario ?? "",
+          databaseId,
+        );
+        return result;
+      }
+
       // Check if Cache exists
       const cache: Doc<"recommCache"> = await ctx.runMutation(
         internal.recommend.cache,
         {
           scenario: scenario ?? "", // Use scenario for caching, with a fallback
           userId,
-        }
+        },
       );
 
       // Cache valid for 1 hour
@@ -74,26 +96,29 @@ export const recommendItems = action({
 
       // If cache is still valid
       if (cache.data && Date.now() - cache.updatedAt < oneHour) {
+        console.log(
+          "[Recombee] Returning cached data (cache age:",
+          Date.now() - cache.updatedAt,
+          "ms)",
+        );
         const validCache = cache.data as RecommendationResponse;
 
         return validCache;
       }
 
-      // TODO - Implement using axios
+      console.log(
+        "[Recombee] Cache miss or expired, fetching from Recombee API...",
+      );
+
       // Fetch recommendations
+      const data = await fetchRecommendation(
+        fullUrl,
+        hmac_sign,
+        userId,
+        scenario ?? "",
+        databaseId,
+      );
 
-      const res = await fetch(fullUrl, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${process.env.RECOMBEE_PRIVATE_TOKEN as string}`,
-        },
-      });
-      if (!res.ok) {
-        throw new Error(`Recombee request failed: ${res.statusText}`);
-      }
-
-      const data: RecommendationResponse = await res.json();
       // Update Cache
       await ctx.runMutation(internal.recommend.updateCache, {
         cacheId: cache._id,
@@ -109,6 +134,59 @@ export const recommendItems = action({
   },
 });
 
+// Fetch Recommendation
+async function fetchRecommendation(
+  fullUrl: string,
+  hmac_sign: string,
+  userId: Id<"users">,
+  scenario: string,
+  databaseId: string,
+) {
+  const res = await fetch(fullUrl, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${process.env.RECOMBEE_PRIVATE_TOKEN as string}`,
+    },
+  });
+
+  console.log("[Recombee] Response status:", res.status, res.statusText);
+
+  if (!res.ok) {
+    // Get the response body for more details
+    let errorBody = "";
+    try {
+      errorBody = await res.text();
+      console.error("[Recombee] Error response body:", errorBody);
+    } catch (e) {
+      console.error("[Recombee] Could not read error response body");
+    }
+
+    console.error("[Recombee] Request failed with status:", res.status);
+    console.error(
+      "[Recombee] Request URL was:",
+      fullUrl.replace(hmac_sign, "[REDACTED]"),
+    );
+    console.error("[Recombee] User ID:", userId);
+    console.error("[Recombee] Scenario:", scenario);
+    console.error("[Recombee] Database ID:", databaseId);
+
+    throw new Error(
+      `Recombee request failed: ${res.statusText} - ${errorBody}`,
+    );
+  }
+
+  const data: RecommendationResponse = await res.json();
+  console.log(
+    "[Recombee] SUCCESS: Received",
+    data.recomms?.length ?? 0,
+    "recommendations",
+  );
+  console.log("[Recombee] Response recommId:", data.recommId);
+
+  return data;
+}
+
 //////////////////////////////////////////////////////
 // Check if there is  an existing Cache
 export const cache = internalMutation({
@@ -118,7 +196,7 @@ export const cache = internalMutation({
     const cache = await ctx.db
       .query("recommCache")
       .withIndex("by_user", (q) =>
-        q.eq("userId", args.userId).eq("scenario", args.scenario)
+        q.eq("userId", args.userId).eq("scenario", args.scenario),
       )
       .unique();
 
@@ -144,7 +222,7 @@ export const updateCache = internalMutation({
     scenario: v.string(),
     data: v.any(),
   },
-  handler: async function (ctx, args) {
+  async handler(ctx, args) {
     await ctx.db.patch(args.cacheId, {
       data: args.data,
       scenario: args.scenario,
