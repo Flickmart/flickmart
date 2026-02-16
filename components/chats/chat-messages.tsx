@@ -1,7 +1,9 @@
 import { TriangleAlert } from 'lucide-react';
-import { type Dispatch, type SetStateAction, useRef } from 'react';
+import { type Dispatch, type SetStateAction, useRef, useState } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import MessageBubble from './message-bubble';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 type Message = {
   id: string;
@@ -10,7 +12,7 @@ type Message = {
   images?: string[];
   role: 'user' | 'assistant';
   timestamp: Date;
-  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer';
+  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer' | "ai";
   title?: string;
   price?: number;
   productImage?: string;
@@ -39,6 +41,7 @@ export default function ChatMessages({
   selectedMessages,
 }: ChatMessagesProps) {
   const _messagesEndRef = useRef<HTMLDivElement>(null);
+  const [streamId, useStreamId] = useState<string>("")
 
   // const scrollToBottom = () => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -47,6 +50,11 @@ export default function ChatMessages({
   // useEffect(() => {
   //   scrollToBottom();
   // }, [messages]);
+
+
+  const chatBody = useQuery(api.chat.getChatBody, {
+    streamId: streamId
+  })
 
   // Toggle selection mode
   const toggleSelectionMode = () => {
@@ -151,7 +159,7 @@ export default function ChatMessages({
             <div className="mx-auto w-fit rounded-full bg-gray-200 px-3 py-1 text-center text-gray-600 text-xs">
               {group.date}
             </div>
-            {group.messages.map((message) => (
+            {group.messages.map((message) => ( message.content &&
               <MessageBubble
                 currency={message.currency}
                 handleLongPress={handleLongPress}
@@ -183,6 +191,9 @@ export default function ChatMessages({
           </div>
         ))}
       </PhotoProvider>
+      <div className='h-96 border border-flickmart'>
+        {chatBody?.text}
+      </div>
       {/* <div ref={messagesEndRef} /> */}
       {/* Extra spacing at bottom for better scrolling */}
       <div className="h-16" />

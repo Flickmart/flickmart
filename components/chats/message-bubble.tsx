@@ -27,7 +27,7 @@ type MessageBubbleProps = {
   handleLongPress: (messageId: string) => void;
   toggleMessageSelection: (messageId: string) => void;
   toggleSelectionMode: () => void;
-  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer';
+  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer' | "ai";
   title?: string;
   price?: number;
   image?: string;

@@ -60,6 +60,7 @@ export default function ConversationPage() {
   const [showProfile, setShowProfile] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
+  const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
   const [processedProductId, setProcessedProductId] =
     useState<Id<'product'> | null>(null);
   const [pendingMessages, setPendingMessages] = useState<
@@ -75,6 +76,9 @@ export default function ConversationPage() {
   const conversationId = params?.conversationId as Id<'conversations'>;
   const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
+  const streamId = useQuery(api.chat.getStreamIdByMessageId, {
+    messageId
+  })
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -427,7 +431,7 @@ export default function ConversationPage() {
       }
 
       // Send message with text and/or images
-      await sendMessage({
+      const chatId = await sendMessage({
         senderId: user._id,
         content: messageText,
         conversationId,
@@ -435,25 +439,14 @@ export default function ConversationPage() {
         type: 'text',
       });
 
+      setMessageId(chatId)
+
      // Remove pending message on success
       setPendingMessages((prev) =>
         prev.filter((msg) => msg.id !== optimisticMessageId)
       );
 
-      // Check if other user is online and if other user has AI enabled through subscription
-      // if(!otherUserOnlineStatus?.isOnline && otherUser?.aiEnabled){
-      //   const response = await ai.models.generateContent({
-      //     model: "gemma-3-27b-it",
-      //     contents: input
-      //   })
-        // console.log(response.candidates?.at(0)?.content?.parts?.at(0)?.text)
-      // }   
-      const { text } = await generateText({
-        model: google('gemma-3-27b-it'),
-        prompt: input,
-      });
-      
-      console.log(text)
+
     } catch (error) {
       console.error('Failed to send message:', error);
       toast.error('Failed to send message');
@@ -463,6 +456,34 @@ export default function ConversationPage() {
       );
     }
   };
+
+  useEffect(()=> {
+    console.log("Hello Im here", streamId)
+    if(!streamId) return
+    // try{
+    async function promptAIAssistant (){
+      const response = await fetch("",{
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          streamId,
+          prompt: input
+        })
+      })
+      
+      if (!response.ok) throw Error ("Something went wrong, Please try again...")
+      const data = await response.json()
+
+      console.log(data)
+    }
+
+    promptAIAssistant()
+    // }catch(err){
+    //   console.log(err)
+    // }
+  }, [streamId])
 
   const handleInputWrapper = (value: string) => {
     handleInputChange({

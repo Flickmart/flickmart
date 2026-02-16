@@ -1,7 +1,7 @@
 import { Presence } from "@convex-dev/presence";
 import { v } from "convex/values";
-import { components } from "./_generated/api";
-import { mutation, query } from "./_generated/server";
+import { components, internal } from "./_generated/api";
+import { internalQuery, mutation, query } from "./_generated/server";
 import { getCurrentUserOrThrow } from "./users";
 
 export const presence = new Presence(components.presence);
@@ -119,8 +119,31 @@ export const getConversationTypingStatus = query({
   },
 });
 
+type StatusType = {
+  isOnline: boolean;
+  lastSeen: number;
+};
+
 // Get user's online status (for profile pages)
 export const getUserOnlineStatus = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Run Internal Query to get online status
+
+    const status: StatusType = await ctx.runQuery(
+      internal.presence.onlineStatus,
+      {
+        userId: args.userId,
+      },
+    );
+
+    return status;
+  },
+});
+
+export const onlineStatus = internalQuery({
   args: {
     userId: v.id("users"),
   },
@@ -137,7 +160,7 @@ export const getUserOnlineStatus = query({
 
       // Check if the user's external ID (Clerk ID) is in the presence list
       const isOnline = appPresence.some(
-        (p) => p.userId === user._id && p.online === true
+        (p) => p.userId === user._id && p.online === true,
       );
 
       return {
