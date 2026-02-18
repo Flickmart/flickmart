@@ -1,5 +1,5 @@
 import { api } from "@/convex/_generated/api";
-import { Id } from "@/convex/_generated/dataModel";
+import { Doc, Id } from "@/convex/_generated/dataModel";
 import { StreamId } from "@convex-dev/persistent-text-streaming";
 import { useStream } from "@convex-dev/persistent-text-streaming/react";
 import { useMutation, useQuery } from "convex/react";
@@ -8,12 +8,14 @@ import ReactMarkdown from "react-markdown";
 import { Skeleton } from "../ui/skeleton";
 
 export default function ChatAI({
+    sellerId,
     prompt, 
     setAIStatus, 
     streamId, 
     messageId, 
     setShowAIStream}: 
 {
+    sellerId: Id<"users">
     prompt: string, 
     setAIStatus: (val: string)=> void; 
     streamId: string; messageId: Id<"message">; 
@@ -23,13 +25,15 @@ const updateAIMessageRecord = useMutation(api.chat.updateAIRecord)
 const bottomRef = useRef<HTMLDivElement | null>(null);
 
 // Before Streaming AI Response - Retrieve Store Details
-const store = useQuery(api.store.getStoresByUserId)
+const store = useQuery(api.store.getExternalUserStore, {
+    userId: sellerId
+}) as Doc<"store">
     
 // Stream AI Response
 const streamUrl = new URL(`${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/chat-stream`);
 streamUrl.searchParams.set("prompt", prompt);
 streamUrl.searchParams.set("streamId", streamId ?? "");
-streamUrl.searchParams.set("storeName", store?.data?.name ?? "" )
+streamUrl.searchParams.set("storeName", store?.name ?? ""  )
 
 const { text, status } = useStream(
     api.chat.getChatBody,

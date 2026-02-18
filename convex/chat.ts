@@ -216,6 +216,7 @@ export const sendMessage = mutation({
         v.literal("product"),
         v.literal("escrow"),
         v.literal("transfer"),
+        v.literal("ai"),
       ),
     ),
     productId: v.optional(v.id("product")),
@@ -238,6 +239,16 @@ export const sendMessage = mutation({
     if (!conversation) {
       throw new Error("Conversation not found");
     }
+
+    // If conversation has been created without products needed for ai to work, update that field
+    if (args.productId && !conversation.products?.includes(args.productId)) {
+      // Update conversation product
+      ctx.db.patch(conversation._id, {
+        products: [...(conversation.products || []), args.productId],
+      });
+    }
+
+    // Update if no products exist
 
     // Get current timestamp
     const now = Date.now();
@@ -364,7 +375,7 @@ export const getChatBody = query({
 });
 
 // Create a query that returns the stream id
-export const getStreamIdByMessageId = query({
+export const getStreamIdAndUserIdByMessageId = query({
   args: {
     messageId: v.optional(v.id("message")),
   },
@@ -372,7 +383,7 @@ export const getStreamIdByMessageId = query({
     if (!args.messageId) return;
 
     const message = await ctx.db.get(args.messageId);
-    return message?.streamId;
+    return { streamId: message?.streamId, sellerId: message?.senderId };
   },
 });
 
