@@ -16,7 +16,6 @@ import {
 } from "@convex-dev/persistent-text-streaming";
 import { cors } from "./http";
 import { systemPrompt } from "./system";
-import { DataAPIClient, Db } from "@datastax/astra-db-ts";
 
 // Google Gen AI client
 const ai = new GoogleGenAI({
@@ -25,27 +24,6 @@ const ai = new GoogleGenAI({
 
 // Persistent Streaming Client
 const pts = new PersistentTextStreaming(components.persistentTextStreaming);
-
-// DataStax Vector DB Client
-export function connectToDatabase(): Db {
-  const { API_ENDPOINT: endpoint, APPLICATION_TOKEN: token } = process.env;
-
-  if (!token || !endpoint) {
-    throw new Error(
-      "Environment variables API_ENDPOINT and APPLICATION_TOKEN must be defined.",
-    );
-  }
-
-  // Create an instance of the `DataAPIClient` class
-  const client = new DataAPIClient();
-
-  // Get the database specified by your endpoint and provide the token
-  const database = client.db(endpoint, { token });
-
-  console.log(`Connected to database ${database.id}`);
-
-  return database;
-}
 
 // Helper function to handle consolidated message notifications
 async function handleMessageNotification(
@@ -244,7 +222,7 @@ export const sendMessage = mutation({
     if (args.productId && !conversation.products?.includes(args.productId)) {
       // Update conversation product
       await ctx.db.patch(conversation._id, {
-        products: [...(conversation.products || []), args.productId],
+        products: [args.productId, ...(conversation.products || [])],
       });
     }
 
@@ -429,9 +407,6 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       });
     }
 
-    // Connect to Vector DB
-    const database = connectToDatabase();
-
     const { searchParams } = new URL(request.url);
     const prompt = searchParams.get("prompt");
     const streamId = searchParams.get("streamId");
@@ -444,26 +419,26 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       });
     }
 
-    // Embed Prompt
-    const embeddedPrompt = (
-      await ai.models.embedContent({
-        model: "gemini-embedding-001",
-        contents: prompt,
-        config: {
-          outputDimensionality: 768,
-        },
-      })
-    ).embeddings?.at(0)?.values;
+    const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/vectors`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt,
+      }),
+    });
 
-    // Use Embedded Vector to Query DataStax Vector db
-    const results = database
-      .collection("product_listings_embeddings")
-      .find({
-        vector_field: { $vector: embeddedPrompt },
-      })
-      .limit(5);
+    if (!result.ok)
+      throw Error(
+        "There was an issue retrieving similarity search results for this request.",
+      );
 
-    // console.log(results);
+    const data = (await result.json()).data as Array<{
+      _id: string;
+      text: string;
+    }>;
+    const infoFromVectorDB = data.map((item) => item.text).join("#");
 
     const response = await pts.stream(
       ctx,
@@ -472,7 +447,7 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       async (ctx, req, id, append) => {
         const aiResponse = await ai.models.generateContentStream({
           model: process.env.GEMINI_MODEL as string,
-          contents: `${systemPrompt.replace("{Company Name}", storeName as string)} User Prompt: ${prompt}`,
+          contents: `${systemPrompt.replace("{Company Name}", storeName as string)} Info from vector DB: ${infoFromVectorDB} User Prompt: ${prompt}`,
         });
         for await (const chunk of aiResponse) {
           const text = chunk.text;
