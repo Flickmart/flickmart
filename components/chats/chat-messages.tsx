@@ -19,6 +19,7 @@ type Message = {
   productImage?: string;
   productId?: string;
   // Transfer-specific fields
+  
   orderId?: string;
   transferAmount?: number;
   currency?: string;
