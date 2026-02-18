@@ -9,7 +9,7 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 
 type ChatHeaderProps = {
-
+  aiEnabled: boolean;
   toggleSidebar: () => void;
   AIStatus: string;
   activeChatData: {
@@ -30,6 +30,7 @@ type ChatHeaderProps = {
 };
 
 export default function ChatHeader({
+  aiEnabled,
   sellerId,
   userId,
   toggleSidebar,
@@ -133,7 +134,7 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
-                    sellerId === userId ? <p className="truncate text-gray-500 text-sm">offline</p> :
+                    sellerId === userId || !aiEnabled? <p className="truncate text-gray-500 text-sm">offline</p> :
                     AIStatus === "thinking" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Thinking...</p> :
                     AIStatus === "generating" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Generating response...</p> :
                     AIStatus === "done" && <p className="truncate text-purple-600 text-sm flex items-center gap-1"><Sparkles className="size-4" />NKEM AI</p>

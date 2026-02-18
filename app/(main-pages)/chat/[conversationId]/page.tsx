@@ -80,7 +80,7 @@ export default function ConversationPage() {
   const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
   const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
-  const messageProps = useQuery(api.chat.getStreamIdAndUserIdByMessageId, {
+  const streamId = useQuery(api.chat.getStreamIdByMessageId, {
     messageId
   })
   const [showAIStream, setShowAIStream] = useState(false)
@@ -128,6 +128,9 @@ export default function ConversationPage() {
     otherUserId ? { userId: otherUserId } : 'skip'
   );
 
+  // Ensure that other user is the seller in the conversation so we can check if ai response is enabled
+  const seller = otherUser?._id === conversationProduct?.userId ? otherUser : null
+
   // Mutation to send a message
   const sendMessage = useMutation(api.chat.sendMessage);
 
@@ -172,8 +175,10 @@ export default function ConversationPage() {
           productTitle: product.title,
           conversationId,
         });
+        const content =`Hey i'm interested in this product, ${product?.title} is it still available?`
 
-        await sendMessage({
+        setPrompt(content)
+        const chatId = await sendMessage({
           senderId: user._id,
           conversationId,
           type: 'product',
@@ -181,8 +186,12 @@ export default function ConversationPage() {
           price: product?.price,
           title: product?.title,
           productImage: product?.images?.[0],
-          content: `Hey i'm interested in this product, ${product?.title} is it still available?`,
+          content
         });
+        if(conversationProduct?.userId !==  user._id && seller?.aiEnabled){
+          setShowAIStream(true)
+          setMessageId(chatId)
+        }
         setProcessedProductId(currentProductId);
         console.log('Product message sent successfully');
       } catch (error) {
@@ -450,7 +459,7 @@ export default function ConversationPage() {
       });
 
       // Before activating process that triggers AI, let determine if user is buyer or seller
-      if(conversationProduct?.userId !==  user._id){
+      if(conversationProduct?.userId !==  user._id && seller?.aiEnabled){
         setShowAIStream(true)
         setMessageId(chatId)
       }
@@ -533,6 +542,7 @@ export default function ConversationPage() {
   return (
     <div className="flex h-full flex-col">
       <ChatHeader
+        aiEnabled = {seller?.aiEnabled ?? false}
         sellerId = {conversationProduct?.userId as Id<"users">}
         userId={user?._id as Id<"users">}
         AIStatus={AIStatus}
@@ -556,8 +566,8 @@ export default function ConversationPage() {
           messageId={messageId as Id<"message">}
           prompt={prompt}
           showAIStream= {showAIStream}
-          sellerId = {messageProps?.sellerId as Id<"users">}
-          streamId = {messageProps?.streamId as string}
+          sellerId = {conversationProduct?.userId as Id<"users">}
+          streamId = {streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}
           selectionMode={selectionMode}

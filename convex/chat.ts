@@ -243,7 +243,7 @@ export const sendMessage = mutation({
     // If conversation has been created without products needed for ai to work, update that field
     if (args.productId && !conversation.products?.includes(args.productId)) {
       // Update conversation product
-      ctx.db.patch(conversation._id, {
+      await ctx.db.patch(conversation._id, {
         products: [...(conversation.products || []), args.productId],
       });
     }
@@ -254,6 +254,8 @@ export const sendMessage = mutation({
         ? conversation.user2
         : conversation.user1;
 
+    let tempProdId: Id<"product"> | undefined;
+
     // Update if no products exist
     if (!conversation.products || !conversation.products.length) {
       const product = await ctx.db
@@ -262,7 +264,8 @@ export const sendMessage = mutation({
         .first();
 
       // Update conversation Id
-      ctx.db.patch(conversation._id, {
+      tempProdId = product?._id;
+      await ctx.db.patch(conversation._id, {
         products: [product?._id as Id<"product">],
       });
     }
@@ -289,12 +292,16 @@ export const sendMessage = mutation({
       currency: args.currency,
     });
 
+    // Get Seller
+    const seller = await ctx.db.get(recipientId);
+
     // Get userId from product
-    const productId = conversation.products?.at(0);
+    const productId =
+      conversation.products?.at(0) || args.productId || tempProdId;
 
     const product = productId ? await ctx.db.get(productId) : null;
 
-    if (recipientId === product?.userId) {
+    if (recipientId === product?.userId && seller?.aiEnabled) {
       // We are sure atp that recipient is seller, Check if seller is online/offline
       const status = await ctx.runQuery(internal.presence.onlineStatus, {
         userId: recipientId,
@@ -386,7 +393,7 @@ export const getChatBody = query({
 });
 
 // Create a query that returns the stream id
-export const getStreamIdAndUserIdByMessageId = query({
+export const getStreamIdByMessageId = query({
   args: {
     messageId: v.optional(v.id("message")),
   },
@@ -394,7 +401,7 @@ export const getStreamIdAndUserIdByMessageId = query({
     if (!args.messageId) return;
 
     const message = await ctx.db.get(args.messageId);
-    return { streamId: message?.streamId, sellerId: message?.senderId };
+    return message?.streamId;
   },
 });
 
@@ -456,7 +463,7 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       })
       .limit(5);
 
-    console.log(results);
+    // console.log(results);
 
     const response = await pts.stream(
       ctx,
@@ -464,7 +471,7 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       streamId as StreamId,
       async (ctx, req, id, append) => {
         const aiResponse = await ai.models.generateContentStream({
-          model: "gemini-2.5-flash",
+          model: process.env.GEMINI_MODEL as string,
           contents: `${systemPrompt.replace("{Company Name}", storeName as string)} User Prompt: ${prompt}`,
         });
         for await (const chunk of aiResponse) {
