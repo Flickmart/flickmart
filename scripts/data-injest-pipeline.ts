@@ -4,7 +4,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { readFile } from "node:fs";
 import path from "node:path";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import ollama from "ollama";
+// import ollama from "ollama";
 import {
   Collection,
   DataAPIClient,
@@ -12,8 +12,13 @@ import {
   FoundDoc,
   SomeDoc,
 } from "@datastax/astra-db-ts";
+import { GoogleGenAI } from "@google/genai";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;
+
+const ai = new GoogleGenAI({
+  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
+});
 
 if (!convexUrl) {
   throw Error("Missing Environment Variable");
@@ -35,7 +40,7 @@ export function connectToDatabase(): Db {
 
   if (!token || !endpoint) {
     throw new Error(
-      "Environment variables API_ENDPOINT and APPLICATION_TOKEN must be defined."
+      "Environment variables API_ENDPOINT and APPLICATION_TOKEN must be defined.",
     );
   }
 
@@ -52,7 +57,7 @@ export function connectToDatabase(): Db {
 
 // Create Collection
 async function createCollection(
-  database: Db
+  database: Db,
 ): Promise<Collection<SomeDoc, FoundDoc<SomeDoc>>> {
   const collection = await database.createCollection(
     "product_listings_embeddings",
@@ -61,7 +66,7 @@ async function createCollection(
         dimension: 768,
         metric: "cosine",
       },
-    }
+    },
   );
 
   console.log(`Created collection ${collection.keyspace}.${collection.name}`);
@@ -78,6 +83,7 @@ async function main() {
 
   // Fetch all product data from convex
   const products = (await convex.query(api.product.getAll, {})).slice(0);
+  console.log("Total Number of Products: ", products.length);
 
   const templatePath = path.join(__dirname, "..", "templates", "products.md");
 
@@ -124,14 +130,24 @@ async function main() {
       const chunks = await splitter.splitText(document);
 
       for (const chunk of chunks) {
-        // Get embeddings using Ollama
+        // Get embeddings using Ollama or Gemini
+        // const vector = (
+        //   await ollama.embed({
+        //     model: "embeddinggemma:latest",
+        //     input: chunk,
+        //     dimensions: 768,
+        //   })
+        // ).embeddings.at(0);
+
         const vector = (
-          await ollama.embed({
-            model: "embeddinggemma:latest",
-            input: chunk,
-            dimensions: 768,
+          await ai.models.embedContent({
+            model: "gemini-embedding-001",
+            contents: chunk,
+            config: {
+              outputDimensionality: 768,
+            },
           })
-        ).embeddings.at(0);
+        ).embeddings?.at(0)?.values;
 
         // Insert Embeddings Directly into Vector DB
         const res = await collection.insertOne({

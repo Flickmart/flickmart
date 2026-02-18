@@ -10,6 +10,7 @@ import type { Id } from '@/convex/_generated/dataModel';
 
 type ChatHeaderProps = {
   toggleSidebar: () => void;
+  AIStatus: string;
   activeChatData: {
     name: string;
     image: string;
@@ -28,6 +29,7 @@ type ChatHeaderProps = {
 export default function ChatHeader({
   toggleSidebar,
   activeChatData,
+  AIStatus,
   isTyping,
   isOnline = false,
   showProfile,
@@ -110,7 +112,7 @@ export default function ChatHeader({
             </AvatarFallback>
           </Avatar>
 
-          <div className="ml-3 flex-1 truncate">
+          <div className="ml-3 flex-1 flex flex-col gap-1 truncate">
             <h4 className="truncate font-medium text-black text-md">
               {activeChatData?.name}
             </h4>
@@ -126,7 +128,9 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
-                    <p className="truncate text-gray-500 text-sm">offline</p>
+                    AIStatus === "thinking" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Thinking...</p> :
+                    AIStatus === "generating" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Generating response...</p> :
+                    AIStatus === "done" && <p className="truncate text-purple-600 text-sm">NKEM AI</p>
                   )}
                 </div>
               )}
@@ -137,3 +141,5 @@ export default function ChatHeader({
     </div>
   );
 }
+
+                    // <p className="truncate text-gray-500 text-sm">offline</p>

@@ -16,12 +16,36 @@ import {
 } from "@convex-dev/persistent-text-streaming";
 import { cors } from "./http";
 import { systemPrompt } from "./system";
+import { DataAPIClient, Db } from "@datastax/astra-db-ts";
 
+// Google Gen AI client
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 });
 
+// Persistent Streaming Client
 const pts = new PersistentTextStreaming(components.persistentTextStreaming);
+
+// DataStax Vector DB Client
+export function connectToDatabase(): Db {
+  const { API_ENDPOINT: endpoint, APPLICATION_TOKEN: token } = process.env;
+
+  if (!token || !endpoint) {
+    throw new Error(
+      "Environment variables API_ENDPOINT and APPLICATION_TOKEN must be defined.",
+    );
+  }
+
+  // Create an instance of the `DataAPIClient` class
+  const client = new DataAPIClient();
+
+  // Get the database specified by your endpoint and provide the token
+  const database = client.db(endpoint, { token });
+
+  console.log(`Connected to database ${database.id}`);
+
+  return database;
+}
 
 // Helper function to handle consolidated message notifications
 async function handleMessageNotification(
@@ -375,6 +399,10 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
         headers: cors(request),
       });
     }
+
+    // Connect to Vector DB
+    const database = connectToDatabase();
+
     const { searchParams } = new URL(request.url);
     const prompt = searchParams.get("prompt");
     const streamId = searchParams.get("streamId");
@@ -386,6 +414,27 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
         headers: cors(request),
       });
     }
+
+    // Embed Prompt
+    const embeddedPrompt = (
+      await ai.models.embedContent({
+        model: "gemini-embedding-001",
+        contents: prompt,
+        config: {
+          outputDimensionality: 768,
+        },
+      })
+    ).embeddings?.at(0)?.values;
+
+    // Use Embedded Vector to Query DataStax Vector db
+    const results = database
+      .collection("product_listings_embeddings")
+      .find({
+        vector_field: { $vector: embeddedPrompt },
+      })
+      .limit(5);
+
+    console.log(results);
 
     const response = await pts.stream(
       ctx,
@@ -420,44 +469,6 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
     });
   }
 });
-
-// export const runAISalesAssistant = internalAction({
-//   args: { content: v.string() },
-//   handler: async (ctx, args) => {
-//     const response = await ai.models.generateContent({
-//       model: "gemini-3-pro",
-//       contents: args.content,
-//     });
-
-//     console.log(response.text);
-
-//     return response;
-//   },
-// });
-
-// export const insertAIResponse = internalMutation({
-//   args: {
-//     senderId: v.id("users"),
-//     content: v.string(),
-//     conversationId: v.id("conversations"),
-//     type: v.union(
-//       v.literal("text"),
-//       v.literal("product"),
-//       v.literal("escrow"),
-//       v.literal("transfer"),
-//     ),
-//   },
-//   handler: async (ctx, args) => {
-//     // Insert Response from AI into Convex DB
-//     const messageId = await ctx.db.insert("message", {
-//       senderId: args.senderId,
-//       content: args.content,
-//       conversationId: args.conversationId,
-//       readByUsers: [args.senderId], // The sender has read their own message
-//       type: args.type,
-//     });
-//   },
-// });
 
 export const markMessagesAsRead = mutation({
   args: {

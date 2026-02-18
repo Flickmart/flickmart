@@ -27,6 +27,7 @@ type Message = {
 };
 
 type ChatMessagesProps = {
+  setAIStatus: (val: string)=> void;
   setShowAIStream: ()=> void;
   messageId: Id<"message">
   prompt: string;
@@ -40,6 +41,7 @@ type ChatMessagesProps = {
 };
 
 export default function ChatMessages({
+  setAIStatus,
   setShowAIStream,
   messageId,
   prompt,
@@ -196,7 +198,13 @@ export default function ChatMessages({
           </div>
         ))}
         {showAIStream && 
-        <ChatAI key={streamId} prompt={prompt} streamId={streamId} messageId={messageId} setShowAIStream={setShowAIStream}/>
+        <ChatAI 
+          key={streamId} 
+          setAIStatus={(val)=> setAIStatus(val)} 
+          prompt={prompt} 
+          streamId={streamId} 
+          messageId={messageId} 
+          setShowAIStream={setShowAIStream}/>
         }
       </PhotoProvider>
   

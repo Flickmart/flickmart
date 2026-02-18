@@ -7,7 +7,18 @@ import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Skeleton } from "../ui/skeleton";
 
-export default function ChatAI({prompt, streamId, messageId, setShowAIStream}: {prompt: string, streamId: string; messageId: Id<"message">; setShowAIStream: () => void} ) {
+export default function ChatAI({
+    prompt, 
+    setAIStatus, 
+    streamId, 
+    messageId, 
+    setShowAIStream}: 
+{
+    prompt: string, 
+    setAIStatus: (val: string)=> void; 
+    streamId: string; messageId: Id<"message">; 
+    setShowAIStream: () => void
+} ) {
 const updateAIMessageRecord = useMutation(api.chat.updateAIRecord)
 const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -22,7 +33,7 @@ streamUrl.searchParams.set("storeName", store?.data?.name ?? "" )
 
 const { text, status } = useStream(
     api.chat.getChatBody,
-    streamUrl.href,
+    streamUrl.href as unknown as URL,
     true,
     streamId as StreamId,
 );
@@ -34,9 +45,18 @@ useEffect(()=>{
     updateAIMessageRecord({
       messageId: messageId!,
       content: text
-    }).then(data=> data.status === 200 && setShowAIStream())
+    }).then(data=> {
+        data.status === 200 && setShowAIStream()
+        setAIStatus("done")
+    })
   }
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  if (status === "pending" && !text){
+    setAIStatus("thinking")
+  } 
+  if(text){
+    setAIStatus("generating")
+  }
+  bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
 }, [status, text])
 

@@ -12,7 +12,8 @@
     "lint": "npx ultracite@latest lint",
     "format": "npx ultracite@latest format",
     "sync-recombee": "tsx scripts/sync-to-recombee.ts",
-    "delete-recombee": "tsx scripts/delete-items-recombee.ts"
+    "delete-recombee": "tsx scripts/delete-items-recombee.ts",
+    "generate:product-embeddings": "tsx scripts/data-injest-pipeline.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^3.0.2",
