@@ -1,5 +1,5 @@
 import { useMutation } from 'convex/react';
-import { ChevronLeft, Trash2 } from 'lucide-react';
+import { ChevronLeft, Sparkles, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Dispatch, SetStateAction } from 'react';
 import { toast } from 'sonner';
@@ -9,6 +9,7 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 
 type ChatHeaderProps = {
+
   toggleSidebar: () => void;
   AIStatus: string;
   activeChatData: {
@@ -24,9 +25,13 @@ type ChatHeaderProps = {
   selectedMessages: string[];
   setSelectedMessages: Dispatch<SetStateAction<string[]>>;
   vendorId: Id<'users'>;
+  userId: Id<'users'>;
+  sellerId: Id<'users'>;
 };
 
 export default function ChatHeader({
+  sellerId,
+  userId,
   toggleSidebar,
   activeChatData,
   AIStatus,
@@ -128,9 +133,10 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
+                    sellerId === userId ? <p className="truncate text-gray-500 text-sm">offline</p> :
                     AIStatus === "thinking" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Thinking...</p> :
                     AIStatus === "generating" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Generating response...</p> :
-                    AIStatus === "done" && <p className="truncate text-purple-600 text-sm">NKEM AI</p>
+                    AIStatus === "done" && <p className="truncate text-purple-600 text-sm flex items-center gap-1"><Sparkles className="size-4" />NKEM AI</p>
                   )}
                 </div>
               )}

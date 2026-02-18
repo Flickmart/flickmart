@@ -1,11 +1,12 @@
 'use client';
-import { useQuery } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import {
   ChevronLeft,
   ChevronRight,
   Mail,
   MapPin,
   Phone,
+  Sparkles,
   User,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -28,6 +29,14 @@ import { Button } from '@/components/ui/button';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Switch } from '@/components/ui/switch';
 
 // This would typically come from an API or database
 
@@ -41,6 +50,7 @@ export default function PublicProfile() {
   const productsByUser = useQuery(api.product.getByUserId, {
     userId: user?._id,
   });
+  const updateUser = useMutation(api.users.updateUser)
 
   // Get Wallet Balance
   if (isLoading) {
@@ -248,8 +258,37 @@ export default function PublicProfile() {
                 </div>
               </div>
             </div>
-            {/* Push Notifications */}
-            <PushNotificationSetup />
+            <div className='flex flex-col gap-10'>
+              {/* Enable NKEM AI */}
+             {hasStore !== 404 && <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center text-purple-600 text-lg gap-2">
+                    <Sparkles className="size-6" />
+                    NKEM AI Sales Assistant
+                  </CardTitle>
+                  <CardDescription>
+                    Automatically respond to customers and capture leads while you're offline.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className='flex items-center gap-7'>
+                  <span className='text-sm leading-relaxed text-muted-foreground'>
+                    NKEM engages customers in real-time, answers product questions, recommends items, and collects qualified leads when you're unavailable.
+                  </span>
+                  <Switch 
+                    className='data-[state=checked]:bg-purple-600'
+                    checked={user?.aiEnabled}
+                    onCheckedChange={async(checked) =>{
+                      await updateUser({
+                        aiEnabled: checked
+                      })
+                    }}
+                  />
+                </CardContent>
+              </Card>
+              }
+              {/* Push Notifications */}
+              <PushNotificationSetup />
+            </div>
           </div>
         </div>
       </div>

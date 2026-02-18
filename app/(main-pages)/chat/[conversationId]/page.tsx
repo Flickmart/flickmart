@@ -533,6 +533,8 @@ export default function ConversationPage() {
   return (
     <div className="flex h-full flex-col">
       <ChatHeader
+        sellerId = {conversationProduct?.userId as Id<"users">}
+        userId={user?._id as Id<"users">}
         AIStatus={AIStatus}
         activeChatData={activeChatData}
         isOnline={otherUserOnlineStatus?.isOnline}
