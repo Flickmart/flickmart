@@ -188,7 +188,7 @@ export default function ConversationPage() {
           productImage: product?.images?.[0],
           content
         });
-        if(conversationProduct?.userId !==  user._id && seller?.aiEnabled){
+        if(conversationProduct?.userId !==  user._id && seller?.aiEnabled && !otherUserOnlineStatus?.isOnline){
           setShowAIStream(true)
           setMessageId(chatId)
         }
@@ -459,7 +459,7 @@ export default function ConversationPage() {
       });
 
       // Before activating process that triggers AI, let determine if user is buyer or seller
-      if(conversationProduct?.userId !==  user._id && seller?.aiEnabled){
+      if(conversationProduct?.userId !==  user._id && seller?.aiEnabled && !otherUserOnlineStatus?.isOnline){
         setShowAIStream(true)
         setMessageId(chatId)
       }
