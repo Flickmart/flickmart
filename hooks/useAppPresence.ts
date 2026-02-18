@@ -8,7 +8,7 @@ export function useAppPresence() {
   const presenceState = usePresence(
     api.presence,
     "app-wide",
-    "j9703rx0rcbwqb1pzbp27n1scx7db2x5"
+    user?._id as string,
   );
 
   return {
