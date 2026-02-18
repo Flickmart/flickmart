@@ -28,6 +28,7 @@ const bottomRef = useRef<HTMLDivElement | null>(null);
 const store = useQuery(api.store.getExternalUserStore, {
     userId: sellerId
 }) as Doc<"store">
+
     
 // Stream AI Response
 const streamUrl = new URL(`${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/chat-stream`);
@@ -42,8 +43,19 @@ const { text, status } = useStream(
     streamId as StreamId,
 );
 
+
 // When Streaming is complete, run update mutation to update message object for persistence
 useEffect(()=>{
+  if (status === "done" && !text){
+    updateAIMessageRecord({
+      messageId: messageId!,
+      content: "NKEM is experiencing a high volume of requests. Please try again in a moment."
+    }).then(data=> {
+        data.status === 200 && setShowAIStream()
+        setAIStatus("done")
+    })
+    return
+  }
   if (status === "done"){
     // Run update mutation
     updateAIMessageRecord({
@@ -54,6 +66,7 @@ useEffect(()=>{
         setAIStatus("done")
     })
   }
+
   if (status === "pending" && !text){
     setAIStatus("thinking")
   } 
