@@ -16,6 +16,9 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useUploadThing } from '@/utils/uploadthing';
+import { StreamId } from '@convex-dev/persistent-text-streaming';
+import { useStream } from "@convex-dev/persistent-text-streaming/react";
+
 
 type Message = {
   _id: Id<'message'>;
@@ -73,8 +76,15 @@ export default function ConversationPage() {
   >([]);
 
   const conversationId = params?.conversationId as Id<'conversations'>;
+  const [AIStatus, setAIStatus] = useState("done")
   const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
+  const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
+  const streamId = useQuery(api.chat.getStreamIdByMessageId, {
+    messageId
+  })
+  const [showAIStream, setShowAIStream] = useState(false)
+  const [prompt, setPrompt] = useState("")
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -98,6 +108,9 @@ export default function ConversationPage() {
     api.chat.getConversation,
     conversationId ? { conversationId } : 'skip'
   );
+  
+  // Get Seller product
+  const conversationProduct = useQuery(api.product.getById, {productId: conversation?.products?.at(0) ?? "skip"})
 
   // Get the other user's ID
   const otherUserId = useMemo(() => {
@@ -394,6 +407,7 @@ export default function ConversationPage() {
     // Clear input immediately for better UX
     const messageText = input;
     const messageImages = [...selectedImages];
+    setPrompt(input)
     setInput('');
     setSelectedImages([]);
 
@@ -427,7 +441,7 @@ export default function ConversationPage() {
       }
 
       // Send message with text and/or images
-      await sendMessage({
+      const chatId = await sendMessage({
         senderId: user._id,
         content: messageText,
         conversationId,
@@ -435,10 +449,19 @@ export default function ConversationPage() {
         type: 'text',
       });
 
-      // Remove pending message on success
+      // Before activating process that triggers AI, let determine if user is buyer or seller
+      if(conversationProduct?.userId !==  user._id){
+        setShowAIStream(true)
+        setMessageId(chatId)
+      }
+
+
+     // Remove pending message on success
       setPendingMessages((prev) =>
         prev.filter((msg) => msg.id !== optimisticMessageId)
       );
+
+
     } catch (error) {
       console.error('Failed to send message:', error);
       toast.error('Failed to send message');
@@ -510,6 +533,7 @@ export default function ConversationPage() {
   return (
     <div className="flex h-full flex-col">
       <ChatHeader
+        AIStatus={AIStatus}
         activeChatData={activeChatData}
         isOnline={otherUserOnlineStatus?.isOnline}
         isTyping={otherUserIsTyping ? otherUserIsTyping : false}
@@ -525,6 +549,12 @@ export default function ConversationPage() {
 
       <div className="flex-1 overflow-y-auto">
         <ChatMessages
+          setAIStatus={(val)=> setAIStatus(val)}
+          setShowAIStream={() => setShowAIStream(false)}
+          messageId={messageId as Id<"message">}
+          prompt={prompt}
+          showAIStream= {showAIStream}
+          streamId = {streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}
           selectionMode={selectionMode}

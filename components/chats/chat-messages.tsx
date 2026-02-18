@@ -1,7 +1,10 @@
 import { TriangleAlert } from 'lucide-react';
-import { type Dispatch, type SetStateAction, useRef } from 'react';
+import { type Dispatch, type SetStateAction, useRef,  } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import MessageBubble from './message-bubble';
+import ChatAI from './chat-ai';
+import { Id } from '@/convex/_generated/dataModel';
+
 
 type Message = {
   id: string;
@@ -10,12 +13,13 @@ type Message = {
   images?: string[];
   role: 'user' | 'assistant';
   timestamp: Date;
-  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer';
+  type?: 'text' | 'product' | 'image' | 'escrow' | 'transfer' | "ai";
   title?: string;
   price?: number;
   productImage?: string;
   productId?: string;
   // Transfer-specific fields
+  
   orderId?: string;
   transferAmount?: number;
   currency?: string;
@@ -24,6 +28,12 @@ type Message = {
 };
 
 type ChatMessagesProps = {
+  setAIStatus: (val: string)=> void;
+  setShowAIStream: ()=> void;
+  messageId: Id<"message">
+  prompt: string;
+  showAIStream: boolean;
+  streamId: string
   messages: Message[];
   selectionMode: boolean;
   setSelectionMode: Dispatch<SetStateAction<boolean>>;
@@ -32,6 +42,12 @@ type ChatMessagesProps = {
 };
 
 export default function ChatMessages({
+  setAIStatus,
+  setShowAIStream,
+  messageId,
+  prompt,
+  showAIStream,
+  streamId,
   messages,
   selectionMode,
   setSelectionMode,
@@ -151,7 +167,7 @@ export default function ChatMessages({
             <div className="mx-auto w-fit rounded-full bg-gray-200 px-3 py-1 text-center text-gray-600 text-xs">
               {group.date}
             </div>
-            {group.messages.map((message) => (
+            {group.messages.map((message) => ( message.content &&
               <MessageBubble
                 currency={message.currency}
                 handleLongPress={handleLongPress}
@@ -182,10 +198,20 @@ export default function ChatMessages({
             ))}
           </div>
         ))}
+        {showAIStream && 
+        <ChatAI 
+          key={streamId} 
+          setAIStatus={(val)=> setAIStatus(val)} 
+          prompt={prompt} 
+          streamId={streamId} 
+          messageId={messageId} 
+          setShowAIStream={setShowAIStream}/>
+        }
       </PhotoProvider>
+  
       {/* <div ref={messagesEndRef} /> */}
       {/* Extra spacing at bottom for better scrolling */}
-      <div className="h-16" />
+      <div className="h-10" />
     </div>
   );
 }

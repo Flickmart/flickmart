@@ -82,7 +82,8 @@ export default function SignIn() {
       if (result.status === 'complete') {
         // Set the user session active
         await setActive({ session: result.createdSessionId });
-        router.replace(callbackURL);
+        console.log(result)
+        // router.replace(callbackURL);
       } else {
         toast.error('Sign in failed. Please check your credentials.');
       }
