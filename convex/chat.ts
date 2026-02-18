@@ -3,10 +3,7 @@ import { components, internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import {
   type MutationCtx,
-  action,
   httpAction,
-  internalAction,
-  internalMutation,
   mutation,
   query,
 } from "./_generated/server";
@@ -17,6 +14,8 @@ import {
   StreamId,
   StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
+import { cors } from "./http";
+import { systemPrompt } from "./system";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -332,11 +331,11 @@ export const sendMessage = mutation({
 // Create a query that returns the chat body.
 export const getChatBody = query({
   args: {
-    streamId: v.optional(StreamIdValidator),
+    streamId: StreamIdValidator,
   },
   handler: async (ctx, args) => {
-    if (!args.streamId) return;
-    return await pts.getStreamBody(ctx, args.streamId as StreamId);
+    const response = await pts.getStreamBody(ctx, args.streamId as StreamId);
+    return response;
   },
 });
 
@@ -353,28 +352,73 @@ export const getStreamIdByMessageId = query({
   },
 });
 
+// Update AI message Record
+export const updateAIRecord = mutation({
+  args: {
+    messageId: v.id("message"),
+    content: v.string(),
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.messageId, {
+      content: args.content,
+    });
+
+    return { status: 200, message: "Updated successfully..." };
+  },
+});
+
 // Send request using http actions for ai to start generating response
 export const streamAIResponse = httpAction(async (ctx, request) => {
-  const { streamId, prompt } = await request.json();
-
-  const aiResponse = await ai.models.generateContentStream({
-    model: "gemini-3-pro",
-    contents: prompt,
-  });
-
-  for await (const chunk of aiResponse) {
-    const text = chunk.text;
-
-    if (text) {
-      await pts.stream(ctx, request, streamId, async (ctx, req, id, append) => {
-        await append(text);
+  try {
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: cors(request),
       });
     }
+    const { searchParams } = new URL(request.url);
+    const prompt = searchParams.get("prompt");
+    const streamId = searchParams.get("streamId");
+    const storeName = searchParams.get("storeName");
+
+    if (!prompt || !streamId) {
+      return new Response("Missing prompt or streamId", {
+        status: 400,
+        headers: cors(request),
+      });
+    }
+
+    const response = await pts.stream(
+      ctx,
+      request,
+      streamId as StreamId,
+      async (ctx, req, id, append) => {
+        const aiResponse = await ai.models.generateContentStream({
+          model: "gemini-2.5-flash",
+          contents: `${systemPrompt.replace("{Company Name}", storeName as string)} User Prompt: ${prompt}`,
+        });
+        for await (const chunk of aiResponse) {
+          const text = chunk.text;
+          if (text) {
+            await append(text);
+          }
+        }
+      },
+    );
+
+    return new Response(response.body, {
+      status: response.status,
+      headers: {
+        ...cors(request),
+        ...response.headers,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    return new Response("Error", {
+      headers: cors(request),
+      status: 500,
+    });
   }
-
-  const response = new Response(null, { status: 200 });
-
-  return response;
 });
 
 // export const runAISalesAssistant = internalAction({

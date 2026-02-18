@@ -14,6 +14,7 @@ import { PhotoView } from 'react-photo-view';
 import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { cn } from '@/lib/utils';
+import ReactMarkdown from "react-markdown";
 
 type MessageBubbleProps = {
   id: string;
@@ -202,13 +203,13 @@ export default function MessageBubble({
             selectedMessages.includes(id) && 'text-right'
           )}
         >
-          {type !== 'product' && type !== 'transfer' && message}
+           {type !== 'product' && type !== 'transfer' && <ReactMarkdown>{message}</ReactMarkdown>}
         </p>
 
         {type !== 'transfer' && (
           <div className="mt-1 flex items-center justify-end space-x-1">
             <span className="text-[10px] opacity-70 md:text-[10px]">
-              {timestamp}
+              {timestamp} 
             </span>
             {isPending ? (
               <Loader2 className="h-3 w-3 animate-spin text-gray-500" />

@@ -1,9 +1,10 @@
 import { TriangleAlert } from 'lucide-react';
-import { type Dispatch, type SetStateAction, useRef, useState } from 'react';
+import { type Dispatch, type SetStateAction, useRef,  } from 'react';
 import { PhotoProvider } from 'react-photo-view';
 import MessageBubble from './message-bubble';
-import { useQuery } from 'convex/react';
-import { api } from '@/convex/_generated/api';
+import ChatAI from './chat-ai';
+import { Id } from '@/convex/_generated/dataModel';
+
 
 type Message = {
   id: string;
@@ -26,6 +27,11 @@ type Message = {
 };
 
 type ChatMessagesProps = {
+  setShowAIStream: ()=> void;
+  messageId: Id<"message">
+  prompt: string;
+  showAIStream: boolean;
+  streamId: string
   messages: Message[];
   selectionMode: boolean;
   setSelectionMode: Dispatch<SetStateAction<boolean>>;
@@ -34,6 +40,11 @@ type ChatMessagesProps = {
 };
 
 export default function ChatMessages({
+  setShowAIStream,
+  messageId,
+  prompt,
+  showAIStream,
+  streamId,
   messages,
   selectionMode,
   setSelectionMode,
@@ -41,7 +52,6 @@ export default function ChatMessages({
   selectedMessages,
 }: ChatMessagesProps) {
   const _messagesEndRef = useRef<HTMLDivElement>(null);
-  const [streamId, useStreamId] = useState<string>("")
 
   // const scrollToBottom = () => {
   //   messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,11 +60,6 @@ export default function ChatMessages({
   // useEffect(() => {
   //   scrollToBottom();
   // }, [messages]);
-
-
-  const chatBody = useQuery(api.chat.getChatBody, {
-    streamId: streamId
-  })
 
   // Toggle selection mode
   const toggleSelectionMode = () => {
@@ -190,13 +195,14 @@ export default function ChatMessages({
             ))}
           </div>
         ))}
+        {showAIStream && 
+        <ChatAI key={streamId} prompt={prompt} streamId={streamId} messageId={messageId} setShowAIStream={setShowAIStream}/>
+        }
       </PhotoProvider>
-      <div className='h-96 border border-flickmart'>
-        {chatBody?.text}
-      </div>
+  
       {/* <div ref={messagesEndRef} /> */}
       {/* Extra spacing at bottom for better scrolling */}
-      <div className="h-16" />
+      <div className="h-10" />
     </div>
   );
 }

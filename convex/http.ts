@@ -18,7 +18,7 @@ const ALLOWED_ORIGINS = [
   "https://strong-turtle-928.convex.site", // Add your Convex domain
 ];
 
-function getCorsHeaders(origin?: string | null) {
+export function getCorsHeaders(origin?: string | null) {
   const allowedOrigin =
     origin && ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
 
@@ -29,6 +29,16 @@ function getCorsHeaders(origin?: string | null) {
     "Access-Control-Max-Age": "86400",
     Vary: "Origin",
   });
+}
+
+export function cors(request: Request) {
+  const origin = request.headers.get("origin");
+
+  return {
+    "Access-Control-Allow-Origin": origin ?? "*",
+    "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+  };
 }
 
 function getJsonHeaders(origin?: string | null) {
@@ -102,6 +112,13 @@ http.route({
     }
     return new Response();
   }),
+});
+
+// Preflight Request
+http.route({
+  path: "/chat-stream",
+  method: "OPTIONS",
+  handler: streamAIResponse,
 });
 
 http.route({

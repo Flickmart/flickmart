@@ -27,6 +27,7 @@ import type * as pushNotifications from "../pushNotifications.js";
 import type * as recommend from "../recommend.js";
 import type * as search from "../search.js";
 import type * as store from "../store.js";
+import type * as system from "../system.js";
 import type * as transactions from "../transactions.js";
 import type * as users from "../users.js";
 import type * as views from "../views.js";
@@ -58,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   recommend: typeof recommend;
   search: typeof search;
   store: typeof store;
+  system: typeof system;
   transactions: typeof transactions;
   users: typeof users;
   views: typeof views;

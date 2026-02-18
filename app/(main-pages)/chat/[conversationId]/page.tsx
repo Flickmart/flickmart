@@ -16,6 +16,9 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useUploadThing } from '@/utils/uploadthing';
+import { StreamId } from '@convex-dev/persistent-text-streaming';
+import { useStream } from "@convex-dev/persistent-text-streaming/react";
+
 
 type Message = {
   _id: Id<'message'>;
@@ -60,7 +63,6 @@ export default function ConversationPage() {
   const [showProfile, setShowProfile] = useState(false);
   const [selectionMode, setSelectionMode] = useState(false);
   const [selectedMessages, setSelectedMessages] = useState<string[]>([]);
-  const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
   const [processedProductId, setProcessedProductId] =
     useState<Id<'product'> | null>(null);
   const [pendingMessages, setPendingMessages] = useState<
@@ -76,9 +78,12 @@ export default function ConversationPage() {
   const conversationId = params?.conversationId as Id<'conversations'>;
   const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
+  const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
   const streamId = useQuery(api.chat.getStreamIdByMessageId, {
     messageId
   })
+  const [showAIStream, setShowAIStream] = useState(false)
+  const [prompt, setPrompt] = useState("")
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -398,6 +403,7 @@ export default function ConversationPage() {
     // Clear input immediately for better UX
     const messageText = input;
     const messageImages = [...selectedImages];
+    setPrompt(input)
     setInput('');
     setSelectedImages([]);
 
@@ -438,8 +444,9 @@ export default function ConversationPage() {
         images: imageUrls,
         type: 'text',
       });
-
+      setShowAIStream(true)
       setMessageId(chatId)
+
 
      // Remove pending message on success
       setPendingMessages((prev) =>
@@ -456,34 +463,6 @@ export default function ConversationPage() {
       );
     }
   };
-
-  useEffect(()=> {
-    console.log("Hello Im here", streamId)
-    if(!streamId) return
-    // try{
-    async function promptAIAssistant (){
-      const response = await fetch("",{
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          streamId,
-          prompt: input
-        })
-      })
-      
-      if (!response.ok) throw Error ("Something went wrong, Please try again...")
-      const data = await response.json()
-
-      console.log(data)
-    }
-
-    promptAIAssistant()
-    // }catch(err){
-    //   console.log(err)
-    // }
-  }, [streamId])
 
   const handleInputWrapper = (value: string) => {
     handleInputChange({
@@ -561,6 +540,11 @@ export default function ConversationPage() {
 
       <div className="flex-1 overflow-y-auto">
         <ChatMessages
+          setShowAIStream={() => setShowAIStream(false)}
+          messageId={messageId as Id<"message">}
+          prompt={prompt}
+          showAIStream= {showAIStream}
+          streamId = {streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}
           selectionMode={selectionMode}
