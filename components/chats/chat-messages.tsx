@@ -19,7 +19,7 @@ type Message = {
   productImage?: string;
   productId?: string;
   // Transfer-specific fields
-  
+
   orderId?: string;
   transferAmount?: number;
   currency?: string;
@@ -28,6 +28,7 @@ type Message = {
 };
 
 type ChatMessagesProps = {
+  sellerId: Id<"users">;
   setAIStatus: (val: string)=> void;
   setShowAIStream: ()=> void;
   messageId: Id<"message">
@@ -42,6 +43,7 @@ type ChatMessagesProps = {
 };
 
 export default function ChatMessages({
+  sellerId,
   setAIStatus,
   setShowAIStream,
   messageId,
@@ -200,6 +202,7 @@ export default function ChatMessages({
         ))}
         {showAIStream && 
         <ChatAI 
+          sellerId= {sellerId}
           key={streamId} 
           setAIStatus={(val)=> setAIStatus(val)} 
           prompt={prompt} 

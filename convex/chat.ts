@@ -216,6 +216,7 @@ export const sendMessage = mutation({
         v.literal("product"),
         v.literal("escrow"),
         v.literal("transfer"),
+        v.literal("ai"),
       ),
     ),
     productId: v.optional(v.id("product")),
@@ -239,6 +240,33 @@ export const sendMessage = mutation({
       throw new Error("Conversation not found");
     }
 
+    // If conversation has been created without products needed for ai to work, update that field
+    if (args.productId && !conversation.products?.includes(args.productId)) {
+      // Update conversation product
+      ctx.db.patch(conversation._id, {
+        products: [...(conversation.products || []), args.productId],
+      });
+    }
+
+    // Determine the recipient
+    const recipientId =
+      conversation.user1 === args.senderId
+        ? conversation.user2
+        : conversation.user1;
+
+    // Update if no products exist
+    if (!conversation.products || !conversation.products.length) {
+      const product = await ctx.db
+        .query("product")
+        .withIndex("by_userId", (q) => q.eq("userId", recipientId))
+        .first();
+
+      // Update conversation Id
+      ctx.db.patch(conversation._id, {
+        products: [product?._id as Id<"product">],
+      });
+    }
+
     // Get current timestamp
     const now = Date.now();
     // await ctx.runMutation(internal.email.sendTestEmail)
@@ -260,12 +288,6 @@ export const sendMessage = mutation({
       transferAmount: args.transferAmount,
       currency: args.currency,
     });
-
-    // Determine the recipient
-    const recipientId =
-      conversation.user1 === args.senderId
-        ? conversation.user2
-        : conversation.user1;
 
     // Get userId from product
     const productId = conversation.products?.at(0);
@@ -364,7 +386,7 @@ export const getChatBody = query({
 });
 
 // Create a query that returns the stream id
-export const getStreamIdByMessageId = query({
+export const getStreamIdAndUserIdByMessageId = query({
   args: {
     messageId: v.optional(v.id("message")),
   },
@@ -372,7 +394,7 @@ export const getStreamIdByMessageId = query({
     if (!args.messageId) return;
 
     const message = await ctx.db.get(args.messageId);
-    return message?.streamId;
+    return { streamId: message?.streamId, sellerId: message?.senderId };
   },
 });
 

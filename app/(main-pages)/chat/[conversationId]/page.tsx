@@ -80,7 +80,7 @@ export default function ConversationPage() {
   const _vendorId = searchParams?.get('vendorId') as Id<'users'> | null;
   const productId = searchParams?.get('productId') as Id<'product'> | null;
   const [messageId, setMessageId] = useState<Id<"message"> | undefined>()
-  const streamId = useQuery(api.chat.getStreamIdByMessageId, {
+  const messageProps = useQuery(api.chat.getStreamIdAndUserIdByMessageId, {
     messageId
   })
   const [showAIStream, setShowAIStream] = useState(false)
@@ -554,7 +554,8 @@ export default function ConversationPage() {
           messageId={messageId as Id<"message">}
           prompt={prompt}
           showAIStream= {showAIStream}
-          streamId = {streamId as string}
+          sellerId = {messageProps?.sellerId as Id<"users">}
+          streamId = {messageProps?.streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}
           selectionMode={selectionMode}
