@@ -24,6 +24,8 @@ export default function MobileNav() {
     redirectOnUnauthenticated: false,
   });
 
+  
+
   // Fetch unread chat messages count
   const conversations = useQuery(
     api.chat.getConversations,

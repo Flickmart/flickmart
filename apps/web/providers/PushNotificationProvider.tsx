@@ -305,7 +305,7 @@ export function PushNotificationProvider({
         applicationServerKey: urlBase64ToUint8Array(
           // biome-ignore lint/style/noNonNullAssertion: <It woukd always be available i can asssert>
           process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-        ),
+        ) as unknown as ArrayBuffer,
       });
 
       // Detect device information
