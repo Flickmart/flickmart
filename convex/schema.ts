@@ -17,6 +17,7 @@ export default defineSchema({
 
     username: v.optional(v.string()),
     description: v.optional(v.string()),
+    // aiEnabled: v.optional(v.boolean()),
     verified: v.optional(v.boolean()),
     verifiedAt: v.optional(v.number()),
     lastWeeklyProductCount: v.optional(v.number()), // Products posted in current week
@@ -149,6 +150,7 @@ export default defineSchema({
     lastMessageId: v.optional(v.id("message")),
     archivedByUsers: v.optional(v.array(v.id("users"))),
     unreadCount: v.optional(v.record(v.string(), v.number())),
+    products: v.optional(v.array(v.id("product"))),
     updatedAt: v.optional(v.number()),
   })
     .index("byUser1Id", ["user1"])
@@ -157,6 +159,7 @@ export default defineSchema({
     senderId: v.id("users"),
     content: v.optional(v.string()),
     readByUsers: v.optional(v.array(v.id("users"))),
+    streamId: v.optional(v.string()),
     productId: v.optional(v.id("product")),
     conversationId: v.id("conversations"),
     file: v.optional(v.array(v.string())),
@@ -167,6 +170,7 @@ export default defineSchema({
         v.literal("product"),
         v.literal("escrow"),
         v.literal("transfer"),
+        v.literal("ai"),
       ),
     ),
     price: v.optional(v.number()),

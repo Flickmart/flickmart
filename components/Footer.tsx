@@ -100,9 +100,9 @@ export default function Footer() {
                 <Mail className="h-5 w-5 flex-shrink-0 text-white" />
                 <a
                   className="hover:text-white"
-                  href="mailto:flickmart2024@gmail.com"
+                  href="mailto:official@flickmart.app"
                 >
-                  flickmart2024@gmail.com
+                  official@flickmart.app
                 </a>
               </p>
             </div>

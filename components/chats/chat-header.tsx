@@ -1,5 +1,5 @@
 import { useMutation } from 'convex/react';
-import { ChevronLeft, Trash2 } from 'lucide-react';
+import { ChevronLeft, Sparkles, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import type { Dispatch, SetStateAction } from 'react';
 import { toast } from 'sonner';
@@ -9,7 +9,9 @@ import { api } from '@/convex/_generated/api';
 import type { Id } from '@/convex/_generated/dataModel';
 
 type ChatHeaderProps = {
+  aiEnabled: boolean;
   toggleSidebar: () => void;
+  AIStatus: string;
   activeChatData: {
     name: string;
     image: string;
@@ -23,11 +25,17 @@ type ChatHeaderProps = {
   selectedMessages: string[];
   setSelectedMessages: Dispatch<SetStateAction<string[]>>;
   vendorId: Id<'users'>;
+  userId: Id<'users'>;
+  sellerId: Id<'users'>;
 };
 
 export default function ChatHeader({
+  aiEnabled,
+  sellerId,
+  userId,
   toggleSidebar,
   activeChatData,
+  AIStatus,
   isTyping,
   isOnline = false,
   showProfile,
@@ -110,7 +118,7 @@ export default function ChatHeader({
             </AvatarFallback>
           </Avatar>
 
-          <div className="ml-3 flex-1 truncate">
+          <div className="ml-3 flex-1 flex flex-col gap-1 truncate">
             <h4 className="truncate font-medium text-black text-md">
               {activeChatData?.name}
             </h4>
@@ -126,7 +134,10 @@ export default function ChatHeader({
                       online
                     </p>
                   ) : (
-                    <p className="truncate text-blue-500 text-sm">offline</p>
+                    sellerId === userId || !aiEnabled? <p className="truncate text-gray-500 text-sm">offline</p> :
+                    AIStatus === "thinking" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Thinking...</p> :
+                    AIStatus === "generating" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Generating response...</p> :
+                    AIStatus === "done" && <p className="truncate text-purple-600 text-sm flex items-center gap-1"><Sparkles className="size-4" />NKEM AI</p>
                   )}
                 </div>
               )}
@@ -137,3 +148,5 @@ export default function ChatHeader({
     </div>
   );
 }
+
+                    // <p className="truncate text-gray-500 text-sm">offline</p>
