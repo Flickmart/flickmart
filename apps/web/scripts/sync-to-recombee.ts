@@ -2,7 +2,7 @@
 import "dotenv/config";
 import { ConvexHttpClient } from "convex/browser";
 import { requests } from "recombee-api-client";
-import { api } from "../../../packages/convex/_generated/api";
+import { api } from "backend/convex/_generated/api";
 import { client as recombeeClient } from "../utils/recombee";
 
 const convexUrl = process.env.NEXT_PUBLIC_CONVEX_URL;

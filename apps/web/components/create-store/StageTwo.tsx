@@ -70,7 +70,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       businessName: '',
       location: '',
       description: '',
-      phoneNumber: '',
+      phoneNumber: undefined,
     },
   });
 
