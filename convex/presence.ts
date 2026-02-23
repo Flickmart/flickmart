@@ -1,8 +1,8 @@
-import { Presence } from '@convex-dev/presence';
-import { v } from 'convex/values';
-import { components } from './_generated/api';
-import { mutation, query } from './_generated/server';
-import { getCurrentUserOrThrow } from './users';
+import { Presence } from "@convex-dev/presence";
+import { v } from "convex/values";
+import { components, internal } from "./_generated/api";
+import { internalQuery, mutation, query } from "./_generated/server";
+import { getCurrentUserOrThrow } from "./users";
 
 export const presence = new Presence(components.presence);
 
@@ -17,7 +17,7 @@ export const heartbeat = mutation({
   handler: async (ctx, { roomId, userId, sessionId, interval }) => {
     const user = await getCurrentUserOrThrow(ctx);
     if (userId !== user?._id) {
-      throw new Error('Cannot send heartbeat for other users');
+      throw new Error("Cannot send heartbeat for other users");
     }
 
     return await presence.heartbeat(ctx, roomId, userId, sessionId, interval);
@@ -41,19 +41,19 @@ export const disconnect = mutation({
 // Typing indicators (keeping custom implementation for conversation-specific typing)
 export const updateTypingStatus = mutation({
   args: {
-    userId: v.id('users'),
+    userId: v.id("users"),
     isTyping: v.boolean(),
-    conversationId: v.optional(v.id('conversations')),
+    conversationId: v.optional(v.id("conversations")),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
-      throw new Error('Unauthorized');
+      throw new Error("Unauthorized");
     }
 
     const existingPresence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), args.userId))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), args.userId))
       .first();
 
     if (existingPresence) {
@@ -61,16 +61,16 @@ export const updateTypingStatus = mutation({
         isTyping: args.isTyping,
         typingInConversation: args.isTyping ? args.conversationId : undefined,
         lastUpdated: Date.now(),
-        status: 'online',
+        status: "online",
       });
       return existingPresence._id;
     }
-    const presenceId = await ctx.db.insert('presence', {
+    const presenceId = await ctx.db.insert("presence", {
       userId: args.userId,
       isTyping: args.isTyping,
       typingInConversation: args.isTyping ? args.conversationId : undefined,
       lastUpdated: Date.now(),
-      status: 'online',
+      status: "online",
     });
     return presenceId;
   },
@@ -79,22 +79,22 @@ export const updateTypingStatus = mutation({
 // Get typing status for a conversation
 export const getConversationTypingStatus = query({
   args: {
-    conversationId: v.id('conversations'),
+    conversationId: v.id("conversations"),
   },
   handler: async (ctx, args) => {
     const conversation = await ctx.db.get(args.conversationId);
     if (!conversation) {
-      throw new Error('Conversation not found');
+      throw new Error("Conversation not found");
     }
 
     const user1Presence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), conversation.user1))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), conversation.user1))
       .first();
 
     const user2Presence = await ctx.db
-      .query('presence')
-      .filter((q) => q.eq(q.field('userId'), conversation.user2))
+      .query("presence")
+      .filter((q) => q.eq(q.field("userId"), conversation.user2))
       .first();
 
     const currentTime = Date.now();
@@ -119,10 +119,33 @@ export const getConversationTypingStatus = query({
   },
 });
 
+type StatusType = {
+  isOnline: boolean;
+  lastSeen: number;
+};
+
 // Get user's online status (for profile pages)
 export const getUserOnlineStatus = query({
   args: {
-    userId: v.id('users'),
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Run Internal Query to get online status
+
+    const status: StatusType = await ctx.runQuery(
+      internal.presence.onlineStatus,
+      {
+        userId: args.userId,
+      },
+    );
+
+    return status;
+  },
+});
+
+export const onlineStatus = internalQuery({
+  args: {
+    userId: v.id("users"),
   },
   handler: async (ctx, args) => {
     try {
@@ -133,11 +156,11 @@ export const getUserOnlineStatus = query({
       }
 
       // Check if user is in the app-wide room using their external ID
-      const appPresence = await presence.listRoom(ctx, 'app-wide');
+      const appPresence = await presence.listRoom(ctx, "app-wide");
 
       // Check if the user's external ID (Clerk ID) is in the presence list
       const isOnline = appPresence.some(
-        (p) => p.userId === user._id && p.online === true
+        (p) => p.userId === user._id && p.online === true,
       );
 
       return {
@@ -145,7 +168,7 @@ export const getUserOnlineStatus = query({
         lastSeen: isOnline ? Date.now() : 0,
       };
     } catch (error) {
-      console.error('Error getting user online status:', error);
+      console.error("Error getting user online status:", error);
       return { isOnline: false, lastSeen: 0 };
     }
   },

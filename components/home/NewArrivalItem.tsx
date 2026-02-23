@@ -74,7 +74,7 @@ export default function NewArrivalItem({
       <div className="flex-grow rounded-md">
         <div className="h-[40vh] w-full lg:h-64">
           <Image
-            alt={name}
+            alt={name ?? ""}
             className="size-full object-cover"
             height={500}
             src={image || '/no-image.png'}

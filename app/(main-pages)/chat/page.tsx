@@ -10,6 +10,7 @@ import type { Doc, Id } from '@/convex/_generated/dataModel';
 import { useAppPresence } from '@/hooks/useAppPresence';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
+
 type FilterType = 'all' | 'unread' | 'archived';
 
 export default function ChatPage() {
@@ -185,6 +186,7 @@ export default function ChatPage() {
             targetConversationId = await startConversation({
               user1Id: user?._id as Id<'users'>,
               user2Id: vendorId,
+              productId: productId as Id<"product">
             });
             console.log('Created new conversation:', targetConversationId);
           }
