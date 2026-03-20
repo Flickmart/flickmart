@@ -8,12 +8,14 @@ type ChatParams = {
   onNavigate: (path: string) => void;
   productId?: Id<"product">;
 };
+//Add location field to ShareParams type to fix TypeScript error
 type ShareParams = {
   title: string;
   description: string;
   productId?: Id<"product">;
   url?: string;
   price?: number;
+  location?: string;
 };
 
 export const initialChat = async ({
@@ -39,11 +41,12 @@ export async function shareProduct({
   description,
   productId,
   url,
+  location,
 }: ShareParams) {
   const shareData = {
     title: title || "Check out this product",
     text:
-      `${description?.substring(0, 200)} '...\n'` ||
+      `${description?.substring(0, 200)}...\n\nAvailable in ${location || "UNN"}.\n\n` ||
       "Check out this product on Flickmart",
     url: url || `https://flickmart.app/product/${productId}`,
   };
