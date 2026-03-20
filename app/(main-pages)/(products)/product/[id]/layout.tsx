@@ -27,11 +27,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: product.title,
-    description:`${product.description || 'Check out this product on Flickmart'} available in ${product.location}.`,
+    description:`${product.description || 'Check out this product on Flickmart'}\nAvailable in ${product.location}.`,
     openGraph: {
       title: `Check out this product i found on Flickmart: ${product.title}`,
       description:
-        `${product.description || 'Check out this product on Flickmart'} available in ${product.location}.`,
+        `${product.description || 'Check out this product on Flickmart'}\nAvailable in ${product.location}.`,
       url: `https://flickmart.app/product/${id}`,
 
       images: [
@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: `Check out ${product.title} on Flickmart!`,
       description:
-        `${product.description || 'Check out this product on Flickmart'} available in ${product.location}.`,
+        `${product.description || 'Check out this product on Flickmart'}\nAvailable in ${product.location}.`,  
       images: [
         product.images[0] || 'https://flickmart.app/icon512_maskable.png',
       ],
