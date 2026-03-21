@@ -107,3 +107,37 @@ export async function fetchRecommendations(
 
   return results;
 }
+
+// Convert timestamp to mins/hours/days/weeks/months
+export const timeSince = (dateDiff: number, endText: string = " ago") => {
+  const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
+  const minsAgo = Math.floor(dateDiff / (1000 * 60));
+  const daysAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
+  const weeksAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7));
+  const monthsAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7 * 4));
+
+  let value = 0;
+  let timeSpan = "";
+  if (monthsAgo) {
+    value = monthsAgo;
+    timeSpan = "month";
+  } else if (weeksAgo) {
+    value = weeksAgo;
+    timeSpan = "week";
+  } else if (daysAgo) {
+    value = daysAgo;
+    timeSpan = "day";
+  } else if (hoursAgo) {
+    value = hoursAgo;
+    timeSpan = "hour";
+  } else if (minsAgo) {
+    value = minsAgo;
+    timeSpan = "min";
+  }
+  if (value > 1) {
+    timeSpan += "s";
+  }
+  return value && timeSpan
+    ? `${value} ${timeSpan}${endText}`
+    : "less than a minute ago";
+};

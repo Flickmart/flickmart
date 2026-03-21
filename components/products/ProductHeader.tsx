@@ -1,10 +1,10 @@
-import { ExternalLink, Eye, MapPin, MessageCircle } from 'lucide-react';
+import { CircleUserRound, ExternalLink, Eye, MapPin, MessageCircle, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useTrack } from '@/hooks/useTrack';
-import { initialChat, shareProduct } from '@/utils/helpers';
+import { initialChat, shareProduct, timeSince } from '@/utils/helpers';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
@@ -18,7 +18,8 @@ export default function ProductHeader({
   description,
   aiEnabled,
   recommendationId,
-  views
+  views,
+  handleChat
 }: {
   location: string;
   title: string;
@@ -30,70 +31,15 @@ export default function ProductHeader({
   aiEnabled: boolean;
   recommendationId: string;
   views: number;
+  handleChat: ()=> void;
 }) {
   const sellerPresence = useQuery(api.presence.getUserLastSeen, {userId})
-  const date = new Date(sellerPresence?.lastUpdated ?? 0);
+  const date = new Date(sellerPresence?.lastUpdated ?? timestamp);
   const dateNow = new Date();
-  const dateDiff = dateNow.getTime() - date.getTime();
   const router = useRouter();
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
-  
-  const captureActivity = useTrack();
-  // Convert milliseconds to hours by dividing by number of milliseconds in an hour
-  const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
-  const minsAgo = Math.floor(dateDiff / (1000 * 60));
-  const daysAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24));
-  const weeksAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7));
-  const monthsAgo = Math.floor(dateDiff / (1000 * 60 * 60 * 24 * 7 * 4));
-
-  const timeSince = () => {
-    let value = 0;
-    let timeSpan = '';
-    if (monthsAgo) {
-      value = monthsAgo;
-      timeSpan = 'month';
-    } else if (weeksAgo) {
-      value = weeksAgo;
-      timeSpan = 'week';
-    } else if (daysAgo) {
-      value = daysAgo;
-      timeSpan = 'day';
-    } else if (hoursAgo) {
-      value = hoursAgo;
-      timeSpan = 'hour';
-    } else if (minsAgo) {
-      value = minsAgo;
-      timeSpan = 'min';
-    }
-    if (value > 1) {
-      timeSpan += 's';
-    }
-    return value && timeSpan
-      ? `${value} ${timeSpan} ago`
-      : 'less than a minute ago';
-  };
-
-  const handleChat = () => {
-    if (!isAuthenticated) {
-      router.push(`/sign-in?callback=/product/${productId}`);
-      toast.error('Please sign in to perform this action');
-      return;
-    }
-    captureActivity('Chat Initiated', {
-      productId,
-      userId: user?._id ?? '',
-      recommId: recommendationId,
-      price,
-    });
-    initialChat({
-      user: user ?? null,
-      userId,
-      onNavigate: router.push,
-      productId,
-    });
-  };
 
   async function handleShare() {
     shareProduct({ title, description, productId, price, location });
@@ -101,12 +47,13 @@ export default function ProductHeader({
 
   return (
     <div className="w-full space-y-4 rounded-md bg-white p-5 lg:space-y-3">
-      <div className='flex justify-between items-center '>
-        <div className="flex items-center gap-2 font-light text-gray-500 text-xs">
-          <MapPin size={17} />
-          <span className="capitalize">
-            {location}, <span className="normal-case">{timeSince()}</span>
+      <div className='flex justify-between gap-2 items-center text-center'>
+        <div className="flex items-center gap-1.5 font-light text-gray-500 text-xs">
+          <span className="capitalize flex gap-1">
+            <MapPin size={17} />
+            {location},
           </span>
+          <span className="normal-case">{timeSince(dateNow.getTime() - date.getTime())}</span>
         </div>
         <div className='flex items-center text-xs gap-2 text-muted-foreground'>
           <Eye size={17} />
