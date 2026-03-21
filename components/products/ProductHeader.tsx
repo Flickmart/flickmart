@@ -1,10 +1,12 @@
-import { ExternalLink, MapPin, MessageCircle } from 'lucide-react';
+import { ExternalLink, Eye, MapPin, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import type { Id } from '@/convex/_generated/dataModel';
 import { useAuthUser } from '@/hooks/useAuthUser';
 import { useTrack } from '@/hooks/useTrack';
 import { initialChat, shareProduct } from '@/utils/helpers';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 export default function ProductHeader({
   location,
@@ -16,6 +18,7 @@ export default function ProductHeader({
   description,
   aiEnabled,
   recommendationId,
+  views
 }: {
   location: string;
   title: string;
@@ -26,14 +29,17 @@ export default function ProductHeader({
   description: string;
   aiEnabled: boolean;
   recommendationId: string;
+  views: number;
 }) {
-  const date = new Date(timestamp);
+  const sellerPresence = useQuery(api.presence.getUserLastSeen, {userId})
+  const date = new Date(sellerPresence?.lastUpdated ?? 0);
   const dateNow = new Date();
   const dateDiff = dateNow.getTime() - date.getTime();
   const router = useRouter();
   const { user, isAuthenticated } = useAuthUser({
     redirectOnUnauthenticated: false,
   });
+  
   const captureActivity = useTrack();
   // Convert milliseconds to hours by dividing by number of milliseconds in an hour
   const hoursAgo = Math.floor(dateDiff / (1000 * 60 * 60));
@@ -95,11 +101,17 @@ export default function ProductHeader({
 
   return (
     <div className="w-full space-y-4 rounded-md bg-white p-5 lg:space-y-3">
-      <div className="flex items-center gap-2 font-light text-gray-500 text-xs">
-        <MapPin size={17} />
-        <span className="capitalize">
-          {location}, <span className="normal-case">{timeSince()}</span>
-        </span>
+      <div className='flex justify-between items-center '>
+        <div className="flex items-center gap-2 font-light text-gray-500 text-xs">
+          <MapPin size={17} />
+          <span className="capitalize">
+            {location}, <span className="normal-case">{timeSince()}</span>
+          </span>
+        </div>
+        <div className='flex items-center text-xs gap-2 text-muted-foreground'>
+          <Eye size={17} />
+          <span>{views} views</span>
+        </div>
       </div>
       {/* <div className='flex justify-between items-center'> */}
       <h2 className="font-bold text-gray-800 text-xl capitalize">{title}</h2>

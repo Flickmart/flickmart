@@ -281,6 +281,7 @@ export default function ProductPage() {
                 recommendationId={recommendationId ?? ''}
                 timestamp={productData?.timeStamp ?? ''}
                 title={productData?.title ?? ''}
+                views={productData?.views ?? 0}
                 userId={productData?.userId!}
               />
             ) : null}
@@ -335,6 +336,7 @@ export default function ProductPage() {
                 productId={productId}
                 recommendationId={recommendationId ?? ''}
                 timestamp={productData?.timeStamp ?? ''}
+                views={productData?.views ?? 0}
                 title={productData?.title ?? ''}
                 userId={productData?.userId!}
               />
