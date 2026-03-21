@@ -8,6 +8,8 @@ import {
   Store,
   ThumbsDown,
   ThumbsUp,
+  User,
+  UserCheck,
   X,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -41,6 +43,20 @@ import useNav from '@/hooks/useNav';
 import useSlider from '@/hooks/useSlider';
 import { useTrack } from '@/hooks/useTrack';
 import { useTrackDuration } from '@/hooks/useTrackDuration';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { initialChat, timeSince } from '@/utils/helpers';
+
+type Store = {
+    _id: Id<"store">;
+    _creationTime: number;
+    name?: string | undefined;
+    description?: string | undefined;
+    phone?: string | undefined;
+    location?: string | undefined;
+    image?: string | undefined;
+    userId: Id<"users">;
+}
 
 export default function ProductPage() {
   const [viewed, setViewed] = useState(false);
@@ -56,9 +72,10 @@ export default function ProductPage() {
   const bookmarkProduct = useMutation(api.product.addBookmark);
   const [anonId, setAnonId] = useState<string | null>('');
   const productData = productId
-    ? useQuery(api.product.getById, { productId })
-    : null;
+  ? useQuery(api.product.getById, { productId })
+  : null;
   const like = useQuery(api.product.getLikeByProductId, { productId });
+  const store = useQuery(api.store.getExternalUserStore, { userId: productData?.userId }) as Store;
   const saved = useQuery(api.product.getSavedOrWishlistProduct, {
     productId,
     type: 'saved',
@@ -179,6 +196,25 @@ export default function ProductPage() {
 
   const [loading, setLoading] = useState(false);
 
+  const handleChat = () => {
+    if (!isAuthenticated) {
+      router.push(`/sign-in?callback=/product/${productId}`);
+      toast.error('Please sign in to perform this action');
+      return;
+    }
+    captureActivity('Chat Initiated', {
+      productId,
+      userId: user?._id ?? '',
+      recommId: recommendationId,
+      price: productData?.price ?? 0,
+    });
+    initialChat({
+      user: user ?? null,
+      userId: user?._id as Id<"users">,
+      onNavigate: router.push,
+      productId,
+    });
+};
 
   useEffect(() => {
     const anonymousUserId = localStorage.getItem("anonId");
@@ -283,6 +319,7 @@ export default function ProductPage() {
                 title={productData?.title ?? ''}
                 views={productData?.views ?? 0}
                 userId={productData?.userId!}
+                handleChat={handleChat}
               />
             ) : null}
             <div className="flex w-full justify-around rounded-md bg-white p-5">
@@ -339,6 +376,7 @@ export default function ProductPage() {
                 views={productData?.views ?? 0}
                 title={productData?.title ?? ''}
                 userId={productData?.userId!}
+                handleChat={handleChat}
               />
             )}
             <div className="space-y-2 rounded-md bg-white p-5">
@@ -358,6 +396,28 @@ export default function ProductPage() {
               <span className="font-semibold">
                 {productData?.negotiable ? 'yes' : 'no'}
               </span>
+            </div>
+            <div className=" min-h-20 gap-5 flex  flex-col bg-white p-5">
+              <div className='flex items-center gap-3 w-full'>
+                <Avatar className='size-12'>
+                  <AvatarImage src={store?.image} />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+                <div className='flex flex-col gap-2  w-full'>
+                  <h4 className='font-bold text-lg'>{store?.name}</h4>
+                  <div className='flex gap-2'>
+                   <span className='flex items-center justify-center bg-gray-200 text-xs text-foreground flex-1 lg:flex-none font-medium gap-1 py-1 px-3 rounded-xl'><User size={17}/>Since {timeSince(Date.now() - (store?._creationTime), "+")}</span>
+                   {user?.verified && <span className='flex items-center bg-blue-200/70 text-xs text-blue-800 font-medium gap-1 py-1 px-3 rounded-xl'><UserCheck size={17}/> Verified</span>}
+                  </div>
+                </div>
+              </div>
+              <Button
+                className="flex h-11  items-center w-full justify-center gap-2 rounded-md bg-flickmart-chat-orange p-2 px-3 font-medium lg:w-2/4"
+                onClick={handleChat}
+              >
+                <MessageCircle /> Message vendor
+              </Button>
+
             </div>
             <div className="rounded-md bg-white px-5">
               <Accordion type="multiple">
