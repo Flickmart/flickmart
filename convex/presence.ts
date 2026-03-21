@@ -143,6 +143,22 @@ export const getUserOnlineStatus = query({
   },
 });
 
+export const getUserLastSeen = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    // Get presence record using useris
+
+    const presence = await ctx.db
+      .query("presence")
+      .withIndex("byUserId", (q) => q.eq("userId", args.userId))
+      .first();
+
+    return presence;
+  },
+});
+
 export const onlineStatus = internalQuery({
   args: {
     userId: v.id("users"),
