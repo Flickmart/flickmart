@@ -56,6 +56,18 @@ export const updateUser = mutation({
       throw new Error("Please Login First...");
     }
 
+    if (args.aiEnabled) {
+      const hasProduct = await ctx.db
+        .query("product")
+        .withIndex("by_userId", (q) => q.eq("userId", user._id))
+        .first();
+      if (!hasProduct) {
+        throw new Error(
+          "Post at least one product before enabling the AI assistant.",
+        );
+      }
+    }
+
     args.aiEnabled !== undefined &&
       (await ctx.db.patch(user._id, {
         aiEnabled: args.aiEnabled,

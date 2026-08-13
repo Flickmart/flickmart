@@ -15,7 +15,7 @@ export default function PopularSection({anonId}: {anonId: string | null}) {
   const user = useQuery(api.users.current, {});
 
   return (
-    <div className="lg-text-center space-y-5 lg:space-y-10">
+    <div className="lg-text-center space-y-5  lg:space-y-10">
       <h2 className="section-title">Popular</h2>
       <Container>
         <div className="grid w-full grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">

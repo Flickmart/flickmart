@@ -181,12 +181,12 @@ export default function SettingsPage() {
         ))}
 
         {/* Developer Tools Section */}
-        <div className="space-y-2">
-          <h2 className="font-medium text-gray-600 text-sm">Developer Tools</h2>
+        {/* <div className="space-y-2">
+          <h2 className="font-medium text-gray-600 text-sm">Developer Tools</h2> */}
           {/* <div>
             <AddDemoProductsButton />
           </div> */}
-        </div>
+        {/* </div> */}
       </div>
     </div>
   );

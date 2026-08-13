@@ -18,7 +18,7 @@ export default function NewArrivals({anonId}: {anonId: string | null}) {
   const user = useQuery(api.users.current, {});
 
   return (
-    <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-5 capitalize">
+    <section className="mx-auto mt-0 flex flex-col items-center justify-start space-y-5 py-0 capitalize">
       <div className="flex w-full items-center justify-between">
         <h2 className="section-title mb-0">New Arrivals</h2>
         <Link
