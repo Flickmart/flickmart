@@ -571,6 +571,7 @@ export default function ConversationPage() {
           prompt={prompt}
           showAIStream= {showAIStream}
           sellerId = {otherUserId as Id<"users">}
+          conversationId={conversationId}
           streamId = {streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}

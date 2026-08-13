@@ -11,7 +11,7 @@ import {
 } from "@convex-dev/persistent-text-streaming";
 import { cors } from "./cors";
 import { siteAssistantSystemPrompt } from "./system";
-import { streamOpenRouterChat } from "./openrouter";
+import { type ChatTurn, streamOpenRouterChat } from "./openrouter";
 
 const pts = new PersistentTextStreaming(components.persistentTextStreaming);
 
@@ -48,12 +48,30 @@ export const streamSiteAssistantResponse = httpAction(async (ctx, request) => {
     const { searchParams } = new URL(request.url);
     const prompt = searchParams.get("prompt");
     const streamId = searchParams.get("streamId");
+    const historyParam = searchParams.get("history");
 
     if (!prompt || !streamId) {
       return new Response("Missing prompt or streamId", {
         status: 400,
         headers: cors(request),
       });
+    }
+
+    // The widget has no server-side conversation record (by design -- see
+    // createAssistantStream), so unlike the seller AI's history lookup this
+    // can't be re-derived from the database. The client instead sends the
+    // prior turns it already holds in its own session state.
+    let history: ChatTurn[] = [];
+    if (historyParam) {
+      try {
+        const parsed = JSON.parse(historyParam);
+        if (Array.isArray(parsed)) {
+          history = parsed;
+        }
+      } catch {
+        // Malformed/truncated history param -- answer without it rather
+        // than failing the whole request.
+      }
     }
 
     const response = await pts.stream(
@@ -64,6 +82,7 @@ export const streamSiteAssistantResponse = httpAction(async (ctx, request) => {
         await streamOpenRouterChat({
           systemPrompt: siteAssistantSystemPrompt,
           userPrompt: prompt,
+          history,
           append,
         });
       },

@@ -1,5 +1,5 @@
 import { v } from "convex/values";
-import { components, internal } from "./_generated/api";
+import { api, components, internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import {
   type MutationCtx,
@@ -15,7 +15,13 @@ import {
 } from "@convex-dev/persistent-text-streaming";
 import { cors } from "./cors";
 import { systemPrompt } from "./system";
-import { streamOpenRouterChat } from "./openrouter";
+import { type ChatTurn, streamOpenRouterChat } from "./openrouter";
+
+// How many prior messages (combined user + AI turns) to feed back as
+// conversation history, most-recent-first before being reversed into
+// chronological order. Keeps prompt size/token usage bounded on long
+// conversations while still giving the model real short-term memory.
+const MAX_HISTORY_MESSAGES = 12;
 
 // Persistent Streaming Client
 const pts = new PersistentTextStreaming(components.persistentTextStreaming);
@@ -407,12 +413,39 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
     const streamId = searchParams.get("streamId");
     const storeName = searchParams.get("storeName");
     const sellerId = searchParams.get("sellerId");
+    const conversationId = searchParams.get("conversationId");
 
     if (!prompt || !streamId) {
       return new Response("Missing prompt or streamId", {
         status: 400,
         headers: cors(request),
       });
+    }
+
+    // Give the model real short-term memory of this conversation. The
+    // latest user message (this same `prompt`) and the empty AI placeholder
+    // it's currently answering are both already rows in the `message`
+    // table by the time this action runs, so we drop the trailing entry
+    // (it duplicates `prompt`) and skip/empty ones (the placeholder, plus
+    // any image-only messages with no text) before capping to the most
+    // recent turns.
+    let history: ChatTurn[] = [];
+    if (conversationId) {
+      try {
+        const messages = await ctx.runQuery(api.chat.getMessages, {
+          conversationId: conversationId as Id<"conversations">,
+        });
+        const withText = messages
+          .filter((m) => m.content)
+          .sort((a, b) => a._creationTime - b._creationTime);
+        withText.pop();
+        history = withText.slice(-MAX_HISTORY_MESSAGES).map((m) => ({
+          role: m.senderId === sellerId ? "assistant" : "user",
+          content: m.content as string,
+        }));
+      } catch (err) {
+        console.log("Failed to load conversation history, continuing without it:", err);
+      }
     }
 
     // Vector-DB context is best-effort: if it fails, we still answer using
@@ -460,6 +493,7 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
             storeName as string,
           ),
           userPrompt: `Info from vector DB: ${infoFromVectorDB} User Prompt: ${prompt}`,
+          history,
           append,
         });
       },

@@ -2,22 +2,29 @@
 
 import type { StreamId } from '@convex-dev/persistent-text-streaming';
 import { useStream } from '@convex-dev/persistent-text-streaming/react';
+import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { BeatLoader } from 'react-spinners';
 import { api } from '@/convex/_generated/api';
+import type { AssistantHistoryTurn } from './assistant-widget';
 
 export function AssistantStreamMessage({
   prompt,
   streamId,
+  history,
+  onComplete,
 }: {
   prompt: string;
   streamId: string;
+  history: AssistantHistoryTurn[];
+  onComplete: (streamId: string, text: string) => void;
 }) {
   const streamUrl = new URL(
     `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/site-assistant-stream`
   );
   streamUrl.searchParams.set('prompt', prompt);
   streamUrl.searchParams.set('streamId', streamId);
+  streamUrl.searchParams.set('history', JSON.stringify(history));
 
   const { text, status } = useStream(
     api.siteAssistant.getAssistantStreamBody,
@@ -25,6 +32,12 @@ export function AssistantStreamMessage({
     true,
     streamId as StreamId
   );
+
+  useEffect(() => {
+    if (status === 'done' && text) {
+      onComplete(streamId, text);
+    }
+  }, [status, text, streamId, onComplete]);
 
   const finishedWithNoAnswer = (status === 'done' || status === 'error') && !text;
 
