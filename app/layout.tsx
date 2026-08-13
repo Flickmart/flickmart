@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import 'react-photo-view/dist/react-photo-view.css';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import AssistantWidget from '@/components/ai-assistant/assistant-widget';
 import MobileHeader from '@/components/MobileHeader';
 import Loader from '@/components/multipage/Loader';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
@@ -62,6 +63,7 @@ export default function RootLayout({
             <MobileHeader />
           </Suspense>
           <Suspense fallback={null}>{children}</Suspense>
+          <AssistantWidget />
           <Toaster position="top-right" richColors />
         </Providers>
       </body>

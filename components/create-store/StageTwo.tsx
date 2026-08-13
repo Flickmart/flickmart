@@ -99,9 +99,7 @@ const StageTwo = ({ setStage }: { setStage: Dispatch<1 | 2 | 3 | 4> }) => {
       businessName: string;
       location: string;
       description: string;
-      phoneNumber: string & {
-        __tag: 'E164Number';
-      };
+      phoneNumber: string;
     }>
   ) {
     console.log(error);

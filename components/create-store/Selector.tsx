@@ -12,7 +12,7 @@ type FormType = {
   businessName: string;
   location: string;
   description: string;
-  phoneNumber: string & { __tag: 'E164Number' };
+  phoneNumber: string;
 };
 
 export default function Selector({

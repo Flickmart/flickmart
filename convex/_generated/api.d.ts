@@ -9,16 +9,21 @@
  */
 
 import type * as actions from "../actions.js";
+import type * as astra from "../astra.js";
 import type * as bankAccounts from "../bankAccounts.js";
 import type * as categories from "../categories.js";
 import type * as chat from "../chat.js";
 import type * as comments from "../comments.js";
+import type * as cors from "../cors.js";
 import type * as email from "../email.js";
+import type * as embeddingTemplate from "../embeddingTemplate.js";
+import type * as embeddings from "../embeddings.js";
 import type * as helpers from "../helpers.js";
 import type * as http from "../http.js";
 import type * as interactions from "../interactions.js";
 import type * as internal_ from "../internal.js";
 import type * as notifications from "../notifications.js";
+import type * as openrouter from "../openrouter.js";
 import type * as orders from "../orders.js";
 import type * as populate from "../populate.js";
 import type * as presence from "../presence.js";
@@ -26,6 +31,7 @@ import type * as product from "../product.js";
 import type * as pushNotifications from "../pushNotifications.js";
 import type * as recommend from "../recommend.js";
 import type * as search from "../search.js";
+import type * as siteAssistant from "../siteAssistant.js";
 import type * as store from "../store.js";
 import type * as system from "../system.js";
 import type * as transactions from "../transactions.js";
@@ -41,16 +47,21 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
+  astra: typeof astra;
   bankAccounts: typeof bankAccounts;
   categories: typeof categories;
   chat: typeof chat;
   comments: typeof comments;
+  cors: typeof cors;
   email: typeof email;
+  embeddingTemplate: typeof embeddingTemplate;
+  embeddings: typeof embeddings;
   helpers: typeof helpers;
   http: typeof http;
   interactions: typeof interactions;
   internal: typeof internal_;
   notifications: typeof notifications;
+  openrouter: typeof openrouter;
   orders: typeof orders;
   populate: typeof populate;
   presence: typeof presence;
@@ -58,6 +69,7 @@ declare const fullApi: ApiFromModules<{
   pushNotifications: typeof pushNotifications;
   recommend: typeof recommend;
   search: typeof search;
+  siteAssistant: typeof siteAssistant;
   store: typeof store;
   system: typeof system;
   transactions: typeof transactions;
@@ -93,219 +105,7 @@ export declare const internal: FilterApi<
 >;
 
 export declare const components: {
-  resend: {
-    lib: {
-      cancelEmail: FunctionReference<
-        "mutation",
-        "internal",
-        { emailId: string },
-        null
-      >;
-      cleanupAbandonedEmails: FunctionReference<
-        "mutation",
-        "internal",
-        { olderThan?: number },
-        null
-      >;
-      cleanupOldEmails: FunctionReference<
-        "mutation",
-        "internal",
-        { olderThan?: number },
-        null
-      >;
-      createManualEmail: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          from: string;
-          headers?: Array<{ name: string; value: string }>;
-          replyTo?: Array<string>;
-          subject: string;
-          to: string;
-        },
-        string
-      >;
-      get: FunctionReference<
-        "query",
-        "internal",
-        { emailId: string },
-        {
-          complained: boolean;
-          createdAt: number;
-          errorMessage?: string;
-          finalizedAt: number;
-          from: string;
-          headers?: Array<{ name: string; value: string }>;
-          html?: string;
-          opened: boolean;
-          replyTo: Array<string>;
-          resendId?: string;
-          segment: number;
-          status:
-            | "waiting"
-            | "queued"
-            | "cancelled"
-            | "sent"
-            | "delivered"
-            | "delivery_delayed"
-            | "bounced"
-            | "failed";
-          subject: string;
-          text?: string;
-          to: string;
-        } | null
-      >;
-      getStatus: FunctionReference<
-        "query",
-        "internal",
-        { emailId: string },
-        {
-          complained: boolean;
-          errorMessage: string | null;
-          opened: boolean;
-          status:
-            | "waiting"
-            | "queued"
-            | "cancelled"
-            | "sent"
-            | "delivered"
-            | "delivery_delayed"
-            | "bounced"
-            | "failed";
-        } | null
-      >;
-      handleEmailEvent: FunctionReference<
-        "mutation",
-        "internal",
-        { event: any },
-        null
-      >;
-      sendEmail: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          from: string;
-          headers?: Array<{ name: string; value: string }>;
-          html?: string;
-          options: {
-            apiKey: string;
-            initialBackoffMs: number;
-            onEmailEvent?: { fnHandle: string };
-            retryAttempts: number;
-            testMode: boolean;
-          };
-          replyTo?: Array<string>;
-          subject: string;
-          text?: string;
-          to: string;
-        },
-        string
-      >;
-      updateManualEmail: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          emailId: string;
-          errorMessage?: string;
-          resendId?: string;
-          status:
-            | "waiting"
-            | "queued"
-            | "cancelled"
-            | "sent"
-            | "delivered"
-            | "delivery_delayed"
-            | "bounced"
-            | "failed";
-        },
-        null
-      >;
-    };
-  };
-  presence: {
-    public: {
-      disconnect: FunctionReference<
-        "mutation",
-        "internal",
-        { sessionToken: string },
-        null
-      >;
-      heartbeat: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          interval?: number;
-          roomId: string;
-          sessionId: string;
-          userId: string;
-        },
-        { roomToken: string; sessionToken: string }
-      >;
-      list: FunctionReference<
-        "query",
-        "internal",
-        { limit?: number; roomToken: string },
-        Array<{ lastDisconnected: number; online: boolean; userId: string }>
-      >;
-      listRoom: FunctionReference<
-        "query",
-        "internal",
-        { limit?: number; onlineOnly?: boolean; roomId: string },
-        Array<{ lastDisconnected: number; online: boolean; userId: string }>
-      >;
-      listUser: FunctionReference<
-        "query",
-        "internal",
-        { limit?: number; onlineOnly?: boolean; userId: string },
-        Array<{ lastDisconnected: number; online: boolean; roomId: string }>
-      >;
-      removeRoom: FunctionReference<
-        "mutation",
-        "internal",
-        { roomId: string },
-        null
-      >;
-      removeRoomUser: FunctionReference<
-        "mutation",
-        "internal",
-        { roomId: string; userId: string },
-        null
-      >;
-    };
-  };
-  persistentTextStreaming: {
-    lib: {
-      addChunk: FunctionReference<
-        "mutation",
-        "internal",
-        { final: boolean; streamId: string; text: string },
-        any
-      >;
-      createStream: FunctionReference<"mutation", "internal", {}, any>;
-      getStreamStatus: FunctionReference<
-        "query",
-        "internal",
-        { streamId: string },
-        "pending" | "streaming" | "done" | "error" | "timeout"
-      >;
-      getStreamText: FunctionReference<
-        "query",
-        "internal",
-        { streamId: string },
-        {
-          status: "pending" | "streaming" | "done" | "error" | "timeout";
-          text: string;
-        }
-      >;
-      setStreamStatus: FunctionReference<
-        "mutation",
-        "internal",
-        {
-          status: "pending" | "streaming" | "done" | "error" | "timeout";
-          streamId: string;
-        },
-        any
-      >;
-    };
-  };
+  resend: import("@convex-dev/resend/_generated/component.js").ComponentApi<"resend">;
+  presence: import("@convex-dev/presence/_generated/component.js").ComponentApi<"presence">;
+  persistentTextStreaming: import("@convex-dev/persistent-text-streaming/_generated/component.js").ComponentApi<"persistentTextStreaming">;
 };

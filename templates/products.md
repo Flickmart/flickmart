@@ -1,3 +1,7 @@
+<!-- Reference copy only. The template actually used at runtime (by the
+     ingestion script and the per-product embedding sync action) is inlined
+     in convex/embeddingTemplate.ts -- keep the two in sync by hand. -->
+
 # Listing: {{title}}
 
 ## Overview
