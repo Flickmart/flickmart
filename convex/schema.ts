@@ -104,7 +104,7 @@ export default defineSchema({
     userId: v.id("users"),
     timeStamp: v.string(),
     search: v.string(),
-  }),
+  }).index("byUserId", ["userId"]),
 
   // Comments
   comments: defineTable({
