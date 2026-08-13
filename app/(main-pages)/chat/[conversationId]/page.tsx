@@ -109,9 +109,6 @@ export default function ConversationPage() {
     conversationId ? { conversationId } : 'skip'
   );
   
-  // Get Seller product
-  const conversationProduct = useQuery(api.product.getById, {productId: conversation?.products?.at(0) ?? "skip"})
-
   // Get the other user's ID
   const otherUserId = useMemo(() => {
     if (!(conversation && user?._id)) {
@@ -128,8 +125,12 @@ export default function ConversationPage() {
     otherUserId ? { userId: otherUserId } : 'skip'
   );
 
-  // Ensure that other user is the seller in the conversation so we can check if ai response is enabled
-  const seller = otherUser?._id === conversationProduct?.userId ? otherUser : null
+  // aiEnabled lives directly on the user record, so the AI-active indicator
+  // can read it straight off otherUser -- no need to also resolve the
+  // conversation's linked product and match it against otherUser's id just
+  // to reach the same boolean (that extra hop was the previous approach and
+  // added a query race: if the product lookup hadn't resolved yet, the
+  // header showed "offline" even when the seller genuinely had AI on).
 
   // Mutation to send a message
   const sendMessage = useMutation(api.chat.sendMessage);
@@ -178,7 +179,7 @@ export default function ConversationPage() {
         const content =`Hey i'm interested in this product, ${product?.title} is it still available?`
 
         setPrompt(content)
-        const chatId = await sendMessage({
+        const { messageId: chatId, aiActivated } = await sendMessage({
           senderId: user._id,
           conversationId,
           type: 'product',
@@ -188,7 +189,7 @@ export default function ConversationPage() {
           productImage: product?.images?.[0],
           content
         });
-        if(conversationProduct?.userId !==  user._id && seller?.aiEnabled && !otherUserOnlineStatus?.isOnline){
+        if (aiActivated) {
           setShowAIStream(true)
           setMessageId(chatId)
         }
@@ -450,7 +451,7 @@ export default function ConversationPage() {
       }
 
       // Send message with text and/or images
-      const chatId = await sendMessage({
+      const { messageId: chatId, aiActivated } = await sendMessage({
         senderId: user._id,
         content: messageText,
         conversationId,
@@ -458,8 +459,11 @@ export default function ConversationPage() {
         type: 'text',
       });
 
-      // Before activating process that triggers AI, let determine if user is buyer or seller
-      if(conversationProduct?.userId !==  user._id && seller?.aiEnabled && !otherUserOnlineStatus?.isOnline){
+      // The backend is the single source of truth for whether the seller
+      // was offline+AI-enabled at send time -- trust its answer instead of
+      // re-deriving the same condition from locally cached presence data,
+      // which can race and disagree with what the backend just decided.
+      if (aiActivated) {
         setShowAIStream(true)
         setMessageId(chatId)
       }
@@ -542,8 +546,8 @@ export default function ConversationPage() {
   return (
     <div className="flex h-full flex-col">
       <ChatHeader
-        aiEnabled = {seller?.aiEnabled ?? false}
-        sellerId = {conversationProduct?.userId as Id<"users">}
+        aiEnabled = {otherUser?.aiEnabled ?? false}
+        sellerId = {otherUserId as Id<"users">}
         userId={user?._id as Id<"users">}
         AIStatus={AIStatus}
         activeChatData={activeChatData}
@@ -566,7 +570,7 @@ export default function ConversationPage() {
           messageId={messageId as Id<"message">}
           prompt={prompt}
           showAIStream= {showAIStream}
-          sellerId = {conversationProduct?.userId as Id<"users">}
+          sellerId = {otherUserId as Id<"users">}
           streamId = {streamId as string}
           messages={formattedMessages}
           selectedMessages={selectedMessages}

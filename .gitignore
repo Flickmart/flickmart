@@ -16,6 +16,7 @@
 .vscode
 .kiro
 .cursor
+.claude
 
 # testing
 /coverage

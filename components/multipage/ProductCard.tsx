@@ -39,6 +39,7 @@ export default function ProductCard({
   );
 
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [imageFailed, setImageFailed] = useState(false);
 
   const userEngagements = [
     {
@@ -114,13 +115,14 @@ export default function ProductCard({
           className={` ${saved?.data?.added ? 'fill-flickmart stroke-[#F68B1E]' : 'fill-[#6C7275] stroke-[#6C7275]'}`}
         />
       </button>
-      {image ? (
+      {image && !imageFailed ? (
         <div className="block h-[74%] overflow-hidden rounded-sm">
           <Image
             alt={title || ''}
             className="size-full border object-cover object-top transition-transform duration-300 sm:hover:scale-125"
             height={500}
-            src={image || ''}
+            onError={() => setImageFailed(true)}
+            src={image}
             width={500}
           />
         </div>
