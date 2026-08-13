@@ -28,6 +28,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `Check out ${user?.name} on Flickmart!`,
     description: user?.description || 'Discover my profile on Flickmart.',
+    alternates: {
+      canonical: `/business/${userId}`,
+    },
     openGraph: {
       title: `Check out ${user?.name} on Flickmart!`,
       description: user?.description || 'Discover my profile on Flickmart.',

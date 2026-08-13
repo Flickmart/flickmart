@@ -9,18 +9,31 @@ import MobileHeader from '@/components/MobileHeader';
 import Loader from '@/components/multipage/Loader';
 import { ServiceWorkerRegistration } from '@/components/ServiceWorkerRegistration';
 import { Providers } from '@/providers/providers';
+import { SITE_NAME, SITE_URL, SOCIAL_LINKS } from '@/utils/seo';
 
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3000';
+const DESCRIPTION =
+  'Flickmart is a classified online marketplace where students and locals in Enugu and Nsukka discover, buy, and sell electronics, fashion, food, services and more — securely, with escrow-protected payments and greater visibility for sellers.';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
-  title: 'Flickmart',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Buy & Sell Near You`,
+    template: `%s | ${SITE_NAME}`,
+  },
   manifest: '/manifest.json',
-  keywords: ['nextjs', 'next15', 'pwa', 'next-pwa'],
-  description:
-    'A classified online marketplace where students and locals discover, buy, and sell everything they need — securely and with greater visibility for sellers, all in one trusted platform.',
+  keywords: [
+    'flickmart',
+    'online marketplace',
+    'buy and sell',
+    'classified ads',
+    'ecommerce Nigeria',
+    'Enugu marketplace',
+    'Nsukka marketplace',
+    'student marketplace',
+    'buy and sell online',
+    'campus marketplace',
+  ],
+  description: DESCRIPTION,
   generator: 'Next.js',
   viewport:
     'minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, viewport-fit=cover',
@@ -28,6 +41,62 @@ export const metadata: Metadata = {
     { rel: 'apple-touch-icon', url: 'icon512_rounded.png' },
     { rel: 'icon', url: 'icon512_maskable.png' },
   ],
+  alternates: {
+    canonical: '/',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  openGraph: {
+    type: 'website',
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Buy & Sell Near You`,
+    description: DESCRIPTION,
+    url: SITE_URL,
+    images: [
+      {
+        url: `${SITE_URL}/icon512_maskable.png`,
+        width: 512,
+        height: 512,
+        alt: SITE_NAME,
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: `${SITE_NAME} — Buy & Sell Near You`,
+    description: DESCRIPTION,
+    images: [`${SITE_URL}/icon512_maskable.png`],
+  },
+};
+
+const organizationJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/flickmart-logo.svg`,
+  sameAs: SOCIAL_LINKS,
+};
+
+const websiteJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: SITE_NAME,
+  url: SITE_URL,
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: `${SITE_URL}/search?query={search_term_string}`,
+    },
+    'query-input': 'required name=search_term_string',
+  },
 };
 const inter = Inter({
   subsets: ['latin'],
@@ -49,6 +118,18 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
     >
+      <head>
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static, non-user-controlled JSON-LD
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          type="application/ld+json"
+        />
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: static, non-user-controlled JSON-LD
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+          type="application/ld+json"
+        />
+      </head>
       <body className="text relative bg-background">
         <Providers>
           <ServiceWorkerRegistration />
