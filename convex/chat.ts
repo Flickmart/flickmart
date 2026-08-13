@@ -8,19 +8,14 @@ import {
   query,
 } from "./_generated/server";
 import { getCurrentUser } from "./users";
-import { GoogleGenAI } from "@google/genai";
 import {
   PersistentTextStreaming,
   StreamId,
   StreamIdValidator,
 } from "@convex-dev/persistent-text-streaming";
-import { cors } from "./http";
+import { cors } from "./cors";
 import { systemPrompt } from "./system";
-
-// Google Gen AI client
-const ai = new GoogleGenAI({
-  apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
-});
+import { streamOpenRouterChat } from "./openrouter";
 
 // Persistent Streaming Client
 const pts = new PersistentTextStreaming(components.persistentTextStreaming);
@@ -411,6 +406,7 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
     const prompt = searchParams.get("prompt");
     const streamId = searchParams.get("streamId");
     const storeName = searchParams.get("storeName");
+    const sellerId = searchParams.get("sellerId");
 
     if (!prompt || !streamId) {
       return new Response("Missing prompt or streamId", {
@@ -419,42 +415,53 @@ export const streamAIResponse = httpAction(async (ctx, request) => {
       });
     }
 
-    const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/vectors`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        prompt,
-      }),
-    });
+    // Vector-DB context is best-effort: if it fails, we still answer using
+    // the system prompt alone rather than failing the whole AI reply.
+    let infoFromVectorDB = "";
+    try {
+      const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/vectors`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt,
+          sellerId,
+        }),
+      });
 
-    if (!result.ok)
-      throw Error(
-        "There was an issue retrieving similarity search results for this request.",
+      if (result.ok) {
+        const data = (await result.json()).data as Array<{
+          _id: string;
+          text: string;
+        }> | null;
+        infoFromVectorDB = (data ?? []).map((item) => item.text).join("#");
+      } else {
+        console.log(
+          "Vector search request failed, continuing without RAG context:",
+          result.status,
+        );
+      }
+    } catch (err) {
+      console.log(
+        "Vector search request errored, continuing without RAG context:",
+        err,
       );
-
-    const data = (await result.json()).data as Array<{
-      _id: string;
-      text: string;
-    }>;
-    const infoFromVectorDB = data.map((item) => item.text).join("#");
+    }
 
     const response = await pts.stream(
       ctx,
       request,
       streamId as StreamId,
       async (ctx, req, id, append) => {
-        const aiResponse = await ai.models.generateContentStream({
-          model: process.env.GEMINI_MODEL as string,
-          contents: `${systemPrompt.replace("{Company Name}", storeName as string)} Info from vector DB: ${infoFromVectorDB} User Prompt: ${prompt}`,
+        await streamOpenRouterChat({
+          systemPrompt: systemPrompt.replace(
+            "{Company Name}",
+            storeName as string,
+          ),
+          userPrompt: `Info from vector DB: ${infoFromVectorDB} User Prompt: ${prompt}`,
+          append,
         });
-        for await (const chunk of aiResponse) {
-          const text = chunk.text;
-          if (text) {
-            await append(text);
-          }
-        }
       },
     );
 

@@ -445,7 +445,9 @@ export default function PostAdForm({
             action={action as string}
             adId={adId}
             basicDuration={basicDuration}
-            formSubmit={() => form.handleSubmit(onSubmit, onError)()}
+            formSubmit={async () => {
+              await form.handleSubmit(onSubmit, onError)();
+            }}
             formTrigger={form.trigger}
             images={images}
             isPending={isPending}

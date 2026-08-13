@@ -1,6 +1,7 @@
 /** biome-ignore-all lint/style/noMagicNumbers: <Needed> */
 /** biome-ignore-all lint/performance/useTopLevelRegex: <N> */
 import { ConvexError, v } from "convex/values";
+import { internal } from "./_generated/api";
 import type { Doc, Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserOrThrow } from "./users";
@@ -189,6 +190,10 @@ export const create = mutation({
       store: args.store,
     });
 
+    await ctx.scheduler.runAfter(0, internal.embeddings.syncProductEmbedding, {
+      productId,
+    });
+
     return productId;
   },
 });
@@ -261,6 +266,10 @@ export const update = mutation({
 
     await ctx.db.patch(args.productId, updates);
 
+    await ctx.scheduler.runAfter(0, internal.embeddings.syncProductEmbedding, {
+      productId: args.productId,
+    });
+
     return args.productId;
   },
 });
@@ -283,6 +292,12 @@ export const remove = mutation({
     if (product.userId !== user._id) {
       throw new Error("Unauthorized to delete this product");
     }
+
+    await ctx.scheduler.runAfter(
+      0,
+      internal.embeddings.deleteProductEmbedding,
+      { productId: args.productId },
+    );
 
     await ctx.db.delete(args.productId);
 

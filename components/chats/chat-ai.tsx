@@ -35,6 +35,7 @@ const streamUrl = new URL(`${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/chat-strea
 streamUrl.searchParams.set("prompt", prompt);
 streamUrl.searchParams.set("streamId", streamId ?? "");
 streamUrl.searchParams.set("storeName", store?.name ?? ""  )
+streamUrl.searchParams.set("sellerId", sellerId)
 
 const { text, status } = useStream(
     api.chat.getChatBody,
