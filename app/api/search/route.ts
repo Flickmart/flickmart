@@ -7,12 +7,20 @@ export async function GET(req: NextRequest) {
   const q = searchParams.get('q');
   const userId = searchParams.get('userId');
 
-  const result = await client.send(
-    new requests.SearchItems(userId ?? '', q ?? '', 20, {
-      returnProperties: true,
-      cascadeCreate: true,
-    })
-  );
+  try {
+    const result = await client.send(
+      new requests.SearchItems(userId ?? '', q ?? '', 20, {
+        returnProperties: true,
+        cascadeCreate: true,
+      })
+    );
 
-  return NextResponse.json(result);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error('Recombee search request failed:', error);
+    return NextResponse.json(
+      { error: 'Failed to fetch search results' },
+      { status: 502 }
+    );
+  }
 }

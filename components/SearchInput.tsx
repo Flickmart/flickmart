@@ -41,15 +41,31 @@ export default function SearchInput({
 }) {
   const isMobile = useIsMobile();
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearchInput, setDebouncedSearchInput] = useState('');
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [focus, setFocus] = useState<boolean>(false);
   const saveSearchInput = useMutation(api.search.insertSearchHistory);
   const deleteSearchInput = useMutation(api.search.deleteSearchHistory);
   const retrievePreviousInputs = useQuery(api.search.getSearchHistory, {});
-  const autoSuggest = useQuery(api.product.search, {
-    query: searchInput || '',
-    type: 'suggestions',
-  });
+
+  // Debounce the query sent to the backend so we're not firing a full
+  // search on every keystroke.
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchInput(searchInput.trim());
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // api.product.search returns a different shape depending on `type`, which
+  // Convex's generated types can't narrow based on the literal we pass --
+  // this cast reflects the actual shape returned for type: 'suggestions'.
+  const autoSuggest = useQuery(
+    api.product.search,
+    debouncedSearchInput
+      ? { query: debouncedSearchInput, type: 'suggestions' }
+      : 'skip'
+  ) as { title: string; image: string }[] | undefined;
   const router = useRouter();
   const searchRef = useRef<HTMLInputElement | null>(null);
   const captureActivity = useTrack();
@@ -65,14 +81,21 @@ export default function SearchInput({
     event: React.KeyboardEvent<T>
   ) {
     if (event.key === 'Enter') {
-      const locationQuery = !loc || loc === 'all' ? '' : `?location=${loc}`;
-      router.push(`/search?query=${searchInput}${locationQuery}`);
+      const trimmedInput = searchInput.trim();
+      if (!trimmedInput) {
+        return;
+      }
+      const locationQuery =
+        !loc || loc === 'all' ? '' : `&location=${encodeURIComponent(loc)}`;
+      router.push(
+        `/search?query=${encodeURIComponent(trimmedInput)}${locationQuery}`
+      );
       openSearch?.(false);
       saveSearchInput({
-        search: searchInput,
+        search: trimmedInput,
       });
       captureActivity('Product Searched', {
-        query: searchInput,
+        query: trimmedInput,
         userId: user?._id ?? '',
       });
       // Perform search action
@@ -91,19 +114,14 @@ export default function SearchInput({
     }
   }
   useEffect(() => {
-    if (autoSuggest || searchInput) {
-      updateAutoSuggest?.(
-        autoSuggest as { title: string; image: string }[],
-        searchInput
-      );
-    }
-  }, [autoSuggest, isMobile, isOverlayOpen, searchInput]);
+    updateAutoSuggest?.(autoSuggest ?? [], searchInput);
+  }, [autoSuggest, searchInput]);
 
   useEffect(() => {
     if (query) {
       setSearchInput(query);
     }
-  }, []);
+  }, [query]);
 
   return (
     <Command className="h-full bg-inherit">
@@ -162,7 +180,7 @@ export default function SearchInput({
             <CommandGroup heading="Suggestions">
               {autoSuggest?.map((item, index) => (
                 <Link
-                  href={`/search?query=${item}`}
+                  href={`/search?query=${encodeURIComponent(item.title)}`}
                   key={index}
                   onMouseDown={(e) => e.preventDefault()}
                 >
@@ -170,21 +188,23 @@ export default function SearchInput({
                     className="cursor-pointer"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
-                        router.push(`/search?query=${item}`);
+                        router.push(
+                          `/search?query=${encodeURIComponent(item.title)}`
+                        );
                         setIsTyping(false);
                       }
                     }}
                   >
-                    {typeof item === 'string' ? item : null}
+                    {item.title}
                   </CommandItem>
                 </Link>
               ))}
             </CommandGroup>
-            {autoSuggest?.length === 0 ? (
-              <CommandEmpty>No results found.</CommandEmpty>
-            ) : (
+            {autoSuggest === undefined ? (
               <CommandEmpty>Loading...</CommandEmpty>
-            )}
+            ) : autoSuggest.length === 0 ? (
+              <CommandEmpty>No results found.</CommandEmpty>
+            ) : null}
           </MotionCommandList>
         ) : focus &&
           !isOverlayOpen &&
@@ -199,7 +219,9 @@ export default function SearchInput({
                   onClick={() => {
                     setFocus(false);
                     searchRef.current?.blur();
-                    router.push(`/search?query=${item.search}`);
+                    router.push(
+                      `/search?query=${encodeURIComponent(item.search)}`
+                    );
                   }}
                   onMouseDown={(e) => e.preventDefault()}
                 >

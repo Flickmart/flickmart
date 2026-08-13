@@ -203,15 +203,45 @@ export default function DetailedCategoryPage() {
     id: string;
     values: ValuesDto & { category: string };
   }>;
+  const [searchError, setSearchError] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const router = useRouter();
+  const userId = user?._id;
 
   useEffect(() => {
+    // Guards against a slower response for a stale query/user overwriting a
+    // faster response for the current one.
+    let cancelled = false;
+
     setPersonalizedSearch(null);
-    fetch(`/api/search?q=${query}&userId=${user?._id}`).then((res) =>
-      res.json().then((data) => setPersonalizedSearch(data))
-    );
-  }, [query, user]);
+    setSearchError(false);
+
+    fetch(
+      `/api/search?q=${encodeURIComponent(query ?? '')}&userId=${encodeURIComponent(userId ?? '')}`
+    )
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Search request failed with status ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        if (!cancelled) {
+          setPersonalizedSearch(data);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to fetch search results:', error);
+        if (!cancelled) {
+          setSearchError(true);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [query, userId, retryCount]);
 
   const { isMobile } = useSidebar();
 
@@ -374,7 +404,26 @@ export default function DetailedCategoryPage() {
           <div
             className={`mt-2 ${search?.length && 'grid'} grid-cols-2 gap-5 py-3 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4`}
           >
-            {personalizedSearch ? (
+            {searchError ? (
+              <div className="flex h-[45vh] flex-col items-center justify-start px-5">
+                <Empty>
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon">
+                      <IconMoodPuzzled />
+                    </EmptyMedia>
+                    <EmptyTitle>Something went wrong</EmptyTitle>
+                    <EmptyDescription>
+                      We couldn&apos;t load search results. Please try again.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button onClick={() => setRetryCount((c) => c + 1)}>
+                      Retry
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              </div>
+            ) : personalizedSearch ? (
               search?.length === 0 ? (
                 <div className="flex h-[45vh] flex-col items-center justify-start px-5">
                   <Empty>

@@ -261,14 +261,23 @@ export const update = mutation({
       }
     }
 
+    // Whether any embedding-relevant field actually changed, so a no-op
+    // update (e.g. called with only productId) doesn't trigger a wasted
+    // re-embed of unchanged content.
+    const hasContentChanges = Object.keys(updates).length > 0;
+
     // Add timestamp to track when the product was last updated
     updates.timeStamp = new Date().toISOString();
 
     await ctx.db.patch(args.productId, updates);
 
-    await ctx.scheduler.runAfter(0, internal.embeddings.syncProductEmbedding, {
-      productId: args.productId,
-    });
+    if (hasContentChanges) {
+      await ctx.scheduler.runAfter(
+        0,
+        internal.embeddings.syncProductEmbedding,
+        { productId: args.productId },
+      );
+    }
 
     return args.productId;
   },
@@ -611,7 +620,16 @@ export const search = query({
     ),
   },
   handler: async (ctx, args) => {
-    const searchQuery = args.query.toLowerCase();
+    const searchQuery = args.query.trim().toLowerCase();
+
+    // An empty query would match every product (a substring check against
+    // "" is always true) -- for suggestions specifically, that means
+    // scanning and scoring the entire catalog just to throw it away, so
+    // short-circuit instead.
+    if (args.type === "suggestions" && !searchQuery) {
+      return [];
+    }
+
     let products = await ctx.db.query("product").collect();
 
     // Apply text search filter
@@ -713,8 +731,9 @@ export const search = query({
       return 0;
     });
 
+    const MAX_SUGGESTIONS = 8;
     if (args.type === "suggestions") {
-      return products.map((item) => ({
+      return products.slice(0, MAX_SUGGESTIONS).map((item) => ({
         title: item.title,
         image: item.images[0],
       }));

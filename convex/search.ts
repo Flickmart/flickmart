@@ -11,15 +11,17 @@ export const insertSearchHistory = mutation({
     if (!user) {
       throw new Error('Not authenticated');
     }
+
+    const search = args.search.trim();
+    if (!search) {
+      return;
+    }
+
     // Check if the search already exists for the user
     const existingHistory = await ctx.db
       .query('history')
-      .filter((q) =>
-        q.and(
-          q.eq(q.field('userId'), user._id),
-          q.eq(q.field('search'), args.search)
-        )
-      )
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
+      .filter((q) => q.eq(q.field('search'), search))
       .first();
 
     if (existingHistory) {
@@ -27,7 +29,7 @@ export const insertSearchHistory = mutation({
     }
     await ctx.db.insert('history', {
       userId: user._id,
-      search: args.search,
+      search,
       timeStamp: Date.now().toString(),
     });
   },
@@ -50,7 +52,7 @@ export const getSearchHistory = query({
 
     const history = await ctx.db
       .query('history')
-      .filter((q) => q.eq(q.field('userId'), user._id))
+      .withIndex('byUserId', (q) => q.eq('userId', user._id))
       .order('desc')
       .take(10);
     return { success: true, data: history, error: null };
@@ -62,10 +64,20 @@ export const deleteSearchHistory = mutation({
     searchId: v.id('history'),
   },
   handler: async (ctx, args) => {
-    try {
-      await ctx.db.delete(args.searchId);
-    } catch (err) {
-      console.log(err);
+    const user = await getCurrentUserOrThrow(ctx);
+    if (!user) {
+      throw new Error('Not authenticated');
     }
+
+    const entry = await ctx.db.get(args.searchId);
+    // Already gone, or never existed -- nothing to do.
+    if (!entry) {
+      return;
+    }
+    if (entry.userId !== user._id) {
+      throw new Error('Not authorized to delete this search history entry');
+    }
+
+    await ctx.db.delete(args.searchId);
   },
 });
