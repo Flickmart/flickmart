@@ -32,6 +32,8 @@ const MODEL_STALL_TIMEOUT_MS = 12_000;
 
 type ChunkAppender = (text: string) => Promise<void>;
 
+export type ChatTurn = { role: "user" | "assistant"; content: string };
+
 /**
  * Streams a chat completion from OpenRouter, trying each model in `models`
  * in order. Falls back to the next model if it fails, stalls, or completes
@@ -44,11 +46,13 @@ type ChunkAppender = (text: string) => Promise<void>;
 export async function streamOpenRouterChat({
   systemPrompt,
   userPrompt,
+  history = [],
   append,
   models = OPENROUTER_MODELS,
 }: {
   systemPrompt: string;
   userPrompt: string;
+  history?: ChatTurn[];
   append: ChunkAppender;
   models?: string[];
 }): Promise<{ modelUsed: string }> {
@@ -86,6 +90,7 @@ export async function streamOpenRouterChat({
           max_tokens: 1024,
           messages: [
             { role: "system", content: systemPrompt },
+            ...history,
             { role: "user", content: userPrompt },
           ],
         }),

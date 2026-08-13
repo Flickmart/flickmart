@@ -9,16 +9,18 @@ import { BeatLoader, SyncLoader } from "react-spinners";
 
 export default function ChatAI({
     sellerId,
-    prompt, 
-    setAIStatus, 
-    streamId, 
-    messageId, 
-    setShowAIStream}: 
+    conversationId,
+    prompt,
+    setAIStatus,
+    streamId,
+    messageId,
+    setShowAIStream}:
 {
     sellerId: Id<"users">
-    prompt: string, 
-    setAIStatus: (val: string)=> void; 
-    streamId: string; messageId: Id<"message">; 
+    conversationId: Id<"conversations">
+    prompt: string,
+    setAIStatus: (val: string)=> void;
+    streamId: string; messageId: Id<"message">;
     setShowAIStream: () => void
 } ) {
 const updateAIMessageRecord = useMutation(api.chat.updateAIRecord)
@@ -36,6 +38,7 @@ streamUrl.searchParams.set("prompt", prompt);
 streamUrl.searchParams.set("streamId", streamId ?? "");
 streamUrl.searchParams.set("storeName", store?.name ?? ""  )
 streamUrl.searchParams.set("sellerId", sellerId)
+streamUrl.searchParams.set("conversationId", conversationId)
 
 const { text, status } = useStream(
     api.chat.getChatBody,

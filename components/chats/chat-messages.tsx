@@ -29,6 +29,7 @@ type Message = {
 
 type ChatMessagesProps = {
   sellerId: Id<"users">;
+  conversationId: Id<"conversations">;
   setAIStatus: (val: string)=> void;
   setShowAIStream: ()=> void;
   messageId: Id<"message">
@@ -44,6 +45,7 @@ type ChatMessagesProps = {
 
 export default function ChatMessages({
   sellerId,
+  conversationId,
   setAIStatus,
   setShowAIStream,
   messageId,
@@ -200,10 +202,11 @@ export default function ChatMessages({
             ))}
           </div>
         ))}
-        {showAIStream && 
-        <ChatAI 
+        {showAIStream &&
+        <ChatAI
           sellerId= {sellerId}
-          key={streamId} 
+          conversationId={conversationId}
+          key={streamId}
           setAIStatus={(val)=> setAIStatus(val)} 
           prompt={prompt} 
           streamId={streamId} 

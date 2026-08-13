@@ -7,8 +7,10 @@ import { AssistantStreamMessage } from './assistant-stream-message';
 
 export function AssistantMessageList({
   messages,
+  onComplete,
 }: {
   messages: AssistantMessage[];
+  onComplete: (streamId: string, text: string) => void;
 }) {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
@@ -35,7 +37,9 @@ export function AssistantMessageList({
             </div>
           ) : (
             <AssistantStreamMessage
+              history={message.history}
               key={message.id}
+              onComplete={onComplete}
               prompt={message.prompt}
               streamId={message.streamId}
             />
