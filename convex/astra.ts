@@ -29,11 +29,25 @@ let cachedCollection: any = null;
  * across warm invocations of whichever runtime calls this (a Convex action,
  * the Next.js `/api/vectors` route, or the local ingestion script) instead
  * of reconnecting on every call.
+ *
+ * Ensures the collection actually exists first via `createCollection`,
+ * which Astra treats as a no-op against an existing collection with the
+ * same definition (see scripts/data-injest-pipeline.ts). Without this, a
+ * plain `db.collection(name)` handle looks valid but every read/write
+ * against it 500s until *something* has called createCollection at least
+ * once -- previously only the manual backfill script did that, so the
+ * automatic per-product sync silently failed on every deploy where nobody
+ * had run it yet.
  */
-export function getProductEmbeddingsCollection() {
+export async function getProductEmbeddingsCollection() {
   if (!cachedCollection) {
     const db = connectToDatabase();
-    cachedCollection = db.collection(PRODUCT_LISTINGS_COLLECTION);
+    cachedCollection = await db.createCollection(PRODUCT_LISTINGS_COLLECTION, {
+      vector: {
+        dimension: 768,
+        metric: "cosine",
+      },
+    });
   }
   return cachedCollection;
 }

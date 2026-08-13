@@ -1,9 +1,12 @@
 import { Camera, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Spinner } from '@/components/Spinner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+
+const MAX_TEXTAREA_HEIGHT = 128;
 
 type ChatInputProps = {
   input: string;
@@ -25,10 +28,39 @@ export default function ChatInput({
   extraIcons = true,
 }: ChatInputProps) {
   const [isMobile, setIsMobile] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setIsMobile(/iPhone|iPad|iPod|Android/i.test(navigator.userAgent));
   }, []);
+
+  // Auto-grow the textarea as the user types multiple lines, capped so it
+  // never pushes the send button off-screen (overflow scrolls internally
+  // past that cap). Keyed off `input` rather than just the change handler
+  // so it also shrinks back down when the parent clears the field after
+  // sending.
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (!textarea) {
+      return;
+    }
+    textarea.style.height = 'auto';
+    textarea.style.height = `${Math.min(textarea.scrollHeight, MAX_TEXTAREA_HEIGHT)}px`;
+  }, [input]);
+
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Enter sends the message, like every mainstream chat app; Shift+Enter
+    // (or Enter on mobile, where there's no shift key to combo with) drops
+    // to a new line via the textarea's own default behavior.
+    if (e.key === 'Enter' && !e.shiftKey && !isMobile) {
+      e.preventDefault();
+      e.currentTarget.form?.requestSubmit();
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -102,11 +134,15 @@ export default function ChatInput({
             </label>
           </>
         )}
-        <Input
-          className="flex-1"
+        <Textarea
+          className="max-h-32 min-h-0 flex-1 resize-none py-2 leading-normal"
           disabled={isUploading}
-          onChange={(e) => setInput(e.target.value)}
+          enterKeyHint="send"
+          onChange={handleTextareaChange}
+          onKeyDown={handleKeyDown}
           placeholder="Type a message"
+          ref={textareaRef}
+          rows={1}
           value={input}
         />
         <Button

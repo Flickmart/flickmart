@@ -14,7 +14,8 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await getProductEmbeddingsCollection().deleteMany({ productId });
+    const collection = await getProductEmbeddingsCollection();
+    await collection.deleteMany({ productId });
 
     return NextResponse.json({ status: "success" });
   } catch (err) {
