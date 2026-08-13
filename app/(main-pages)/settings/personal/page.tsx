@@ -13,6 +13,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import MobileNav from '@/components/MobileNav';
 import { PushNotificationSetup } from '@/components/notifications/PushNotificationSetup';
 
@@ -50,6 +51,7 @@ export default function PublicProfile() {
   const productsByUser = useQuery(api.product.getByUserId, {
     userId: user?._id,
   });
+  const hasProducts = (productsByUser?.length ?? 0) > 0;
   const updateUser = useMutation(api.users.updateUser)
 
   // Get Wallet Balance
@@ -272,12 +274,19 @@ export default function PublicProfile() {
                 </CardHeader>
                 <CardContent className='flex items-center gap-7'>
                   <span className='text-sm leading-relaxed text-muted-foreground'>
-                    NKEM engages customers in real-time, answers product questions, recommends items, and collects qualified leads when you're unavailable.
+                    {hasProducts
+                      ? "NKEM engages customers in real-time, answers product questions, recommends items, and collects qualified leads when you're unavailable."
+                      : 'Post at least one product to enable NKEM — it needs a listing to answer questions about.'}
                   </span>
-                  <Switch 
+                  <Switch
                     className='data-[state=checked]:bg-purple-600'
                     checked={user?.aiEnabled}
+                    disabled={!hasProducts}
                     onCheckedChange={async(checked) =>{
+                      if (checked && !hasProducts) {
+                        toast.error('Post a product first to enable NKEM.');
+                        return;
+                      }
                       await updateUser({
                         aiEnabled: checked
                       })

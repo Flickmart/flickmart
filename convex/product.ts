@@ -301,6 +301,19 @@ export const remove = mutation({
 
     await ctx.db.delete(args.productId);
 
+    // If this was the user's last product, the AI assistant no longer has
+    // anything to answer questions about -- turn it off rather than leaving
+    // it silently on with nothing to work with.
+    if (user.aiEnabled) {
+      const remainingProduct = await ctx.db
+        .query("product")
+        .withIndex("by_userId", (q) => q.eq("userId", user._id))
+        .first();
+      if (!remainingProduct) {
+        await ctx.db.patch(user._id, { aiEnabled: false });
+      }
+    }
+
     return args.productId;
   },
 });
