@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import ChatSidebar from '@/components/chats/chat-sidebar';
 import { api } from '@/convex/_generated/api';
 import type { Doc, Id } from '@/convex/_generated/dataModel';
-import { useAppPresence } from '@/hooks/useAppPresence';
 import { useAuthUser } from '@/hooks/useAuthUser';
 
 

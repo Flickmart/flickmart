@@ -11,7 +11,6 @@ import Slider from '@/components/home/Slider';
 import MobileNav from '@/components/MobileNav';
 import SearchBox from '@/components/SearchBox';
 import SearchOverlay from '@/components/SearchOverlay';
-import { useAppPresence } from '@/hooks/useAppPresence';
 
 export default function Home() {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -20,10 +19,6 @@ export default function Home() {
   function openSearch(val: boolean) {
     setSearchOpen(val);
   }
-
-  const { presenceState } = useAppPresence();
-
-  console.log('Presense state', presenceState);
 
   useEffect(() => {
     const id = localStorage.getItem("anonId")
