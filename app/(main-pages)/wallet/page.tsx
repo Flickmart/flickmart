@@ -131,15 +131,17 @@ export default function WalletPage() {
         }
       );
       const data = await response.json();
-      if (data.status) {
-        setPaystackReference(data.data.reference);
-      } else {
-        setError('Failed to initialize payment.');
-        toast.error('Failed to initialize payment.');
+      if (!response.ok || !data.status) {
+        const message =
+          data.message || data.error || 'Failed to initialize payment.';
+        setError(message);
+        toast.error(message);
         setIsPaystackModalOpen(false);
+        return;
       }
+      setPaystackReference(data.data.reference);
     } catch (_err) {
-      setError('Error initializing payment.');
+      setError('Error initializing payment. Please check your connection and try again.');
       setIsPaystackModalOpen(false);
     } finally {
       setIsInitializing(false);

@@ -120,6 +120,30 @@ http.route({
 
     const { email, amount } = await request.json();
 
+    if (typeof email !== "string" || !email) {
+      return new Response(
+        JSON.stringify({ error: "A valid email is required." }),
+        { status: 400, headers },
+      );
+    }
+
+    if (typeof amount !== "number" || !Number.isFinite(amount) || amount <= 0) {
+      return new Response(
+        JSON.stringify({ error: "Please enter a valid deposit amount." }),
+        { status: 400, headers },
+      );
+    }
+
+    if (!process.env.PAYSTACK_SECRET_KEY) {
+      console.error("PAYSTACK_SECRET_KEY is not configured");
+      return new Response(
+        JSON.stringify({
+          error: "Payment provider is not configured. Please contact support.",
+        }),
+        { status: 500, headers },
+      );
+    }
+
     const user = await ctx.runQuery(api.users.current, {});
 
     if (!user) {
@@ -149,58 +173,86 @@ http.route({
 
     // If no customer ID exists, create a customer first
     if (!customerId) {
-      const customerResponse = await fetch("https://api.paystack.co/customer", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-          first_name: user.name.split(" ")[0] || user.name,
-          last_name: user.name.split(" ").slice(1).join(" ") || "",
-          phone: user.contact?.phone || "",
-        }),
-      });
+      try {
+        const customerResponse = await fetch(
+          "https://api.paystack.co/customer",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email,
+              first_name: user.name.split(" ")[0] || user.name,
+              last_name: user.name.split(" ").slice(1).join(" ") || "",
+              phone: user.contact?.phone || "",
+            }),
+          },
+        );
 
-      const customerData = await customerResponse.json();
-      if (
-        customerData.status &&
-        customerData.data &&
-        customerData.data.customer_code
-      ) {
-        const newCustomerId = customerData.data.customer_code;
-        customerId = newCustomerId;
+        const customerData = await customerResponse.json();
+        if (
+          customerData.status &&
+          customerData.data &&
+          customerData.data.customer_code
+        ) {
+          const newCustomerId = customerData.data.customer_code;
+          customerId = newCustomerId;
 
-        // Save customer ID to user and wallet
-        await ctx.runMutation(internal.users.updatePaystackCustomerId, {
-          userId: user._id,
-          customerId: newCustomerId,
-        });
+          // Save customer ID to user and wallet
+          await ctx.runMutation(internal.users.updatePaystackCustomerId, {
+            userId: user._id,
+            customerId: newCustomerId,
+          });
 
-        await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
-          walletId: wallet._id,
-          customerId: newCustomerId,
-        });
+          await ctx.runMutation(internal.wallet.updatePaystackCustomerId, {
+            walletId: wallet._id,
+            customerId: newCustomerId,
+          });
+        } else {
+          console.error(
+            "Paystack customer creation failed:",
+            customerData.message,
+          );
+        }
+      } catch (error) {
+        // Customer creation is an optimization (lets Paystack pre-fill
+        // saved cards), not a hard requirement -- the transaction can
+        // still be initialized with just an email, so log and continue
+        // rather than failing the whole deposit over it.
+        console.error("Paystack customer creation request failed:", error);
       }
     }
 
-    const response = await fetch(
-      "https://api.paystack.co/transaction/initialize",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
-          "Content-Type": "application/json",
+    let data: any;
+    try {
+      const response = await fetch(
+        "https://api.paystack.co/transaction/initialize",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.PAYSTACK_SECRET_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            amount: Math.round(amount * 100),
+            customer: customerId, // Include customer ID if available
+          }), // Convert to kobo
         },
-        body: JSON.stringify({
-          email,
-          amount: amount * 100,
-          customer: customerId, // Include customer ID if available
-        }), // Convert to kobo
-      },
-    );
-    const data = await response.json();
+      );
+      data = await response.json();
+    } catch (error) {
+      console.error("Paystack initialize request failed:", error);
+      return new Response(
+        JSON.stringify({
+          error: "Could not reach the payment provider. Please try again.",
+        }),
+        { status: 502, headers: getJsonHeaders(origin) },
+      );
+    }
+
     if (data.status) {
       try {
         const reference = await ctx.runAction(
@@ -234,6 +286,7 @@ http.route({
         );
       }
     }
+    console.error("Paystack transaction initialize failed:", data.message);
     return new Response(JSON.stringify(data), {
       status: 400,
       headers: getJsonHeaders(origin),
