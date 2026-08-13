@@ -284,7 +284,7 @@ export const sendMessage = mutation({
         const streamId = await pts.createStream(ctx);
 
         // Create Empty AI Message
-        const messageId = await ctx.db.insert("message", {
+        const aiMessageId = await ctx.db.insert("message", {
           senderId: recipientId,
           content: "",
           conversationId: args.conversationId,
@@ -293,7 +293,7 @@ export const sendMessage = mutation({
           readByUsers: [recipientId],
         });
 
-        return messageId;
+        return { messageId: aiMessageId, aiActivated: true as const };
       }
     }
 
@@ -350,7 +350,7 @@ export const sendMessage = mutation({
       }
     }
 
-    return messageId;
+    return { messageId, aiActivated: false as const };
   },
 });
 

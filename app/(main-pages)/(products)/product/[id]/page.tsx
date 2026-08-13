@@ -210,7 +210,7 @@ export default function ProductPage() {
     });
     initialChat({
       user: user ?? null,
-      userId: user?._id as Id<"users">,
+      userId: productData?.userId as Id<"users">,
       onNavigate: router.push,
       productId,
     });

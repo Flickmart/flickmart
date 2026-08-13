@@ -133,11 +133,21 @@ export default function ChatHeader({
                     <p className="truncate text-flickmart-chat-orange text-sm">
                       online
                     </p>
+                  ) : sellerId === userId || !aiEnabled ? (
+                    <p className="truncate text-gray-500 text-sm">offline</p>
+                  ) : AIStatus === 'thinking' ? (
+                    <p className="text-purple-600 animate-pulse font-medium text-xs">
+                      Thinking...
+                    </p>
+                  ) : AIStatus === 'generating' ? (
+                    <p className="text-purple-600 animate-pulse font-medium text-xs">
+                      Generating response...
+                    </p>
                   ) : (
-                    sellerId === userId || !aiEnabled? <p className="truncate text-gray-500 text-sm">offline</p> :
-                    AIStatus === "thinking" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Thinking...</p> :
-                    AIStatus === "generating" ? <p className='text-purple-600 animate-pulse font-medium text-xs'>Generating response...</p> :
-                    AIStatus === "done" && <p className="truncate text-purple-600 text-sm flex items-center gap-1"><Sparkles className="size-4" />NKEM AI</p>
+                    <p className="truncate text-purple-600 text-sm flex items-center gap-1">
+                      <Sparkles className="size-4" />
+                      NKEM AI
+                    </p>
                   )}
                 </div>
               )}
