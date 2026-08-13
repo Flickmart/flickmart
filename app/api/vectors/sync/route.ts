@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const collection = getProductEmbeddingsCollection();
+    const collection = await getProductEmbeddingsCollection();
 
     // Clear any previous chunks for this product first so edits/re-syncs
     // never accumulate duplicates.

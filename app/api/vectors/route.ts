@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
     // Falls back to an unfiltered search only if no sellerId was provided.
     const filter = sellerId ? { userId: sellerId } : {};
 
-    const results = await getProductEmbeddingsCollection()
+    const collection = await getProductEmbeddingsCollection();
+    const results = await collection
       .find(filter)
       .sort({ $vector: Array.from(embeddedPrompt) })
       .limit(5)
