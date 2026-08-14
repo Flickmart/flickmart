@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "convex/react";
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { BeatLoader, SyncLoader } from "react-spinners";
+import { chatMarkdownImageComponents } from "@/components/chat-markdown-image";
 
 export default function ChatAI({
     sellerId,
@@ -89,7 +90,7 @@ useEffect(()=>{
         <div className=" h-12 pl-3 flex items-center"><BeatLoader color="#6b7280 "/></div> :
         <div className="max-w-[85%] xs:max-w-[80%] rounded-xl p-2 sm:max-w-[75%] sm:px-3 lg:max-w-[65%] bg-gray-300/80 rounded-bl-none  text-black text-foreground">
             <span className="break-words text-xs leading-relaxed sm:text-sm md:text-base">
-                <ReactMarkdown>
+                <ReactMarkdown components={chatMarkdownImageComponents}>
                     {text}
                 </ReactMarkdown>
                 <div ref={bottomRef} />

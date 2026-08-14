@@ -108,3 +108,63 @@ export async function renderProductChunks(
   });
   return await splitter.splitText(document);
 }
+
+// Kept in sync by hand with templates/stores.md. Callers pass the store
+// doc's own fields plus a few computed extras (ownerName, verified,
+// productCount, categories) that aren't stored on the `store` table itself
+// -- see scripts/store-ingest-pipeline.ts for how those are assembled.
+const STORE_TEMPLATE = `# Store: {{name}}
+
+## Overview
+
+{{name}} is a seller store on Flickmart. It has {{productCount}} active listing(s) on the platform.
+
+## Store Details
+
+- **Store Name:** {{name}}
+- **Owner:** {{ownerName}}
+- **Verified Seller:** {{verified}}
+- **Location:** {{location}}
+- **Categories Sold:** {{categories}}
+- **Active Listings:** {{productCount}}
+
+## About
+
+{{description}}
+
+## Contact Information
+
+- **Phone Number:** {{phone}}
+
+## Internal Metadata (For Reference)
+
+- **Store ID:** {{_id}}
+- **User ID:** {{userId}}
+- **Created Time:** {{_creationTime}}
+`;
+
+function renderStoreDocument(store: Record<string, unknown>): string {
+  let document = STORE_TEMPLATE;
+
+  for (const key of Object.keys(store)) {
+    const value = String(store[key]);
+    document = document.replaceAll(`{{${key}}}`, value);
+  }
+
+  return document;
+}
+
+// Renders a store into the same markdown template used for embeddings, then
+// splits it the same way renderProductChunks does. Single source of truth
+// for scripts/store-ingest-pipeline.ts.
+export async function renderStoreChunks(
+  store: Record<string, unknown>,
+): Promise<string[]> {
+  const document = renderStoreDocument(store);
+  const splitter = new RecursiveCharacterTextSplitter({
+    separators: ["## "],
+    chunkSize: 512,
+    chunkOverlap: 60,
+  });
+  return await splitter.splitText(document);
+}

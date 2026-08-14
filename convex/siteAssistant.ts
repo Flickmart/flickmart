@@ -34,9 +34,11 @@ export const getAssistantStreamBody = query({
   },
 });
 
-// HTTP action that actually generates the assistant's reply. No RAG lookup
-// here -- the widget answers general platform questions from
-// `siteAssistantSystemPrompt` alone.
+// HTTP action that actually generates the assistant's reply. Looks up
+// relevant listings/stores from the vector DB (unfiltered by seller, unlike
+// the per-conversation seller AI in chat.ts) so it can answer "is X
+// available" style questions with real, current inventory instead of
+// deflecting every specific-product question.
 export const streamSiteAssistantResponse = httpAction(async (ctx, request) => {
   try {
     if (request.method === "OPTIONS") {
@@ -74,6 +76,35 @@ export const streamSiteAssistantResponse = httpAction(async (ctx, request) => {
       }
     }
 
+    // Vector-DB context is best-effort: if it fails, still answer using the
+    // system prompt alone rather than failing the whole reply.
+    let infoFromVectorDB = "";
+    try {
+      const result = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/vectors`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt }),
+      });
+
+      if (result.ok) {
+        const data = (await result.json()).data as Array<{
+          _id: string;
+          text: string;
+        }> | null;
+        infoFromVectorDB = (data ?? []).map((item) => item.text).join("#");
+      } else {
+        console.log(
+          "Vector search request failed, continuing without RAG context:",
+          result.status,
+        );
+      }
+    } catch (err) {
+      console.log(
+        "Vector search request errored, continuing without RAG context:",
+        err,
+      );
+    }
+
     const response = await pts.stream(
       ctx,
       request,
@@ -81,7 +112,9 @@ export const streamSiteAssistantResponse = httpAction(async (ctx, request) => {
       async (ctx, req, id, append) => {
         await streamOpenRouterChat({
           systemPrompt: siteAssistantSystemPrompt,
-          userPrompt: prompt,
+          userPrompt: infoFromVectorDB
+            ? `Live listings/store info from the database: ${infoFromVectorDB}\n\nUser question: ${prompt}`
+            : prompt,
           history,
           append,
         });

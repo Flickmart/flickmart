@@ -3,6 +3,14 @@
     {
       "path": "/api/sync-recombee?secret=ajd82n3jdh9283hdf89sd",
       "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/sync-products",
+      "schedule": "0 3 * * 0"
+    },
+    {
+      "path": "/api/cron/sync-stores",
+      "schedule": "0 3 * * *"
     }
   ]
 }
