@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 import { ingestAllStores } from "@/lib/vectorIngestion";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300;
+// See app/api/cron/sync-products/route.ts for why this is capped at 60 and
+// what that means for large-catalog runs on Vercel's Hobby plan.
+export const maxDuration = 60;
 
 // See app/api/cron/sync-products/route.ts for why this checks a bearer
 // header instead of a URL secret.
