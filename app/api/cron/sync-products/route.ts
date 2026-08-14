@@ -2,10 +2,18 @@ import { NextResponse } from "next/server";
 import { ingestAllProducts } from "@/lib/vectorIngestion";
 
 export const dynamic = "force-dynamic";
-// Full re-embed of every product can take a while on a large catalog --
-// raise the default serverless timeout. Actual ceiling depends on the
-// Vercel plan (Hobby caps at 60s regardless of this value).
-export const maxDuration = 300;
+// Vercel's Hobby plan hard-caps this at 60 -- it's a build-time validation
+// error, not a silent clamp, so anything higher fails the whole deploy.
+// Full re-embed of a large catalog can genuinely exceed 60s (this project's
+// ~150 products took noticeably longer than that in local testing), in
+// which case Vercel kills the function mid-run. That's not data-corrupting
+// (each product is deleted-then-reinserted independently, so a
+// mid-list timeout just leaves the remaining products unsynced until the
+// next run) but it does mean this cron may never reach products past
+// wherever it times out, run after run, since it always restarts from the
+// same first item. Upgrading past Hobby (raises the cap up to 300s+) or
+// batching this across multiple invocations would both fix that properly.
+export const maxDuration = 60;
 
 // Vercel automatically sends `Authorization: Bearer $CRON_SECRET` on its
 // own cron-triggered requests when the CRON_SECRET env var is set on the
