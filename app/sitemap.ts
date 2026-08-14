@@ -3,6 +3,17 @@ import type { MetadataRoute } from 'next';
 import { api } from '@/convex/_generated/api';
 import { SITE_URL } from '@/utils/seo';
 
+// Without this, Next tries to prerender this route at BUILD time. Convex's
+// fetchQuery uses a no-store fetch internally, which trips Next's
+// "dynamic API used during static generation" bailout (DYNAMIC_SERVER_USAGE)
+// -- a special control-flow error that fails the whole build even though
+// the try/catch below "handles" it at the JS level, because the signal that
+// something dynamic happened during an attempted static render still
+// propagates up to Next's build harness regardless. Forcing this route
+// dynamic means it just renders per-request instead, which is what a
+// sitemap reflecting live product data needs anyway.
+export const dynamic = 'force-dynamic';
+
 // Sitemaps cap out at 50,000 URLs per file; the product catalog is far
 // below that today, but this bound keeps the route from ever generating an
 // invalid oversized file if the catalog grows a lot before this is revisited.

@@ -4,7 +4,10 @@
       "Bash(git fetch *)",
       "Bash(git rm *)",
       "Bash(NEXT_PUBLIC_CONVEX_URL=https://blissful-toucan-658.convex.cloud npx tsx scripts/data-injest-pipeline.ts)",
-      "Bash(NEXT_PUBLIC_CONVEX_URL=https://blissful-toucan-658.convex.cloud npx tsx scripts/store-ingest-pipeline.ts)"
+      "Bash(NEXT_PUBLIC_CONVEX_URL=https://blissful-toucan-658.convex.cloud npx tsx scripts/store-ingest-pipeline.ts)",
+      "WebFetch(domain:flickmart.app)",
+      "Bash(curl -s https://flickmart.app/)",
+      "Bash(curl -s https://flickmart.app/robots.txt)"
     ]
   }
 }
