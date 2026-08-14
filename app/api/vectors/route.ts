@@ -1,6 +1,9 @@
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
-import { getProductEmbeddingsCollection } from "@/convex/astra";
+import {
+  getProductEmbeddingsCollection,
+  getStoreEmbeddingsCollection,
+} from "@/convex/astra";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
@@ -32,13 +35,32 @@ export async function POST(req: NextRequest) {
     // buyer never gets another seller's product info in their AI answer.
     // Falls back to an unfiltered search only if no sellerId was provided.
     const filter = sellerId ? { userId: sellerId } : {};
+    const vector = Array.from(embeddedPrompt);
 
-    const collection = await getProductEmbeddingsCollection();
-    const results = await collection
-      .find(filter)
-      .sort({ $vector: Array.from(embeddedPrompt) })
-      .limit(5)
-      .toArray();
+    const [productCollection, storeCollection] = await Promise.all([
+      getProductEmbeddingsCollection(),
+      getStoreEmbeddingsCollection(),
+    ]);
+
+    // Two separate collections (see convex/astra.ts) so a store query isn't
+    // competing against every individual product chunk for the top-N spots.
+    // Product results get the larger share since most questions are about a
+    // specific listing; store results add "who sells this / are they
+    // verified" context alongside them.
+    const [productResults, storeResults] = await Promise.all([
+      productCollection
+        .find(filter)
+        .sort({ $vector: vector })
+        .limit(4)
+        .toArray(),
+      storeCollection
+        .find(filter)
+        .sort({ $vector: vector })
+        .limit(2)
+        .toArray(),
+    ]);
+
+    const results = [...productResults, ...storeResults];
 
     if (process.env.NODE_ENV !== "production") {
       console.log(results);

@@ -19,10 +19,13 @@ export function connectToDatabase() {
 }
 
 const PRODUCT_LISTINGS_COLLECTION = "product_listings_embeddings";
+const STORE_LISTINGS_COLLECTION = "store_listings_embeddings";
 
 // biome-ignore lint/suspicious/noExplicitAny: astra-db-ts's Collection generics
 // aren't worth fighting for a cached handle reused across warm invocations.
 let cachedCollection: any = null;
+// biome-ignore lint/suspicious/noExplicitAny: see cachedCollection above.
+let cachedStoreCollection: any = null;
 
 /**
  * Returns a cached handle to the product-listings vector collection, shared
@@ -50,4 +53,26 @@ export async function getProductEmbeddingsCollection() {
     });
   }
   return cachedCollection;
+}
+
+/**
+ * Same idea as getProductEmbeddingsCollection, but for store/seller
+ * documents -- kept in a separate collection rather than mixed into the
+ * product one so a similarity search for "tell me about store X" isn't
+ * competing against every individual product chunk for the top-N results.
+ */
+export async function getStoreEmbeddingsCollection() {
+  if (!cachedStoreCollection) {
+    const db = connectToDatabase();
+    cachedStoreCollection = await db.createCollection(
+      STORE_LISTINGS_COLLECTION,
+      {
+        vector: {
+          dimension: 768,
+          metric: "cosine",
+        },
+      },
+    );
+  }
+  return cachedStoreCollection;
 }

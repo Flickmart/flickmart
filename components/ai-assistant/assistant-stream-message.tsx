@@ -5,6 +5,7 @@ import { useStream } from '@convex-dev/persistent-text-streaming/react';
 import { useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { BeatLoader } from 'react-spinners';
+import { chatMarkdownImageComponents } from '@/components/chat-markdown-image';
 import { api } from '@/convex/_generated/api';
 import type { AssistantHistoryTurn } from './assistant-widget';
 
@@ -49,7 +50,7 @@ export function AssistantStreamMessage({
           again.
         </p>
       ) : text ? (
-        <ReactMarkdown>{text}</ReactMarkdown>
+        <ReactMarkdown components={chatMarkdownImageComponents}>{text}</ReactMarkdown>
       ) : (
         <div className="flex h-6 items-center">
           <BeatLoader color="#6b7280" size={6} />

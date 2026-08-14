@@ -197,14 +197,14 @@ export default function MessageBubble({
             </div>
           </div>
         )}
-        <p
+        <div
           className={cn(
-            'break-words text-xs leading-relaxed sm:text-sm md:text-base',
+            'whitespace-pre-wrap break-words text-xs leading-relaxed sm:text-sm md:text-base',
             selectedMessages.includes(id) && 'text-right'
           )}
         >
            {type !== 'product' && type !== 'transfer' && <ReactMarkdown>{message}</ReactMarkdown>}
-        </p>
+        </div>
 
         {type !== 'transfer' && (
           <div className="mt-1 flex items-center justify-end space-x-1">
